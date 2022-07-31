@@ -1,0 +1,14 @@
+*
+{
+    color: white;
+    font-family: 'Andika';
+    /* outline: 0.5px solid red; */
+}
+
+body
+{
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    font-size: 10px;
+}

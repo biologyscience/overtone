@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>OverTone</title>
+
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/displayLeft.css">
+        <link rel="stylesheet" href="css/displayRight.css">
+        <link rel="stylesheet" href="css/customClasses.css">
+        <link rel="stylesheet" href="css/fonts.css">
+        <link rel="stylesheet" href="css/customVariables.css">
+
+        <script src="js/hover3D.js" defer></script>
+        <script src="js/fillPreviousID.js" defer></script>
+    </head>
+    <body class="flex">
+        <div id="displayLeft">
+            <div class="flex flexCol alignItemsCenter">
+                <button id="choose">Choose a song</button>
+                <button id="getAlbumArt">Get Album Art</button>
+                <div class="rpc flex flexCol alignItemsCenter">
+                    <input id="discordAppID" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
+                    <button id="connect">Connect</button>
+                </div>
+            </div>
+        </div>
+        <div id="displayRight">
+            <div class="alignItemsCenter flex">
+                <div id="albumArtLyricsWrapper" class="hoverPointer relative flex">
+                    <div id="lyricsWrapper" class="absolute">
+                        <!-- LYRICS -->
+                    </div>
+                    <div id="albumArtWrapper" class="absolute">
+                        <img id="albumArt" class="hover3D" src="svg/empty.svg">
+                    </div>
+                </div>
+            </div>
+            <div class="spacing flex">
+                <div id="songInfo">
+                    <div id="songName" class="overflowPrevent">
+                        Name of the Song
+                    </div>
+                    <div id="artistName" class="overflowPrevent">
+                        Name of the Artist
+                    </div>
+                    <div id="albumName" class="overflowPrevent">
+                        Name of the Album
+                    </div>
+                </div>
+                <div>
+                    <button class="miscButtons" title="does nothing">
+                        <img src="svg/favorite.svg" class="miscSVG">
+                    </button>
+
+                    <button class="miscButtons" title="does nothing">
+                        <img src="svg/info.svg" class="miscSVG">
+                    </button>
+
+                    <button class="miscButtons" title="does nothing">
+                        <img src="svg/playlistAdd.svg" class="miscSVG">
+                    </button>
+
+                    <button class="miscButtons" title="does nothing">
+                        <img src="svg/more.svg" class="miscSVG">
+                    </button>
+                </div>
+                <div id="timeLine" class="relative flex">
+                    <div id="currentTime" class="absolute top0 bottom0 left0">
+                        Current Time
+                    </div>
+
+                    <div id="theLine" class="absolute top0 bottom0"></div>
+
+                    <div id="totalTime" class="absolute top0 bottom0 right0">
+                        Total Time
+                    </div>
+                </div>
+                <div id="mediaButtons" class="flex">
+                    <div id="div-previousSong" class="relative">
+                        <button id="previousSong">
+                            <img src="svg/previous.svg" title="does nothing" class="svg top0 left0 absolute" id="imgPrevious">
+                        </button>
+                    </div>
+                    <div id="div-pauseORplay" class="relative">
+                        <button id="pauseORplay">
+                            <img src="svg/play.svg" class="svg top0 left0 absolute" alt="" id="imgPlay">                            
+                            <img src="svg/pause.svg" class="opacity0 svg top0 left0 absolute" alt="" id="imgPause">
+                        </button>
+                    </div>
+                    <div id="div-nextSong" class="relative">
+                        <button id="nextSong">
+                            <img src="svg/next.svg" title="does nothing" class="svg top0 left0 absolute" id="imgNext">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>document.querySelectorAll('img').forEach(x => x.setAttribute('draggable', 'false'));</script>
+        <script>require('./js/play.js')</script>
+        <script>require('./js/getAlbumArt.js')</script>
+        <script>require('./js/rpc/rpc.js')</script>
+    </body>
+</html>

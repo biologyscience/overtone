@@ -1,0 +1,19 @@
+{
+  "name": "overtone",
+  "version": "0.0.1",
+  "description": "A free and open source Music Player for all your local music files !",
+  "main": "app/index.js",
+  "author": "biologyscience",
+  "license": "MIT",
+  "homepage": "https://biologyscience.github.io/overtone",
+  "scripts": {
+    "start": "electron app/index.js",
+    "build": "electron-packager ./ --platform=win32 --arch=x64"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.0.8",
+    "discord-rpc": "^4.0.1",
+    "electron": "^19.0.8",
+    "music-metadata": "^7.12.5"
+  }
+}

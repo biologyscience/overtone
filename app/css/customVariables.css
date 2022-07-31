@@ -1,0 +1,36 @@
+:root
+{
+    --dark10: hsl(0, 0%, 10%);
+    --dark20: hsl(0, 0%, 20%);
+    --dark30: hsl(0, 0%, 30%);
+    --dark40: hsl(0, 0%, 40%);
+    --dark50: hsl(0, 0%, 50%);
+    --dark60: hsl(0, 0%, 60%);
+    --dark70: hsl(0, 0%, 70%);
+    --dark80: hsl(0, 0%, 80%);
+    --dark90: hsl(0, 0%, 90%);
+    --accentGreen1: rgb(101, 255, 160);
+    --accentGreen2: rgb(118, 255, 3);
+    --accentGreen3: rgb(174, 234, 0);
+    --accentGreen4: rgb(100, 255, 218);
+    --accentRed1: rgb(255, 82, 82);
+    --accentRed2: rgb(213, 0, 0);
+    --accentRed3: rgb(221, 44, 0);
+    --accentPurple1: rgb(224, 64, 251);
+    --accentPurple2: rgb(170, 0, 255);
+    --accentPurple3: rgb(124, 77, 255);
+    --accentBlue1: rgb(98, 0, 234);
+    --accentBlue2: rgb(83, 109, 254);
+    --accentBlue3: rgb(48, 79, 154);
+    --accentBlue4: rgb(68, 138, 255);
+    --accentBlue5: rgb(41, 98, 255);
+    --accentYellow1: rgb(255, 255, 0);
+    --accentYellow2: rgb(255, 215, 64);
+    --accentOrange1: rgb(255, 140, 64);
+    --accentOrange2: rgb(255, 109, 0);
+    --accentOrange3: rgb(255, 93, 42);
+    --accentPink1: rgb(255, 64, 129);
+    --accentPink2: rgb(197, 17, 98);
+    --accentLightBlue1: rgb(64, 196, 255);
+    --accentLightBlue2: rgb(24, 255, 255);
+}
