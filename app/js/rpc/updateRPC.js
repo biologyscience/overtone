@@ -1,11 +1,22 @@
 const metadata = require('music-metadata');
 const formatter = require('../formatter');
 
+let x = false;
+
 function updateRPC(filePath)
 {
     const client = require('./rpc');
 
-    if (client.clientId === undefined) return alert('ERROR: RPC is not connected');
+    if (client.clientId === undefined)
+    {
+        if (!x)
+        {
+            x = true;
+            alert('ALERT: RPC is not connected');
+        }
+
+        return;
+    }
 
     metadata.parseFile(filePath).then((tags) =>
     {

@@ -14,7 +14,8 @@ app.on('ready', () =>
         minimizable: true,
         maximizable: true,
         autoHideMenuBar: true,
-        
+        // icon: '',
+
         webPreferences:
         {
             nodeIntegration: true,

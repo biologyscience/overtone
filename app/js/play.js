@@ -126,7 +126,7 @@ function setMetaTags(fileLocation)
         div.artistName.innerHTML = albumArtist;
         div.albumName.innerHTML = albumName;
 
-        event.emit('updateRPC', fileLocation);
+        event.emit('update', fileLocation);
     });
 };
 
@@ -164,4 +164,8 @@ function clearAllIntervals()
 button.choose.onclick = choose;
 button.pauseORplay.onclick = pauseORplay;
 
-event.addListener('updateRPC', (fileLocation) => require('./rpc/updateRPC')(fileLocation));
+event.addListener('update', (fileLocation) =>
+{
+    require('./rpc/updateRPC')(fileLocation);
+    require('./mediaSessionMetaData')(navigator, fileLocation);
+});

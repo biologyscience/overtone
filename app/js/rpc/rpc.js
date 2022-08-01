@@ -1,8 +1,7 @@
 const pressence = 
 {
     state: 'Name of the Song',
-    details: 'Name of the Artist',
-    largeImageKey: 'imagine_dragons_ragged_insomnia'
+    details: 'Name of the Artist'
 };
 
 const connect = document.getElementById('connect');
