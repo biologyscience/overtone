@@ -1,16 +1,72 @@
 #displayLeft
 {
     height: 100vh;
-    width: 60%;
+    width: 60vw;
     outline: 2px solid var(--accentGreen1);
-    background-color: var(--dark20);
+    /* background-color: var(--dark20); */
+}
+
+#navbar
+{
+    width: 60vw;
+    background-color: var(--dark10);
+    font-size: 20px;
+    --size: 25px;
+}
+
+#navbarList
+{
+    --left: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: space-evenly;
+}
+
+#navbarList::after
+{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: var(--left);
+    height: .15em;
+    width: calc( var(--size) * 1.7 );
+    background-color: var(--accentGreen1);
+    transition: left ease 250ms;
+}
+
+.navbarItems
+{
+    display: block;
+    margin: .6em 0;
+}
+
+.navbarItems:last-child { margin-left: 1.5em; }
+
+.navbarButton
+{
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.navbarSVG
+{
+    height: var(--size);
+    width: var(--size)
+}
+
+#focusHighlight button svg
+{
+    fill: white;
+    transition: fill ease 100ms;
 }
 
 #choose, #getAlbumArt, #connect
 {
     background: none;
     border-radius: 5px;
-    margin: 1em 0;
+    margin: 1rem 0;
 }
 
 #choose, #getAlbumArt

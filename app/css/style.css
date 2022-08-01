@@ -11,4 +11,9 @@ body
     align-items: center;
     margin: 0;
     font-size: 10px;
+    height: 100vh;
+    width: 100vw;
+    background-image: linear-gradient(-135deg, hsl(0, 0%, 10%), hsl(0, 0%, 20%) 20%, hsl(0, 0%, 30%));
 }
+
+button:hover { cursor: pointer; }

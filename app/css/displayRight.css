@@ -1,9 +1,9 @@
 #displayRight
 {
     height: 100vh;
-    width: 40%;
+    width: 40vw;
     outline: 2px solid var(--accentGreen1);
-    background-color: var(--dark20);
+    /* background-color: var(--dark20); */
 }
 
 .alignItemsCenter

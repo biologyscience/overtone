@@ -1,7 +1,7 @@
 const metadata = require('music-metadata');
 const formatter = require('../formatter');
 
-let x = false;
+let firstAlertOver = false;
 
 function updateRPC(filePath)
 {
@@ -9,9 +9,9 @@ function updateRPC(filePath)
 
     if (client.clientId === undefined)
     {
-        if (!x)
+        if (!firstAlertOver)
         {
-            x = true;
+            firstAlertOver = true;
             alert('ALERT: RPC is not connected');
         }
 

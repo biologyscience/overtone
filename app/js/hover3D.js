@@ -23,7 +23,7 @@ hover3D.addEventListener('mousemove', (E) =>
         yRotation = extent * ((xVal - width / 2) / width),
         xRotation = -(extent) * ((yVal - height / 2) / height);
 
-    hover3D.style.transform = 'perspective(1000px) scale(1.025) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
+    hover3D.style.transform = 'perspective(1000px) scale(1.01) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
 });
 
 hover3D.addEventListener('mouseenter', () =>

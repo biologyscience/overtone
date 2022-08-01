@@ -167,5 +167,5 @@ button.pauseORplay.onclick = pauseORplay;
 event.addListener('update', (fileLocation) =>
 {
     require('./rpc/updateRPC')(fileLocation);
-    require('./mediaSessionMetaData')(navigator, fileLocation);
+    require('./metaData/mediaSessionMetaData')(navigator, fileLocation);
 });

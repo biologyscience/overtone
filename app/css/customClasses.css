@@ -1,5 +1,3 @@
-button:hover { cursor: pointer; }
-
 .hoverPointer { cursor: pointer; }
 
 .relative { position: relative; }
@@ -14,7 +12,11 @@ button:hover { cursor: pointer; }
 
 .flex { display: flex; }
 
-.flexCol { flex-direction: column; }
+.flexCol
+{
+    display: flex;
+    flex-direction: column;
+}
 
 .flexCenter
 {
@@ -46,6 +48,8 @@ button:hover { cursor: pointer; }
 .justifyContentCenter { justify-content: center; }
 
 .justifyItemsCenter { justify-items: center; }
+
+.overflowHidden { overflow: hidden; }
 
 .overflowPrevent
 {
