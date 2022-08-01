@@ -1,4 +1,4 @@
-const parseTime = require('./parseTime');
+const parseTime = require('../parseTime');
 
 const eventEmitter = require('events');
 const event = new eventEmitter();
@@ -94,7 +94,7 @@ function setMetaTags(fileLocation)
 {
     const metadata = require('music-metadata');
 
-    audio.addEventListener('loadeddata', (E) =>
+    audio.addEventListener('loadeddata', () =>
     {
         const
             totalTime = parseTime(audio.duration * 1000),
@@ -132,7 +132,7 @@ function setMetaTags(fileLocation)
 
 function changeTimeline()
 {
-    audio.addEventListener('playing', (E) =>
+    audio.addEventListener('playing', () =>
     {
         const a = setInterval(() =>
         {
@@ -148,10 +148,10 @@ function changeTimeline()
             div.currentTime.innerHTML = minutes + ':' + seconds;
         }, 1000);
 
-        const b = setInterval(() => { if (audio.paused) { clearAllIntervals(); } }, 1);
-
-        intervals.push(a, b);
+        intervals.push(a);
     });
+
+    audio.addEventListener('pause', () => clearAllIntervals());
 };
 
 function clearAllIntervals()
@@ -166,6 +166,6 @@ button.pauseORplay.onclick = pauseORplay;
 
 event.addListener('update', (fileLocation) =>
 {
-    require('./rpc/updateRPC')(fileLocation);
-    require('./metaData/mediaSessionMetaData')(navigator, fileLocation);
+    require('../rpc/updateRPC')(fileLocation);
+    require('../metaData/mediaSessionMetaData')(navigator, fileLocation);
 });

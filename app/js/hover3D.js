@@ -18,10 +18,10 @@ hover3D.addEventListener('mousemove', (E) =>
     if (hoverEffect === false) return;
 
     const
-        xVal = E.layerX,
-        yVal = E.layerY,
-        yRotation = extent * ((xVal - width / 2) / width),
-        xRotation = -(extent) * ((yVal - height / 2) / height);
+        x = E.layerX,
+        y = E.layerY,
+        yRotation = extent * ((x - width / 2) / width),
+        xRotation = -(extent) * ((y - height / 2) / height);
 
     hover3D.style.transform = 'perspective(1000px) scale(1.01) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
 });
@@ -31,7 +31,6 @@ hover3D.addEventListener('mouseenter', () =>
     setTimeout(() => { hoverEffect = true; }, 1000);
 
     hoverEffect ? enteredWithinDelay = true : null;
-
 });
 
 hover3D.addEventListener('mouseleave', () => setTimeout(() => { enteredWithinDelay ? enteredWithinDelay = false : hoverEffect = false; }, 1000));
