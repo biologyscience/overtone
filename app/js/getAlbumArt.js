@@ -12,7 +12,7 @@ function chooseFiles()
         metadata = require('music-metadata'),
         remote = require('@electron/remote'),
         fs = require('fs'),
-        formatter = require('./formatter');
+        util = require('./util');
 
     const options =
     {
@@ -33,7 +33,7 @@ function chooseFiles()
                 {
                     const
                         picture = tags.common.picture[0],
-                        formatted = formatter(tags.common.album, tags.common.albumartist);
+                        formatted = util.formatter(tags.common.album, tags.common.albumartist);
 
                     if (fs.existsSync(dir.albumArts) === false) { fs.mkdirSync(dir.albumArts); }
                     

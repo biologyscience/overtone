@@ -21,8 +21,10 @@ function rpcStart()
     client.once('ready', () => client.setActivity(pressence));
 
     client.login({clientId: ID})
-    .then((CLIENT) =>
+    .then((c) =>
     {
+        document.dispatchEvent(new CustomEvent('-RPC', {detail: c}));
+
         connect.innerHTML = 'Connected';
         connect.style.borderColor = 'var(--accentGreen1)';
 
@@ -40,8 +42,6 @@ function rpcStart()
         else { data = { discordAppID: ID }; }
 
         fs.writeFileSync('app/config.json', JSON.stringify(data, null, 4));
-
-        module.exports = CLIENT;
     });
 };
 

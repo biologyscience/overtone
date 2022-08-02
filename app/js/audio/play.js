@@ -1,7 +1,4 @@
-const parseTime = require('../parseTime');
-
-const eventEmitter = require('events');
-const event = new eventEmitter();
+const util = require('../util');
 
 let intervals = [];
 
@@ -97,7 +94,7 @@ function setMetaTags(fileLocation)
     audio.addEventListener('loadeddata', () =>
     {
         const
-            totalTime = parseTime(audio.duration * 1000),
+            totalTime = util.parseTime(audio.duration * 1000),
             minutes = totalTime.minutes.toString(),
             seconds = totalTime.seconds.toString().length > 1 ? totalTime.seconds : '0' + totalTime.seconds;
 
@@ -112,7 +109,7 @@ function setMetaTags(fileLocation)
 
         if (tags.common?.picture)
         {
-            const albumArt = 'data:' + tags.common.picture[0].format + ';base64,' + tags.common.picture[0].data.toString('base64');
+            const albumArt = util.buffer2DataURL(tags.common.picture[0].format, tags.common.picture[0].data);
 
             img.albumArt.setAttribute('src', albumArt);
         }
@@ -126,7 +123,7 @@ function setMetaTags(fileLocation)
         div.artistName.innerHTML = albumArtist;
         div.albumName.innerHTML = albumName;
 
-        event.emit('update', fileLocation);
+        document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags}));
     });
 };
 
@@ -139,8 +136,8 @@ function changeTimeline()
             const
                 currentTime = audio.currentTime,
                 totalTime = audio.duration,
-                minutes = parseTime(currentTime * 1000).minutes.toString(),
-                seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds,
+                minutes = util.parseTime(currentTime * 1000).minutes.toString(),
+                seconds = util.parseTime(currentTime * 1000).seconds.toString().length > 1 ? util.parseTime(currentTime * 1000).seconds : '0' + util.parseTime(currentTime * 1000).seconds,
                 number = getComputedStyle(div.theLine).getPropertyValue('--maxWidth').split('%')[0];
 
             div.theLine.style.width = ((currentTime / totalTime) * parseInt(number)).toFixed(2) + '%';
@@ -163,9 +160,3 @@ function clearAllIntervals()
 
 button.choose.onclick = choose;
 button.pauseORplay.onclick = pauseORplay;
-
-event.addListener('update', (fileLocation) =>
-{
-    require('../rpc/updateRPC')(fileLocation);
-    require('../metaData/mediaSessionMetaData')(navigator, fileLocation);
-});

@@ -1,13 +1,14 @@
-const metadata = require('music-metadata');
-const formatter = require('../formatter');
+const util = require('../util');
 
-let firstAlertOver = false;
+let
+    firstAlertOver = false,
+    client;
 
-function updateRPC(filePath)
+function updateRPC({detail})
 {
-    const client = require('./rpc');
+    const tags = detail;
 
-    if (client.clientId === undefined)
+    if (client === undefined)
     {
         if (!firstAlertOver)
         {
@@ -18,23 +19,21 @@ function updateRPC(filePath)
         return;
     }
 
-    metadata.parseFile(filePath).then((tags) =>
-    {
-        const
-            songName = tags.common?.title,
-            albumArtist = tags.common?.albumartist,
-            albumName = tags.common?.album;
+    const
+        songName = tags.common?.title,
+        albumArtist = tags.common?.albumartist,
+        albumName = tags.common?.album;
 
-        const pressence = 
-        {
-            details: songName,
-            state: albumArtist,
-            largeImageKey: formatter(albumName, albumArtist),
-            largeImageText: albumName
-        };
-    
-        client.setActivity(pressence);
-    });
+    const pressence = 
+    {
+        details: songName,
+        state: albumArtist,
+        largeImageKey: util.formatter(albumName, albumArtist),
+        largeImageText: albumName
+    };
+
+    client.setActivity(pressence);
 };
 
-module.exports = updateRPC;
+document.addEventListener('-RPC', ({detail}) => client = detail);
+document.addEventListener('-updateMetaData', updateRPC);

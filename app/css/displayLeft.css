@@ -17,6 +17,7 @@
 #navbarList
 {
     --left: 0;
+    --opacity: 0;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -31,6 +32,7 @@
     left: var(--left);
     height: .15em;
     width: calc( var(--size) * 1.7 );
+    opacity: var(--opacity);
     background-color: var(--accentGreen1);
     transition: left ease 250ms;
 }
