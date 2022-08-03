@@ -1,8 +1,8 @@
-const util = require('../util');
-
 function updateMediaSessionMetaData({detail})
 {
     const tags = detail;
+
+    const util = require('./js/util');
 
     const mediaMetaData = 
     {

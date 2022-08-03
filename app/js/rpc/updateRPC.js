@@ -1,5 +1,3 @@
-const util = require('../util');
-
 let
     firstAlertOver = false,
     client;
@@ -7,6 +5,8 @@ let
 function updateRPC({detail})
 {
     const tags = detail;
+
+    const util = require('./js/util');
 
     if (client === undefined)
     {

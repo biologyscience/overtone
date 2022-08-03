@@ -9,12 +9,26 @@
         <link rel="stylesheet" href="css/fonts.css">
         <link rel="stylesheet" href="css/customVariables.css">
 
-        <script src="js/hover3D.js" defer></script>
-        <script src="js/fillPreviousID.js" defer></script>
-        <script src="js/misc.js" defer></script>
+        <!-- LISTENERS -->
+        <script src="js/audio/play.js" defer></script>
+        <script src="js/audio/timeLine.js" defer></script>
+        <script src="js/metaData/mediaSessionMetaData.js" defer></script>
+        <script src="js/metaData/metaData.js" defer></script>
+        <script src="js/rpc/updateRPC.js" defer></script>
+
+        <!-- EMITTERS -->
+        <script src="js/audio/choose.js" defer></script>
+        <script src="js/rpc/rpc.js" defer></script>
+
+        <!-- OTHERS -->
         <script src="js/navbar/focus.js" defer></script>
+        <script src="js/fillPreviousID.js" defer></script>
+        <script src="js/getAlbumArt.js" defer></script>
+        <script src="js/hover3D.js" defer></script>
+        <script src="js/misc.js" defer></script>
+                
     </head>
-    <body class="flex relative">
+    <body class="flex overflowHidden">
 
 
 <!--  -->
@@ -22,8 +36,91 @@
 
         <div id="displayLeft" class="flexCol">
 
-            <div class="top0 lef0 absolute displayNone">
+            <div class="top0 left0 absolute displayNone">
                 <button style="background: none;" id="misc">Misc Button</button>
+            </div>
+
+            <div id="displayLeftMain">
+
+                <div id="div-queue" class="displayNone inheritHeight">
+                    div-queue
+                    <div class="head displayNone">
+                        <div id="part1">
+                        </div>
+                        <div id="part2">
+                            <ul id="part2List" class="flex">
+                                <li class="part2Items">A</li>
+                                <li class="part2Items">B</li>
+                                <li class="part2Items">7/7</li>
+                                <li class="part2Items">D</li>
+                                <li class="part2Items">E</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="queueList" class="displayNone">
+
+                    </div>
+                    <div class="mainDivider displayNone"></div>
+                    <div id="content" class="block displayNone">
+                        <ul id="currentQueueList" class="flexCol">
+                            <li class="currentQueueItems grid">
+                                <div class="dragger flex flexCenter">
+                                    =
+                                </div>
+                                <div class="info relative hoverPointer" -data-SongDuration="1:04">
+                                    <div id="song">
+                                        CLOUDS
+                                    </div>
+                                    <div id="-artist">
+                                        NF
+                                    </div>
+                                    <div id="-album">
+                                        CLOUDS (THE MIXTAPE)
+                                    </div>
+                                </div>
+                                <div class="options flex flexCenter">
+                                    . . .
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mainDivider displayNone"></div>
+                </div>
+
+
+                <div id="div-folder" class="displayNone inheritHeight">
+                    div-folder
+                </div>
+
+                <div id="div-album" class="displayNone inheritHeight">
+                    div-album
+                </div>
+
+                <div id="div-artist" class="displayNone inheritHeight">
+                    div-artist
+                </div>
+
+                <div id="div-genre" class="displayNone inheritHeight">
+                    div-genre
+                </div>
+
+                <div id="div-library" class="displayNone inheritHeight">
+                    div-library
+                </div>
+
+                <div id="div-search" class="displayNone inheritHeight">
+                    div-search
+                </div>
+
+                <div id="div-extras" class="displayNone flexCol alignItemsCenter">
+                    <button id="choose">Choose a song</button>
+                    <button id="getAlbumArt">Get Album Art</button>
+                    <div class="rpc flexCol alignItemsCenter">
+                        <input id="discordAppID" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
+                        <button id="connect">Connect</button>
+                    </div>
+                </div>
+
             </div>
 
             <div id="navbar">
@@ -125,47 +222,6 @@
                 </ul>
             </div>
 
-            <div id="displayLeftRest">
-
-                <div id="div-queue" class="displayNone">
-                    div-queue
-                </div>
-
-                <div id="div-folder" class="displayNone">
-                    div-folder
-                </div>
-
-                <div id="div-album" class="displayNone">
-                    div-album
-                </div>
-
-                <div id="div-artist" class="displayNone">
-                    div-artist
-                </div>
-
-                <div id="div-genre" class="displayNone">
-                    div-genre
-                </div>
-
-                <div id="div-library" class="displayNone">
-                    div-library
-                </div>
-
-                <div id="div-search" class="displayNone">
-                    div-search
-                </div>
-
-                <div id="div-extras" class="flexCol alignItemsCenter">
-                    <button id="choose">Choose a song</button>
-                    <button id="getAlbumArt">Get Album Art</button>
-                    <div class="rpc flexCol alignItemsCenter">
-                        <input id="discordAppID" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
-                        <button id="connect">Connect</button>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
 
 
@@ -253,10 +309,5 @@
         </div>
 
         <script>['a', 'img'].forEach(x => document.querySelectorAll(x).forEach(y => y.setAttribute('draggable', 'false')));</script>
-        <script>require('./js/rpc/updateRPC.js')</script>
-        <script>require('./js/metaData/mediaSessionMetaData.js')</script>
-        <script>require('./js/audio/play.js')</script>
-        <script>require('./js/getAlbumArt.js')</script>
-        <script>require('./js/rpc/rpc.js')</script>
     </body>
 </html>

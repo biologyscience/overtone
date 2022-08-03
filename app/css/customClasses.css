@@ -27,7 +27,7 @@
 
 .displayNone { display: none; }
 
-.visibilityNone { visibility: none; }
+.visibilityHidden { visibility: hidden; }
 
 .left0 { left: 0; }
 
@@ -58,8 +58,4 @@
     text-overflow: ellipsis;
 }
 
-.overflowAuto { overflow: auto; }
-
-.overflowYauto { overflow-y: auto; }
-
-.overflowXauto { overflow-x: auto; }
+.inheritHeight { height: inherit; }

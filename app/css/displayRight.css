@@ -102,7 +102,7 @@
 {
     --maxWidth: 80%;
     height: .25em;
-    background-color: var(--accentYellow1);
+    background-color: var(--accentGreen1);
     border-radius: 1em;
     margin: auto;
     left: calc( calc(100% - var(--maxWidth)) / 2 );

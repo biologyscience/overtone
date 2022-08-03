@@ -1,15 +1,14 @@
-const pressence = 
-{
-    state: 'Name of the Song',
-    details: 'Name of the Artist'
-};
-
-const connect = document.getElementById('connect');
-const appID = document.getElementById('discordAppID');
-
 function rpcStart()
 {
-    const ID = appID.value;
+    const
+        connect = document.getElementById('connect'),
+        appID = document.getElementById('discordAppID'),
+        ID = appID.value,
+        pressence = 
+        {
+            state: 'Name of the Song',
+            details: 'Name of the Artist'
+        };
 
     if (ID === 0) return alert('Please enter your Discord Application ID');
 
@@ -32,7 +31,7 @@ function rpcStart()
 
         if (fs.existsSync('app/config.json'))
         {
-            const config = require('../../config.json');
+            const config = require('./config.json');
 
             config.discordAppID = ID;
 
@@ -45,4 +44,4 @@ function rpcStart()
     });
 };
 
-connect.onclick = rpcStart;
+document.getElementById('connect').onclick = rpcStart;

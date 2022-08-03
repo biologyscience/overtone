@@ -1,24 +1,23 @@
-const getAlbumArt = document.getElementById('getAlbumArt');
-
-const dir =
-{
-    albumArts: 'app/album arts',
-    config: 'app/config.json'
-};
-
 function chooseFiles()
 {
     const
         metadata = require('music-metadata'),
         remote = require('@electron/remote'),
         fs = require('fs'),
-        util = require('./util');
+        util = require('./js/util');
 
-    const options =
-    {
-        filters: [ { name: 'Music Files', extensions: ['mp3', 'flac'] } ],
-        properties: ['multiSelections', 'showHiddenFiles']
-    };
+    const
+        options =
+        {
+            filters: [ { name: 'Music Files', extensions: ['mp3', 'flac'] } ],
+            properties: ['multiSelections', 'showHiddenFiles']
+        },
+
+        dir =
+        {
+            albumArts: 'app/album arts',
+            config: 'app/config.json'
+        };
 
     remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), options)
     .then((selected) =>
@@ -52,4 +51,4 @@ function chooseFiles()
     });
 };
 
-getAlbumArt.onclick = chooseFiles;
+document.getElementById('getAlbumArt').onclick = chooseFiles;

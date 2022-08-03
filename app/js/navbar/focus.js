@@ -33,36 +33,32 @@ function click(E)
 
     const left = clickedListItem.offsetLeft;
 
-    navbar.list.style.setProperty('--left', math(left) + 'px');
+    navbar.div.style.setProperty('--left', math(left) + 'px');
 
     navbar.items.forEach(x => x.id = '');
 
-    clickedListItem.id = 'focusHighlight';
-
-    changeID(clickedListItem);
+    show(clickedListItem);
 };
 
-function changeID(listItem)
+function show(listItem)
 {
+    listItem.id = 'focusHighlight';
+
     const
         IDofSVG = listItem.querySelector('svg').id,
         displayDiv = document.getElementById('div-' + IDofSVG),
-        displayLeftRest = document.getElementById('displayLeftRest');
+        displayLeftMain = document.getElementById('displayLeftMain');
 
-    for (let index = 0; index <= (displayLeftRest.children.length - 1); index++)
-    { displayLeftRest.children[index].classList.add('displayNone'); }
+    Array.from(displayLeftMain.children).forEach(x => x.classList.add('displayNone'));
 
     displayDiv.classList.remove('displayNone');
 };
 
-const lastItem = navbar.items[navbar.items.length - 1];
+const startUpHighlight = navbar.items[navbar.items.length - 1];
+// const startUpHighlight = navbar.items[0];
 
-navbar.list.style.setProperty('--left', math(lastItem.offsetLeft) + 'px');
+navbar.div.style.setProperty('--left', math(startUpHighlight.offsetLeft) + 'px');
 
-lastItem.id = 'focusHighlight';
-
-changeID(lastItem);
-
-setTimeout(() => { navbar.list.style.setProperty('--opacity', 1); }, 250);
+show(startUpHighlight);
 
 navbar.items.forEach(x => x.addEventListener('click', click));
