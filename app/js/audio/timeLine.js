@@ -4,7 +4,7 @@ function updateTimeLine({detail})
 {  
     const audio = detail;
     
-    const util = require('./js/util');
+    const { parseTime, getAudioDuration } = require('./js/util');
 
     const div =
     {
@@ -13,7 +13,7 @@ function updateTimeLine({detail})
         totalTime: document.getElementById('totalTime')
     };
 
-    util.getAudioDuration(audio.src).then((x) =>
+    getAudioDuration(audio.src).then((x) =>
     {
         const
             minutes = x.minutes.toString(),
@@ -30,8 +30,8 @@ function updateTimeLine({detail})
             const
                 currentTime = audio.currentTime,
                 totalTime = audio.duration,
-                minutes = util.parseTime(currentTime * 1000).minutes.toString(),
-                seconds = util.parseTime(currentTime * 1000).seconds.toString().length > 1 ? util.parseTime(currentTime * 1000).seconds : '0' + util.parseTime(currentTime * 1000).seconds,
+                minutes = parseTime(currentTime * 1000).minutes.toString(),
+                seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds,
                 number = getComputedStyle(div.theLine).getPropertyValue('--maxWidth').split('%')[0];
 
             div.theLine.style.width = ((currentTime / totalTime) * parseInt(number)).toFixed(2) + '%';
@@ -44,7 +44,7 @@ function updateTimeLine({detail})
     {
         clearInterval(interval);
 
-        interval = '';
+        interval = null;
     });
 };
 

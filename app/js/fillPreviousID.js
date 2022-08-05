@@ -1,10 +1,10 @@
-const fs = require('fs');
+const { existsSync, readFileSync } = require('fs');
 
-const discordAppID = document.getElementById('discordAppID');
-
-if (fs.existsSync('app/config.json'))
+if (existsSync('app/config.json'))
 {
-    const config = JSON.parse(fs.readFileSync('app/config.json'));
+    const discordAppID = document.getElementById('discordAppID');
+
+    const config = JSON.parse(readFileSync('app/config.json'));
 
     discordAppID.value = config.discordAppID;
 }

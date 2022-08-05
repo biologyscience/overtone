@@ -6,8 +6,8 @@ function setQueue({detail})
 
     const filePaths = detail;
 
-    const util = require('./js/util');
-    const metadata = require('music-metadata');
+    const { getAudioDuration } = require('./js/util');
+    const { parseFile } = require('music-metadata');
 
     const ul = document.getElementById('currentQueueList');
 
@@ -23,9 +23,9 @@ function setQueue({detail})
 
     filePaths.forEach((x) =>
     {
-        list.metadata.push(metadata.parseFile(x, {skipPostHeaders: true}));
+        list.metadata.push(parseFile(x, {skipPostHeaders: true}));
 
-        list.audioDuration.push(util.getAudioDuration(x));
+        list.audioDuration.push(getAudioDuration(x));
     });
 
     Promise.all(list.metadata).then((x) =>

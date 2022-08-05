@@ -1,10 +1,10 @@
 function chooseFiles()
 {
     const
-        metadata = require('music-metadata'),
-        remote = require('@electron/remote'),
-        fs = require('fs'),
-        util = require('./js/util');
+        { parseFile } = require('music-metadata'),
+        { dialog, BrowserWindow } = require('@electron/remote'),
+        { existsSync, mkdirSync, writeFileSync } = require('fs'),
+        { formatter } = require('./js/util');
 
     const
         options =
@@ -19,12 +19,12 @@ function chooseFiles()
             config: 'app/config.json'
         };
 
-    remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), options)
+    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), options)
     .then((selected) =>
     {
         if (selected.canceled) return;
 
-        Promise.all([...selected.filePaths.map(x => metadata.parseFile(x))]).then((x) =>
+        Promise.all([...selected.filePaths.map(x => parseFile(x))]).then((x) =>
         {
             x.forEach((tags) =>
             {
@@ -32,15 +32,15 @@ function chooseFiles()
                 {
                     const
                         picture = tags.common.picture[0],
-                        formatted = util.formatter(tags.common.album, tags.common.albumartist);
+                        formatted = formatter(tags.common.album, tags.common.albumartist);
 
-                    if (fs.existsSync(dir.albumArts) === false) { fs.mkdirSync(dir.albumArts); }
+                    if (existsSync(dir.albumArts) === false) { mkdirSync(dir.albumArts); }
                     
                     const fileLocation = dir.albumArts + '/' + formatted + '.' + picture.format.split('/')[1];
 
-                    if (fs.existsSync(fileLocation)) return;
+                    if (existsSync(fileLocation)) return;
 
-                    fs.writeFileSync(fileLocation, picture.data);
+                    writeFileSync(fileLocation, picture.data);
                 }
             });
         })

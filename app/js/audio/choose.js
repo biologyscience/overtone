@@ -1,6 +1,6 @@
 function choose()
 {
-    const remote = require('@electron/remote');
+    const { dialog, BrowserWindow } = require('@electron/remote');
 
     const options = 
     {
@@ -8,7 +8,7 @@ function choose()
         properties: ['showHiddenFiles', 'multiSelections']
     };
 
-    remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), options)
+    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), options)
     .then((selected) =>
     {
         if (selected.canceled) return;

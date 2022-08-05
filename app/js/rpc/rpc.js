@@ -12,10 +12,10 @@ function rpcStart()
 
     if (ID === 0) return alert('Please enter your Discord Application ID');
 
-    const rpc = require('discord-rpc');
-    const fs = require('fs');
+    const { Client } = require('discord-rpc');
+    const { existsSync, writeFileSync } = require('fs');
 
-    const client = new rpc.Client({transport: 'ipc'});
+    const client = new Client({transport: 'ipc'});
 
     client.once('ready', () => client.setActivity(pressence));
 
@@ -29,7 +29,7 @@ function rpcStart()
 
         let data;
 
-        if (fs.existsSync('app/config.json'))
+        if (existsSync('app/config.json'))
         {
             const config = require('./config.json');
 
@@ -40,7 +40,7 @@ function rpcStart()
 
         else { data = { discordAppID: ID }; }
 
-        fs.writeFileSync('app/config.json', JSON.stringify(data, null, 4));
+        writeFileSync('app/config.json', JSON.stringify(data, null, 4));
     });
 };
 

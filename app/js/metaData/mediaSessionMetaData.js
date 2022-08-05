@@ -2,7 +2,7 @@ function updateMediaSessionMetaData({detail})
 {
     const tags = detail;
 
-    const util = require('./js/util');
+    const { buffer2DataURL } = require('./js/util');
 
     const mediaMetaData = 
     {
@@ -12,7 +12,7 @@ function updateMediaSessionMetaData({detail})
         artwork:
         [
             {
-                src: util.buffer2DataURL(tags.common?.picture?.[0]?.format, tags.common.picture?.[0]?.data),
+                src: buffer2DataURL(tags.common?.picture?.[0]?.format, tags.common.picture?.[0]?.data),
                 format: tags.common?.picture?.[0]?.format
             }
         ]

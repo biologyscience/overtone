@@ -2,7 +2,7 @@ function updateMetaData({detail})
 {
     const tags = detail;
 
-    const util = require('./js/util');
+    const { buffer2DataURL } = require('./js/util');
 
     const div =
     {
@@ -17,7 +17,7 @@ function updateMetaData({detail})
 
     if (tags.common?.picture)
     {
-        const albumArt = util.buffer2DataURL(tags.common.picture[0].format, tags.common.picture[0].data);
+        const albumArt = buffer2DataURL(tags.common.picture[0].format, tags.common.picture[0].data);
 
         img.albumArt.setAttribute('src', albumArt);
     }

@@ -1,12 +1,10 @@
-let
-    firstAlertOver = false,
-    client;
+let client;
 
 function updateRPC({detail})
 {
     const tags = detail;
 
-    const util = require('./js/util');
+    const { formatter } = require('./js/util');
 
     if (client === undefined) return;
 
@@ -19,7 +17,7 @@ function updateRPC({detail})
     {
         details: songName,
         state: albumArtist,
-        largeImageKey: util.formatter(albumName, albumArtist),
+        largeImageKey: formatter(albumName, albumArtist),
         largeImageText: albumName
     };
 

@@ -1,6 +1,8 @@
 const audio = new Audio();
 
-let queueList, current;
+let
+    queueList = [],
+    current = 0;
 
 function play({detail} = '')
 {
@@ -15,11 +17,11 @@ function play({detail} = '')
         else { current = detail; }
     }
 
-    const metadata = require('music-metadata');
+    const { parseFile } = require('music-metadata');
 
     audio.src = queueList[current];
 
-    metadata.parseFile(queueList[current]).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
+    parseFile(queueList[current]).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
 
     document.dispatchEvent(new CustomEvent('-audio', {detail: audio}));
 
