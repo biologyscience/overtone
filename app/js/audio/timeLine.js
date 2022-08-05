@@ -1,9 +1,9 @@
 let interval;
 
 function updateTimeLine({detail})
-{
+{  
     const audio = detail;
-
+    
     const util = require('./js/util');
 
     const div =
@@ -13,15 +13,14 @@ function updateTimeLine({detail})
         totalTime: document.getElementById('totalTime')
     };
 
-    audio.addEventListener('loadeddata', () =>
+    util.getAudioDuration(audio.src).then((x) =>
     {
         const
-            totalTime = util.parseTime(audio.duration * 1000),
-            minutes = totalTime.minutes.toString(),
-            seconds = totalTime.seconds.toString().length > 1 ? totalTime.seconds : '0' + totalTime.seconds;
-    
-        div.totalTime.innerHTML = minutes + ':' + seconds;
+            minutes = x.minutes.toString(),
+            seconds = x.seconds.toString().length > 1 ? x.seconds : '0' + x.seconds;
+
         div.currentTime.innerHTML = '0:00';
+        div.totalTime.innerHTML = minutes + ':' + seconds;
     });
 
     audio.addEventListener('play', () =>

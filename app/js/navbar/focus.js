@@ -18,34 +18,12 @@ function math(offset)
     return req;
 };
 
-function click(E)
+function show(li)
 {
-    let clickedListItem;
-
-    E.path.forEach((x) =>
-    {
-        if (x.localName === 'li')
-        {
-            clickedListItem = x; 
-            return;
-        }
-    });
-
-    const left = clickedListItem.offsetLeft;
-
-    navbar.div.style.setProperty('--left', math(left) + 'px');
-
-    navbar.items.forEach(x => x.id = '');
-
-    show(clickedListItem);
-};
-
-function show(listItem)
-{
-    listItem.id = 'focusHighlight';
+    li.id = 'focusHighlight';
 
     const
-        IDofSVG = listItem.querySelector('svg').id,
+        IDofSVG = li.querySelector('svg').id,
         displayDiv = document.getElementById('div-' + IDofSVG),
         displayLeftMain = document.getElementById('displayLeftMain');
 
@@ -54,11 +32,29 @@ function show(listItem)
     displayDiv.classList.remove('displayNone');
 };
 
-const startUpHighlight = navbar.items[navbar.items.length - 1];
-// const startUpHighlight = navbar.items[0];
+function changeNavbarItemFocus(E)
+{
+    const li = require('./js/util').getElement('li', E);
 
-navbar.div.style.setProperty('--left', math(startUpHighlight.offsetLeft) + 'px');
+    const left = li.offsetLeft;
 
-show(startUpHighlight);
+    navbar.div.style.setProperty('--left', math(left) + 'px');
 
-navbar.items.forEach(x => x.addEventListener('click', click));
+    navbar.items.forEach(x => x.id = '');
+
+    show(li);
+};
+
+setTimeout(() =>
+{
+    const startUpHighlight = navbar.items[navbar.items.length - 1];
+    // const startUpHighlight = navbar.items[0];
+
+    navbar.div.style.setProperty('--left', math(startUpHighlight.offsetLeft) + 'px');
+
+    show(startUpHighlight);
+}, 500);
+
+navbar.items.forEach(x => x.addEventListener('click', changeNavbarItemFocus));
+
+document.addEventListener('-changeNavbarItemFocus', changeNavbarItemFocus);

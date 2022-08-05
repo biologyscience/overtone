@@ -8,16 +8,7 @@ function updateRPC({detail})
 
     const util = require('./js/util');
 
-    if (client === undefined)
-    {
-        if (!firstAlertOver)
-        {
-            firstAlertOver = true;
-            alert('ALERT: RPC is not connected');
-        }
-
-        return;
-    }
+    if (client === undefined) return;
 
     const
         songName = tags.common?.title,

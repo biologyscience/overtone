@@ -15,76 +15,57 @@
         <script src="js/metaData/mediaSessionMetaData.js" defer></script>
         <script src="js/metaData/metaData.js" defer></script>
         <script src="js/rpc/updateRPC.js" defer></script>
+        <script src="js/navbar/focus.js" defer></script>
+        <script src="js/queue/setBorder.js" defer></script>
+        <script src="js/queue/setQueue.js" defer></script>
 
         <!-- EMITTERS -->
         <script src="js/audio/choose.js" defer></script>
         <script src="js/rpc/rpc.js" defer></script>
 
         <!-- OTHERS -->
-        <script src="js/navbar/focus.js" defer></script>
         <script src="js/fillPreviousID.js" defer></script>
+        <script src="js/displayLeft.js" defer></script>
+        <script src="js/displayRight.js" defer></script>
         <script src="js/getAlbumArt.js" defer></script>
         <script src="js/hover3D.js" defer></script>
         <script src="js/misc.js" defer></script>
                 
     </head>
     <body class="flex overflowHidden">
+        <div id="separator" class="absolute"></div>
+        <div id="loading" class="absolute" style="font-size: 4rem;">Loading ...</div>
+        <button style="background: none;" class="top0 left0 absolute displayNone" id="misc">Misc Button</button>
 
 
 <!--  -->
 
 
-        <div id="displayLeft" class="flexCol">
-
-            <div class="top0 left0 absolute displayNone">
-                <button style="background: none;" id="misc">Misc Button</button>
-            </div>
+        <div id="displayLeft" class="flexCol visibilityHidden opacity0">
 
             <div id="displayLeftMain">
 
-                <div id="div-queue" class="displayNone inheritHeight">
-                    div-queue
-                    <div class="head displayNone">
+                <div id="div-queue" class="inheritHeight">
+                    <div class="head">
                         <div id="part1">
                         </div>
                         <div id="part2">
                             <ul id="part2List" class="flex">
-                                <li class="part2Items">A</li>
-                                <li class="part2Items">B</li>
-                                <li class="part2Items">7/7</li>
-                                <li class="part2Items">D</li>
-                                <li class="part2Items">E</li>
+                                <li class="part2Items">-</li>
+                                <li class="part2Items">-</li>
+                                <li class="part2Items">-/-</li>
+                                <li class="part2Items">-</li>
+                                <li class="part2Items">-</li>
                             </ul>
                         </div>
                     </div>
                     <div id="queueList" class="displayNone">
 
                     </div>
-                    <div class="mainDivider displayNone"></div>
-                    <div id="content" class="block displayNone">
-                        <ul id="currentQueueList" class="flexCol">
-                            <li class="currentQueueItems grid">
-                                <div class="dragger flex flexCenter">
-                                    =
-                                </div>
-                                <div class="info relative hoverPointer" -data-SongDuration="1:04">
-                                    <div id="song">
-                                        CLOUDS
-                                    </div>
-                                    <div id="-artist">
-                                        NF
-                                    </div>
-                                    <div id="-album">
-                                        CLOUDS (THE MIXTAPE)
-                                    </div>
-                                </div>
-                                <div class="options flex flexCenter">
-                                    . . .
-                                </div>
-                            </li>
-                        </ul>
+                    <div class="mainDivider"></div>
+                    <div id="content" class="block">
+                        <ul id="currentQueueList" class="flexCol"></ul>
                     </div>
-                    <div class="mainDivider displayNone"></div>
                 </div>
 
 
@@ -123,7 +104,7 @@
 
             </div>
 
-            <div id="navbar">
+            <div id="navbar" class="relative">
                 <ul id="navbarList" class="flex relative">
                     <li class="navbarItems">
                         <button class="navbarButton">
@@ -228,7 +209,7 @@
 <!--  -->
 
 
-        <div id="displayRight">
+        <div id="displayRight" class="visibilityHidden opacity0">
 
             <div class="alignItemsCenter flex">
                 <div id="albumArtLyricsWrapper" class="hoverPointer relative flex">
@@ -293,8 +274,8 @@
                     </div>
                     <div id="div-pauseORplay" class="relative">
                         <button id="pauseORplay">
-                            <img src="svg/play.svg" class="svg top0 left0 absolute"  id="imgPlay">                            
-                            <img src="svg/pause.svg" class="opacity0 svg top0 left0 absolute"  id="imgPause">
+                            <img src="svg/play.svg" class="svg top0 left0 absolute" id="imgPlay">                            
+                            <img src="svg/pause.svg" class="opacity0 svg top0 left0 absolute" id="imgPause">
                         </button>
                     </div>
                     <div id="div-nextSong" class="relative">

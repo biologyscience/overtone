@@ -2,5 +2,4 @@ app/temp
 app/config.json
 app/album arts
 node_modules
-package-lock.json
 npm start.vbs

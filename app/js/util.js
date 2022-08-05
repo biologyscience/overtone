@@ -33,8 +33,35 @@ function parseTime(ms)
 
 function buffer2DataURL(format, buffer)
 {
-    return 'data:' + format + ';base64,' + buffer?.toString('base64');
+    const dataURL = 'data:' + format + ';base64,' + buffer?.toString('base64');
+
+    return dataURL;
 };
+
+function getAudioDuration(fileLocation)
+{
+    return new Promise((resolve) =>
+    {
+        const audio = document.createElement('audio');
+    
+        audio.src = fileLocation;
+    
+        audio.onloadeddata = () => resolve(parseTime(audio.duration * 1000));
+    });
+};
+
+function getElement(localName, obj)
+{
+    let foundElement;
+
+    if (obj?.localName === localName) { foundElement = obj; }
+
+    else if (obj?.detail?.localName === localName) { foundElement = obj.detail; }
+
+    else { obj?.path?.forEach(x => x.localName === localName ? foundElement = x : null); }
+
+    return foundElement;
+}
 
 //
 
@@ -42,5 +69,7 @@ module.exports =
 {
     formatter,
     parseTime,
-    buffer2DataURL
+    buffer2DataURL,
+    getAudioDuration,
+    getElement
 };

@@ -1,5 +1,6 @@
 *
 {
+    user-select: none;
     color: white;
     font-family: 'Andika';
     /* outline: 0.5px solid red; */
@@ -17,3 +18,13 @@ body
 }
 
 button:hover { cursor: pointer; }
+
+input { user-select: auto; }
+
+#separator
+{
+    height: 100vh;
+    width: 2px;
+    background-color: var(--accentGreen1);
+    left: 60vw;
+}
