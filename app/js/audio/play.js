@@ -2,7 +2,8 @@ const audio = new Audio();
 
 let
     queueList = [],
-    current = 0;
+    current = 0,
+    interval = null;
 
 function play({detail} = '')
 {
@@ -18,12 +19,13 @@ function play({detail} = '')
     }
 
     const { parseFile } = require('music-metadata');
+    const { getAudioDuration } = require('./js/util');
 
     audio.src = queueList[current];
 
     parseFile(queueList[current]).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
 
-    document.dispatchEvent(new CustomEvent('-audio', {detail: audio}));
+    getAudioDuration(audio.src).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
         
@@ -107,12 +109,37 @@ function skip(E)
     });
 };
 
+function audioPause(E)
+{
+    changeCurrentState(E);
+
+    clearInterval(interval);
+
+    interval = null;
+};
+
+function audioPlay(E)
+{
+    changeCurrentState(E);
+
+    interval = setInterval(() =>
+    {
+        const detail =
+        {
+            currentTime: audio.currentTime,
+            duration: audio.duration
+        };
+
+        document.dispatchEvent(new CustomEvent('-updateTimeLine', {detail}));
+    }, 1000);
+};
+
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('imgNext').onclick = skip;
 document.getElementById('imgPrevious').onclick = skip;
 
-audio.addEventListener('pause', changeCurrentState);
-audio.addEventListener('play', changeCurrentState);
+audio.addEventListener('pause', audioPause);
+audio.addEventListener('play', audioPlay);
 
 document.addEventListener('-clickedQueueItem', (obj) =>
 {
