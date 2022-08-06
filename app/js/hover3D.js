@@ -1,10 +1,5 @@
 const hover3D = document.querySelector('.hover3D');
 
-const
-    height = hover3D.clientHeight,
-    width = hover3D.clientWidth,
-    extent = 20;
-
 let
     hoverEffect = false,
     enteredWithinDelay = false;
@@ -15,6 +10,11 @@ hover3D.addEventListener('mouseup', () => hover3D.style.transform = 'perspective
 
 hover3D.addEventListener('mousemove', (E) =>
 {
+    const
+        height = hover3D.clientHeight,
+        width = hover3D.clientWidth,
+        extent = 20;
+
     if (hoverEffect === false) return;
 
     const
@@ -23,7 +23,7 @@ hover3D.addEventListener('mousemove', (E) =>
         yRotation = extent * ((x - width / 2) / width),
         xRotation = -(extent) * ((y - height / 2) / height);
 
-    hover3D.style.transform = 'perspective(1000px) scale(1.01) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
+    hover3D.style.transform = `perspective(1000px) scale(1.01) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
 });
 
 hover3D.addEventListener('mouseenter', () =>

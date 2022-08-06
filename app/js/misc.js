@@ -1,6 +1,4 @@
-const button = document.getElementById('misc');
-
-button.onclick = () =>
+document.getElementById('misc').onclick = () =>
 {
     
 };

@@ -33,7 +33,7 @@ function parseTime(ms)
 
 function buffer2DataURL(format, buffer)
 {
-    const dataURL = 'data:' + format + ';base64,' + buffer?.toString('base64');
+    const dataURL = `data:${format};base64,${buffer?.toString('base64')}`;
 
     return dataURL;
 };
