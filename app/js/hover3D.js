@@ -4,11 +4,7 @@ let
     hoverEffect = false,
     enteredWithinDelay = false;
 
-hover3D.addEventListener('mouseout', () => hover3D.style.transform = 'perspective(1000px) scale(1) rotateX(0) rotateY(0)');
-hover3D.addEventListener('mousedown', () => hover3D.style.transform = 'perspective(1000px) scale(0.975) rotateX(0) rotateY(0)');
-hover3D.addEventListener('mouseup', () => hover3D.style.transform = 'perspective(1000px) scale(1.025) rotateX(0) rotateY(0)');
-
-hover3D.addEventListener('mousemove', (E) =>
+function move(E)
 {
     const
         height = hover3D.clientHeight,
@@ -24,7 +20,12 @@ hover3D.addEventListener('mousemove', (E) =>
         xRotation = -(extent) * ((y - height / 2) / height);
 
     hover3D.style.transform = `perspective(1000px) scale(1.01) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
-});
+};
+
+hover3D.addEventListener('mouseout', () => hover3D.style.transform = 'perspective(1000px) scale(1) rotateX(0) rotateY(0)');
+hover3D.addEventListener('mousedown', () => hover3D.style.transform = 'perspective(1000px) scale(0.975) rotateX(0) rotateY(0)');
+hover3D.addEventListener('mouseup', () => hover3D.style.transform = 'perspective(1000px) scale(1.025) rotateX(0) rotateY(0)');
+hover3D.addEventListener('mousemove', move);
 
 hover3D.addEventListener('mouseenter', () =>
 {
