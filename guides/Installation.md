@@ -1,6 +1,6 @@
 # 🛠️ Install the app
 > ## NOTE:  
-> You should have [Node](https://nodejs.org) and [npm](https://www.npmjs.com/) installed in your PC in order to install this app and run it.
+> You should have [nodejs](https://nodejs.org) and [npm](https://www.npmjs.com/) installed in your PC in order to install this app and run it.
 
 ## 💠 Download the source code
 Clone this repository by using [git](https://git-scm.com/).
@@ -16,8 +16,8 @@ npm install
 ```
 This will install all the necessary dependencies to run the app.
 > Installing the dependencies can take upto 1 minute.
-## 💠 Run the actuall app
-You would not have any **.exe** file to open / run the app. This is beacause, the app is not fully packaged yet.  
+## 💠 Run the actual app
+You would not have any **.exe** file to open/run the app. This is beacause, the app is not fully packaged yet.  
 So to run the app, open up your terminal and do
 ```
 npm start

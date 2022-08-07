@@ -3,7 +3,7 @@ After you have started the app, you would get a new window which is the UI of th
 > As this app is not a finished product and has just started it's journey to become one, most of the advanced features like, playlists, multiple queues, equalisers, etc. are not currently avaiable.
 ## On the left side.
 - A navbar
-  - Only 2 of it's section is currently functional.
+  - Only 2 of its sections are currently functional.
 - A Queue.
 - A Section for the following
   - Input field
@@ -15,7 +15,7 @@ After you have started the app, you would get a new window which is the UI of th
     - Get Album Art
       - Click this button to select a bunch of songs and get the album art present in them.
     - Connect
-      - Click this button to start the Discord Rich Pressence.
+      - Click this button to start the Discord Rich Presence.
 ## On the right side.
 - A place for the album art for the current song.
 - Some information of the current song.
