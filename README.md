@@ -1,12 +1,12 @@
 # OverTone
-A free and open source Music Player for all your local music files !
+A free and open-source Music Player for all your local music files !
 
 # About
-- Has Discord Rich Pressence support.
+- Has Discord Rich Presence support.
 - This is an desktop only app which is currently **not** completely done and is subjected to constant changes.
 - This app is made using the [Electron](https://www.electronjs.org/) framework for [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript).
 - This project is under [MIT License](https://github.com/biologyscience/overtone/blob/main/LICENSE).
-- That's all for now 😅, if there is any updates look out for them at the [Releases](https://github.com/biologyscience/overtone/releases).
+- That's all for now 😅, if there are any updates look out for them at the [Releases](https://github.com/biologyscience/overtone/releases).
 
 ---
 
