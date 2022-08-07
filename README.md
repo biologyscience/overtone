@@ -1,5 +1,5 @@
 # OverTone
-A free and open-source Music Player for all your local music files !
+A free and open source Music Player for all your local music files !
 
 # About
 - Has Discord Rich Presence support.

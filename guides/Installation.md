@@ -1,6 +1,6 @@
 # 🛠️ Install the app
 > ## NOTE:  
-> You should have [nodejs](https://nodejs.org) and [npm](https://www.npmjs.com/) installed in your PC in order to install this app and run it.
+> You should have [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com/) installed in your PC in order to install this app and run it.
 
 ## 💠 Download the source code
 Clone this repository by using [git](https://git-scm.com/).
