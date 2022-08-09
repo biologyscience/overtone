@@ -21,11 +21,15 @@ function play({detail} = '')
     const { parseFile } = require('music-metadata');
     const { getAudioDuration } = require('./js/util');
 
-    audio.src = queueList[current];
+    const fileLocation = queueList[current];
 
-    parseFile(queueList[current]).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
+    audio.src = fileLocation;
 
-    getAudioDuration(audio.src).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
+    parseFile(fileLocation).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
+
+    document.dispatchEvent(new CustomEvent('-updateRPC', {detail: fileLocation}));
+
+    getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
         
@@ -85,37 +89,33 @@ function skip(E)
 
     const id = E.target.id;
 
-    setTimeout(() =>
+    const int = setInterval(() =>
     {
-        if (queueList.length === 0) return;
+        if (audio.paused)
+        {
+            clearInterval(int);
 
-        if (id === 'imgNext')
-        {
-            if (queueList.length === (current + 1)) return play();
-        
-            current++;
+            if (queueList.length === 0) return;
+
+            if (id === 'imgNext')
+            {
+                if (queueList.length === (current + 1)) return play();
             
-            play(); 
-        }
-        
-        if (id === 'imgPrevious')
-        {
-            if (current === 0) return play();
-        
-            current = current - 1;
+                current++;
+                
+                play(); 
+            }
             
-            play(); 
-        }     
+            if (id === 'imgPrevious')
+            {
+                if (current === 0) return play();
+            
+                current = current - 1;
+                
+                play(); 
+            }
+        }   
     });
-};
-
-function audioPause(E)
-{
-    changeCurrentState(E);
-
-    clearInterval(interval);
-
-    interval = null;
 };
 
 function audioPlay(E)
@@ -134,6 +134,31 @@ function audioPlay(E)
     }, 1000);
 };
 
+function audioPause(E)
+{
+    changeCurrentState(E);
+
+    clearInterval(interval);
+
+    interval = null;
+};
+
+function pauseThenPlay(obj)
+{
+    pauseORplay();
+
+    const int = setInterval(() =>
+    {
+        if (audio.paused)
+        {
+            clearInterval(int);
+
+            play(obj);
+        }
+    });
+};
+
+
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('imgNext').onclick = skip;
 document.getElementById('imgPrevious').onclick = skip;
@@ -141,16 +166,5 @@ document.getElementById('imgPrevious').onclick = skip;
 audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
 
-document.addEventListener('-clickedQueueItem', (obj) =>
-{
-    pauseORplay();
-
-    setTimeout(() => play(obj));
-});
-
-document.addEventListener('-selectedFilePaths', (obj) =>
-{
-    pauseORplay();
-
-    setTimeout(() => play(obj));
-});
+document.addEventListener('-clickedQueueItem', pauseThenPlay);
+document.addEventListener('-selectedFilePaths', pauseThenPlay);

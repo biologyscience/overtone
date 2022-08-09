@@ -31,6 +31,25 @@ function parseTime(ms)
 	return data;
 };
 
+function getFileSize(fileLocation)
+{
+    const { statSync } = require('fs');
+
+    const byte = statSync(fileLocation).size;
+
+    const round = byte > 0 ? Math.floor : Math.ceil;
+
+	const data =
+	{
+		gb: round(byte / (1024 * 1024 * 1024)) % 1024,
+		mb: round(byte / (1024 * 1024)) % 1024,
+		kb: round(byte / 1024) % 1024,
+		byte
+	};
+
+	return data;
+};
+
 function buffer2DataURL(format, buffer)
 {
     const dataURL = `data:${format};base64,${buffer?.toString('base64')}`;
@@ -40,13 +59,16 @@ function buffer2DataURL(format, buffer)
 
 function getAudioDuration(fileLocation)
 {
+    const { parseFile } = require('music-metadata');
+    
     return new Promise((resolve) =>
     {
-        const audio = document.createElement('audio');
-    
-        audio.src = fileLocation;
-    
-        audio.onloadeddata = () => resolve(parseTime(audio.duration * 1000));
+        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
+        {
+            const ms = result.format.duration * 1000;
+
+            resolve(parseTime(ms));
+        });
     });
 };
 
@@ -61,7 +83,78 @@ function getElement(localName, obj)
     else { obj?.path?.forEach(x => x.localName === localName ? foundElement = x : null); }
 
     return foundElement;
-}
+};
+
+function getAlbumArt(fileLocation)
+{
+    const { parseFile } = require('music-metadata');
+
+    return new Promise((resolve) =>
+    {
+        parseFile(fileLocation, {skipPostHeaders: true}).then((tags) =>
+        {
+            const picture = tags.common?.picture[0];
+
+            const obj = {};
+
+            obj.format = picture?.format;
+            obj.buffer = picture?.data;
+            obj.URL = buffer2DataURL(picture?.format, picture?.data);
+
+            resolve(obj);
+        });
+    });
+};
+
+function getMetaData(fileLocation)
+{
+    const { parseFile } = require('music-metadata');
+
+    return new Promise((resolve) =>
+    {
+        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((tags) =>
+        {
+            const { album, albumartist, artists, bpm, disk, genre, title, track, year } = tags.common;
+
+            resolve
+            ({
+                album,
+                albumArtist: albumartist,
+                artists,
+                bpm,
+                disk,
+                genre,
+                title,
+                track,
+                year
+            });
+        });
+    });
+};
+
+function getAudioInfo(fileLocation)
+{
+    const { parseFile } = require('music-metadata');
+
+    return new Promise((resolve) =>
+    {
+        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
+        {
+            const { bitrate, codec, duration, lossless, numberOfChannels, sampleRate } = result.format;
+
+            resolve
+            ({
+                bitrate: `${bitrate / 1000} kbps`,
+                encoding: codec,
+                sampleRate: `${sampleRate} Hz`,
+                channelType: numberOfChannels === 2 ? 'Stereo' : 'Mono',
+                lossless,
+                duration: { parsed: parseTime(duration * 1000), rawSeconds: duration },
+                fileSize: getFileSize(fileLocation)
+            });
+        });
+    });
+};
 
 //
 
@@ -69,7 +162,11 @@ module.exports =
 {
     formatter,
     parseTime,
+    getFileSize,
     buffer2DataURL,
     getAudioDuration,
-    getElement
+    getElement,
+    getAlbumArt,
+    getMetaData,
+    getAudioInfo
 };
