@@ -80,7 +80,7 @@ function getElement(localName, obj)
 
     else if (obj?.detail?.localName === localName) { foundElement = obj.detail; }
 
-    else { obj?.path?.forEach(x => x.localName === localName ? foundElement = x : null); }
+    else { obj?.composedPath()?.forEach(x => x.localName === localName ? foundElement = x : null); }
 
     return foundElement;
 };

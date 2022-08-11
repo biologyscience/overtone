@@ -36,3 +36,5 @@ input { user-select: auto; }
     background-color: var(--accentGreen1);
     left: 60vw;
 }
+
+.greenBorder { border: 2px solid var(--accentGreen1) !important; }

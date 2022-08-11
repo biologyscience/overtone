@@ -2,6 +2,8 @@ function clickSetBorder(E)
 {
     const li = require('./js/util').getElement('li', E);
 
+    if (li === undefined) return;
+
     const children = Array.from(document.getElementById('currentQueueList').children);
 
     if (children.length === 0) return;
