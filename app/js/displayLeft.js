@@ -9,4 +9,4 @@ function setHeight()
 
 setTimeout(setHeight);
 
-setTimeout(() => { document.getElementById('displayLeft').classList.remove('opacity0', 'visibilityHidden'); }, 50);
+setTimeout(() => { document.getElementById('displayLeft').classList.remove('opacity0', 'visibilityHidden'); }, 1000);
