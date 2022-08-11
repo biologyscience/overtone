@@ -1,6 +1,6 @@
 document.getElementById('misc').onclick = () =>
 {
-
+    
 };
 
 setTimeout(() => { document.getElementById('loading').classList.add('displayNone') }, 900);
@@ -27,18 +27,16 @@ setTimeout(() =>
     {
         const data =
         `
-        <div class="dragger flex flexCenter hoverPointer">
+        <div class="dragger flexCenter cursorGrab">
             <img src="svg/drag.svg" class="imgDragger" draggable="false">
         </div>
-        <div class="info relative hoverPointer">
+        <div class="cursorPointer">
             <span class="queueNames overflowPrevent"> ${int} </span>
         </div>
-        <div class="options flex flexCenter">
-            <img src="svg/moreHorizontal.svg" class="imgOptions hoverPointer" draggable="false">
+        <div class="options flexCenter">
+            <img src="svg/moreHorizontal.svg" class="imgOptions cursorPointer" draggable="false">
         </div>
         `;
-
-        int++;
 
         const li = document.createElement('li');
 
@@ -46,6 +44,10 @@ setTimeout(() =>
     
         li.innerHTML = data;
 
+        li.dataset.id = int;
+
         ql.append(li);
+
+        int++;
     } while (int < 16);
 });

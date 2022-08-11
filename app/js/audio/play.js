@@ -11,7 +11,8 @@ function play({detail} = '')
     {
         if (typeof(detail) === 'object')
         {
-            queueList = detail;
+            Object.assign(queueList, detail);
+
             current = 0;
         }
 
@@ -158,6 +159,46 @@ function pauseThenPlay(obj)
     });
 };
 
+function rearrange({detail: {from, to}})
+{
+    const
+        FROM = parseInt(from),
+        TO = parseInt(to);
+
+    const temp = queueList[FROM];
+
+    if (TO > FROM)
+    {
+        queueList.splice(TO + 1, 0, temp);
+    
+        queueList.splice(FROM, 1);
+    }
+
+    else
+    {
+        queueList.splice(TO, 0, temp);
+    
+        queueList.splice(FROM + 1, 1);
+    }
+
+    const childern = Array.from(document.getElementById('currentQueueList').children);
+
+    childern.splice(childern.length - 1, 1);
+
+    let i = 0;
+
+    childern.forEach((x) =>
+    {
+        x.dataset.id = i;
+
+        x.style.borderColor === 'var(--accentGreen1)' ? current = i : null;
+        
+        i++;
+    });
+
+    document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+};
+
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('imgNext').onclick = skip;
@@ -168,3 +209,4 @@ audio.addEventListener('play', audioPlay);
 
 document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedFilePaths', pauseThenPlay);
+document.addEventListener('-rearrange', rearrange);

@@ -218,7 +218,7 @@
 #currentQueueList::-webkit-scrollbar
 {
     background: none;
-    width: .5vw;
+    width: 1px;
 }
 
 #currentQueueList::-webkit-scrollbar-thumb
@@ -234,7 +234,6 @@
     grid-template-columns: 1fr 8fr 1fr;
     margin: 0 .1em;
     padding: .5em 0;
-    border: none;
     box-sizing: border-box;
     border-radius: .5rem;
     border: 2px solid transparent;
@@ -243,13 +242,14 @@
 
 .currentQueueItems:first-of-type { margin-top: .3em; }
 .currentQueueItems:last-of-type { margin-bottom: .3em; }
-.currentQueueItems:hover { border-color: var(--accentGreen1); }
 
 .imgDragger, .imgOptions
 {
     height: 1em;
     width: 1em;
 }
+
+.imgDragger { z-index: -1; }
 
 .info::after
 {
@@ -262,6 +262,7 @@
 
 .song { font-size: 1.2em; }
 .artist, .album { font-size: .7em; }
+
 
 
 

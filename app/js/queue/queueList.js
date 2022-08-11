@@ -1,6 +1,31 @@
 const sortable = require('sortable-dnd');
 
-new sortable(document.getElementById('queueList'), {animation: 300});
+new sortable(document.getElementById('queueList'),
+{
+    draggable: '.dragger',
+    animation: 300,
+    chosenClass: 'greenBorder',
+    ghostClass: 'displayNone'
+});
+
+new sortable(document.getElementById('currentQueueList'),
+{
+    draggable: '.dragger',
+    animation: 300,
+    chosenClass: 'greenBorder',
+    ghostClass: 'displayNone',
+    onDrop: (x) =>
+    {
+        if (x.changed)
+        {
+            const from = x.from.node.dataset.id;
+
+            const to = x.to.node.dataset.id;
+
+            document.dispatchEvent(new CustomEvent('-rearrange', {detail: {from, to}}));
+        }
+    }
+});
 
 function showQueues()
 {

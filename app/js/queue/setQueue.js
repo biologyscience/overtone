@@ -6,6 +6,8 @@ function setQueue({detail})
 
     const filePaths = detail;
 
+    let id = 0;
+
     const { getAudioDuration, getMetaData } = require('./js/util');
 
     const ul = document.getElementById('currentQueueList');
@@ -33,10 +35,10 @@ function setQueue({detail})
         {
             const data =
             `
-            <div class="dragger flex flexCenter">
-                <img src="svg/drag.svg" class="imgDragger hoverPointer" draggable="false">
+            <div class="dragger flex flexCenter cursorGrab">
+                <img src="svg/drag.svg" class="imgDragger" draggable="false">
             </div>
-            <div class="info relative hoverPointer">
+            <div class="info relative cursorPointer">
                 <div class="song overflowPrevent">
                     ${tags.title}
                 </div>
@@ -47,8 +49,8 @@ function setQueue({detail})
                     ${tags.album}
                 </div>
             </div>
-            <div class="options flex flexCenter">
-                <img src="svg/moreHorizontal.svg" class="imgDragger hoverPointer" draggable="false">
+            <div class="options flex flexCenter cursorPointer">
+                <img src="svg/moreHorizontal.svg" class="imgDragger" draggable="false">
             </div>
             `;
 
@@ -58,7 +60,11 @@ function setQueue({detail})
     
             li.innerHTML = data;
 
+            li.dataset.id = id;
+
             list.li.push(li);
+
+            id++;
         });
 
         Promise.all(list.audioDuration).then((x) =>

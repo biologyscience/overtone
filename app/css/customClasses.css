@@ -1,4 +1,6 @@
-.hoverPointer { cursor: pointer; }
+.cursorPointer { cursor: pointer; }
+
+.cursorGrab { cursor: grab; }
 
 .relative { position: relative; }
 
