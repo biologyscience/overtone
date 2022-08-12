@@ -4,7 +4,7 @@
   "description": "A free and open source Music Player for all your local music files !",
   "main": "app/index.js",
   "author": "biologyscience",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "homepage": "https://biologyscience.github.io/overtone",
   "scripts": {
     "start": "electron app/index.js",
