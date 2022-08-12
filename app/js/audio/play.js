@@ -11,7 +11,7 @@ function play({detail} = '')
     {
         if (typeof(detail) === 'object')
         {
-            Object.assign(queueList, detail);
+            queueList = [...detail];
 
             current = 0;
         }
