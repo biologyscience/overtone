@@ -12,8 +12,9 @@ function rpcStart()
 
     if (ID === 0) return alert('Please enter your Discord Application ID');
 
-    const { Client } = require('discord-rpc');
-    const { existsSync, writeFileSync } = require('fs');
+    const
+        { Client } = require('discord-rpc'),
+        { json } = require('./js/util');
 
     const client = new Client({transport: 'ipc'});
 
@@ -27,20 +28,17 @@ function rpcStart()
         connect.innerHTML = 'Connected';
         connect.style.borderColor = 'var(--accentGreen1)';
 
-        let data;
-
-        if (existsSync('app/config.json'))
+        try
         {
-            const config = require('./config.json');
+            const
+                file = new json('app/config.json'),
+                data = file.read();
 
-            config.discordAppID = ID;
+            data.discordAppID = ID;
 
-            data = config;
-        }
+            file.save();
 
-        else { data = { discordAppID: ID }; }
-
-        writeFileSync('app/config.json', JSON.stringify(data, null, 4));
+        } catch (e) { alert('Caannot write app id to config file !\nRestarting the app should fix it.'); }
     });
 };
 

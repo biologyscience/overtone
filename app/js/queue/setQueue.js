@@ -1,18 +1,23 @@
 let queueReady = false;
 
-function setQueue({detail})
+function showQueue(queueName)
+{
+    Array.from(document.getElementById('content').children).forEach((x) =>
+    {
+        if (x.dataset.queueName === queueName)
+        { x.classList.add('current'); }
+
+        else { x.classList.remove('current'); }
+    });
+};
+
+function setQueue({detail: {filePaths, queueName}})
 {
     queueReady = false;
-
-    const filePaths = detail;
 
     let id = 0;
 
     const { getAudioDuration, getMetaData } = require('./js/util');
-
-    const ul = document.getElementById('currentQueueList');
-
-    Array.from(ul.children).forEach(x => x.remove());
 
     const list =
     {
@@ -77,22 +82,47 @@ function setQueue({detail})
     
                 list.time.push(minutes + ':' + seconds);
             });
+
+            const ul = document.createElement('ul');
     
+            ul.classList.add('queue');
+
+            ul.dataset.queueName = queueName;
+            
             for (let i = 0; i < list.time.length; i++)
             {
                 list.li[i].querySelector('.info').dataset.songDuration = list.time[i];
-
+        
                 ul.append(list.li[i]);
             }
+
+            document.getElementById('content').append(ul);
+
+            showQueue(queueName);
 
             document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: document.querySelector('.navbarItems svg#queue').parentElement.parentElement}));
 
             queueReady = true;
+
+            document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
         });
     });
 };
 
-document.addEventListener('-selectedFilePaths', setQueue)
+document.addEventListener('-selectedFilePaths', setQueue);
+
+document.addEventListener('-chooseQueue', (obj) =>
+{
+    let TF = false;
+
+    Array.from(document.getElementById('content').children).forEach((x) =>
+    {
+        if (x.dataset.queueName === obj.detail.queueName)
+        { return TF = true; }
+    });
+
+    TF ? showQueue(obj.detail.queueName) : setQueue(obj);
+});
 
 document.addEventListener('-current', (obj) =>
 {

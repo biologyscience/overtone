@@ -19,15 +19,16 @@
         <script src="js/queue/queueList.js" defer></script>
         <script src="js/queue/setBorder.js" defer></script>
         <script src="js/queue/setQueue.js" defer></script>
+        <script src="js/queue/storeQueue.js" defer></script>
+        <script src="js/sortable.js" defer></script>
 
         <!-- EMITTERS -->
         <script src="js/audio/choose.js" defer></script>
         <script src="js/rpc/rpc.js" defer></script>
+        <script src="js/startup.js" defer></script>
 
         <!-- OTHERS -->
         <script src="js/fillPreviousID.js" defer></script>
-        <script src="js/displayLeft.js" defer></script>
-        <script src="js/displayRight.js" defer></script>
         <script src="js/getAlbumArt.js" defer></script>
         <script src="js/hover3D.js" defer></script>
         <script src="js/misc.js" defer></script>
@@ -38,7 +39,7 @@
         <div id="loading" class="absolute" style="font-size: 4rem;">Loading ...</div>
         <button style="background: none;" class="top0 right0 absolute displayNone" id="misc">Misc Button</button>
 
-        <div class="queueList absolute visibilityHidden">
+        <div id="queueListMenu" class="absolute visibilityHidden">
             <div class="titleHolder flex relative">
                 <img src="svg/queue.svg" id="imgQueue">
                 <span id="queues">Queues</span>
@@ -60,7 +61,7 @@
 
                 <div id="div-queue" class="inheritHeight">
                     <div class="part flex">
-                        <div id="queueLists" class="flex cursorPointer relative">
+                        <div id="queueListWrapper" class="flex cursorPointer relative">
                             <span id="queueNumber">Queue Number</span>
                             <span>.&nbsp;</span>
                             <span id="queueName">Queue Name</span>
@@ -77,7 +78,7 @@
                     </div>
                     <div class="mainDivider"></div>
                     <div id="content" class="block">
-                        <ul id="currentQueueList" class="flexCol"></ul>
+                        <ul class="queue current"></ul>
                     </div>
                 </div>
 
