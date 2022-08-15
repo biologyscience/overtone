@@ -1,5 +1,7 @@
-const electron = require('electron');
-const remote = require('@electron/remote/main');
+const
+    electron = require('electron'),
+    remote = require('@electron/remote/main'),
+    { existsSync, writeFileSync } = require('fs');
 
 remote.initialize();
 
@@ -24,4 +26,8 @@ app.on('ready', () =>
     remote.enable(window.webContents);
 
     window.loadFile('index.html').then(() => window.maximize());
+    // window.loadFile('temp/file.html').then(() => window.maximize());
 });
+
+existsSync('app/config.json') ? null : writeFileSync('app/config.json', JSON.stringify({}));
+existsSync('app/queues.json') ? null : writeFileSync('app/queues.json', JSON.stringify({}));

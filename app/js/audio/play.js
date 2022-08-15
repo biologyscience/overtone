@@ -2,6 +2,7 @@ const audio = new Audio();
 
 let
     queueList = [],
+    queueName = null,
     current = 0,
     interval = null;
 
@@ -11,16 +12,19 @@ function play({detail} = '')
     {
         if (typeof(detail) === 'object')
         {
-            queueList = [...detail];
+            queueList = [...detail.filePaths];
 
-            current = 0;
+            queueName = detail.queueName;
+
+            detail.current === undefined ? current = 0 : current = detail.current;
         }
 
         else { current = detail; }
     }
 
-    const { parseFile } = require('music-metadata');
-    const { getAudioDuration } = require('./js/util');
+    const
+        { parseFile } = require('music-metadata'),
+        { getAudioDuration, json } = require('./js/util');
 
     const fileLocation = queueList[current];
 
@@ -35,6 +39,26 @@ function play({detail} = '')
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
         
     pauseORplay();
+
+    //
+
+    let temp = false;
+
+    const queues = new json('app/queues.json').read();
+
+    for (x in queues)
+    {
+        if (queues[x].join('') === queueList.join(''))
+        { return temp = false; }
+
+        else { temp = true; }
+    }
+
+    if (temp)
+    {
+        document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
+        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: queueName}));
+    }
 };
 
 function pauseORplay(x)
@@ -181,7 +205,7 @@ function rearrange({detail: {from, to}})
         queueList.splice(FROM + 1, 1);
     }
 
-    const childern = Array.from(document.getElementById('currentQueueList').children);
+    const childern = Array.from(document.querySelector('.queue.current').children);
 
     childern.splice(childern.length - 1, 1);
 
@@ -197,6 +221,8 @@ function rearrange({detail: {from, to}})
     });
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+
+    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
 };
 
 

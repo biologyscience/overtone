@@ -1,55 +1,24 @@
-const sortable = require('sortable-dnd');
-
-new sortable(document.getElementById('queueList'),
-{
-    draggable: '.dragger',
-    animation: 300,
-    chosenClass: 'greenBorder',
-    ghostClass: 'displayNone'
-});
-
-new sortable(document.getElementById('currentQueueList'),
-{
-    draggable: '.dragger',
-    animation: 300,
-    chosenClass: 'greenBorder',
-    ghostClass: 'displayNone',
-    onDrop: (x) =>
-    {
-        if (x.changed)
-        {
-            const from = x.from.node.dataset.id;
-
-            const to = x.to.node.dataset.id;
-
-            document.dispatchEvent(new CustomEvent('-rearrange', {detail: {from, to}}));
-        }
-    }
-});
-
 function showQueues()
 {
     const displayLeft = document.getElementById('displayLeft');
-    const queueList = document.querySelector('.queueList');
 
     displayLeft.style.transition = 'opacity ease 300ms';
     displayLeft.style.opacity = '0.1';
 
-    queueList.classList.remove('displayNone');
+    document.getElementById('queueListMenu').classList.remove('displayNone');
 };
 
 function hideQueues()
 {
     const displayLeft = document.getElementById('displayLeft');
-    const queueList = document.querySelector('.queueList');
 
     displayLeft.style.transition = 'opacity ease 300ms';
 
-    setTimeout(() => displayLeft.style.transition = '', 300);
-
     displayLeft.style.opacity = '1';
 
-    queueList.classList.add('displayNone');
+    setTimeout(() => displayLeft.style.transition = '', 300);
+
+    document.getElementById('queueListMenu').classList.add('displayNone');
 };
 
 function updateNumber({detail})
@@ -60,7 +29,7 @@ function updateNumber({detail})
     {
         const totalSongsInCurrentQueue = document.getElementById('totalSongsInCurrentQueue');
 
-        totalSongsInCurrentQueue.innerHTML = thing.length;
+        totalSongsInCurrentQueue.innerHTML = thing.filePaths.length;
     }
 
     else
@@ -71,11 +40,68 @@ function updateNumber({detail})
     }
 };
 
-document.getElementById('queueLists').onclick = showQueues;
-document.querySelector('.titleHolder .close').onclick = hideQueues;
+function chooseQueue(E)
+{
+    const div = E.target;
+
+    if (div.classList.contains('xx'))
+    {
+        const queueName = div.dataset.queueName;
+
+        const { json } = require('./js/util');
+
+        const filePaths = new json('app/queues.json').read()[queueName];
+
+        document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
+
+        hideQueues();
+
+        updateNumber({detail: {filePaths}});
+    }
+};
+
+function addItemToQueueList({detail})
+{
+    const queueName = detail;
+
+    const data =
+    `
+    <div class="dragger flexCenter cursorGrab">
+        <img src="svg/drag.svg" class="imgDragger" draggable="false">
+    </div>
+    <div class="xx cursorPointer" data-queue-name="${queueName}">
+        <span class="queueNames overflowPrevent"> ${queueName} </span>
+    </div>
+    <div class="options flexCenter">
+        <img src="svg/moreHorizontal.svg" class="imgOptions cursorPointer" draggable="false">
+    </div>
+    `;
+
+    const li = document.createElement('li');
+    const ql = document.getElementById('queueList');
+
+    li.classList.add('currentQueueItems', 'grid');
+
+    li.innerHTML = data;
+
+    ql.append(li);
+};
+
+function displayQueueName({detail})
+{
+    const ul = detail;
+
+    document.getElementById('queueName').innerHTML = ul.dataset.queueName;
+};
+
+document.getElementById('queueListWrapper').onclick = showQueues;
+document.getElementById('queueList').onclick = chooseQueue;
+document.querySelector('.titleHolder .close').addEventListener('click', hideQueues);
 
 document.addEventListener('-selectedFilePaths', updateNumber);
-document.addEventListener('-current', updateNumber)
+document.addEventListener('-current', updateNumber);
+document.addEventListener('-addItemToQueueList', addItemToQueueList);
+document.addEventListener('-currentQueueReady', displayQueueName);
 
 /*
 

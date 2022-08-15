@@ -4,7 +4,7 @@ function choose()
 
     const options = 
     {
-        filters: [ { name: 'Music Files', extensions: ['mp3', 'flac'] } ],
+        filters: [ { name: 'Music Files', extensions: ['mp3', 'flac', 'ogg', 'wav'] } ],
         properties: ['showHiddenFiles', 'multiSelections']
     };
 
@@ -13,7 +13,9 @@ function choose()
     {
         if (selected.canceled) return;
 
-        document.dispatchEvent(new CustomEvent('-selectedFilePaths', {detail: selected.filePaths}));
+        const queueName = new Date().toLocaleString();
+
+        document.dispatchEvent(new CustomEvent('-selectedFilePaths', {detail: {filePaths: selected.filePaths, queueName}}));
     });
 };
 

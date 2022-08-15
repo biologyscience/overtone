@@ -1,10 +1,14 @@
 function clickSetBorder(E)
 {
-    const li = require('./js/util').getElement('li', E);
+    const { getElement, json } = require('./js/util');
+
+    const li = getElement('li', E);
 
     if (li === undefined) return;
 
-    const children = Array.from(document.getElementById('currentQueueList').children);
+    const currentQueue = document.querySelector('.queue.current');
+
+    const children = Array.from(currentQueue.children);
 
     if (children.length === 0) return;
 
@@ -12,14 +16,25 @@ function clickSetBorder(E)
 
     li.style.borderColor = 'var(--accentGreen1)';
 
-    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: children.indexOf(li)}));
+    const queueName = currentQueue.dataset.queueName;
+
+    const filePaths = new json('app/queues.json').read()[queueName];
+
+    const detail =
+    {
+        filePaths,
+        queueName,
+        current: children.indexOf(li)
+    };
+
+    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail}));
 };
 
 function queueSetBorder({detail})
 {
     const current = detail;
 
-    const children = Array.from(document.getElementById('currentQueueList').children);
+    const children = Array.from(document.querySelector('.queue.current').children);
     
     children.forEach(x => x.style.borderColor = '');
 

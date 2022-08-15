@@ -156,6 +156,32 @@ function getAudioInfo(fileLocation)
     });
 };
 
+class json
+{
+    constructor(fileLocation)
+    {
+        this.fileLocation = fileLocation;
+        this.fs = require('fs');
+    };
+
+    read()
+    {
+        const json = this.fs.readFileSync(this.fileLocation);
+
+        this.json = JSON.parse(json);
+
+        return this.json;
+    };
+
+
+    save()
+    {
+        const json = JSON.stringify(this.json, null, 4);
+
+        this.fs.writeFileSync(this.fileLocation, json);
+    };
+};
+
 //
 
 module.exports =
@@ -168,5 +194,6 @@ module.exports =
     getElement,
     getAlbumArt,
     getMetaData,
-    getAudioInfo
+    getAudioInfo,
+    json
 };

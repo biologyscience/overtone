@@ -90,7 +90,7 @@
 
 
 /* div-queue */
-.queueList
+#queueListMenu
 {
     font-size: 20px;
     width: calc(60vw * .7);
@@ -152,6 +152,8 @@
     font-size: 1.5em;
 }
 
+.queueNames { pointer-events: none; }
+
 .part
 {
     width: 100%;
@@ -159,7 +161,7 @@
     padding: .5em 0;
 }
 
-#queueLists
+#queueListWrapper
 {
     --width: calc(60vw * .85);
     font-size: 25px;
@@ -206,28 +208,35 @@
     font-size: 20px;
 }
 
-#currentQueueList
+.queue
 {
     list-style: none;
     padding: 0;
     margin: 0;
     height: inherit;
     overflow-y: scroll;
+    display: none;
 }
 
-#currentQueueList::-webkit-scrollbar
+.current
+{
+    display: flex !important;
+    flex-direction: column;
+}
+
+.queue::-webkit-scrollbar
 {
     background: none;
     width: 1px;
 }
 
-#currentQueueList::-webkit-scrollbar-thumb
+.queue::-webkit-scrollbar-thumb
 {
     background-color: white;
     border-radius: 10em;
 }
 
-#currentQueueList::-webkit-scrollbar:hover { cursor: pointer; }
+.queue::-webkit-scrollbar:hover { cursor: pointer; }
 
 .currentQueueItems
 {
