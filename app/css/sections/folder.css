@@ -1,15 +1,25 @@
+#div-folder { overflow-y: auto; }
+
+#div-folder::-webkit-scrollbar
+{
+    background: none;
+    width: 2px;
+}
+
+#div-folder::-webkit-scrollbar-thumb { background-color: var(--dark70); }
+
 #folders
 {
     font-size: 1.1rem;
     list-style: none;
-    margin: 1.5em .5em;
+    margin: 0;
     padding: 0;
 }
 
-#folders li * { pointer-events: none; }
-
 .folderItem
 {
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 15fr 1fr;
     align-items: center;
     margin: .5em 0;
     padding: .5em 1em;
@@ -18,20 +28,20 @@
     transition: border-color 150ms ease;
 }
 
+.folderItem *:not(.deleteFolder) { pointer-events: none; }
+
 .folderItem:hover
 {
     border-color: var(--accent);
     cursor: pointer;
 }
 
-.folderItem img
+.folder
 {
     --size: 1.7em;
     height: var(--size);
     width: var(--size);
 }
-
-.folderItem div { margin: 0 1em; }
 
 .folderItem .name { font-size: 1.35em; }
 
@@ -41,12 +51,22 @@
     color: var(--dark80);
 }
 
+.deleteFolder
+{
+    --size: 1em;
+    height: var(--size);
+    width: var(--size);
+    justify-content: end;
+}
+
 .folderOptions
 {
     font-size: 1.1rem;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 15fr 1fr;
     align-items: center;
-    margin: .5em;
-    padding: 1em 1em;
+    margin: .5em 0;
+    padding: 1em;
     border: 2px solid transparent;
     border-radius: 5px;
     transition: border-color 150ms ease;
@@ -67,4 +87,42 @@
     width: var(--size);
 }
 
-.folderOptions span { margin: 0 1em; }
+@keyframes showAnimation 
+{
+    0%
+    {
+        opacity: 0;
+        transform: rotate(0deg);
+        display: none;
+    }
+
+    40% { opacity: 1; }
+
+    100%
+    {
+        display: block;
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes hideAnimation 
+{
+    0%
+    {
+        display: block;
+        transform: rotate(360deg);
+    }
+
+    60% { opacity: 1; }
+
+    100%
+    {
+        opacity: 0;
+        transform: rotate(0deg);
+        display: none;
+    }
+}
+
+.show { animation: showAnimation 1s ease forwards; }
+
+.hide { animation: hideAnimation 1s ease forwards; }

@@ -115,13 +115,9 @@ document.addEventListener('-chooseQueue', (obj) =>
 {
     let TF = false;
 
-    Array.from(document.getElementById('content').children).forEach((x) =>
-    {
-        if (x.dataset.queueName === obj.detail.queueName)
-        { return TF = true; }
-    });
+    const element = Array.from(document.getElementById('content').children).filter(x => x.dataset.queueName === obj.detail.queueName);
 
-    TF ? showQueue(obj.detail.queueName) : setQueue(obj);
+    element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);
 });
 
 document.addEventListener('-current', (obj) =>
