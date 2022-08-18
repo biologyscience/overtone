@@ -182,6 +182,13 @@ class json
     };
 };
 
+function readConfig()
+{
+    const { readFileSync } = require('fs');
+
+    return JSON.parse(readFileSync('app/config.json'));
+};
+
 //
 
 module.exports =
@@ -195,5 +202,6 @@ module.exports =
     getAlbumArt,
     getMetaData,
     getAudioInfo,
-    json
+    json,
+    readConfig
 };

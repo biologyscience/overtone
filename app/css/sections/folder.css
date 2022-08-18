@@ -1,0 +1,70 @@
+#folders
+{
+    font-size: 1.1rem;
+    list-style: none;
+    margin: 1.5em .5em;
+    padding: 0;
+}
+
+#folders li * { pointer-events: none; }
+
+.folderItem
+{
+    align-items: center;
+    margin: .5em 0;
+    padding: .5em 1em;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: border-color 150ms ease;
+}
+
+.folderItem:hover
+{
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+.folderItem img
+{
+    --size: 1.7em;
+    height: var(--size);
+    width: var(--size);
+}
+
+.folderItem div { margin: 0 1em; }
+
+.folderItem .name { font-size: 1.35em; }
+
+.folderItem .path
+{
+    font-size: .7em;
+    color: var(--dark80);
+}
+
+.folderOptions
+{
+    font-size: 1.1rem;
+    align-items: center;
+    margin: .5em;
+    padding: 1em 1em;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: border-color 150ms ease;
+}
+
+.folderOptions:hover
+{
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+.folderOptions * { pointer-events: none; }
+
+.folderOptions img
+{
+    --size: 1.7em;
+    height: var(--size);
+    width: var(--size);
+}
+
+.folderOptions span { margin: 0 1em; }

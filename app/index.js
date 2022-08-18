@@ -29,5 +29,5 @@ app.on('ready', () =>
     // window.loadFile('temp/file.html').then(() => window.maximize());
 });
 
-existsSync('app/config.json') ? null : writeFileSync('app/config.json', JSON.stringify({}));
+existsSync('app/config.json') ? null : writeFileSync('app/config.json', JSON.stringify({allowedMusicFileFormats: ['mp3', 'flac', 'ogg']}));
 existsSync('app/queues.json') ? null : writeFileSync('app/queues.json', JSON.stringify({}));

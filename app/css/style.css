@@ -33,8 +33,8 @@ input { user-select: auto; }
 {
     height: 100vh;
     width: 2px;
-    background-color: var(--accentGreen1);
+    background-color: var(--accent);
     left: 60vw;
 }
 
-.greenBorder { border: 2px solid var(--accentGreen1) !important; }
+.greenBorder { border: 2px solid var(--accent) !important; }

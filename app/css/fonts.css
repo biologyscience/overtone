@@ -2,3 +2,8 @@
     font-family: 'Andika';
     src: url('../fonts/AndikaNewBasic-Regular.ttf');
 }
+
+@font-face {
+    font-family: 'Fira';
+    src: url('../fonts/FiraSans-Medium.ttf');
+}

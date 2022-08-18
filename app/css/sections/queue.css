@@ -1,0 +1,181 @@
+#queueListMenu
+{
+    font-size: 20px;
+    width: calc(60vw * .7);
+    height: calc(100vh * .8);
+    top: 50;
+    left: 100;
+    border-radius: 5px;
+    background-color: var(--dark30);
+    z-index: 1;
+}
+
+.titleHolder
+{
+    padding: .7em .5em;
+}
+
+#imgQueue
+{
+    height: 1.5em;
+    width: 1.5em;
+    align-self: center;
+}
+
+#imgClose
+{
+    height: 1em;
+    width: 1em;
+}
+
+.close
+{
+    align-self: center;
+    right: 5%;
+}
+
+#queueList
+{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: scroll;
+}
+
+#queueList::-webkit-scrollbar
+{
+    background: none;
+    width: 1px;
+}
+
+#queueList::-webkit-scrollbar-thumb
+{
+    background-color: var(--dark80);
+}
+
+#imgQueue, #queues { margin-left: 20px; }
+
+#queues
+{
+    font-size: 1.5em;
+}
+
+.queueNames { pointer-events: none; }
+
+.part
+{
+    width: 100%;
+    font-size: 20px;
+    padding: .5em 0;
+}
+
+#queueListWrapper
+{
+    --width: calc(60vw * .85);
+    font-size: 25px;
+    width: var(--width);
+    border: .1em solid var(--dark40);
+    border-radius: .5em;
+    padding: .4em .7em;
+    margin-left: .5em;
+}
+
+#chevronDown
+{
+    --size: 20px;
+    height: var(--size);
+    width: var(--size);
+    align-self: center;
+    right: 1em;
+}
+
+#deleteCurrentQueue
+{
+    align-self: center;
+    margin-left: auto;
+    margin-right: 1.5em;
+}
+
+#X
+{
+    --size: 25px;
+    height: var(--size);
+    width: var(--size);
+}
+
+.mainDivider
+{
+    width: 100%;
+    height: 2px;
+    background-color: var(--dark40);
+}
+
+#content
+{
+    width: 100%;
+    font-size: 20px;
+}
+
+.queue
+{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: inherit;
+    overflow-y: scroll;
+    display: none;
+}
+
+.current
+{
+    display: flex !important;
+    flex-direction: column;
+}
+
+.queue::-webkit-scrollbar
+{
+    background: none;
+    width: 1px;
+}
+
+.queue::-webkit-scrollbar-thumb
+{
+    background-color: white;
+    border-radius: 10em;
+}
+
+.queue::-webkit-scrollbar:hover { cursor: pointer; }
+
+.currentQueueItems
+{
+    grid-template-columns: 1fr 8fr 1fr;
+    margin: 0 .1em;
+    padding: .5em 0;
+    box-sizing: border-box;
+    border-radius: .5rem;
+    border: 2px solid transparent;
+    transition: border-color ease 150ms;
+}
+
+.currentQueueItems:first-of-type { margin-top: .3em; }
+.currentQueueItems:last-of-type { margin-bottom: .3em; }
+
+.imgDragger, .imgOptions
+{
+    height: 1em;
+    width: 1em;
+}
+
+.imgDragger { z-index: -1; }
+
+.info::after
+{
+    content: attr(data-song-duration);
+    position: absolute;
+    font-size: .8em;
+    bottom: 0;
+    right: 0;
+}
+
+.song { font-size: 1.2em; }
+.artist, .album { font-size: .7em; }
