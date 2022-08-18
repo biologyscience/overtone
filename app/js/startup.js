@@ -14,7 +14,7 @@ let b = setTimeout(() =>
 {
     document.getElementById('displayLeft').classList.remove('opacity0', 'visibilityHidden');
     document.getElementById('displayRight').classList.remove('opacity0', 'visibilityHidden');
-}, 1000);
+}, 100);
 
 /**
  * misc

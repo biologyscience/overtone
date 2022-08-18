@@ -33,4 +33,6 @@
     --accentPink2: rgb(197, 17, 98);
     --accentLightBlue1: rgb(64, 196, 255);
     --accentLightBlue2: rgb(24, 255, 255);
+
+    --accent: var(--accentGreen1);
 }

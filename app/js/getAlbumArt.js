@@ -4,12 +4,12 @@ function chooseFiles()
         { parseFile } = require('music-metadata'),
         { dialog, BrowserWindow } = require('@electron/remote'),
         { existsSync, mkdirSync, writeFileSync } = require('fs'),
-        { formatter } = require('./js/util');
+        { formatter, readConfig } = require('./js/util');
 
     const
         options =
         {
-            filters: [ { name: 'Music Files', extensions: ['mp3', 'flac'] } ],
+            filters: [ { name: 'Music Files', extensions: readConfig().allowedMusicFiles } ],
             properties: ['multiSelections', 'showHiddenFiles']
         },
 

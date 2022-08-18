@@ -14,7 +14,7 @@ function clickSetBorder(E)
 
     children.forEach(x => x.style.borderColor = '');
 
-    li.style.borderColor = 'var(--accentGreen1)';
+    li.style.borderColor = 'var(--accent)';
 
     const queueName = currentQueue.dataset.queueName;
 
@@ -38,7 +38,7 @@ function queueSetBorder({detail})
     
     children.forEach(x => x.style.borderColor = '');
 
-    children[current].style.borderColor = 'var(--accentGreen1)';
+    children[current].style.borderColor = 'var(--accent)';
 };
 
 document.querySelector('#div-queue #content').addEventListener('click', clickSetBorder);

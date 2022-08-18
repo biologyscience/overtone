@@ -1,10 +1,12 @@
 function choose()
 {
-    const { dialog, BrowserWindow } = require('@electron/remote');
+    const
+        { dialog, BrowserWindow } = require('@electron/remote'),
+        { readConfig } = require('./js/util');
 
     const options = 
     {
-        filters: [ { name: 'Music Files', extensions: ['mp3', 'flac', 'ogg', 'wav'] } ],
+        filters: [ { name: 'Music Files', extensions: readConfig().allowedMusicFileFormats } ],
         properties: ['showHiddenFiles', 'multiSelections']
     };
 

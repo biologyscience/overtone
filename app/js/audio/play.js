@@ -215,7 +215,7 @@ function rearrange({detail: {from, to}})
     {
         x.dataset.id = i;
 
-        x.style.borderColor === 'var(--accentGreen1)' ? current = i : null;
+        x.style.borderColor === 'var(--accent)' ? current = i : null;
         
         i++;
     });

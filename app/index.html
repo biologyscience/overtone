@@ -2,16 +2,20 @@
     <head>
         <title>OverTone</title>
 
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/displayLeft.css">
-        <link rel="stylesheet" href="css/displayRight.css">
+        <link rel="stylesheet" href="css/customVariables.css">
         <link rel="stylesheet" href="css/customClasses.css">
         <link rel="stylesheet" href="css/fonts.css">
-        <link rel="stylesheet" href="css/customVariables.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/displayRight.css">
+        <link rel="stylesheet" href="css/displayLeft.css">
+        <link rel="stylesheet" href="css/sections/queue.css">
+        <link rel="stylesheet" href="css/sections/folder.css">
+        <link rel="stylesheet" href="css/sections/extras.css">
 
         <!-- LISTENERS -->
         <script src="js/audio/play.js" defer></script>
         <script src="js/audio/timeLine.js" defer></script>
+        <script src="js/folder/updateFolders.js" defer></script>
         <script src="js/metaData/mediaSessionMetaData.js" defer></script>
         <script src="js/metaData/metaData.js" defer></script>
         <script src="js/rpc/updateRPC.js" defer></script>
@@ -24,6 +28,7 @@
 
         <!-- EMITTERS -->
         <script src="js/audio/choose.js" defer></script>
+        <script src="js/folder/addFolder.js" defer></script>
         <script src="js/rpc/rpc.js" defer></script>
         <script src="js/startup.js" defer></script>
 
@@ -84,7 +89,16 @@
 
 
                 <div id="div-folder" class="displayNone inheritHeight">
-                    div-folder
+                    <ul id="folders"></ul>
+                    <div class="mainDivider"></div>
+                    <div id="addFolder" class="flex folderOptions">
+                        <img src="svg/folderAdd.svg">
+                        <span>Add a folder</span>
+                    </div>
+                    <div id="removeFolder" class="flex folderOptions">
+                        <img src="svg/folderRemove.svg">
+                        <span>Remove a folder</span>
+                    </div>
                 </div>
 
                 <div id="div-album" class="displayNone inheritHeight">
