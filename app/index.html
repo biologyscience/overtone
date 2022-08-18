@@ -15,7 +15,6 @@
         <!-- LISTENERS -->
         <script src="js/audio/play.js" defer></script>
         <script src="js/audio/timeLine.js" defer></script>
-        <script src="js/folder/updateFolders.js" defer></script>
         <script src="js/metaData/mediaSessionMetaData.js" defer></script>
         <script src="js/metaData/metaData.js" defer></script>
         <script src="js/rpc/updateRPC.js" defer></script>
@@ -28,11 +27,12 @@
 
         <!-- EMITTERS -->
         <script src="js/audio/choose.js" defer></script>
-        <script src="js/folder/addFolder.js" defer></script>
         <script src="js/rpc/rpc.js" defer></script>
         <script src="js/startup.js" defer></script>
 
         <!-- OTHERS -->
+        <script src="js/folder/addFolder.js" defer></script>
+        <script src="js/folder/removeFolder.js" defer></script>
         <script src="js/getAlbumArt.js" defer></script>
         <script src="js/hover3D.js" defer></script>
         <script src="js/misc.js" defer></script>
@@ -88,15 +88,19 @@
 
 
                 <div id="div-folder" class="displayNone inheritHeight">
-                    <ul id="folders"></ul>
-                    <div class="mainDivider"></div>
-                    <div id="addFolder" class="flex folderOptions">
-                        <img src="svg/folderAdd.svg">
-                        <span>Add a folder</span>
+                    <div style="padding: 1.5em 1em;">
+                        <ul id="folders"></ul>
                     </div>
-                    <div id="removeFolder" class="flex folderOptions">
-                        <img src="svg/folderRemove.svg">
-                        <span>Remove a folder</span>
+                    <div class="mainDivider"></div>
+                    <div style="padding: .5em;">
+                        <div id="addFolder" class="folderOptions grid">
+                            <img class="folder" src="svg/folderAdd.svg">
+                            <span>Add a folder</span>
+                        </div>
+                        <div id="removeFolder" class="folderOptions grid">
+                            <img class="folder" src="svg/folderRemove.svg">
+                            <span>Remove a folder</span>
+                        </div>
                     </div>
                 </div>
 

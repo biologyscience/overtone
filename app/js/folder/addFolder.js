@@ -65,24 +65,52 @@ function addFolder()
 
         if (filtered.length === 0) return;
 
-        if (data['checkMusicIn'] === undefined)
-        { data['checkMusicIn'] = filtered; }
+        if (data.checkMusicIn === undefined)
+        { data.checkMusicIn = filtered; }
 
         else
         {
             filtered.forEach((x) =>
             {
-                if (data['checkMusicIn'].includes(x) === false)
-                { data['checkMusicIn'].push(x); }
+                if (data.checkMusicIn.includes(x) === false)
+                { data.checkMusicIn.push(x); }
             });
         }
 
         config.save();
 
-        document.dispatchEvent(new Event('-updateFolders'));
+        allFolders = [];
+        filtered = [];
 
-        allFolders = null;
-        filtered = null;
+        const
+            folders = document.getElementById('folders'),
+            paths = Array.from(folders.children).map(x => x.dataset.path);
+
+        data.checkMusicIn.forEach((x) =>
+        {
+            if (paths.includes(x) === false)
+            {
+                const li = document.createElement('li');
+
+                const name = x.split('\\');
+
+                li.classList.add('folderItem', 'grid');
+
+                li.dataset.path = x;
+
+                li.innerHTML =
+                `
+                <img class="folder" src="svg/folder.svg">
+                <div class="flexCol">
+                    <span class="name">${name[name.length - 1]}</span>
+                    <span class="path">${name.join('/')}</span>
+                </div>
+                <img src="svg/close.svg" class="deleteFolder hide">
+                `;
+
+                folders.append(li);
+            }
+        });
     });
 };
 

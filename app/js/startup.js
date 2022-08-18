@@ -10,11 +10,21 @@ let a = setTimeout(() =>
     document.getElementById('content').style.height = `calc(100vh - ${y + 2}px)`;
 });
 
+let f = setTimeout(() =>
+{
+    document.dispatchEvent(new Event('-navbarStartup'));
+
+    const x = document.getElementById('div-folder');
+
+    x.style.height = `${x.offsetHeight - 2}px`;
+});
+
 let b = setTimeout(() =>
 {
     document.getElementById('displayLeft').classList.remove('opacity0', 'visibilityHidden');
     document.getElementById('displayRight').classList.remove('opacity0', 'visibilityHidden');
 }, 1000);
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
 
 /**
  * misc
@@ -37,7 +47,7 @@ let d = setTimeout(() =>
 /**
  * navbar
  */
-let e = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 500);
+let e = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 900);
 
 
 /**
@@ -58,10 +68,81 @@ let e = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 50
 
 let timeout = setTimeout(() =>
 {
-    [a, b, c, d, e, timeout].forEach((x) =>
+    [a, b, c, d, e, timeout, f].forEach((x) =>
     {
         clearTimeout(x);
 
         x = null;
     });
 }, 2 * 1000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+    const { existsSync, readFileSync } = require('fs');
+    const { readConfig } = require('./js/util');
+
+    /* fill previous id */
+    if (existsSync('app/config.json'))
+    {
+        const config = JSON.parse(readFileSync('app/config.json'));
+        
+        if (config.discordAppID !== undefined)
+        {
+            const discordAppID = document.getElementById('discordAppID');
+            
+            discordAppID.value = config.discordAppID;
+        }
+    }
+        
+    /* fill the folders */
+    const checkMusicIn = readConfig().checkMusicIn;
+    
+    if (checkMusicIn !== undefined)
+    {
+        const folders = document.getElementById('folders');
+        
+        const paths = Array.from(folders.children).map(x => x.dataset.path);
+        
+        checkMusicIn.forEach((x) =>
+        {
+            if (paths.includes(x) === false)
+            {
+                const li = document.createElement('li');
+                
+                const name = x.split('\\');
+                
+                li.classList.add('folderItem', 'grid');
+                
+                li.dataset.path = x;
+                
+                li.innerHTML =
+                `
+                <img class="folder" src="svg/folder.svg">
+                <div class="flexCol">
+                    <span class="name">${name[name.length - 1]}</span>
+                    <span class="path">${name.join('/')}</span>
+                </div>
+                <img src="svg/close.svg" class="deleteFolder hide">
+                `;
+                
+                folders.append(li);
+            }
+        });
+    }
+}
