@@ -78,5 +78,5 @@ input { user-select: auto !important; }
 .hover3D:hover
 {
     box-shadow: 0 0 40px black;
-    border-radius: 1em;
+    border-radius: 7px;
 }

@@ -6,6 +6,55 @@ let
     current = 0,
     interval = null;
 
+function emitMetaData(fileLocation)
+{
+    const { getAlbumArt, read, buffer2DataURL, updateMetaDataJSON } = require('./js/util');
+
+    const tags = read.metadata()[fileLocation];
+
+    if (tags === undefined)
+    {
+        const { parseFile } = require('music-metadata');
+
+        parseFile(fileLocation).then((tag) =>
+        {
+            const { album, albumartist, title, picture } = tag.common;
+
+            const send =
+            {
+                title,
+                albumArtist: albumartist,
+                album
+            };
+
+            document.dispatchEvent(new CustomEvent('-updateRPC', {detail: send}));
+
+            send.picture =
+            {
+                format: picture[0]?.format,
+                buffer: picture[0]?.data,
+                URL: buffer2DataURL(picture[0]?.format, picture[0]?.data)
+            };
+
+            document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: send}));
+
+            updateMetaDataJSON(tag);
+        });
+    }
+
+    else
+    {
+        document.dispatchEvent(new CustomEvent('-updateRPC', {detail: tags}));
+
+        getAlbumArt(fileLocation).then((pic) =>
+        {
+            tags.picture = pic;
+
+            document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags}));
+        });
+    }
+};
+
 function play({detail} = '')
 {
     if (detail !== undefined)
@@ -28,16 +77,7 @@ function play({detail} = '')
 
     audio.src = fileLocation;
 
-    if (read.metadata[fileLocation] === undefined)
-    {
-        const { parseFile } = require('music-metadata');
-
-        parseFile(fileLocation).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
-    }
-
-    else { document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: read.metadata[fileLocation]})); }
-
-    document.dispatchEvent(new CustomEvent('-updateRPC', {detail: fileLocation}));
+    emitMetaData(fileLocation);
 
     getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 

@@ -21,4 +21,4 @@ function choose()
     });
 };
 
-document.getElementById('choose').onclick = choose;
+document.getElementById('choose').addEventListener('click', choose);
