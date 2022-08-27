@@ -95,11 +95,12 @@ function getAlbumArt(fileLocation)
         {
             const picture = tags.common?.picture[0];
 
-            const obj = {};
-
-            obj.format = picture?.format;
-            obj.buffer = picture?.data;
-            obj.URL = buffer2DataURL(picture?.format, picture?.data);
+            const obj =
+            {
+                format: picture?.format,
+                buffer: picture?.data,
+                URL: buffer2DataURL(picture?.format, picture?.data)
+            };
 
             resolve(obj);
         });
@@ -204,6 +205,42 @@ const read =
     songList() { return JSON.parse(this.fs.readFileSync('app/json/songList.json')); }
 };
 
+function updateMetaDataJSON(tags)
+{
+    const metadata = new json('app/json/metadata.json');
+
+    const data = metadata.read();
+
+    const { album, albumartist, artists, bpm, disk, genre, title, track, year } = tags.common;
+
+    const
+        time = parseTime(tags.format.duration * 1000),
+        hours = time.hours,
+        minutes = time.minutes,
+        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
+
+    let duration;
+
+    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
+
+    data[fileLocation] =
+    {
+        album,
+        albumArtist: albumartist,
+        artists,
+        bpm,
+        disk,
+        genre,
+        title,
+        track,
+        year,
+        duration,
+        rawDuration: Math.floor(tags.format.duration * 1000)
+    };
+
+    metadata.save();
+};
+
 //
 
 module.exports =
@@ -218,5 +255,6 @@ module.exports =
     getMetaData,
     getAudioInfo,
     json,
-    read
+    read,
+    updateMetaDataJSON
 };

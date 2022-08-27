@@ -1,18 +1,36 @@
 function storeQueue({detail: {queueList, queueName}})
 {
-    const { json } = require('./js/util');
+    const { json, getMetaData } = require('./js/util');
 
-    try
+    const
+        temp = [],
+        fileLocations = [];
+
+    const
+        queues = new json('app/json/queues.json'),
+        metadata = new json('app/json/metadata.json'),
+
+        queuesData = queues.read(),
+        metadataData = metadata.read();
+
+    queuesData[queueName] = queueList;
+
+    queues.save();
+
+    queueList.forEach(x => metadataData[x] === undefined ? temp.push(getMetaData(x)) && fileLocations.push(x) : null);
+
+    if (temp.length > 0)
     {
-        const
-            file = new json('app/json/queues.json'),
-            queues = file.read();
-    
-        queues[queueName] = queueList;
-    
-        file.save();
+        Promise.all(temp).then((tags) =>
+        {
+            for (let i = 0; i < fileLocations.length; i++)
+            {
+                metadataData[fileLocations[i]] = temp[i];
+            }
 
-    } catch (e) { alert('Caannot write queue details to queues file !\nRestarting the app should fix it.'); }
+            
+        });
+    }
 };
 
 document.addEventListener('-storeQueue', storeQueue);

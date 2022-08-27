@@ -25,7 +25,7 @@ function setQueue({detail: {filePaths, queueName}})
         audioDuration: [],
         li: [],
         time: []
-    }
+    };
 
     filePaths.forEach((x) =>
     {

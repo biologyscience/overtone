@@ -2,8 +2,6 @@ function updateMetaData({detail})
 {
     const tags = detail;
 
-    const { buffer2DataURL } = require('./js/util');
-
     const div =
     {
         songName: document.getElementById('songName'),
@@ -13,18 +11,11 @@ function updateMetaData({detail})
 
     const img = { albumArt: document.getElementById('albumArt') };
 
-    img.albumArt.setAttribute('src', './svg/empty.svg');
+    tags.picture.buffer === undefined ? img.albumArt.setAttribute('src', 'svg/empty.svg') : img.albumArt.setAttribute('src', tags.picture.URL);
 
-    if (tags.common?.picture)
-    {
-        const albumArt = buffer2DataURL(tags.common.picture[0].format, tags.common.picture[0].data);
-
-        img.albumArt.setAttribute('src', albumArt);
-    }
-
-    div.songName.innerHTML = tags.common?.title;
-    div.artistName.innerHTML = tags.common?.albumartist;
-    div.albumName.innerHTML = tags.common?.album;
+    div.songName.innerHTML = tags.title;
+    div.artistName.innerHTML = tags.albumArtist;
+    div.albumName.innerHTML = tags.album;
 };
 
-document.addEventListener('-updateMetaData', updateMetaData)
+document.addEventListener('-updateMetaData', updateMetaData);

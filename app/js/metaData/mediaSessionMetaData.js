@@ -2,18 +2,16 @@ function updateMediaSessionMetaData({detail})
 {
     const tags = detail;
 
-    const { buffer2DataURL } = require('./js/util');
-
     const mediaMetaData = 
     {
-        title: tags.common?.title,
-        artist: tags.common?.albumartist,
-        album: tags.common?.album,
+        title: tags.title,
+        artist: tags.albumArtist,
+        album: tags.album,
         artwork:
         [
             {
-                src: buffer2DataURL(tags.common?.picture?.[0]?.format, tags.common.picture?.[0]?.data),
-                format: tags.common?.picture?.[0]?.format
+                src: tags.picture.URL,
+                format: tags.picture.format
             }
         ]
     };

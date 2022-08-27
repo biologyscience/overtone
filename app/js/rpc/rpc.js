@@ -2,8 +2,7 @@ function rpcStart()
 {
     const
         connect = document.getElementById('connect'),
-        appID = document.getElementById('discordAppID'),
-        ID = appID.value,
+        ID = document.getElementById('discordAppID').value,
         pressence = 
         {
             state: 'Name of the Song',
@@ -20,10 +19,9 @@ function rpcStart()
 
     client.once('ready', () => client.setActivity(pressence));
 
-    client.login({clientId: ID})
-    .then((c) =>
+    client.login({clientId: ID}).then((detail) =>
     {
-        document.dispatchEvent(new CustomEvent('-RPC', {detail: c}));
+        document.dispatchEvent(new CustomEvent('-RPC', {detail}));
 
         connect.innerHTML = 'Connected';
         connect.style.borderColor = 'var(--accentGreen1)';
@@ -42,4 +40,4 @@ function rpcStart()
     });
 };
 
-document.getElementById('connect').onclick = rpcStart;
+document.getElementById('connect').addEventListener('click', rpcStart);
