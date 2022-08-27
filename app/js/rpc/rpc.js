@@ -31,7 +31,7 @@ function rpcStart()
         try
         {
             const
-                file = new json('app/config.json'),
+                file = new json('./app/json/config.json'),
                 data = file.read();
 
             data.discordAppID = ID;

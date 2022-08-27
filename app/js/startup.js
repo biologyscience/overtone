@@ -1,62 +1,60 @@
-/**
- * display
- */
 let a = setTimeout(() =>
 {
-    let y = document.getElementById('navbar').offsetHeight;
+    // floating queue list
+    const titleHolder = document.querySelector('.titleHolder');
 
-    Array.from(document.getElementById('div-queue').children).forEach(x => x.id === 'content' ? null : y = y + x.offsetHeight);
+    const queueListMenu = document.getElementById('queueListMenu');
 
-    document.getElementById('content').style.height = `calc(100vh - ${y + 2}px)`;
+    const math = queueListMenu.offsetHeight - (titleHolder.offsetHeight + 2);
+
+    document.getElementById('queueList').style.height = `${math}px`;
+
+    // queue content
+    let contentHeight = 0;
+
+    Array.from(document.getElementById('div-queue').children).forEach(x => x.id === 'content' ? null : contentHeight = contentHeight + x.offsetHeight);
+
+    document.getElementById('content').style.height = `calc(var(--displayHeight) - ${contentHeight + 2}px)`;
+    
+    // folderIn list
+    let songListInFolderHeight = 0;
+    
+    Array.from(document.getElementById('folderIn').children).forEach(x => x.id === 'songListInFolder' ? null : songListInFolderHeight = songListInFolderHeight + x.offsetHeight);
+
+    document.getElementById('songListInFolder').style.height = `calc(var(--displayHeight) - ${songListInFolderHeight + 2}px)`;
+
+    // display none to divs
+    [
+        'div-queue',
+        'queueListMenu',
+
+        'div-folder',
+        'folderIn',
+
+        'div-album', 'div-artist', 'div-genre', 'div-library', 'div-extras', 'div-search'
+    ].forEach(x => document.getElementById(x).classList.add('displayNone'));
+
 });
-
-let f = setTimeout(() =>
-{
-    document.dispatchEvent(new Event('-navbarStartup'));
-
-    const x = document.getElementById('div-folder');
-
-    x.style.height = `${x.offsetHeight - 2}px`;
-});
-
-let b = setTimeout(() =>
-{
-    document.getElementById('displayLeft').classList.remove('opacity0', 'visibilityHidden');
-    document.getElementById('displayRight').classList.remove('opacity0', 'visibilityHidden');
-}, 1000);
-/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
 
 /**
  * misc
  */
-let c = setTimeout(() => { document.getElementById('loading').classList.add('displayNone') }, 900);
+let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 1000);
 
-let d = setTimeout(() =>
-{
-    const x = document.querySelector('.titleHolder').offsetHeight;
-
-    const y = document.getElementById('queueListMenu').offsetHeight;
-
-    const math = y - (x + 2);
-
-    document.getElementById('queueList').style.height = `${math}px`;
-
-    document.getElementById('queueListMenu').classList.replace('visibilityHidden', 'displayNone');
-});
 
 /**
  * navbar
  */
-let e = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 900);
+let c = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 500);
 
 
 /**
  * queue list
  */
 {
-    const { json } = require('./js/util');
+    const { read } = require('./js/util');
 
-    const queueList = new json('app/queues.json').read();
+    const queueList = read.queues();
 
     for (detail in queueList)
     {
@@ -66,9 +64,11 @@ let e = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 90
 
 //
 
+
+
 let timeout = setTimeout(() =>
 {
-    [a, b, c, d, e, timeout, f].forEach((x) =>
+    [a, b, c, timeout].forEach((x) =>
     {
         clearTimeout(x);
 
@@ -90,17 +90,14 @@ let timeout = setTimeout(() =>
 
 
 
-
-
-
 {
     const { existsSync, readFileSync } = require('fs');
-    const { readConfig } = require('./js/util');
+    const { read } = require('./js/util');
 
     /* fill previous id */
-    if (existsSync('app/config.json'))
+    if (existsSync('./app/json/config.json'))
     {
-        const config = JSON.parse(readFileSync('app/config.json'));
+        const config = JSON.parse(readFileSync('./app/json/config.json'));
         
         if (config.discordAppID !== undefined)
         {
@@ -111,7 +108,7 @@ let timeout = setTimeout(() =>
     }
         
     /* fill the folders */
-    const checkMusicIn = readConfig().checkMusicIn;
+    const checkMusicIn = read.config().checkMusicIn;
     
     if (checkMusicIn !== undefined)
     {
@@ -138,7 +135,7 @@ let timeout = setTimeout(() =>
                     <span class="name">${name[name.length - 1]}</span>
                     <span class="path">${name.join('/')}</span>
                 </div>
-                <img src="svg/close.svg" class="deleteFolder hide">
+                <img src="svg/close.svg" class="deleteFolder pointerEventsNone">
                 `;
                 
                 folders.append(li);

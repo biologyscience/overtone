@@ -30,11 +30,9 @@ function updateTimeLine({detail})
         currentTime = detail.currentTime,
         totalTime = detail.duration,
         minutes = parseTime(currentTime * 1000).minutes.toString(),
-        seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds,
-        number = getComputedStyle(div.theLine).getPropertyValue('--maxWidth').split('%')[0];
-        
+        seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds;
 
-    div.theLine.style.width = ((currentTime / totalTime) * parseInt(number)).toFixed(2) + '%';
+    div.theLine.style.setProperty('--scaleFactor', (currentTime / totalTime).toFixed(4));
 
     div.currentTime.innerHTML = minutes + ':' + seconds;
 };

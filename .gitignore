@@ -1,6 +1,6 @@
 app/temp
-app/config.json
-app/queues.json
+app/json/*
+!app/json/emptyFile
 app/album arts
 node_modules
 npm start.vbs

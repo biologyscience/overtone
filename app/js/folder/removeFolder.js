@@ -10,7 +10,7 @@ function removeFolder(E)
         folderItem = E.path[1],
         path = folderItem.dataset.path,
 
-        config = new json('app/config.json'),
+        config = new json('app/json/config.json'),
         data = config.read(),
         index = data.checkMusicIn.indexOf(path);
 
@@ -37,22 +37,54 @@ function shiftFocus()
 
         deleteFolder.forEach((x) =>
         {
-            x.classList.remove('show');
-            x.classList.add('hide');
+            x.animate([
+                {
+                    opacity: 1,
+                    transform: 'rotate(360deg)'
+                },
+
+                {
+                    opacity: 1,
+                    offset: 0.6
+                },
+                
+                {
+                    opacity: 0,
+                    transform: 'rotate(0deg)'
+                }
+            ], {duration: 1000, easing: 'ease', fill: 'forwards'});
         });
 
         FOCUS = false;
+
+        deleteFolder.forEach(x => x.classList.add('pointerEventsNone'));
     }
 
     else
     {
+        deleteFolder.forEach(x => x.classList.remove('pointerEventsNone'));
+        
         span.innerHTML = 'Done';
         removeFolder.style.borderColor = 'var(--accent)';
 
         deleteFolder.forEach((x) =>
         {
-            x.classList.add('show');
-            x.classList.remove('hide');
+            x.animate([
+                {
+                    opacity: 0,
+                    transform: 'rotate(0deg)'
+                },
+
+                {
+                    opacity: 1,
+                    offset: 0.4
+                },
+                
+                {
+                    opacity: 1,
+                    transform: 'rotate(360deg)'
+                }
+            ], {duration: 1000, easing: 'ease', fill: 'forwards'});
         });
 
         FOCUS = true;

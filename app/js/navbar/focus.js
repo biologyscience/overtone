@@ -18,9 +18,9 @@ function show(li)
     const
         IDofSVG = li.querySelector('svg').id,
         displayDiv = document.getElementById('div-' + IDofSVG),
-        displayLeftMain = document.getElementById('displayLeftMain');
+        displayLeft = document.getElementById('displayLeft');
 
-    Array.from(displayLeftMain.children).forEach(x => x.classList.add('displayNone'));
+    Array.from(displayLeft.children).forEach(x => x.classList.add('displayNone'));
 
     displayDiv.classList.remove('displayNone');
 };
