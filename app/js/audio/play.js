@@ -22,15 +22,20 @@ function play({detail} = '')
         else { current = detail; }
     }
 
-    const
-        { parseFile } = require('music-metadata'),
-        { getAudioDuration, json } = require('./js/util');
+    const { getAudioDuration, read } = require('./js/util');
 
     const fileLocation = queueList[current];
 
     audio.src = fileLocation;
 
-    parseFile(fileLocation).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
+    if (read.metadata[fileLocation] === undefined)
+    {
+        const { parseFile } = require('music-metadata');
+
+        parseFile(fileLocation).then(tags => document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags})));
+    }
+
+    else { document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: read.metadata[fileLocation]})); }
 
     document.dispatchEvent(new CustomEvent('-updateRPC', {detail: fileLocation}));
 
@@ -44,7 +49,7 @@ function play({detail} = '')
 
     let temp = false;
 
-    const queues = new json('app/queues.json').read();
+    const queues = read.queues();
 
     for (x in queues)
     {
@@ -82,7 +87,7 @@ function changeCurrentState(E)
     const
         imgPause = document.getElementById('imgPause'),
         imgPlay = document.getElementById('imgPlay'),
-        albumArtWrapper = document.getElementById('albumArtWrapper');
+        albumArtLyricsWrapper = document.getElementById('albumArtLyricsWrapper');
 
     if (E.type === 'pause')
     {
@@ -93,7 +98,7 @@ function changeCurrentState(E)
             play();
         }
 
-        albumArtWrapper.style.transform = 'scale(0.98)';
+        albumArtLyricsWrapper.style.transform = 'scale(0.98)';
 
         imgPause.classList.add('opacity0');
         imgPlay.classList.remove('opacity0');
@@ -101,7 +106,7 @@ function changeCurrentState(E)
 
     else
     {
-        albumArtWrapper.style.transform = '';
+        albumArtLyricsWrapper.style.transform = '';
 
         imgPlay.classList.add('opacity0');
         imgPause.classList.remove('opacity0');
@@ -227,8 +232,8 @@ function rearrange({detail: {from, to}})
 
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
-document.getElementById('imgNext').onclick = skip;
-document.getElementById('imgPrevious').onclick = skip;
+document.getElementById('nextSong').onclick = skip;
+document.getElementById('previousSong').onclick = skip;
 
 audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);

@@ -1,43 +1,13 @@
-#displayLeft
-{
-    --mainHeight: 92.5vh;
-    height: 100vh;
-    width: 60vw;
-    /* outline: 2px solid var(--accent); */
-    transition: opacity ease 1s;
-    /* background-color: var(--dark20); */
-}
-
-#displayLeftMain
-{
-    height: var(--mainHeight);
-    width: 60vw;
-}
-
-
-
-
-/* navbar */
 #navbar
 {
     --size: 25px;
     --left: 0;
+    --height: .15em;
 
-    height: calc(100vh - var(--mainHeight));
-    width: 60vw;
+    height: calc(100vh - var(--displayHeight));
+    width: 100vw;
     background-color: var(--dark10);
     font-size: 20px;
-}
-
-#navbar::before
-{
-    position: absolute;
-    content: '';
-    bottom: 100%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--dark40);
 }
 
 #navbarList
@@ -52,9 +22,9 @@
 {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: var(--height);
     left: var(--left);
-    height: .15em;
+    height: var(--height);
     width: calc( var(--size) * 1.7 );
     background-color: var(--accent);
     transition: left ease 250ms;
@@ -63,7 +33,7 @@
 .navbarItems
 {
     display: block;
-    margin: calc( calc(100vh - var(--mainHeight) - var(--size)) / 2 ) 0;
+    margin: calc( calc(100vh - var(--displayHeight) - var(--size)) / 2 ) 0;
 }
 
 .navbarItems:last-child { margin-left: 1.5em; }

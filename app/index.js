@@ -29,5 +29,22 @@ app.on('ready', () =>
     // window.loadFile('temp/file.html').then(() => window.maximize());
 });
 
-existsSync('app/config.json') ? null : writeFileSync('app/config.json', JSON.stringify({allowedMusicFileFormats: ['mp3', 'flac', 'ogg']}));
-existsSync('app/queues.json') ? null : writeFileSync('app/queues.json', JSON.stringify({}));
+['config', 'metadata', 'queues', 'songList'].forEach((x) =>
+{
+    const path = `app/json/${x}.json`;
+
+    let data = JSON.stringify({}, null, 4);
+
+    if (existsSync(path) === false)
+    {
+        if (x === 'config')
+        {
+            data = JSON.stringify({
+                "regexp": "\\.(mp3|flac|ogg)$",
+                "allowedMusicFileFormats": [ "mp3", "flac", "ogg" ]
+            }, null, 4);
+        }
+
+        writeFileSync(path, data);
+    }
+});

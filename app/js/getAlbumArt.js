@@ -4,19 +4,19 @@ function chooseFiles()
         { parseFile } = require('music-metadata'),
         { dialog, BrowserWindow } = require('@electron/remote'),
         { existsSync, mkdirSync, writeFileSync } = require('fs'),
-        { formatter, readConfig } = require('./js/util');
+        { formatter, read } = require('./js/util');
 
     const
         options =
         {
-            filters: [ { name: 'Music Files', extensions: readConfig().allowedMusicFiles } ],
+            filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFiles } ],
             properties: ['multiSelections', 'showHiddenFiles']
         },
 
         dir =
         {
             albumArts: 'app/album arts',
-            config: 'app/config.json'
+            config: './app/json/config.json'
         };
 
     dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), options)

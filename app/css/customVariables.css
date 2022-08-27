@@ -35,4 +35,6 @@
     --accentLightBlue2: rgb(24, 255, 255);
 
     --accent: var(--accentGreen1);
+
+    --displayHeight: 92.5vh;
 }

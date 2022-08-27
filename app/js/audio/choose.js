@@ -2,11 +2,11 @@ function choose()
 {
     const
         { dialog, BrowserWindow } = require('@electron/remote'),
-        { readConfig } = require('./js/util');
+        { read } = require('./js/util');
 
     const options = 
     {
-        filters: [ { name: 'Music Files', extensions: readConfig().allowedMusicFileFormats } ],
+        filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFileFormats } ],
         properties: ['showHiddenFiles', 'multiSelections']
     };
 

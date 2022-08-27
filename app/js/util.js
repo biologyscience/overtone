@@ -116,6 +116,16 @@ function getMetaData(fileLocation)
         {
             const { album, albumartist, artists, bpm, disk, genre, title, track, year } = tags.common;
 
+            const
+                time = parseTime(tags.format.duration * 1000),
+                hours = time.hours,
+                minutes = time.minutes,
+                seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
+            
+            let duration;
+
+            time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
+
             resolve
             ({
                 album,
@@ -126,7 +136,9 @@ function getMetaData(fileLocation)
                 genre,
                 title,
                 track,
-                year
+                year,
+                duration,
+                rawDuration: Math.floor(tags.format.duration * 1000)
             });
         });
     });
@@ -182,11 +194,14 @@ class json
     };
 };
 
-function readConfig()
+const read =
 {
-    const { readFileSync } = require('fs');
+    fs: require('fs'),
 
-    return JSON.parse(readFileSync('app/config.json'));
+    config() { return JSON.parse(this.fs.readFileSync('app/json/config.json')); },
+    metadata() { return JSON.parse(this.fs.readFileSync('app/json/metadata.json')); },
+    queues() { return JSON.parse(this.fs.readFileSync('app/json/queues.json')); },
+    songList() { return JSON.parse(this.fs.readFileSync('app/json/songList.json')); }
 };
 
 //
@@ -203,5 +218,5 @@ module.exports =
     getMetaData,
     getAudioInfo,
     json,
-    readConfig
+    read
 };

@@ -1,6 +1,6 @@
 function clickSetBorder(E)
 {
-    const { getElement, json } = require('./js/util');
+    const { getElement, read } = require('./js/util');
 
     const li = getElement('li', E);
 
@@ -18,7 +18,7 @@ function clickSetBorder(E)
 
     const queueName = currentQueue.dataset.queueName;
 
-    const filePaths = new json('app/queues.json').read()[queueName];
+    const filePaths = read.queues()[queueName];
 
     const detail =
     {

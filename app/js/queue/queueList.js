@@ -48,9 +48,9 @@ function chooseQueue(E)
     {
         const queueName = div.dataset.queueName;
 
-        const { json } = require('./js/util');
+        const { read } = require('./js/util');
 
-        const filePaths = new json('app/queues.json').read()[queueName];
+        const filePaths = read.queues()[queueName];
 
         document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
 
@@ -70,7 +70,7 @@ function addItemToQueueList({detail})
         <img src="svg/drag.svg" class="imgDragger" draggable="false">
     </div>
     <div class="xx cursorPointer" data-queue-name="${queueName}">
-        <span class="queueNames overflowPrevent"> ${queueName} </span>
+        <span class="queueNames overflowPrevent">${queueName}</span>
     </div>
     <div class="options flexCenter">
         <img src="svg/moreHorizontal.svg" class="imgOptions cursorPointer" draggable="false">

@@ -5,7 +5,7 @@ function storeQueue({detail: {queueList, queueName}})
     try
     {
         const
-            file = new json('app/queues.json'),
+            file = new json('app/json/queues.json'),
             queues = file.read();
     
         queues[queueName] = queueList;

@@ -2,6 +2,10 @@
 
 .cursorGrab { cursor: grab; }
 
+.pointerEventsNone { pointer-events: none; }
+
+.pointerEventsAll { pointer-events: all; }
+
 .relative { position: relative; }
 
 .absolute { position: absolute; }

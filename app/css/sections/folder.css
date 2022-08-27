@@ -1,13 +1,5 @@
 #div-folder { overflow-y: auto; }
 
-#div-folder::-webkit-scrollbar
-{
-    background: none;
-    width: 2px;
-}
-
-#div-folder::-webkit-scrollbar-thumb { background-color: var(--dark70); }
-
 #folders
 {
     font-size: 1.1rem;
@@ -26,6 +18,7 @@
     border: 2px solid transparent;
     border-radius: 5px;
     transition: border-color 150ms ease;
+    pointer-events: all;
 }
 
 .folderItem *:not(.deleteFolder) { pointer-events: none; }
@@ -57,6 +50,7 @@
     height: var(--size);
     width: var(--size);
     justify-content: end;
+    opacity: 0;
 }
 
 .folderOptions
@@ -87,42 +81,102 @@
     width: var(--size);
 }
 
-@keyframes showAnimation 
+#folderIn { font-size: 20px; }
+
+#title
 {
-    0%
-    {
-        opacity: 0;
-        transform: rotate(0deg);
-        display: none;
-    }
-
-    40% { opacity: 1; }
-
-    100%
-    {
-        display: block;
-        transform: rotate(360deg);
-    }
+    align-items: center;
+    padding: 1em .5em;
 }
 
-@keyframes hideAnimation 
+#backIcon
 {
-    0%
-    {
-        display: block;
-        transform: rotate(360deg);
-    }
-
-    60% { opacity: 1; }
-
-    100%
-    {
-        opacity: 0;
-        transform: rotate(0deg);
-        display: none;
-    }
+    --size: 1.5em;
+    height: var(--size);
+    width: var(--size);
 }
 
-.show { animation: showAnimation 1s ease forwards; }
+#backIcon:hover { cursor: pointer; }
 
-.hide { animation: hideAnimation 1s ease forwards; }
+#folderName
+{
+    font-size: 1.5em;
+    margin: 0 .5em;
+}
+
+#belowTitle
+{
+    grid-template-columns: auto auto 1fr;
+    padding: .5em 0;
+}
+
+#belowTitle > *:not(.searchBar) { align-items: center; }
+
+#belowTitle > * { margin: 0 1em; }
+
+#belowTitle .marginLeft { margin-left: .5em !important; }
+
+#belowTitle > div > img
+{
+    --size: 1em;
+    height: var(--size);
+    width: var(--size);
+}
+
+.searchBar
+{
+    width: auto;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
+
+#searchInput
+{
+    width: auto;
+    background: none;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom-color .5s ease;
+}
+
+#searchInput:focus
+{
+    outline: none;
+    border-bottom-color: var(--accent);
+}
+
+#songListInFolder
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.songListInFolderItems { grid-template-columns: 1fr auto; }
+
+.songListInFolderItems > div { margin: .5em 2em; }
+
+.after::after
+{
+    content: attr(data-song-duration);
+    position: absolute;
+    font-size: .8em;
+    bottom: 0;
+    right: 0;
+}
+
+.songListInFolderItems .songName { font-size: 1.2em; }
+
+.songListInFolderItems .artistName,
+.songListInFolderItems .albumName
+{ font-size: .7em; }
+
+.songListInFolderItems img
+{
+    --size: 1em;
+    height: var(--size);
+    width: var(--size);
+}
