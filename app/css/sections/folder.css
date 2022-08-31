@@ -155,9 +155,13 @@
     overflow-y: auto;
 }
 
-.songListInFolderItems { grid-template-columns: 1fr auto; }
+.songListInFolderItems
+{
+    --sweetSpot: .87;
+    grid-template-columns: calc(60vw * var(--sweetSpot)) auto;
+}
 
-.songListInFolderItems > div { margin: .5em 2em; }
+.songListInFolderItems > div { margin: .5em 2.5em; }
 
 .after::after
 {
