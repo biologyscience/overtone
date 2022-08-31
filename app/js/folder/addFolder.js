@@ -5,7 +5,7 @@ let
 const
     { readdirSync, statSync } = require('fs'),
     { join } = require('path'),
-    { json, read, getMetaData } = require('./js/util');
+    { json, read, getMetaData, validateMusicFileFormat } = require('./js/util');
 
 let regexp = new RegExp(read.config().regexp, 'i');
 
@@ -29,7 +29,7 @@ function filterFolders()
 
         for (const file of files)
         {
-            if (regexp.test(file))
+            if (validateMusicFileFormat(file))
             {
                 filtered.push(x);
                 break;
@@ -74,8 +74,8 @@ function saveSongList()
     filtered.forEach((x) =>
     {
         const songListInFolder = readdirSync(x)
-        .filter(a => statSync(join(x, a)).isDirectory() === false)
-        .filter(b => regexp.test(b) === true)
+        .filter(a => !statSync(join(x, a)).isDirectory())
+        .filter(b => validateMusicFileFormat(b))
         .map(c => join(x, c));
 
         data[x] = songListInFolder;

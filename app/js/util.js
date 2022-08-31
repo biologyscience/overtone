@@ -241,6 +241,13 @@ function updateMetaDataJSON(tags)
     metadata.save();
 };
 
+function validateMusicFileFormat(fileLocation)
+{
+    const validator = /\.(mp3|flac|ogg)$/i;
+
+    return validator.test(fileLocation);
+};
+
 //
 
 module.exports =
@@ -256,5 +263,6 @@ module.exports =
     getAudioInfo,
     json,
     read,
-    updateMetaDataJSON
+    updateMetaDataJSON,
+    validateMusicFileFormat
 };
