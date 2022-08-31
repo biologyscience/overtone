@@ -1,15 +1,13 @@
 const
-    electron = require('electron'),
     remote = require('@electron/remote/main'),
+    { app, BrowserWindow } = require('electron'),
     { existsSync, writeFileSync } = require('fs');
 
 remote.initialize();
 
-const app = electron.app;
-
 app.on('ready', () =>
 {
-    const window = new electron.BrowserWindow
+    const window = new BrowserWindow
     ({
         width: 1920,
         height: 1080,
@@ -33,18 +31,12 @@ app.on('ready', () =>
 {
     const path = `app/json/${x}.json`;
 
-    let data = JSON.stringify({}, null, 4);
+    let data = {};
 
     if (existsSync(path) === false)
     {
-        if (x === 'config')
-        {
-            data = JSON.stringify({
-                "regexp": "\\.(mp3|flac|ogg)$",
-                "allowedMusicFileFormats": [ "mp3", "flac", "ogg" ]
-            }, null, 4);
-        }
+        x === 'config' ? data = { "allowedMusicFileFormats": [ "mp3", "flac", "ogg" ] } : null;
 
-        writeFileSync(path, data);
+        writeFileSync(path, JSON.stringify(data, null, 4));
     }
 });
