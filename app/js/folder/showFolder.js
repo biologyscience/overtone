@@ -33,7 +33,7 @@ function showFolder(E)
         <div class="after relative cursorPointer flexCol" data-song-duration="${metadata[x].duration}">
             <span class="songName overflowPrevent">${metadata[x].title}</span>
             <span class="artistName overflowPrevent">${metadata[x].albumArtist}</span>
-            <span class="albumName overflowPrevent">${metadata[x].album}<span>
+            <span class="albumName overflowPrevent">${metadata[x].album}</span>
         </div>
         <div class="flex flexCenter cursorPointer">
             <img src="svg/moreHorizontal.svg" draggable="false">
@@ -68,7 +68,6 @@ function hideFolder()
     document.getElementById('folderIn').classList.add('displayNone');
     document.getElementById('folderOut').classList.remove('displayNone');
     document.getElementById('searchInput').value = '';
-
 };
 
 document.getElementById('folders').addEventListener('click', showFolder);

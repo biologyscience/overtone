@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "chokidar": "^3.5.3",
     "discord-rpc": "^4.0.1",
     "electron": "^19.0.11",
     "music-metadata": "^7.12.5",

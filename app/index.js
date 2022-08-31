@@ -9,8 +9,8 @@ app.on('ready', () =>
 {
     const window = new BrowserWindow
     ({
-        width: 1920,
-        height: 1080,
+        width: 1280,
+        height: 720,
         autoHideMenuBar: true,
         // icon: '',
 

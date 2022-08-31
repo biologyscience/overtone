@@ -5,9 +5,7 @@ let
 const
     { readdirSync, statSync } = require('fs'),
     { join } = require('path'),
-    { json, read, getMetaData, validateMusicFileFormat } = require('./js/util');
-
-let regexp = new RegExp(read.config().regexp, 'i');
+    { json, getMetaData, validateMusicFileFormat } = require('./js/util');
 
 function getAllFolders(path)
 {
