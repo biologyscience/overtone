@@ -17,8 +17,8 @@ function showFolder(E)
     document.getElementById('folderName').innerHTML = name[name.length - 1];
     document.getElementById('songCount').innerHTML = `${songList[path].length} songs`;
 
-    document.getElementById('folderIn').classList.remove('displayNone');
-    document.getElementById('folderOut').classList.add('displayNone');
+    document.querySelector('section.folder .in').classList.remove('displayNone');
+    document.querySelector('section.folder .out').classList.add('displayNone');
 
     const songListInFolder = document.getElementById('songListInFolder');
 
@@ -65,8 +65,8 @@ function showFolder(E)
 
 function hideFolder()
 {
-    document.getElementById('folderIn').classList.add('displayNone');
-    document.getElementById('folderOut').classList.remove('displayNone');
+    document.querySelector('section.folder .in').classList.add('displayNone');
+    document.querySelector('section.folder .out').classList.remove('displayNone');
     document.getElementById('searchInput').value = '';
 };
 

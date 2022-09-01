@@ -12,27 +12,27 @@ let a = setTimeout(() =>
     // queue content
     let contentHeight = 0;
 
-    Array.from(document.getElementById('div-queue').children).forEach(x => x.id === 'content' ? null : contentHeight = contentHeight + x.offsetHeight);
+    Array.from(document.querySelector('section.queue').children).forEach(x => x.id === 'content' ? null : contentHeight = contentHeight + x.offsetHeight);
 
     document.getElementById('content').style.height = `calc(var(--displayHeight) - ${contentHeight + 2}px)`;
     
     // folderIn list
     let songListInFolderHeight = 0;
     
-    Array.from(document.getElementById('folderIn').children).forEach(x => x.id === 'songListInFolder' ? null : songListInFolderHeight = songListInFolderHeight + x.offsetHeight);
+    Array.from(document.querySelector('section.folder .in').children).forEach(x => x.id === 'songListInFolder' ? null : songListInFolderHeight = songListInFolderHeight + x.offsetHeight);
 
     document.getElementById('songListInFolder').style.height = `calc(var(--displayHeight) - ${songListInFolderHeight + 2}px)`;
 
     // display none to divs
     [
-        'div-queue',
-        'queueListMenu',
+        'section.queue',
+        '#queueListMenu',
 
-        'div-folder',
-        'folderIn',
+        'section.folder',
+        'section.folder .in',
 
-        'div-album', 'div-artist', 'div-genre', 'div-library', 'div-extras', 'div-search'
-    ].forEach(x => document.getElementById(x).classList.add('displayNone'));
+        'section.album', 'section.artist', 'section.genre', 'section.library', 'section.extras', 'section.search'
+    ].forEach(x => document.querySelector(x).classList.add('displayNone'));
 
 });
 

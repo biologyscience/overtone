@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="css/displayRight.css">
         <link rel="stylesheet" href="css/navbar.css">
         <link rel="stylesheet" href="css/sections/queue.css">
-        <link rel="stylesheet" href="css/sections/folder.css">
+        <link rel="stylesheet" href="scss/empty/folder.css">
         <link rel="stylesheet" href="css/sections/extras.css">
 
         <script src="js/audio/choose.js" defer></script>
@@ -66,7 +66,7 @@
 
         <div id="displayLeft" class="fixed top0 left0">
 
-            <div id="div-queue" class="inheritHeight">
+            <section class="queue inheritHeight">
                 <div class="part flex">
                     <div id="queueListWrapper" class="flex cursorPointer relative">
                         <span id="queueNumber">Queue Number</span>
@@ -87,10 +87,10 @@
                 <div id="content" class="block">
                     <ul class="queue current"></ul>
                 </div>
-            </div>
+            </section>
 
-            <div id="div-folder" class="inheritHeight">
-                <div id="folderOut" class="inheritHeight">
+            <section class="folder inheritHeight">
+                <div class="out inheritHeight">
                     <div style="padding: 1.5em 1em;">
                         <ul id="folders" class="pointerEventsNone"></ul>
                     </div>
@@ -106,12 +106,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="folderIn" class="inheritHeight">
-                    <div id="title" class="flex">
+                <div class="in inheritHeight">
+                    <div class="head flex">
                         <img src="svg/chevronLeft.svg" id="backIcon">
                         <span id="folderName">empty</span>
                     </div>
-                    <div id="belowTitle" class="grid">
+                    <div class="body grid">
                         <div class="flex">
                             <img src="svg/hash.svg">
                             <span id="songCount" class="marginLeft">empty</span>
@@ -128,36 +128,36 @@
                     <div class="mainDivider"></div>
                     <ul id="songListInFolder"></ul>
                 </div>
-            </div>
+            </section>
 
-            <div id="div-album" class="inheritHeight">
+            <section class="album inheritHeight">
                 div-album
-            </div>
+            </section>
 
-            <div id="div-artist" class="inheritHeight">
+            <section class="artist inheritHeight">
                 div-artist
-            </div>
+            </section>
 
-            <div id="div-genre" class="inheritHeight">
+            <section class="genre inheritHeight">
                 div-genre
-            </div>
+            </section>
 
-            <div id="div-library" class="inheritHeight">
+            <section class="library inheritHeight">
                 div-library
-            </div>
+            </section>
 
-            <div id="div-search" class="inheritHeight">
+            <section class="search inheritHeight">
                 div-search
-            </div>
+            </section>
 
-            <div id="div-extras" class="inheritHeight flexCol">
+            <section class="extras inheritHeight flexCol">
                 <button id="choose">Choose a song</button>
                 <button id="getAlbumArt">Get Album Art</button>
                 <div class="rpc flexCol alignItemsCenter">
                     <input id="discordAppID" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
                     <button id="connect">Connect</button>
                 </div>
-            </div>
+            </section>
 
         </div>
 

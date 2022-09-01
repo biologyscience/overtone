@@ -41,5 +41,5 @@ function queueSetBorder({detail})
     children[current].style.borderColor = 'var(--accent)';
 };
 
-document.querySelector('#div-queue #content').addEventListener('click', clickSetBorder);
+document.querySelector('section.queue #content').addEventListener('click', clickSetBorder);
 document.addEventListener('-setBorder', queueSetBorder);
