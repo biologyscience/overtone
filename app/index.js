@@ -1,6 +1,7 @@
 const
     remote = require('@electron/remote/main'),
     { app, BrowserWindow } = require('electron'),
+    { watch } = require('chokidar'), 
     { existsSync, writeFileSync } = require('fs');
 
 remote.initialize();
@@ -25,6 +26,15 @@ app.on('ready', () =>
 
     window.loadFile('index.html').then(() => window.maximize());
     // window.loadFile('temp/file.html').then(() => window.maximize());
+
+    const watcher = watch([]);
+
+    ['css', 'js', 'scss/empty', 'index.html'].forEach(x => watcher.add(`app/${x}`));
+
+    watcher.on('ready', () =>
+    {
+        watcher.on('all', () => window.reload());
+    });
 });
 
 ['config', 'metadata', 'queues', 'songList'].forEach((x) =>

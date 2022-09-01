@@ -17,7 +17,7 @@ function show(li)
 
     const
         IDofSVG = li.querySelector('svg').id,
-        displayDiv = document.getElementById('div-' + IDofSVG),
+        displayDiv = document.querySelector(`section.${IDofSVG}`),
         displayLeft = document.getElementById('displayLeft');
 
     Array.from(displayLeft.children).forEach(x => x.classList.add('displayNone'));

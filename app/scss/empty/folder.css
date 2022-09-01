@@ -1,0 +1,144 @@
+section.folder {
+  overflow-y: auto;
+}
+section.folder #folders {
+  font-size: 1.1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+section.folder #folders li {
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 15fr 1fr;
+  align-items: center;
+  margin: 0.5em 0;
+  padding: 0.5em 1em;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border-color 150ms ease;
+  pointer-events: all;
+}
+section.folder #folders li *:not(.deleteFolder) {
+  pointer-events: none;
+}
+section.folder #folders li .name {
+  font-size: 1.35em;
+}
+section.folder #folders li .path {
+  font-size: 0.7em;
+  color: var(--dark80);
+}
+section.folder #folders li .deleteFolder {
+  height: 1em;
+  width: 1em;
+  justify-content: end;
+  opacity: 0;
+}
+section.folder #folders li:hover {
+  border-color: var(--accent);
+  cursor: pointer;
+}
+section.folder .out img {
+  height: 1.7em;
+  width: 1.7em;
+}
+section.folder .out .folderOptions {
+  font-size: 1.1rem;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 15fr 1fr;
+  align-items: center;
+  margin: 0.5em 0;
+  padding: 1em;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border-color 150ms ease;
+}
+section.folder .out .folderOptions * {
+  pointer-events: none;
+}
+section.folder .out .folderOptions:hover {
+  border-color: var(--accent);
+  cursor: pointer;
+}
+section.folder .in {
+  font-size: 20px;
+}
+section.folder .in .head {
+  align-items: center;
+  padding: 1em 0.5em;
+}
+section.folder .in .head #backIcon {
+  height: 1.5em;
+  width: 1.5em;
+}
+section.folder .in .head #backIcon:hover {
+  cursor: pointer;
+}
+section.folder .in .head #folderName {
+  font-size: 1.5em;
+  margin: 0 0.5em;
+}
+section.folder .in .body {
+  grid-template-columns: auto auto 1fr;
+  padding: 0.5em 0;
+}
+section.folder .in .body > * {
+  margin: 0 1em;
+}
+section.folder .in .body > *:not(.searchBar) {
+  align-items: center;
+}
+section.folder .in .body > * .marginLeft {
+  margin-left: 0.5em !important;
+}
+section.folder .in .body img {
+  height: 1em;
+  width: 1em;
+}
+section.folder .in .body .searchBar {
+  width: auto;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+section.folder .in .body .searchBar #searchInput {
+  width: auto;
+  background: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.5s ease;
+}
+section.folder .in .body .searchBar #searchInput:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+section.folder .in #songListInFolder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+section.folder .in #songListInFolder li {
+  grid-template-columns: 52.2vw auto;
+}
+section.folder .in #songListInFolder li > div {
+  margin: 0.5em 2.5em;
+}
+section.folder .in #songListInFolder li .songName {
+  font-size: 1.2em;
+}
+section.folder .in #songListInFolder li .artistName, section.folder .in #songListInFolder li .albumName {
+  font-size: 0.7em;
+}
+section.folder .in #songListInFolder li img {
+  height: 1em;
+  width: 1em;
+}
+section.folder .in #songListInFolder li::after {
+  content: attr(data-song-duration);
+  position: absolute;
+  font-size: 0.8em;
+  bottom: 0;
+  right: 0;
+}
