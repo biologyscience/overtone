@@ -24,12 +24,9 @@ app.on('ready', () =>
 
     remote.enable(window.webContents);
 
-    window.loadFile('index.html').then(window.maximize);
-    // window.loadFile('temp/file.html').then(() => window.maximize());
+    window.loadFile('index.html');
 
-    const watcher = watch([]);
-
-    ['css', 'js', 'scss/empty', 'index.html'].forEach(x => watcher.add(`app/${x}`));
+    const watcher = watch(['app/css', 'app/js', 'app/index.html']);
 
     watcher.on('ready', () =>
     {

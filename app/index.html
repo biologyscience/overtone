@@ -2,7 +2,7 @@
     <head>
         <title>OverTone</title>
 
-        <!-- <link rel="stylesheet" href="css/customVariables.css">
+        <link rel="stylesheet" href="css/customVariables.css">
         <link rel="stylesheet" href="css/customClasses.css">
         <link rel="stylesheet" href="css/fonts.css">
         <link rel="stylesheet" href="css/globals.css">
@@ -11,9 +11,7 @@
         <link rel="stylesheet" href="css/navbar.css">
         <link rel="stylesheet" href="css/sections/queue.css">
         <link rel="stylesheet" href="css/sections/folder.css">
-        <link rel="stylesheet" href="css/sections/extras.css"> -->
-
-        <link rel="stylesheet" href="css/MASTER.css">
+        <link rel="stylesheet" href="css/sections/extras.css">
 
         <script src="js/audio/choose.js" defer></script>
         <script src="js/audio/play.js" defer></script>
@@ -51,11 +49,11 @@
         <div id="overlay" style="display: flex;">Loading ...</div>
 
         <div id="queueListMenu" class="absolute">
-            <div class="titleHolder flex relative">
-                <img src="svg/queue.svg" id="imgQueue">
-                <span id="queues">Queues</span>
+            <div class="head flex relative">
+                <img src="svg/queue.svg">
+                <span>Queues</span>
                 <button class="close absolute">
-                    <img src="svg/close.svg" id="imgClose">
+                    <img src="svg/close.svg">
                 </button>
             </div>
             <div class="mainDivider"></div>
@@ -67,27 +65,29 @@
 
 
         <div id="displayLeft" class="fixed top0 left0">
-
+          
             <section class="queue inheritHeight">
-                <div class="part flex">
-                    <div id="queueListWrapper" class="flex cursorPointer relative">
+                <div class="headTop flex">
+                    <div class="queueListWrapper flex cursorPointer relative">
                         <span id="queueNumber">Queue Number</span>
                         <span>.&nbsp;</span>
                         <span id="queueName">Queue Name</span>
-                        <img src="svg/chevronDown.svg" id="chevronDown" class="absolute">
+                        <img src="svg/chevronDown.svg" class="absolute">
                     </div>
-                    <div id="deleteCurrentQueue" class="cursorPointer">
-                        <img src="svg/close.svg" id="X">
-                    </div>
+                    <button id="deleteCurrentQueue">
+                        <img src="svg/close.svg">
+                    </button>
                 </div>
-                <div class="part flex justifyContentCenter">
-                    <span><strong id="currentSongIndex">-</strong></span>
+                <div class="headBottom flex justifyContentCenter">
+                    <strong>
+                        <span id="currentSongIndex">-</span>
+                    </strong>
                     <span>/</span>
                     <span id="totalSongsInCurrentQueue">-</span>
                 </div>
                 <div class="mainDivider"></div>
-                <div id="content" class="block">
-                    <ul class="queue current"></ul>
+                <div id="queuesHolder" class="block">
+                    <ul class="current"></ul>
                 </div>
             </section>
 

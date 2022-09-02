@@ -1,0 +1,213 @@
+#queueListMenu
+{
+    font-size: 20px;
+    width: calc(60vw * .7);
+    height: calc(100vh * .8);
+    top: 50;
+    left: 100;
+    border-radius: 5px;
+    background-color: var(--dark30);
+    z-index: 1;
+
+    .head
+    {
+        padding: .7em .5em;
+
+        & > img
+        {
+            height: 1.5em;
+            width: 1.5em;
+            align-self: center;
+            margin-left: 1em;
+        }
+
+        & > span
+        {
+            font-size: 1.5em;
+            margin-left: .7em;
+        }
+
+        .close
+        {
+            align-self: center;
+            right: 5%;
+
+            img
+            {
+                height: 1em;
+                width: 1em;
+            }
+        }
+    }
+
+    #queueList
+    {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        overflow-y: scroll;
+
+        li
+        {
+            grid-template-columns: 1fr 8fr 1fr;
+            margin: 0 .1em;
+            padding: .5em 0;
+            transition: border-color ease 150ms;
+
+            &:first-of-type { margin-top: .3em; }
+
+            &:last-of-type { margin-bottom: .3em; }
+
+            img
+            {
+                height: 1em;
+                width: 1em;
+            }
+
+            .dragger img { z-index: -1; }
+        }
+
+        &::-webkit-scrollbar
+        {
+            background: none;
+            width: 1px;
+        }
+        
+        &::-webkit-scrollbar-thumb
+        {
+            background-color: var(--dark80);
+        }
+    }
+    
+    .queueNames { pointer-events: none; }
+}
+
+//
+
+section.queue
+{
+    .headTop
+    {
+        width: 100%;
+        font-size: 20px;
+        padding: .5em 0;
+
+        .queueListWrapper
+        {
+            $width: calc(60vw * .85);
+            font-size: 25px;
+            width: $width;
+            border: .1em solid var(--dark40);
+            border-radius: .5em;
+            padding: .4em .7em;
+            margin-left: .5em;
+
+            img
+            {
+                $size: 20px;
+                height: $size;
+                width: $size;
+                align-self: center;
+                right: 1em;
+            }
+        }
+
+        #deleteCurrentQueue
+        {
+            align-self: center;
+            margin-left: auto;
+            margin-right: 1.5em;
+
+            img
+            {
+                $size: 25px;
+                height: $size;
+                width: $size;
+            }
+        }
+    }
+
+    .headBottom
+    {
+        width: 100%;
+        font-size: 20px;
+        padding: .5em 0;
+    }
+
+    #queuesHolder
+    {
+        width: 100%;
+        font-size: 20px;
+
+        ul
+        {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            height: inherit;
+            overflow-y: scroll;
+            display: none;
+
+            &.current
+            {
+                display: flex !important;
+                flex-direction: column;
+            }
+
+            &::-webkit-scrollbar
+            {
+                background: none;
+                width: 1px;
+            }
+
+            &::-webkit-scrollbar-thumb
+            {
+                background-color: white;
+                border-radius: 10em;
+            }
+
+            li
+            {
+                grid-template-columns: 1fr 8fr 1fr;
+                margin: 0 .1em;
+                padding: .5em 0;
+                box-sizing: border-box;
+                border-radius: .5rem;
+                border: 2px solid transparent;
+                transition: border-color ease 150ms;
+
+                &:first-of-type { margin-top: .3em; }
+
+                &:last-of-type { margin-bottom: .3em; }
+
+                img
+                {
+                    font-size: 20px;
+                    height: 1em;
+                    width: 1em;
+                }
+    
+                .dragger img { z-index: -1; }
+
+                .info
+                {
+                    & > *
+                    {
+                        font-size: .7em;
+
+                        &:first-of-type { font-size: 1.2em; }
+                    }
+
+                    &::after
+                    {
+                        content: attr(data-song-duration);
+                        position: absolute;
+                        font-size: .8em;
+                        bottom: 0;
+                        right: 0;
+                    }
+                }
+            }
+        }
+    }
+}

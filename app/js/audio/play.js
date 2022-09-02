@@ -250,7 +250,7 @@ function rearrange({detail: {from, to}})
         queueList.splice(FROM + 1, 1);
     }
 
-    const childern = Array.from(document.querySelector('.queue.current').children);
+    const childern = Array.from(document.querySelector('#queuesHolder .current').children);
 
     childern.splice(childern.length - 1, 1);
 
