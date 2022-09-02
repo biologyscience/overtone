@@ -8,14 +8,14 @@
   "homepage": "https://biologyscience.github.io/overtone",
   "scripts": {
     "start": "electron app/index.js",
-    "buildCSS": "sass app/scss/sections/:app/scss/empty/ --no-source-map",
-    "watchSASS": "sass --watch app/scss/sections/:app/scss/empty/ --no-source-map"
+    "buildCSS": "sass app/scss/:app/css/ --no-source-map",
+    "watchSASS": "sass --watch app/scss/:app/css/ --no-source-map"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "chokidar": "^3.5.3",
     "discord-rpc": "^4.0.1",
-    "electron": "^19.0.11",
+    "electron": "^20.1.1",
     "music-metadata": "^7.12.5",
     "sortable-dnd": "^0.3.9"
   }

@@ -1,58 +1,46 @@
-#navbar
-{
-    --size: 25px;
-    --left: 0;
-    --height: .15em;
-
-    height: calc(100vh - var(--displayHeight));
-    width: 100vw;
-    background-color: var(--dark10);
-    font-size: 20px;
+nav {
+  --left: 0;
+  --size: 25px;
+  height: calc(100vh - var(--displayHeight));
+  width: 100vw;
+  background-color: var(--dark10);
+  font-size: 20px;
 }
-
-#navbarList
-{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    justify-content: space-evenly;
+nav * {
+  pointer-events: none;
 }
-
-#navbarList::after
-{
-    content: '';
-    position: absolute;
-    bottom: var(--height);
-    left: var(--left);
-    height: var(--height);
-    width: calc( var(--size) * 1.7 );
-    background-color: var(--accent);
-    transition: left ease 250ms;
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: space-evenly;
 }
-
-.navbarItems
-{
-    display: block;
-    margin: calc( calc(100vh - var(--displayHeight) - var(--size)) / 2 ) 0;
+nav ul::after {
+  content: "";
+  position: absolute;
+  bottom: 0.15em;
+  left: var(--left);
+  height: 0.15em;
+  width: calc(var(--size) * 1.7);
+  background-color: var(--accent);
+  transition: left ease 250ms;
 }
-
-.navbarItems:last-child { margin-left: 1.5em; }
-
-.navbarButton
-{
-    background: none;
-    padding: 0;
-    border: none;
+nav ul li {
+  display: block;
+  margin: calc((100vh - var(--displayHeight) - var(--size)) / 2) 0;
 }
-
-.navbarSVG
-{
-    height: var(--size);
-    width: var(--size)
+nav ul li button {
+  pointer-events: all !important;
 }
-
-#focusHighlight button svg
-{
-    fill: white;
-    transition: fill ease 100ms;
+nav ul li svg {
+  height: var(--size);
+  width: var(--size);
+  fill: var(--dark70);
+}
+nav ul li.current svg {
+  fill: white;
+  transition: fill ease 100ms;
+}
+nav ul li:last-child {
+  margin-left: 1.5em;
 }

@@ -100,7 +100,7 @@ function setQueue({detail: {filePaths, queueName}})
 
             showQueue(queueName);
 
-            document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: document.querySelector('.navbarItems svg#queue').parentElement.parentElement}));
+            document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
 
             queueReady = true;
 
@@ -113,8 +113,6 @@ document.addEventListener('-selectedFilePaths', setQueue);
 
 document.addEventListener('-chooseQueue', (obj) =>
 {
-    let TF = false;
-
     const element = Array.from(document.getElementById('content').children).filter(x => x.dataset.queueName === obj.detail.queueName);
 
     element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);

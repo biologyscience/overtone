@@ -24,7 +24,7 @@ app.on('ready', () =>
 
     remote.enable(window.webContents);
 
-    window.loadFile('index.html').then(() => window.maximize());
+    window.loadFile('index.html').then(window.maximize);
     // window.loadFile('temp/file.html').then(() => window.maximize());
 
     const watcher = watch([]);
