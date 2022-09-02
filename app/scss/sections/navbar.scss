@@ -1,0 +1,57 @@
+nav
+{
+    --left: 0;
+    --size: 25px;
+
+    $height: .15em;
+
+    height: calc(100vh - var(--displayHeight));
+    width: 100vw;
+    background-color: var(--dark10);
+    font-size: 20px;
+
+    * { pointer-events: none; }
+
+    ul
+    {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        justify-content: space-evenly;
+
+        &::after
+        {
+            content: '';
+            position: absolute;
+            bottom: $height;
+            left: var(--left);
+            height: $height;
+            width: calc( var(--size) * 1.7 );
+            background-color: var(--accent);
+            transition: left ease 250ms;
+        }
+
+        li
+        {
+            display: block;
+            margin: calc( calc(100vh - var(--displayHeight) - var(--size)) / 2 ) 0;
+
+            button { pointer-events: all !important; }
+
+            svg
+            {
+                height: var(--size);
+                width: var(--size);
+                fill: var(--dark70);
+            }
+
+            &.current svg
+            {
+                fill: white;
+                transition: fill ease 100ms;
+            }
+
+            &:last-child { margin-left: 1.5em; }
+        }
+    }
+}

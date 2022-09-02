@@ -2,9 +2,9 @@ function math(offset)
 {
     let x, req, tot;
 
-    tot = parseInt(getComputedStyle(document.getElementById('navbarList'), '::after').width.split('px')[0]);
+    tot = parseInt(getComputedStyle(document.querySelector('nav ul'), '::after').width.split('px')[0]);
 
-    x = parseInt(getComputedStyle(document.getElementById('navbar')).getPropertyValue('--size').split('px')[0]);
+    x = parseInt(getComputedStyle(document.querySelector('nav')).getPropertyValue('--size').split('px')[0]);
 
     req = offset - ( (tot - x) / 2 );
 
@@ -13,27 +13,27 @@ function math(offset)
 
 function show(li)
 {
-    li.id = 'focusHighlight';
+    li.classList.add('current');
 
     const
-        IDofSVG = li.querySelector('svg').id,
-        displayDiv = document.querySelector(`section.${IDofSVG}`),
+        sectionName = li.dataset.displaySection,
+        displaySection = document.querySelector(`section.${sectionName}`),
         displayLeft = document.getElementById('displayLeft');
 
     Array.from(displayLeft.children).forEach(x => x.classList.add('displayNone'));
 
-    displayDiv.classList.remove('displayNone');
+    displaySection.classList.remove('displayNone');
 };
 
 function changeNavbarItemFocus(E)
 {
-    const li = require('./js/util').getElement('li', E);
+    const li = E.target.parentElement;
 
     const left = li.offsetLeft;
 
-    document.getElementById('navbar').style.setProperty('--left', math(left) + 'px');
+    document.querySelector('nav').style.setProperty('--left', math(left) + 'px');
 
-    document.querySelectorAll('.navbarItems').forEach(x => x.id = '');
+    document.querySelectorAll('nav li').forEach(x => x.classList.remove('current'));
 
     show(li);
 };
@@ -42,8 +42,8 @@ function navbarStartup()
 {
     const navbar =
     {
-        div: document.getElementById('navbar'),
-        items: document.querySelectorAll('.navbarItems')
+        div: document.querySelector('nav'),
+        items: document.querySelectorAll('nav li')
     };
 
     // const startUpHighlight = navbar.items[navbar.items.length - 1];
@@ -55,6 +55,6 @@ function navbarStartup()
     show(startUpHighlight);
 };
 
-document.querySelectorAll('.navbarItems').forEach(x => x.addEventListener('click', changeNavbarItemFocus));
+document.querySelectorAll('nav li').forEach(x => x.addEventListener('click', changeNavbarItemFocus));
 document.addEventListener('-changeNavbarItemFocus', changeNavbarItemFocus);
 document.addEventListener('-navbarStartup', navbarStartup);
