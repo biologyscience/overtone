@@ -1,0 +1,46 @@
+nav {
+  --left: 0;
+  --size: 25px;
+  height: calc(100vh - var(--displayHeight));
+  width: 100vw;
+  background-color: var(--dark10);
+  font-size: 20px;
+}
+nav * {
+  pointer-events: none;
+}
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: space-evenly;
+}
+nav ul::after {
+  content: "";
+  position: absolute;
+  bottom: 0.15em;
+  left: var(--left);
+  height: 0.15em;
+  width: calc(var(--size) * 1.7);
+  background-color: var(--accent);
+  transition: left ease 250ms;
+}
+nav ul li {
+  display: block;
+  margin: calc((100vh - var(--displayHeight) - var(--size)) / 2) 0;
+}
+nav ul li button {
+  pointer-events: all !important;
+}
+nav ul li svg {
+  height: var(--size);
+  width: var(--size);
+  fill: var(--dark70);
+}
+nav ul li.current svg {
+  fill: white;
+  transition: fill ease 100ms;
+}
+nav ul li:last-child {
+  margin-left: 1.5em;
+}
