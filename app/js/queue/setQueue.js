@@ -2,7 +2,7 @@ let queueReady = false;
 
 function showQueue(queueName)
 {
-    Array.from(document.getElementById('content').children).forEach((x) =>
+    Array.from(document.getElementById('queuesHolder').children).forEach((x) =>
     {
         if (x.dataset.queueName === queueName)
         { x.classList.add('current'); }
@@ -40,28 +40,22 @@ function setQueue({detail: {filePaths, queueName}})
         {
             const data =
             `
-            <div class="dragger flex flexCenter cursorGrab">
-                <img src="svg/drag.svg" class="imgDragger" draggable="false">
+            <div class="dragger flexCenter cursorGrab">
+                <img src="svg/drag.svg" draggable="false">
             </div>
-            <div class="info relative cursorPointer">
-                <div class="song overflowPrevent">
-                    ${tags.title}
-                </div>
-                <div class="artist overflowPrevent">
-                    ${tags.albumArtist}
-                </div>
-                <div class="album overflowPrevent">
-                    ${tags.album}
-                </div>
+            <div class="info flexCol relative cursorPointer">
+                <span class="overflowPrevent">${tags.title}</span>
+                <span class="overflowPrevent">${tags.albumArtist}</span>
+                <span class="overflowPrevent">${tags.album}</span>
             </div>
-            <div class="options flex flexCenter cursorPointer">
-                <img src="svg/moreHorizontal.svg" class="imgDragger" draggable="false">
-            </div>
+            <button class="options flexCenter cursorPointer">
+                <img src="svg/moreHorizontal.svg" draggable="false">
+            </button>
             `;
 
             const li = document.createElement('li');
     
-            li.classList.add('currentQueueItems', 'grid');
+            li.classList.add('grid');
     
             li.innerHTML = data;
 
@@ -84,8 +78,6 @@ function setQueue({detail: {filePaths, queueName}})
             });
 
             const ul = document.createElement('ul');
-    
-            ul.classList.add('queue');
 
             ul.dataset.queueName = queueName;
             
@@ -96,7 +88,7 @@ function setQueue({detail: {filePaths, queueName}})
                 ul.append(list.li[i]);
             }
 
-            document.getElementById('content').append(ul);
+            document.getElementById('queuesHolder').append(ul);
 
             showQueue(queueName);
 
@@ -113,7 +105,7 @@ document.addEventListener('-selectedFilePaths', setQueue);
 
 document.addEventListener('-chooseQueue', (obj) =>
 {
-    const element = Array.from(document.getElementById('content').children).filter(x => x.dataset.queueName === obj.detail.queueName);
+    const element = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === obj.detail.queueName);
 
     element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);
 });

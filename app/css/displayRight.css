@@ -76,7 +76,6 @@
     height: .25em;
     width: auto;
     background-color: var(--accent);
-    border-radius: 1em;
     margin: auto 1em;
     transform: scaleX(var(--scaleFactor));
     transform-origin: left;

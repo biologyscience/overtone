@@ -1,39 +1,34 @@
-section.extras
-{
-    justify-content: center;
+section.extras {
+  justify-content: center;
 }
-
-#choose, #getAlbumArt
-{
-    font-size: 50px;
-    color: white;
-    border: none;
-    background: none;
-    border-radius: 5px;
-    margin: 1rem 0;
+section.extras #choose, section.extras #getAlbumArt {
+  font-size: 50px;
+  color: white;
+  border: none;
+  background: none;
+  border-radius: 5px;
+  margin: 1rem 0;
 }
-
-.rpc { font-size: 20px; }
-
-#discordAppID
-{
-    font-size: 1.2em;
-    background: none;
-    width: 15em;
-    text-align: center;
-    margin: 1em 0;
-    border: .1em solid var(--accentOrange2);
-    border-radius: .2em;
+section.extras .rpc {
+  font-size: 20px;
 }
-
-#discordAppID:focus { outline: none; }
-
-#connect
-{
-    font-size: 2rem;
-    background: none;
-    color: white;
-    border: .1em solid var(--accentLightBlue1);
-    border-radius: .2em;
-    padding: 0 .5em;
+section.extras .rpc #discordAppID {
+  font-size: 1.2em;
+  background: none;
+  width: 15em;
+  text-align: center;
+  margin: 1em 0;
+  border: 0.1em solid var(--accentOrange2);
+  border-radius: 0.2em;
+}
+section.extras .rpc #discordAppID:focus {
+  outline: none;
+}
+section.extras .rpc #connect {
+  font-size: 2rem;
+  background: none;
+  color: white;
+  border: 0.1em solid var(--accentLightBlue1);
+  border-radius: 0.2em;
+  padding: 0 0.5em;
 }

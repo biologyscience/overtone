@@ -1,0 +1,42 @@
+section.extras
+{
+    justify-content: center;
+
+    #choose, #getAlbumArt
+    {
+        font-size: 50px;
+        color: white;
+        border: none;
+        background: none;
+        border-radius: 5px;
+        margin: 1rem 0;
+    }
+
+    .rpc
+    {
+        font-size: 20px;
+
+        #discordAppID
+        {
+            font-size: 1.2em;
+            background: none;
+            width: 15em;
+            text-align: center;
+            margin: 1em 0;
+            border: .1em solid var(--accentOrange2);
+            border-radius: .2em;
+
+            &:focus { outline: none; }
+        }
+
+        #connect
+        {
+            font-size: 2rem;
+            background: none;
+            color: white;
+            border: .1em solid var(--accentLightBlue1);
+            border-radius: .2em;
+            padding: 0 .5em;
+        }
+    }
+}

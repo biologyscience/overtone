@@ -42,11 +42,11 @@ function updateNumber({detail})
 
 function chooseQueue(E)
 {
-    const div = E.target;
+    const span = E.target;
 
-    if (div.classList.contains('xx'))
+    if (span.localName === 'span')
     {
-        const queueName = div.dataset.queueName;
+        const queueName = span.dataset.queueName;
 
         const { read } = require('./js/util');
 
@@ -67,20 +67,18 @@ function addItemToQueueList({detail})
     const data =
     `
     <div class="dragger flexCenter cursorGrab">
-        <img src="svg/drag.svg" class="imgDragger" draggable="false">
+        <img src="svg/drag.svg" draggable="false">
     </div>
-    <div class="xx cursorPointer" data-queue-name="${queueName}">
-        <span class="queueNames overflowPrevent">${queueName}</span>
-    </div>
-    <div class="options flexCenter">
-        <img src="svg/moreHorizontal.svg" class="imgOptions cursorPointer" draggable="false">
-    </div>
+    <span class="overflowPrevent cursorPointer" data-queue-name="${queueName}">${queueName}</span>
+    <button class="options flexCenter">
+        <img src="svg/moreHorizontal.svg" draggable="false">
+    </button>
     `;
 
     const li = document.createElement('li');
     const ql = document.getElementById('queueList');
 
-    li.classList.add('currentQueueItems', 'grid');
+    li.classList.add('grid');
 
     li.innerHTML = data;
 
@@ -94,9 +92,9 @@ function displayQueueName({detail})
     document.getElementById('queueName').innerHTML = ul.dataset.queueName;
 };
 
-document.getElementById('queueListWrapper').onclick = showQueues;
-document.getElementById('queueList').onclick = chooseQueue;
-document.querySelector('.titleHolder .close').addEventListener('click', hideQueues);
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', showQueues);
+document.getElementById('queueList').addEventListener('click', chooseQueue);
+document.querySelector('#queueListMenu .head .close').addEventListener('click', hideQueues);
 
 document.addEventListener('-selectedFilePaths', updateNumber);
 document.addEventListener('-current', updateNumber);

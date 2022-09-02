@@ -6,7 +6,7 @@ function clickSetBorder(E)
 
     if (li === undefined) return;
 
-    const currentQueue = document.querySelector('.queue.current');
+    const currentQueue = document.querySelector('#queuesHolder .current');
 
     const children = Array.from(currentQueue.children);
 
@@ -34,12 +34,12 @@ function queueSetBorder({detail})
 {
     const current = detail;
 
-    const children = Array.from(document.querySelector('.queue.current').children);
+    const children = Array.from(document.querySelector('#queuesHolder .current').children);
     
     children.forEach(x => x.style.borderColor = '');
 
     children[current].style.borderColor = 'var(--accent)';
 };
 
-document.querySelector('section.queue #content').addEventListener('click', clickSetBorder);
+document.querySelector('section.queue #queuesHolder').addEventListener('click', clickSetBorder);
 document.addEventListener('-setBorder', queueSetBorder);

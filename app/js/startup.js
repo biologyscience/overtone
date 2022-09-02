@@ -1,20 +1,20 @@
 let a = setTimeout(() =>
 {
     // floating queue list
-    const titleHolder = document.querySelector('.titleHolder');
+    const head = document.querySelector('#queueListMenu .head');
 
     const queueListMenu = document.getElementById('queueListMenu');
 
-    const math = queueListMenu.offsetHeight - (titleHolder.offsetHeight + 2);
+    const math = queueListMenu.offsetHeight - (head.offsetHeight + 2);
 
     document.getElementById('queueList').style.height = `${math}px`;
 
-    // queue content
-    let contentHeight = 0;
+    // queuesHolder
+    let queuesHolderHeight = 0;
 
-    Array.from(document.querySelector('section.queue').children).forEach(x => x.id === 'content' ? null : contentHeight = contentHeight + x.offsetHeight);
+    Array.from(document.querySelector('section.queue').children).forEach(x => x.id === 'queuesHolder' ? null : queuesHolderHeight = queuesHolderHeight + x.offsetHeight);
 
-    document.getElementById('content').style.height = `calc(var(--displayHeight) - ${contentHeight + 2}px)`;
+    document.getElementById('queuesHolder').style.height = `calc(var(--displayHeight) - ${queuesHolderHeight + 2}px)`;
     
     // folderIn list
     let songListInFolderHeight = 0;
