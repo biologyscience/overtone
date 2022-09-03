@@ -5,6 +5,7 @@
     /* outline: 2px solid var(--accent); */
     transition: opacity ease 1s;
     /* background-color: var(--dark20); */
+    top: var(--titleBarHeight);
 }
 
 #displayRight
@@ -15,4 +16,5 @@
     transition: opacity ease 1s;
     /* background-color: var(--dark20); */
     font-size: 20px;
+    top: var(--titleBarHeight);
 }

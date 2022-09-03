@@ -1,7 +1,7 @@
 nav {
   --left: 0;
   --size: 25px;
-  height: calc(100vh - var(--displayHeight));
+  height: var(--navbarHeight);
   width: 100vw;
   background-color: var(--dark10);
   font-size: 20px;
@@ -18,7 +18,7 @@ nav ul {
 nav ul::after {
   content: "";
   position: absolute;
-  bottom: 0.15em;
+  bottom: calc(0.15em + 2px);
   left: var(--left);
   height: 0.15em;
   width: calc(var(--size) * 1.7);
@@ -27,7 +27,7 @@ nav ul::after {
 }
 nav ul li {
   display: block;
-  margin: calc((100vh - var(--displayHeight) - var(--size)) / 2) 0;
+  margin: calc((var(--navbarHeight) - var(--size)) / 2) 0;
 }
 nav ul li button {
   pointer-events: all !important;

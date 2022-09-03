@@ -1,3 +1,5 @@
+// window.resizeTo(screen.availWidth, screen.availHeight);
+
 let a = setTimeout(() =>
 {
     // floating queue list
@@ -39,28 +41,38 @@ let a = setTimeout(() =>
 /**
  * misc
  */
-let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 1000);
+let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 100);
 
 
 /**
  * navbar
  */
-let c = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 500);
+let c = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 100);
 
 
 /**
- * queue list
+ * title bar font size
  */
+let d = setTimeout(() =>
 {
-    const { read } = require('./js/util');
+    const titleBar = document.getElementById('titleBar');
+    const name = document.querySelector('#titleBar .name');
 
-    const queueList = read.queues();
+    let resizeValue = getComputedStyle(titleBar).getPropertyValue('--fs').split('px')[0];
 
-    for (detail in queueList)
+    function resize()
     {
-        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail}));
-    }
-}
+        if (name.offsetHeight < titleBar.offsetHeight) return;
+
+        resizeValue = resizeValue - 0.01;
+
+        titleBar.style.setProperty('--fs', `${resizeValue}px`);
+
+        resize();
+    };
+
+    resize();
+}, 100);
 
 //
 
@@ -68,7 +80,7 @@ let c = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 50
 
 let timeout = setTimeout(() =>
 {
-    [a, b, c, timeout].forEach((x) =>
+    [a, b, c, d, timeout].forEach((x) =>
     {
         clearTimeout(x);
 
@@ -93,6 +105,23 @@ let timeout = setTimeout(() =>
 {
     const { existsSync, readFileSync } = require('fs');
     const { read } = require('./js/util');
+    const { watch } = require('chokidar');
+
+    /* watch files */
+    const watcher = watch(['app/css', 'app/js', 'app/index.html']);
+
+    watcher.on('ready', () =>
+    {
+        watcher.on('all', () => window.location.reload());
+    });
+
+    /* queue list */
+    const queueList = read.queues();
+
+    for (detail in queueList)
+    {
+        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail}));
+    }
 
     /* fill previous id */
     if (existsSync('./app/json/config.json'))

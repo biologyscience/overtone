@@ -9,6 +9,7 @@
     --dark70: hsl(0, 0%, 70%);
     --dark80: hsl(0, 0%, 80%);
     --dark90: hsl(0, 0%, 90%);
+    
     --accentGreen1: rgb(101, 255, 160);
     --accentGreen2: rgb(118, 255, 3);
     --accentGreen3: rgb(174, 234, 0);
@@ -36,5 +37,7 @@
 
     --accent: var(--accentGreen1);
 
-    --displayHeight: 92.5vh;
+    --titleBarHeight: 20px;
+    --navbarHeight: 7.5vh;
+    --displayHeight: calc(100vh - var(--navbarHeight) - var(--titleBarHeight));
 }

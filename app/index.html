@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="css/display.css">
         <link rel="stylesheet" href="css/displayRight.css">
         <link rel="stylesheet" href="css/navbar.css">
+        <link rel="stylesheet" href="css/titleBar.css">
         <link rel="stylesheet" href="css/sections/queue.css">
         <link rel="stylesheet" href="css/sections/folder.css">
         <link rel="stylesheet" href="css/sections/extras.css">
@@ -48,6 +49,24 @@
         <button style="background: none;" class="top0 right0 absolute displayNone" id="misc">Misc Button</button>
         <div id="overlay" style="display: flex;">Loading ...</div>
 
+        <div id="titleBar" class="fixed top0 left0 relative">
+            <div class="app absolute left0 top0">
+                <!-- <img src="" class="icon"> -->
+                <span class="name">OverTone</span>
+            </div>
+            <div class="buttons grid inheritHeight absolute right0 top0">
+                <button id="minimize" class="relative">
+                    <img src="svg/titleBar/minimize.svg">
+                </button>
+                <button id="maximize" class="relative">
+                    <img src="svg/titleBar/maximize.svg">
+                </button>
+                <button id="close" class="relative">
+                    <img src="svg/titleBar/close.svg">
+                </button>
+            </div>
+        </div>
+
         <div id="queueListMenu" class="absolute">
             <div class="head flex relative">
                 <img src="svg/queue.svg">
@@ -64,7 +83,7 @@
 <!--  -->
 
 
-        <div id="displayLeft" class="fixed top0 left0">
+        <div id="displayLeft" class="fixed left0">
           
             <section class="queue inheritHeight">
                 <div class="headTop flex">
@@ -167,7 +186,7 @@
 <!--  -->
 
 
-        <div id="displayRight" class="fixed top0 right0">
+        <div id="displayRight" class="fixed right0">
 
             <div class="wrapper grid inheritHeight">
                 <div id="topWrapper" class="flex">
