@@ -1,13 +1,13 @@
 const
     remote = require('@electron/remote/main'),
-    { app, BrowserWindow } = require('electron'),
+    { app, BrowserWindow, ipcMain } = require('electron'),
     { existsSync, writeFileSync } = require('fs');
 
 remote.initialize();
 
-app.on('ready', () =>
+function ready()
 {
-    const window = new BrowserWindow
+    const WINDOW = new BrowserWindow
     ({
         width: 1280,
         height: 720,
@@ -20,10 +20,14 @@ app.on('ready', () =>
         }
     });
 
-    remote.enable(window.webContents);
+    remote.enable(WINDOW.webContents);
 
-    window.loadFile('index.html').then(() => window.maximize());
-});
+    WINDOW.loadFile('index.html').then(() => WINDOW.maximize());
+
+    ipcMain.on('ipc-minimize', () => WINDOW.minimize());
+    ipcMain.on('ipc-maximize', () => WINDOW.maximize());
+    ipcMain.on('ipc-close', () => WINDOW.close());
+};
 
 ['config', 'metadata', 'queues', 'songList'].forEach((x) =>
 {
@@ -38,3 +42,5 @@ app.on('ready', () =>
         writeFileSync(path, JSON.stringify(data, null, 4));
     }
 });
+
+app.on('ready', ready);
