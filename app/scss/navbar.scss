@@ -5,7 +5,7 @@ nav
 
     $height: .15em;
 
-    height: calc(100vh - var(--displayHeight));
+    height: var(--navbarHeight);
     width: 100vw;
     background-color: var(--dark10);
     font-size: 20px;
@@ -23,7 +23,7 @@ nav
         {
             content: '';
             position: absolute;
-            bottom: $height;
+            bottom: calc($height + 2px);
             left: var(--left);
             height: $height;
             width: calc( var(--size) * 1.7 );
@@ -34,7 +34,7 @@ nav
         li
         {
             display: block;
-            margin: calc( calc(100vh - var(--displayHeight) - var(--size)) / 2 ) 0;
+            margin: calc( calc(var(--navbarHeight) - var(--size)) / 2 ) 0;
 
             button { pointer-events: all !important; }
 

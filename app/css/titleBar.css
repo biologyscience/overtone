@@ -1,0 +1,30 @@
+#titleBar {
+  --fs: 22px;
+  font-size: var(--fs);
+  height: var(--titleBarHeight);
+  width: 100vw;
+  background-color: var(--dark10);
+  -webkit-app-region: drag;
+}
+#titleBar .app {
+  margin-left: 1em;
+}
+#titleBar .buttons {
+  grid-auto-flow: column;
+  -webkit-app-region: no-drag;
+}
+#titleBar .buttons button {
+  font-size: var(--fs);
+  padding-left: 1em;
+  padding-right: 1em;
+}
+#titleBar .buttons button#close:hover {
+  background-color: var(--accentRed3);
+}
+#titleBar .buttons button:not(#close):hover {
+  background-color: var(--dark30);
+}
+#titleBar .buttons img {
+  height: 1em;
+  width: 1em;
+}
