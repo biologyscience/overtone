@@ -9,18 +9,19 @@
 
     $size: 1em;
         
-    .app { margin-left: $size; }
+    .app { margin: 0 $size; }
 
     .buttons
     {
         grid-auto-flow: column;
         -webkit-app-region: no-drag;
         
+        $reduce: .25em;
+
         button
         {
             font-size: var(--fs);
-            padding-left: $size;
-            padding-right: $size;
+            padding: 0 ($size - $reduce);
 
             &#close:hover { background-color: var(--accentRed3); }
 
@@ -29,8 +30,8 @@
 
         img
         {
-            height: $size;
-            width: $size;
+            height: $size - $reduce;
+            width: $size - $reduce;
         }
     }
 }
