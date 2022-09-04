@@ -1,0 +1,26 @@
+section.album .body {
+  flex-wrap: wrap;
+  gap: 2em;
+  padding: 1em 5em;
+  justify-content: space-evenly;
+  overflow-y: auto;
+}
+section.album .body .albumItem {
+  text-align: center;
+  width: 150px;
+  padding: 0 0.5em;
+}
+section.album .body .albumItem * {
+  pointer-events: none;
+}
+section.album .body .albumItem:hover {
+  cursor: pointer;
+}
+section.album .body .albumItem img {
+  height: 150px;
+  width: 150px;
+  padding: 0.25em 0;
+}
+section.album .body .albumItem .albumName {
+  padding: 0.25em 0;
+}

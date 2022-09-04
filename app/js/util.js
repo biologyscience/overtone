@@ -93,7 +93,7 @@ function getAlbumArt(fileLocation)
     {
         parseFile(fileLocation, {skipPostHeaders: true}).then((tags) =>
         {
-            const picture = tags.common?.picture[0];
+            const picture = tags.common?.picture?.[0];
 
             const obj =
             {
@@ -199,6 +199,7 @@ const read =
 {
     fs: require('fs'),
 
+    albums() { return JSON.parse(this.fs.readFileSync('app/json/albums.json')); },
     config() { return JSON.parse(this.fs.readFileSync('app/json/config.json')); },
     metadata() { return JSON.parse(this.fs.readFileSync('app/json/metadata.json')); },
     queues() { return JSON.parse(this.fs.readFileSync('app/json/queues.json')); },
