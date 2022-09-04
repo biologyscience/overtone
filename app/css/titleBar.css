@@ -7,7 +7,7 @@
   -webkit-app-region: drag;
 }
 #titleBar .app {
-  margin-left: 1em;
+  margin: 0 1em;
 }
 #titleBar .buttons {
   grid-auto-flow: column;
@@ -15,8 +15,7 @@
 }
 #titleBar .buttons button {
   font-size: var(--fs);
-  padding-left: 1em;
-  padding-right: 1em;
+  padding: 0 0.75em;
 }
 #titleBar .buttons button#close:hover {
   background-color: var(--accentRed3);
@@ -25,6 +24,6 @@
   background-color: var(--dark30);
 }
 #titleBar .buttons img {
-  height: 1em;
-  width: 1em;
+  height: 0.75em;
+  width: 0.75em;
 }
