@@ -17,6 +17,16 @@ body
     background-image: linear-gradient(-135deg, hsl(0, 0%, 10%), hsl(0, 0%, 20%) 20%, hsl(0, 0%, 30%));
 }
 
+body::before
+{
+    position: absolute;
+    content: '';
+    height: 100vh;
+    width: 2px;
+    background-color: var(--accent);
+    left: 60vw;
+}
+
 #overlay
 {
     align-items: center;
@@ -40,14 +50,6 @@ button
 button:hover { cursor: pointer; }
 
 input { user-select: auto !important; }
-
-#separator
-{
-    height: 100vh;
-    width: 2px;
-    background-color: var(--accent);
-    left: 60vw;
-}
 
 .greenBorder { border: 2px solid var(--accent) !important; }
 
