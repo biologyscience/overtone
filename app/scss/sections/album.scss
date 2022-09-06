@@ -50,29 +50,34 @@ section.album
 
             .albumArt
             {
-                position: relative;
-
+                
                 $size: 200px;
-                $boxShadowValues: 0 0 ($size / 20) ($size / 40);
+                $boxShadowValues: 0 0 calc($size / 20) calc($size / 40);
                 $transitionStyle: .5s ease;
-
-                .image
+                
+                position: relative;
+                
+                img
                 {
                     height: $size;
                     width: $size;
                     box-shadow: $boxShadowValues none;
                     transition:
+                        border-radius $transitionStyle,
                         box-shadow $transitionStyle,
                         opacity $transitionStyle;
                 }
 
-                .icon
+                &::after
                 {
-                    fill: var(--accent);
+                    content: url(../../svg/play.svg);
                     position: absolute;
                     inset: 0;
-                    transform: scale(.25);
+                    padding: 3em;
+                    transform: scale(.45);
                     opacity: 0;
+                    border: 1em solid var(--dark80);
+                    border-radius: 50%;
                     transition: opacity $transitionStyle;
                 }
 
@@ -80,13 +85,14 @@ section.album
                 {
                     cursor: pointer;
 
-                    .image
+                    img
                     {
+                        border-radius: .25em;
                         box-shadow: $boxShadowValues black;
                         opacity: .5;
                     }
 
-                    .icon { opacity: 1; }
+                    &::after { opacity: 1; }
                 }
             }
 
@@ -149,13 +155,46 @@ section.album
 
         .body
         {
-            $song: inherit;
-            $plays: inherit;
-            $duration: inherit;
+            $number: 2vw;
+            $song: 43vw;
+            $plays: 7vw;
+
+            padding: 0 2em;
+            
+            .columnDividers
+            {
+                align-items: center;
+                padding: 1em 0;
+
+                img
+                {
+                    height: 1.5em;
+                    width: 1.5em;
+                }
+
+                .number
+                {
+                    width: $number;
+                    border-left: .2em solid transparent;
+                }
+
+                .duration
+                {
+                    flex-grow: 1;
+                    align-self: center;
+                    border-right: .2em solid transparent;
+                }
+
+                .song { width: $song; }
+                .plays { width: $plays; }
+            }
 
             #songListInAlbum
             {
                 list-style: none;
+                margin: 0;
+                padding: 0;
+                overflow-y: auto;
                 counter-reset: songNumbers;
                 
                 li
@@ -163,6 +202,11 @@ section.album
                     counter-increment: songNumbers;
                     display: flex;
                     align-items: center;
+                    padding: .5em 0;
+                    margin: 1em 0;
+                    border: .2em solid transparent;
+                    border-radius: .5em;
+                    transition: border-color 300ms ease;
 
                     .song
                     {
@@ -170,8 +214,13 @@ section.album
                         display: flex;
                         flex-direction: column;
 
+                        .artist
+                        {
+                            font-size: 1.5em;
+                            color: var(--dark90);
+                        }
+
                         .name { font-size: 2.25em; }
-                        .artist { font-size: 1.5em; }
                     }
 
                     .plays
@@ -182,13 +231,22 @@ section.album
 
                     .duration
                     {
-                        width: $duration;
                         font-size: 1.5em;
+                        flex-grow: 1;
+                        text-align: center;
+                    }
+
+                    &:hover
+                    {
+                        cursor: pointer;
+                        border-color: var(--accent);
                     }
 
                     &::before
                     {
                         content: counter(songNumbers) ' ';
+                        width: $number;
+                        text-align: center;
                     }
                 }
             }

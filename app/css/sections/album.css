@@ -33,28 +33,32 @@ section.album .in .head {
 section.album .in .head .albumArt {
   position: relative;
 }
-section.album .in .head .albumArt .image {
+section.album .in .head .albumArt img {
   height: 200px;
   width: 200px;
   box-shadow: 0 0 10px 5px none;
-  transition: box-shadow 0.5s ease, opacity 0.5s ease;
+  transition: border-radius 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
 }
-section.album .in .head .albumArt .icon {
-  fill: var(--accent);
+section.album .in .head .albumArt::after {
+  content: url(../../svg/play.svg);
   position: absolute;
   inset: 0;
-  transform: scale(0.25);
+  padding: 3em;
+  transform: scale(0.45);
   opacity: 0;
+  border: 1em solid var(--dark80);
+  border-radius: 50%;
   transition: opacity 0.5s ease;
 }
 section.album .in .head .albumArt:hover {
   cursor: pointer;
 }
-section.album .in .head .albumArt:hover .image {
+section.album .in .head .albumArt:hover img {
+  border-radius: 0.25em;
   box-shadow: 0 0 10px 5px black;
   opacity: 0.5;
 }
-section.album .in .head .albumArt:hover .icon {
+section.album .in .head .albumArt:hover::after {
   opacity: 1;
 }
 section.album .in .head .content {
@@ -99,34 +103,76 @@ section.album .in .head .content .searchBar input:focus {
   outline: none;
   border-bottom-color: var(--accent);
 }
+section.album .in .body {
+  padding: 0 2em;
+}
+section.album .in .body .columnDividers {
+  align-items: center;
+  padding: 1em 0;
+}
+section.album .in .body .columnDividers img {
+  height: 1.5em;
+  width: 1.5em;
+}
+section.album .in .body .columnDividers .number {
+  width: 2vw;
+  border-left: 0.2em solid transparent;
+}
+section.album .in .body .columnDividers .duration {
+  flex-grow: 1;
+  align-self: center;
+  border-right: 0.2em solid transparent;
+}
+section.album .in .body .columnDividers .song {
+  width: 43vw;
+}
+section.album .in .body .columnDividers .plays {
+  width: 7vw;
+}
 section.album .in .body #songListInAlbum {
   list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
   counter-reset: songNumbers;
 }
 section.album .in .body #songListInAlbum li {
   counter-increment: songNumbers;
   display: flex;
   align-items: center;
+  padding: 0.5em 0;
+  margin: 1em 0;
+  border: 0.2em solid transparent;
+  border-radius: 0.5em;
+  transition: border-color 300ms ease;
 }
 section.album .in .body #songListInAlbum li .song {
-  width: inherit;
+  width: 43vw;
   display: flex;
   flex-direction: column;
+}
+section.album .in .body #songListInAlbum li .song .artist {
+  font-size: 1.5em;
+  color: var(--dark90);
 }
 section.album .in .body #songListInAlbum li .song .name {
   font-size: 2.25em;
 }
-section.album .in .body #songListInAlbum li .song .artist {
-  font-size: 1.5em;
-}
 section.album .in .body #songListInAlbum li .plays {
-  width: inherit;
+  width: 7vw;
   font-size: 1.5em;
 }
 section.album .in .body #songListInAlbum li .duration {
-  width: inherit;
   font-size: 1.5em;
+  flex-grow: 1;
+  text-align: center;
+}
+section.album .in .body #songListInAlbum li:hover {
+  cursor: pointer;
+  border-color: var(--accent);
 }
 section.album .in .body #songListInAlbum li::before {
   content: counter(songNumbers) " ";
+  width: 2vw;
+  text-align: center;
 }
