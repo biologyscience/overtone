@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="css/sections/extras.css">
 
         <script src="js/album/make.js" defer></script>
+        <script src="js/album/observer.js" defer></script>
         <script src="js/album/showAlbum.js" defer></script>
 
         <script src="js/audio/choose.js" defer></script>
@@ -82,6 +83,7 @@
             <div class="mainDivider"></div>
             <ul id="queueList"></ul>
         </div>
+
 
 
 <!--  -->
@@ -156,10 +158,64 @@
             </section>
 
             <section class="album inheritHeight">
-                <div class="head">
-
+                <div class="out displayNone">
+                    <div class="head">
+                        <input type="text">
+                    </div>
+                    <div class="body flex inheritHeight"></div>
                 </div>
-                <div class="body flex inheritHeight"></div>
+                <div class="in">
+                    <div class="head flex">
+                        <div class="albumArt">
+                            <img class="image" src="https://i.scdn.co/image/ab67616d0000b273e0783b9378aa3857b8a9d24d">
+                            <img class="icon" src="svg/play.svg">
+                        </div>
+                        <div class="content flexCol">
+                            <div class="name">CLOUDS (THE MIXTAPE)</div>
+                            <div class="info flex">
+                                <div>
+                                    <img src="svg/person.svg">
+                                    <span class="albumArtist">NF</span>
+                                </div>
+                                <div>
+                                    <img src="svg/calender.svg">
+                                    <span class="year">2021</span>
+                                </div>
+                                <div>
+                                    <img src="svg/hash.svg">
+                                    <span class="songCount">11 songs</span>
+                                </div>
+                                <div>
+                                    <img src="svg/timer.svg">
+                                    <span class="duration">42:26</span>
+                                </div>
+                            </div>
+                            <div class="searchBar flex">
+                                <img src="svg/search.svg">
+                                <input type="text" placeholder="Search in this list">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mainDivider"></div>
+                    <div class="body">
+                        <div class="columnDividers displayNone">
+                            <img src="svg/hash.svg" class="number">
+                            <span class="song">TITLE</span>
+                            <span class="plays">PLAYS</span>
+                            <img src="svg/timer.svg" class="duration">
+                        </div>
+                        <ul id="songListInAlbum">
+                            <li>
+                                <div class="song">
+                                    <span class="name">THAT'S A JOKE</span>
+                                    <span class="artist">NF</span>
+                                </div>
+                                <div class="plays">35,933,318</div>
+                                <div class="duration">3:49</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </section>
 
             <section class="artist inheritHeight">

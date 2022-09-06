@@ -6,8 +6,28 @@ function makeAlbumList()
 
     const
         albumMap = new Map(Object.entries(albums)),
-        albumArts = [...albumMap.values()].map(x => getAlbumArt(x.ref)),
+        // albumArts = [...albumMap.values()].map(x => getAlbumArt(x.ref)),
         albumNames = [...albumMap.keys()];
+
+    const appendIn = document.querySelector('section.album .body');
+
+    albumNames.forEach((x) =>
+    {
+        const albumItem = document.createElement('div');
+
+        albumItem.innerHTML =
+        `
+        <img src="">
+        <span class="albumName block overflowPrevent">${x}</span>
+        `;
+
+        albumItem.classList.add('albumItem');
+        albumItem.dataset.albumName = x;
+
+        appendIn.append(albumItem);
+    });
+
+    return;
 
     Promise.all(albumArts).then((pictures) =>
     {
@@ -17,19 +37,24 @@ function makeAlbumList()
         {
             const picture = pictures[i];
 
-            const albumItem = document.createElement('div');
+            if (picture.buffer !== undefined)
+            {
+                const albumItem = document.createElement('div');
 
-            albumItem.innerHTML =
-            `
-            <img src="${picture.URL}">
-            <span class="albumName block overflowPrevent">${albumNames[i]}</span>
-            `;
-
-            albumItem.classList.add('albumItem');
-            albumItem.dataset.albumName = albumNames[i];
-
-            appendIn.append(albumItem);
+                albumItem.innerHTML =
+                `
+                <img src="${picture.URL}">
+                <span class="albumName block overflowPrevent">${albumNames[i]}</span>
+                `;
+    
+                albumItem.classList.add('albumItem');
+                albumItem.dataset.albumName = albumNames[i];
+    
+                appendIn.append(albumItem);
+            }
         }
+
+        document.dispatchEvent(new Event('-albumReady'));
     });
 
 };

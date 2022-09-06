@@ -1,26 +1,132 @@
-section.album .body {
+section.album .out .head input {
+  background: none;
+}
+section.album .out .body {
   flex-wrap: wrap;
   gap: 2em;
-  padding: 1em 5em;
+  padding: 0 4em;
   justify-content: space-evenly;
   overflow-y: auto;
 }
-section.album .body .albumItem {
+section.album .out .body .albumItem {
   text-align: center;
   width: 150px;
-  padding: 0 0.5em;
+  padding: 0.5em;
 }
-section.album .body .albumItem * {
+section.album .out .body .albumItem * {
   pointer-events: none;
 }
-section.album .body .albumItem:hover {
+section.album .out .body .albumItem:hover {
   cursor: pointer;
 }
-section.album .body .albumItem img {
+section.album .out .body .albumItem img {
   height: 150px;
   width: 150px;
   padding: 0.25em 0;
 }
-section.album .body .albumItem .albumName {
+section.album .out .body .albumItem .albumName {
   padding: 0.25em 0;
+}
+section.album .in .head {
+  padding: 2.5em;
+}
+section.album .in .head .albumArt {
+  position: relative;
+}
+section.album .in .head .albumArt .image {
+  height: 200px;
+  width: 200px;
+  box-shadow: 0 0 10px 5px none;
+  transition: box-shadow 0.5s ease, opacity 0.5s ease;
+}
+section.album .in .head .albumArt .icon {
+  fill: var(--accent);
+  position: absolute;
+  inset: 0;
+  transform: scale(0.25);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+section.album .in .head .albumArt:hover {
+  cursor: pointer;
+}
+section.album .in .head .albumArt:hover .image {
+  box-shadow: 0 0 10px 5px black;
+  opacity: 0.5;
+}
+section.album .in .head .albumArt:hover .icon {
+  opacity: 1;
+}
+section.album .in .head .content {
+  align-self: flex-end;
+  margin: 0 2em;
+}
+section.album .in .head .content .name {
+  font-size: 4em;
+}
+section.album .in .head .content .info {
+  font-size: 1.75em;
+}
+section.album .in .head .content .info > * {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5em;
+}
+section.album .in .head .content .info > * img {
+  height: 1em;
+  width: 1em;
+}
+section.album .in .head .content .info > * * {
+  margin-right: 0.25em;
+}
+section.album .in .head .content .searchBar {
+  margin-top: 2em;
+  align-items: center;
+}
+section.album .in .head .content .searchBar img {
+  height: 1.5em;
+  width: 1.5em;
+}
+section.album .in .head .content .searchBar input {
+  width: 100%;
+  margin: 0 0.25em;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.5s ease;
+}
+section.album .in .head .content .searchBar input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+section.album .in .body #songListInAlbum {
+  list-style: none;
+  counter-reset: songNumbers;
+}
+section.album .in .body #songListInAlbum li {
+  counter-increment: songNumbers;
+  display: flex;
+  align-items: center;
+}
+section.album .in .body #songListInAlbum li .song {
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+}
+section.album .in .body #songListInAlbum li .song .name {
+  font-size: 2.25em;
+}
+section.album .in .body #songListInAlbum li .song .artist {
+  font-size: 1.5em;
+}
+section.album .in .body #songListInAlbum li .plays {
+  width: inherit;
+  font-size: 1.5em;
+}
+section.album .in .body #songListInAlbum li .duration {
+  width: inherit;
+  font-size: 1.5em;
+}
+section.album .in .body #songListInAlbum li::before {
+  content: counter(songNumbers) " ";
 }
