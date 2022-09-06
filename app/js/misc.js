@@ -1,6 +1,20 @@
 document.getElementById('misc').onclick = () =>
 {
-    document.dispatchEvent(new Event('-makeAlbumList'));
+    // document.dispatchEvent(new Event('-makeAlbumList'));
+
+    let i = 0;
+
+    [
+        document.querySelector('section.album .in .head'),
+        document.querySelector('section.album .in .mainDivider'),
+        document.querySelector('section.album .body .columnDividers'),
+        document.querySelector('section.album .body .mainDivider')
+    ].forEach((x) =>
+    {
+        i = i + x.offsetHeight;
+    });
+
+    document.getElementById('songListInAlbum').style.height = `calc(var(--displayHeight) - ${i}px)`;
 
     return;
 
