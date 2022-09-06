@@ -249,6 +249,42 @@ function validateMusicFileFormat(fileLocation)
     return validator.test(fileLocation);
 };
 
+class ThrottleOnInput
+{
+    constructor(input, fx, delay)
+    {
+        this.input = input;
+        this.fx = fx;
+        this.delay = delay;
+        this.wait = false;
+        this.lastInput = undefined;
+    };
+
+    run()
+    {
+        const inputValue = this.input.value;
+
+        if (this.wait) return;
+    
+        this.wait = true;
+    
+        if (this.lastInput.toLowerCase() === inputValue.toLowerCase()) return this.wait = false;
+    
+        this.lastInput = inputValue.toLowerCase();
+
+        this.fx();
+
+        setTimeout(() =>
+        {
+            this.wait = false;
+    
+            if (this.lastInput.toLowerCase() === inputValue.toLowerCase()) return;
+    
+            this.run();
+        }, this.delay);   
+    }
+};
+
 //
 
 module.exports =
@@ -265,5 +301,6 @@ module.exports =
     json,
     read,
     updateMetaDataJSON,
-    validateMusicFileFormat
+    validateMusicFileFormat,
+    ThrottleOnInput
 };

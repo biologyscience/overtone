@@ -1,33 +1,197 @@
 section.album
 {
-    .body
+    .out
     {
-        flex-wrap: wrap;
-        gap: 2em;
-        padding: 1em 5em;
-        justify-content: space-evenly;
-        overflow-y: auto;
-
-        .albumItem
+        .head
         {
-            $picSize: 150px;
-
-            text-align: center;
-            width: $picSize;
-            padding: 0 .5em;
-
-            * { pointer-events: none; }
-
-            &:hover { cursor: pointer; }
-
-            img
+            input
             {
-                height: $picSize;
+                background: none;
+            }
+        }
+
+        .body
+        {
+            flex-wrap: wrap;
+            gap: 2em;
+            padding: 0 4em;
+            justify-content: space-evenly;
+            overflow-y: auto;
+    
+            .albumItem
+            {
+                $picSize: 150px;
+    
+                text-align: center;
                 width: $picSize;
-                padding: .25em 0;
+                padding: .5em;
+    
+                * { pointer-events: none; }
+    
+                &:hover { cursor: pointer; }
+    
+                img
+                {
+                    height: $picSize;
+                    width: $picSize;
+                    padding: .25em 0;
+                }
+    
+                .albumName { padding: .25em 0; }
+            }
+        }
+    }
+
+    .in
+    {
+        .head
+        {
+            padding: 2.5em;
+
+            .albumArt
+            {
+                position: relative;
+
+                $size: 200px;
+                $boxShadowValues: 0 0 ($size / 20) ($size / 40);
+                $transitionStyle: .5s ease;
+
+                .image
+                {
+                    height: $size;
+                    width: $size;
+                    box-shadow: $boxShadowValues none;
+                    transition:
+                        box-shadow $transitionStyle,
+                        opacity $transitionStyle;
+                }
+
+                .icon
+                {
+                    fill: var(--accent);
+                    position: absolute;
+                    inset: 0;
+                    transform: scale(.25);
+                    opacity: 0;
+                    transition: opacity $transitionStyle;
+                }
+
+                &:hover
+                {
+                    cursor: pointer;
+
+                    .image
+                    {
+                        box-shadow: $boxShadowValues black;
+                        opacity: .5;
+                    }
+
+                    .icon { opacity: 1; }
+                }
             }
 
-            .albumName { padding: .25em 0; }
+            .content
+            {
+                align-self: flex-end;
+                margin: 0 2em;
+
+                .name { font-size: 4em; }
+                
+                .info
+                {
+                    font-size: 1.75em;
+
+                    & > *
+                    {
+                        display: flex;
+                        align-items: center;
+                        margin-right: .5em;
+
+                        img
+                        {
+                            height: 1em;
+                            width: 1em;
+                        }
+
+                        * { margin-right: .25em; }
+                    }
+                }
+
+                .searchBar
+                {
+                    margin-top: 2em;
+                    align-items: center;
+
+                    img
+                    {
+                        height: 1.5em;
+                        width: 1.5em;
+                    }
+
+                    input
+                    {
+                        width: 100%;
+                        margin: 0 .25em;
+                        background: none;
+                        border: none;
+                        border-bottom: 2px solid transparent;
+                        transition: border-bottom-color .5s ease;
+
+                        &:focus
+                        {
+                            outline: none;
+                            border-bottom-color: var(--accent);
+                        }
+                    }
+                }
+            }
+        }
+
+        .body
+        {
+            $song: inherit;
+            $plays: inherit;
+            $duration: inherit;
+
+            #songListInAlbum
+            {
+                list-style: none;
+                counter-reset: songNumbers;
+                
+                li
+                {
+                    counter-increment: songNumbers;
+                    display: flex;
+                    align-items: center;
+
+                    .song
+                    {
+                        width: $song;
+                        display: flex;
+                        flex-direction: column;
+
+                        .name { font-size: 2.25em; }
+                        .artist { font-size: 1.5em; }
+                    }
+
+                    .plays
+                    {
+                        width: $plays;
+                        font-size: 1.5em;
+                    }
+
+                    .duration
+                    {
+                        width: $duration;
+                        font-size: 1.5em;
+                    }
+
+                    &::before
+                    {
+                        content: counter(songNumbers) ' ';
+                    }
+                }
+            }
         }
     }
 }
