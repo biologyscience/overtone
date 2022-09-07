@@ -28,6 +28,8 @@ function parseTime(ms)
 		seconds: round(ms / 1000) % 60
 	};
 
+    // data.timeStamp = '';
+
 	return data;
 };
 

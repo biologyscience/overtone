@@ -1,41 +1,69 @@
+const
+    outAlbum = { wait: false, lastInput: undefined },
+    inAlbum = { wait: false, lastInput: undefined };
+
+function displayNone(x) { x.style.display = 'none'; };
+function displayRevert(x) { x.style.display = ''; };
+
+function searchOutAlbum(E)
 {
-    let
-        wait = false,
-        lastInput;
+    const input = E.target;
 
-    const
-        sectionAlbum = document.querySelector('section.album'),
-        input = sectionAlbum.querySelector('.head input');
-        
-    function search()
+    if (outAlbum.wait) return;
+
+    outAlbum.wait = true;
+
+    if (outAlbum.lastInput === input.value.toLowerCase()) return outAlbum.wait = false;
+
+    outAlbum.lastInput = input.value.toLowerCase();
+
+    const albumItems = Array.from(document.querySelector('section.album .out .body').children);
+
+    albumItems.forEach(x => x.classList.remove('displayNone'));
+
+    albumItems
+    .filter(x => !x.dataset.albumName.toLowerCase().includes(outAlbum.lastInput))
+    .forEach(x => x.classList.add('displayNone'));
+
+    setTimeout(() =>
     {
-        const inputValue = input.value;
+        outAlbum.wait = false;
 
-        if (wait) return;
-    
-        wait = true;
-    
-        if (lastInput === inputValue.toLowerCase()) return wait = false;
-    
-        lastInput = inputValue.toLowerCase();
+        if (outAlbum.lastInput === input.value.toLowerCase()) return;
 
-        const albumItems = [...sectionAlbum.querySelectorAll('.body .albumItem')];
+        searchOutAlbum(E);
+    }, 500);
+};
+        
+function searchInAlbum(E)
+{
+    const input = E.target;
     
-        albumItems.forEach(x => x.classList.remove('displayNone'));
+    if (inAlbum.wait) return;
     
-        albumItems
-        .filter(x => !x.dataset.albumName.toLowerCase().includes(lastInput))
-        .forEach(x => x.classList.add('displayNone'));
-    
-        setTimeout(() =>
-        {
-            wait = false;
-    
-            if (lastInput === inputValue.toLowerCase()) return;
-    
-            search();
-        }, 500);
-    };
-    
-    input.addEventListener('input', search);
-}
+    inAlbum.wait = true;
+
+    if (inAlbum.lastInput === input.value.toLowerCase()) return inAlbum.wait = false;
+
+    inAlbum.lastInput = input.value.toLowerCase();
+
+    const songList = Array.from(document.getElementById('songListInAlbum').children);
+
+    songList.forEach(displayRevert);
+
+    songList
+    .filter(x => !x.dataset.songName.includes(inAlbum.lastInput))
+    .forEach(displayNone);
+
+    setTimeout(() =>
+    {
+        inAlbum.wait = false;
+
+        if (inAlbum.lastInput === input.value.toLowerCase()) return;
+
+        searchInAlbum(E);
+    }, 500);
+};
+
+document.getElementById('outAlbumInput').addEventListener('input', searchOutAlbum);
+document.getElementById('inAlbumInput').addEventListener('input', searchInAlbum);

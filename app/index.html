@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="css/sections/extras.css">
 
         <script src="js/album/make.js" defer></script>
-        <script src="js/album/observer.js" defer></script>
+        <script src="js/album/search.js" defer></script>
         <script src="js/album/showAlbum.js" defer></script>
 
         <script src="js/audio/choose.js" defer></script>
@@ -158,40 +158,38 @@
             </section>
 
             <section class="album inheritHeight">
-                <div class="out displayNone">
+                <div class="out inheritHeight flexCol">
                     <div class="head">
-                        <input type="text">
+                        <input id="outAlbumInput" type="text">
                     </div>
-                    <div class="body flex inheritHeight"></div>
+                    <div class="body flex"></div>
                 </div>
-                <div class="in">
+                <div class="in displayNone">
                     <div class="head flex">
-                        <div class="albumArt">
-                            <img src="https://i.scdn.co/image/ab67616d0000b273e0783b9378aa3857b8a9d24d">
-                        </div>
+                        <div class="albumArt"> <img> </div>
                         <div class="content flexCol">
-                            <div class="name">CLOUDS (THE MIXTAPE)</div>
+                            <div class="name"></div>
                             <div class="info flex">
                                 <div>
                                     <img src="svg/person.svg">
-                                    <span class="albumArtist">NF</span>
+                                    <span class="albumArtist"></span>
                                 </div>
                                 <div>
                                     <img src="svg/calender.svg">
-                                    <span class="year">2021</span>
+                                    <span class="year"></span>
                                 </div>
                                 <div>
                                     <img src="svg/hash.svg">
-                                    <span class="songCount">11 songs</span>
+                                    <span class="songCount"></span>
                                 </div>
                                 <div>
                                     <img src="svg/timer.svg">
-                                    <span class="duration">42:26</span>
+                                    <span class="duration"></span>
                                 </div>
                             </div>
                             <div class="searchBar flex">
                                 <img src="svg/search.svg">
-                                <input type="text" placeholder="Search in this list">
+                                <input id="inAlbumInput" type="text" placeholder="Search in this list">
                             </div>
                         </div>
                     </div>
@@ -204,16 +202,7 @@
                             <img src="svg/timer.svg" class="duration">
                         </div>
                         <div class="mainDivider"></div>
-                        <ul id="songListInAlbum">
-                            <li data-song-name="that's a joke">
-                                <div class="song">
-                                    <span class="name">THAT'S A JOKE</span>
-                                    <span class="artist">NF</span>
-                                </div>
-                                <div class="plays">35,933,318</div>
-                                <div class="duration">3:49</div>
-                            </li>
-                        </ul>
+                        <ul id="songListInAlbum"></ul>
                     </div>
                 </div>
             </section>
