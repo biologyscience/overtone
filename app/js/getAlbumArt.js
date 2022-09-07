@@ -9,7 +9,7 @@ function chooseFiles()
     const
         options =
         {
-            filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFiles } ],
+            filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFileFormats } ],
             properties: ['multiSelections', 'showHiddenFiles']
         },
 

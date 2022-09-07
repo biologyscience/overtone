@@ -1,24 +1,57 @@
 document.getElementById('misc').onclick = () =>
 {
-    // document.dispatchEvent(new Event('-makeAlbumList'));
-
-    let i = 0;
-
-    [
-        document.querySelector('section.album .in .head'),
-        document.querySelector('section.album .in .mainDivider'),
-        document.querySelector('section.album .body .columnDividers'),
-        document.querySelector('section.album .body .mainDivider')
-    ].forEach((x) =>
-    {
-        i = i + x.offsetHeight;
-    });
-
-    document.getElementById('songListInAlbum').style.height = `calc(var(--displayHeight) - ${i}px)`;
-
     return;
 
     const fs = require('fs');
+
+    const { read, formatter, buffer2DataURL } = require('./js/util');
+
+    fs.readdirSync('app/album arts/webp').forEach((x) =>
+    {
+        const fl = 'app/album arts/webp/' + x;
+
+        const dataURL = buffer2DataURL('image/webp', fs.readFileSync(fl));
+
+        ee[x.split('.')[0]] = dataURL;
+    });
+
+    fs.writeFileSync('app/json/new.json', JSON.stringify(ee, null, 4));
+
+    console.log('')
+
+    // document.dispatchEvent(new Event('-makeAlbumList'));
+
+
+
+    return;
+
+    const sharp = require('sharp');
+
+
+    const albums = read.albums();
+    const metadata = read.metadata();
+
+    console.time();
+
+    for (const x in albums)
+    {
+        const meta = metadata[albums[x].songs[0]];
+
+        const name = formatter(meta.album, meta.albumArtist);
+
+        if (fs.existsSync(`app/album arts/${name}.jpeg`))
+        {
+            sharp(`app/album arts/${name}.jpeg`)
+            .toFormat('webp')
+            .resize(500, 500)
+            .toFile(`app/album arts/webp/${name}.webp`);
+        }
+    }
+
+    console.timeEnd();
+
+    return;
+
 
     const { validateMusicFileFormat, getMetaData, json } = require('./js/util');
 
@@ -39,8 +72,17 @@ document.getElementById('misc').onclick = () =>
                 lol[tags[i].album] =
                 {
                     artist: tags[i].albumArtist,
-                    ref: `E:/Music/${p[i]}`
+                    year: tags[i].year,
+                    songs: [`E:\\Music\\${p[i]}`],
+                    rawDuration: tags[i].rawDuration
                 };
+            }
+
+            else
+            {
+                lol[tags[i].album].songs.push(`E:\\Music\\${p[i]}`);
+
+                lol[tags[i].album].rawDuration = lol[tags[i].album].rawDuration + tags[i].rawDuration;
             }
         }
 
