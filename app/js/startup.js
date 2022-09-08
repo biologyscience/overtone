@@ -41,7 +41,7 @@ let a = setTimeout(() =>
 /**
  * misc
  */
-let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 0);
+let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 1000);
 
 
 /**
