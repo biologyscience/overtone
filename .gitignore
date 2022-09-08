@@ -1,6 +1,8 @@
-app/temp
-app/json/*
-!app/json/emptyFile
 app/album arts
+app/json/*
+!app/json/empty.file
+app/temp
+app/webp/*
+!app/webp/empty.file
 node_modules
 npm start.vbs

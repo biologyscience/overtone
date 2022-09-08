@@ -29,7 +29,7 @@ function ready()
     ipcMain.on('ipc-close', () => WINDOW.close());
 };
 
-['config', 'metadata', 'queues', 'songList'].forEach((x) =>
+['albums', 'config', 'metadata', 'queues', 'songList'].forEach((x) =>
 {
     const path = `app/json/${x}.json`;
 
