@@ -45,15 +45,6 @@ function showAlbum(E)
 
     document.querySelector('section.album .out').classList.add('displayNone');
     document.querySelector('section.album .in').classList.remove('displayNone');
-
-    let i = 4;
-
-    [
-        document.querySelector('section.album .in .head'),
-        document.querySelector('section.album .body .columnDividers'),
-    ].forEach(x => i = i + x.offsetHeight);
-    
-    document.getElementById('songListInAlbum').style.height = `calc(var(--displayHeight) - ${i}px)`;
 };
 
 document.querySelector('section.album .body').addEventListener('click', showAlbum);

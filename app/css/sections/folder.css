@@ -118,6 +118,7 @@ section.folder .in #songListInFolder {
   margin: 0;
   padding: 0;
   overflow-y: auto;
+  flex-grow: 1;
 }
 section.folder .in #songListInFolder li {
   grid-template-columns: 52.2vw auto;
