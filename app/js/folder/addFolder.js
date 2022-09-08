@@ -5,7 +5,7 @@ let
 const
     { readdirSync, statSync } = require('fs'),
     { join } = require('path'),
-    { json, getMetaData, validateMusicFileFormat } = require('./js/util');
+    { json, validateMusicFileFormat } = require('./js/util');
 
 function getAllFolders(path)
 {
@@ -23,7 +23,7 @@ function filterFolders()
 {
     allFolders.forEach((x) =>
     {
-        const files = readdirSync(x).filter(y => statSync(join(x, y)).isDirectory() === false);
+        const files = readdirSync(x).filter(y => !statSync(join(x, y)).isDirectory());
 
         for (const file of files)
         {
@@ -34,54 +34,6 @@ function filterFolders()
             }
         }
     });
-};
-
-function updateMetaData(data)
-{
-    const
-        tags = [],
-        paths = [];
-
-    const
-        metadata = new json('app/json/metadata.json'),
-        content = metadata.read();
-
-    for (const x in data)
-    {
-        data[x].forEach((a) =>
-        {
-            tags.push(getMetaData(a));
-            paths.push(a);
-        });
-    }
-
-    Promise.all(tags).then((x) =>
-    {
-        for (let i = 0; i < x.length; i++) { content[paths[i]] = x[i]; }
-
-        metadata.save();
-    });
-};
-
-function saveSongList()
-{
-    const
-        songList = new json('app/json/songList.json'),
-        data = songList.read();
-
-    filtered.forEach((x) =>
-    {
-        const songListInFolder = readdirSync(x)
-        .filter(a => !statSync(join(x, a)).isDirectory())
-        .filter(b => validateMusicFileFormat(b))
-        .map(c => join(x, c));
-
-        data[x] = songListInFolder;
-    });
-
-    songList.save();
-
-    updateMetaData(data);
 };
 
 function addFolder()
@@ -151,7 +103,20 @@ function addFolder()
             }
         });
 
-        saveSongList();
+        const songList = [];
+
+        filtered.forEach((dir) =>
+        {
+            readdirSync(dir)
+            .filter(a => !statSync(join(dir, a)).isDirectory())
+            .filter(b => validateMusicFileFormat(b))
+            .map(c => join(dir, c))
+            .forEach(x => songList.push(x));
+        });
+
+        document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: songList}));
+        document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: songList}));
+        document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: filtered}));
 
         allFolders = [];
         filtered = [];

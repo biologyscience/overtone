@@ -176,12 +176,16 @@ class json
     constructor(fileLocation)
     {
         this.fileLocation = fileLocation;
-        this.fs = require('fs');
+
+        const { readFileSync, writeFileSync } = require('fs');
+
+        this.readFileSync = readFileSync;
+        this.writeFileSync = writeFileSync;
     };
 
     read()
     {
-        const json = this.fs.readFileSync(this.fileLocation);
+        const json = this.readFileSync(this.fileLocation);
 
         this.json = JSON.parse(json);
 
@@ -193,7 +197,7 @@ class json
     {
         const json = JSON.stringify(this.json, null, 4);
 
-        this.fs.writeFileSync(this.fileLocation, json);
+        this.writeFileSync(this.fileLocation, json);
     };
 };
 
@@ -208,83 +212,11 @@ const read =
     songList() { return JSON.parse(this.fs.readFileSync('app/json/songList.json')); }
 };
 
-function updateMetaDataJSON(tags)
-{
-    const metadata = new json('app/json/metadata.json');
-
-    const data = metadata.read();
-
-    const { album, albumartist, artists, bpm, disk, genre, title, track, year } = tags.common;
-
-    const
-        time = parseTime(tags.format.duration * 1000),
-        hours = time.hours,
-        minutes = time.minutes,
-        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
-
-    let duration;
-
-    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
-
-    data[fileLocation] =
-    {
-        album,
-        albumArtist: albumartist,
-        artists,
-        bpm,
-        disk,
-        genre,
-        title,
-        track,
-        year,
-        duration,
-        rawDuration: Math.floor(tags.format.duration * 1000)
-    };
-
-    metadata.save();
-};
-
 function validateMusicFileFormat(fileLocation)
 {
     const validator = /\.(mp3|flac|ogg)$/i;
 
     return validator.test(fileLocation);
-};
-
-class ThrottleOnInput
-{
-    constructor(input, fx, delay)
-    {
-        this.input = input;
-        this.fx = fx;
-        this.delay = delay;
-        this.wait = false;
-        this.lastInput = undefined;
-    };
-
-    run()
-    {
-        const inputValue = this.input.value;
-
-        if (this.wait) return;
-    
-        this.wait = true;
-    
-        if (this.lastInput.toLowerCase() === inputValue.toLowerCase()) return this.wait = false;
-    
-        this.lastInput = inputValue.toLowerCase();
-
-        this.fx();
-
-        setTimeout(() =>
-        {
-            this.wait = false;
-    
-            if (this.lastInput.toLowerCase() === inputValue.toLowerCase()) return;
-    
-            this.run();
-        }, this.delay);   
-    }
 };
 
 //
@@ -302,7 +234,5 @@ module.exports =
     getAudioInfo,
     json,
     read,
-    updateMetaDataJSON,
-    validateMusicFileFormat,
-    ThrottleOnInput
+    validateMusicFileFormat
 };

@@ -8,14 +8,14 @@ function showAlbum(E)
 
     if (!albumItem.classList.contains('albumItem')) return;
 
-    const { read, getAlbumArt, parseTime } = require('./js/util');
+    const { read, parseTime } = require('./js/util');
 
     const
-        albumName = albumItem.dataset.albumName,
+        id = albumItem.dataset.id,
         metadata = read.metadata(),
-        album = read.albums()[albumName];
+        { album, artist, rawDuration, songs, year } = read.albums()[id];
 
-    album.songs.forEach((x) =>
+    songs.forEach((x) =>
     {
         const li = document.createElement('li');
 
@@ -36,27 +36,24 @@ function showAlbum(E)
 
     const head = document.querySelector('section.album .in .head');
 
-    getAlbumArt(album.songs[0]).then((pic) =>
-    {
-        head.querySelector('.albumArt img').setAttribute('src', pic.URL);
-        head.querySelector('.content .name').innerHTML = albumName;
-        head.querySelector('.content .albumArtist').innerHTML = album.artist;
-        head.querySelector('.content .year').innerHTML = album.year;
-        head.querySelector('.content .songCount').innerHTML = album.songs.length;
-        head.querySelector('.content .duration').innerHTML = Object.values(parseTime(album.rawDuration)).join(':');
+    head.querySelector('.albumArt img').setAttribute('src', `webp/${id}.webp`);
+    head.querySelector('.content .name').innerHTML = album;
+    head.querySelector('.content .albumArtist').innerHTML = artist;
+    head.querySelector('.content .year').innerHTML = year;
+    head.querySelector('.content .songCount').innerHTML = songs.length;
+    head.querySelector('.content .duration').innerHTML = Object.values(parseTime(rawDuration)).join(':');
 
-        document.querySelector('section.album .out').classList.add('displayNone');
-        document.querySelector('section.album .in').classList.remove('displayNone');
+    document.querySelector('section.album .out').classList.add('displayNone');
+    document.querySelector('section.album .in').classList.remove('displayNone');
 
-        let i = 4;
+    let i = 4;
 
-        [
-            document.querySelector('section.album .in .head'),
-            document.querySelector('section.album .body .columnDividers'),
-        ].forEach(x => i = i + x.offsetHeight);
-        
-        document.getElementById('songListInAlbum').style.height = `calc(var(--displayHeight) - ${i}px)`;
-    });
+    [
+        document.querySelector('section.album .in .head'),
+        document.querySelector('section.album .body .columnDividers'),
+    ].forEach(x => i = i + x.offsetHeight);
+    
+    document.getElementById('songListInAlbum').style.height = `calc(var(--displayHeight) - ${i}px)`;
 };
 
 document.querySelector('section.album .body').addEventListener('click', showAlbum);

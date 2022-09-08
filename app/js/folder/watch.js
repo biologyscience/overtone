@@ -49,19 +49,14 @@ function addDir(path)
 
     if (songs.length === 0) return;
 
-    const
-        songList = new json('app/json/songList.json'),
-        config = new json('app/json/config.json'),
-        songListData = songList.read(),
-        configData = config.read();
+    const config = new json('app/json/config.json');
 
-    songListData[path] = songs;
-    configData.checkMusicIn.push(path);
-
-    songList.save();
-    configData.save();
+    config.read().checkMusicIn.push(path);
+    config.save();
 
     watcher.add(path);
+
+    document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: [path]}));
 };
 
 function unlinkDir(path)
@@ -83,7 +78,7 @@ function unlinkDir(path)
     songList.save();
     configData.save();
 
-    watcher.unwatch(path)
+    watcher.unwatch(path);
 };
 
 watcher.on('ready', () =>

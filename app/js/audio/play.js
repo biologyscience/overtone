@@ -8,7 +8,7 @@ let
 
 function emitMetaData(fileLocation)
 {
-    const { getAlbumArt, read, buffer2DataURL, updateMetaDataJSON } = require('./js/util');
+    const { getAlbumArt, read, buffer2DataURL } = require('./js/util');
 
     const tags = read.metadata()[fileLocation];
 
@@ -37,8 +37,6 @@ function emitMetaData(fileLocation)
             };
 
             document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: send}));
-
-            updateMetaDataJSON(tag);
         });
     }
 
