@@ -160,6 +160,8 @@ section.album
             $plays: 7vw;
 
             padding: 0 2em;
+            flex-grow: 1;
+            overflow: hidden;
             
             .columnDividers
             {
@@ -194,6 +196,7 @@ section.album
                 list-style: none;
                 margin: 0;
                 padding: 0;
+                flex-grow: 1;
                 overflow-y: auto;
                 counter-reset: songNumbers;
                 

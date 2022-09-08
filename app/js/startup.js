@@ -11,20 +11,6 @@ let a = setTimeout(() =>
 
     document.getElementById('queueList').style.height = `${math}px`;
 
-    // queuesHolder
-    let queuesHolderHeight = 0;
-
-    Array.from(document.querySelector('section.queue').children).forEach(x => x.id === 'queuesHolder' ? null : queuesHolderHeight = queuesHolderHeight + x.offsetHeight);
-
-    document.getElementById('queuesHolder').style.height = `calc(var(--displayHeight) - ${queuesHolderHeight + 2}px)`;
-    
-    // folderIn list
-    let songListInFolderHeight = 0;
-    
-    Array.from(document.querySelector('section.folder .in').children).forEach(x => x.id === 'songListInFolder' ? null : songListInFolderHeight = songListInFolderHeight + x.offsetHeight);
-
-    document.getElementById('songListInFolder').style.height = `calc(var(--displayHeight) - ${songListInFolderHeight + 2}px)`;
-
     // display none to divs
     [
         'section.queue',

@@ -138,6 +138,10 @@ section.queue
     {
         width: 100%;
         font-size: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
 
         ul
         {
@@ -145,7 +149,7 @@ section.queue
             padding: 0;
             margin: 0;
             height: inherit;
-            overflow-y: scroll;
+            overflow-y: auto;
             display: none;
 
             &.current

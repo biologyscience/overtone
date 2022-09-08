@@ -101,13 +101,17 @@ section.queue .headBottom {
 section.queue #queuesHolder {
   width: 100%;
   font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
 }
 section.queue #queuesHolder ul {
   list-style: none;
   padding: 0;
   margin: 0;
   height: inherit;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: none;
 }
 section.queue #queuesHolder ul.current {
