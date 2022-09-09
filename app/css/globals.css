@@ -62,13 +62,6 @@ input { user-select: auto !important; }
 
 *::-webkit-scrollbar-thumb { background-color: var(--dark70); }
 
-.mainDivider
-{
-    width: 100%;
-    height: 2px;
-    background-color: var(--dark40);
-}
-
 .hover3D
 {
     transition:

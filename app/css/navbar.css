@@ -9,6 +9,15 @@ nav {
 nav * {
   pointer-events: none;
 }
+nav::before {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  top: 0;
+  left: 0;
+}
 nav ul {
   list-style: none;
   padding: 0;

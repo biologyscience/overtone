@@ -42,6 +42,18 @@ section.folder .out img {
   height: 1.7em;
   width: 1.7em;
 }
+section.folder .out .folderList {
+  padding: 1.5em 1em;
+}
+section.folder .out .folderList::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
 section.folder .out .folderOptions {
   font-size: 1.1rem;
   grid-auto-flow: column;
@@ -81,6 +93,15 @@ section.folder .in .head #folderName {
 section.folder .in .body {
   grid-template-columns: auto auto 1fr;
   padding: 0.5em 0;
+}
+section.folder .in .body::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
 }
 section.folder .in .body > * {
   margin: 0 1em;

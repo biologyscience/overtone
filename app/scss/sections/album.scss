@@ -1,3 +1,5 @@
+@use '../util';
+
 section.album
 {
     .out
@@ -47,6 +49,13 @@ section.album
         .head
         {
             padding: 2.5em;
+
+            &::after
+            {
+                @include util.divider;
+                bottom: 0;
+                left: 0;
+            }
 
             .albumArt
             {
@@ -167,6 +176,12 @@ section.album
             {
                 align-items: center;
                 padding: 1em 0;
+
+                &::after
+                {
+                    @include util.divider;
+                    bottom: 0;
+                }
 
                 img
                 {
