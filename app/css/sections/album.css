@@ -30,6 +30,15 @@ section.album .out .body .albumItem .albumName {
 section.album .in .head {
   padding: 2.5em;
 }
+section.album .in .head::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
 section.album .in .head .albumArt {
   position: relative;
 }
@@ -111,6 +120,14 @@ section.album .in .body {
 section.album .in .body .columnDividers {
   align-items: center;
   padding: 1em 0;
+}
+section.album .in .body .columnDividers::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
 }
 section.album .in .body .columnDividers img {
   height: 1.5em;

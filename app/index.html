@@ -85,7 +85,6 @@
                     <img src="svg/close.svg">
                 </button>
             </div>
-            <div class="mainDivider"></div>
             <ul id="queueList"></ul>
         </div>
 
@@ -108,14 +107,11 @@
                         <img src="svg/close.svg">
                     </button>
                 </div>
-                <div class="headBottom flex justifyContentCenter">
-                    <strong>
-                        <span id="currentSongIndex">-</span>
-                    </strong>
+                <div class="headBottom flex justifyContentCenter relative">
+                    <strong><span id="currentSongIndex">-</span></strong>
                     <span>/</span>
                     <span id="totalSongsInCurrentQueue">-</span>
                 </div>
-                <div class="mainDivider"></div>
                 <div id="queuesHolder">
                     <ul class="current"></ul>
                 </div>
@@ -123,10 +119,9 @@
 
             <section class="folder inheritHeight">
                 <div class="out inheritHeight">
-                    <div style="padding: 1.5em 1em;">
+                    <div class="folderList relative">
                         <ul id="folders" class="pointerEventsNone"></ul>
                     </div>
-                    <div class="mainDivider"></div>
                     <div style="padding: .5em;">
                         <div id="addFolder" class="folderOptions grid">
                             <img class="folder" src="svg/folderAdd.svg">
@@ -143,7 +138,7 @@
                         <img src="svg/chevronLeft.svg" id="backIcon">
                         <span id="folderName">empty</span>
                     </div>
-                    <div class="body grid">
+                    <div class="body grid relative">
                         <div class="flex">
                             <img src="svg/hash.svg">
                             <span id="songCount" class="marginLeft">empty</span>
@@ -157,7 +152,6 @@
                             <input type="text" id="searchInput" class="marginLeft" placeholder="Search in this list">
                         </div>
                     </div>
-                    <div class="mainDivider"></div>
                     <ul id="songListInFolder"></ul>
                 </div>
             </section>
@@ -170,7 +164,7 @@
                     <div class="body flex"></div>
                 </div>
                 <div class="in displayNone inheritHeight flexCol">
-                    <div class="head flex">
+                    <div class="head flex relative">
                         <div class="albumArt"> <img> </div>
                         <div class="content flexCol">
                             <div class="name"></div>
@@ -198,15 +192,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mainDivider"></div>
                     <div class="body flexCol">
-                        <div class="columnDividers flex">
+                        <div class="columnDividers flex relative">
                             <img src="svg/hash.svg" class="number">
                             <span class="song block">TITLE</span>
                             <span class="plays block">PLAYS</span>
                             <img src="svg/timer.svg" class="duration">
                         </div>
-                        <div class="mainDivider"></div>
                         <ul id="songListInAlbum"></ul>
                     </div>
                 </div>
@@ -322,7 +314,6 @@
 
 
         <nav class="relative fixed bottom0 left0">
-            <div class="mainDivider"></div>
             <ul class="flex relative">
                 <li data-display-section="queue">
                     <button>

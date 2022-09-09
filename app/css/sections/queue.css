@@ -11,6 +11,15 @@
 #queueListMenu .head {
   padding: 0.7em 0.5em;
 }
+#queueListMenu .head::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
 #queueListMenu .head > img {
   height: 1.5em;
   width: 1.5em;
@@ -97,6 +106,15 @@ section.queue .headBottom {
   width: 100%;
   font-size: 20px;
   padding: 0.5em 0;
+}
+section.queue .headBottom::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
 }
 section.queue #queuesHolder {
   width: 100%;
