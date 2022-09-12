@@ -44,8 +44,8 @@ nav
         {
             display: block;
             margin: calc( calc(var(--navbarHeight) - var(--size)) / 2 ) 0;
-
-            button { pointer-events: all !important; }
+            cursor: pointer;
+            pointer-events: all !important;
 
             svg
             {
