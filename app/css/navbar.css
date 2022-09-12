@@ -37,8 +37,7 @@ nav ul::after {
 nav ul li {
   display: block;
   margin: calc((var(--navbarHeight) - var(--size)) / 2) 0;
-}
-nav ul li button {
+  cursor: pointer;
   pointer-events: all !important;
 }
 nav ul li svg {
