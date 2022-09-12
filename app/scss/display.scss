@@ -1,0 +1,22 @@
+#displayLeft
+{
+    height: var(--displayHeight);
+    top: var(--titleBarHeight);
+    transition: transform ease 250ms;
+    background-color: var(--dark25);
+    
+    section
+    {
+        height: var(--displayHeight);
+        width: 60vw;
+    }
+}
+
+#displayRight
+{
+    font-size: 20px;
+    height: var(--displayHeight);
+    width: 40vw;
+    top: var(--titleBarHeight);
+    background-color: var(--dark25);
+}

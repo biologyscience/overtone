@@ -16,13 +16,10 @@ function show(li)
     li.classList.add('current');
 
     const
-        sectionName = li.dataset.displaySection,
-        displaySection = document.querySelector(`section.${sectionName}`),
+        multiplier = li.dataset.multiplier,
         displayLeft = document.getElementById('displayLeft');
-
-    Array.from(displayLeft.children).forEach(x => x.classList.add('displayNone'));
-
-    displaySection.classList.remove('displayNone');
+    
+    displayLeft.style.transform = `translateX(calc(-60vw * ${multiplier}))`;
 };
 
 function changeNavbarItemFocus(E)
