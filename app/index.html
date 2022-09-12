@@ -94,7 +94,7 @@
 <!--  -->
 
 
-        <div id="displayLeft" class="flex fixed left0" data-alpha="1">
+        <div id="displayLeft" class="flex fixed left0">
           
             <section class="queue flexCol">
                 <div class="headTop flex">
@@ -166,7 +166,12 @@
                 </div>
                 <div class="in displayNone inheritHeight flexCol">
                     <div class="head flex relative">
-                        <div class="albumArt"> <img> </div>
+                        <button id="backToAlbumOut">
+                            <img src="svg/chevronLeft.svg">
+                        </button>
+                        <div class="albumArt">
+                            <img>
+                        </div>
                         <div class="content flexCol">
                             <div class="name"></div>
                             <div class="info flex">

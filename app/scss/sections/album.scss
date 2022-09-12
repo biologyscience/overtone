@@ -48,7 +48,8 @@ section.album
     {
         .head
         {
-            padding: 2.5em;
+            padding: 2.5em 0;
+            gap: 2em;
 
             &::after
             {
@@ -57,11 +58,20 @@ section.album
                 left: 0;
             }
 
+            #backToAlbumOut
+            {
+                aspect-ratio: 1;
+                height: 2em;
+                align-self: center;
+                margin-left: 1em;
+
+                * { pointer-events: none; }
+            }
+
             .albumArt
             {
-                
                 $size: 200px;
-                $boxShadowValues: 0 0 calc($size / 20) calc($size / 40);
+                $boxShadowValues: 0 0 2px 1px;
                 $transitionStyle: .5s ease;
                 
                 position: relative;
@@ -108,7 +118,7 @@ section.album
             .content
             {
                 align-self: flex-end;
-                margin: 0 2em;
+                gap: 1.5em;
 
                 .name { font-size: 4em; }
                 
@@ -134,7 +144,6 @@ section.album
 
                 .searchBar
                 {
-                    margin-top: 2em;
                     align-items: center;
 
                     img

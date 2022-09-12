@@ -47,4 +47,12 @@ function showAlbum(E)
     document.querySelector('section.album .in').classList.remove('displayNone');
 };
 
+function hideAlbum()
+{
+    document.querySelector('section.album .out').classList.remove('displayNone');
+    document.querySelector('section.album .in').classList.add('displayNone');
+    document.getElementById('inAlbumInput').value = '';
+};
+
 document.querySelector('section.album .body').addEventListener('click', showAlbum);
+document.getElementById('backToAlbumOut').addEventListener('click', hideAlbum);
