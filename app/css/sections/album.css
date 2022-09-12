@@ -28,7 +28,8 @@ section.album .out .body .albumItem .albumName {
   padding: 0.25em 0;
 }
 section.album .in .head {
-  padding: 2.5em;
+  padding: 2.5em 0;
+  gap: 2em;
 }
 section.album .in .head::after {
   content: "";
@@ -39,13 +40,22 @@ section.album .in .head::after {
   bottom: 0;
   left: 0;
 }
+section.album .in .head #backToAlbumOut {
+  aspect-ratio: 1;
+  height: 2em;
+  align-self: center;
+  margin-left: 1em;
+}
+section.album .in .head #backToAlbumOut * {
+  pointer-events: none;
+}
 section.album .in .head .albumArt {
   position: relative;
 }
 section.album .in .head .albumArt img {
   height: 200px;
   width: 200px;
-  box-shadow: 0 0 10px 5px none;
+  box-shadow: 0 0 2px 1px none;
   transition: border-radius 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
 }
 section.album .in .head .albumArt::after {
@@ -64,7 +74,7 @@ section.album .in .head .albumArt:hover {
 }
 section.album .in .head .albumArt:hover img {
   border-radius: 0.25em;
-  box-shadow: 0 0 10px 5px black;
+  box-shadow: 0 0 2px 1px black;
   opacity: 0.5;
 }
 section.album .in .head .albumArt:hover::after {
@@ -72,7 +82,7 @@ section.album .in .head .albumArt:hover::after {
 }
 section.album .in .head .content {
   align-self: flex-end;
-  margin: 0 2em;
+  gap: 1.5em;
 }
 section.album .in .head .content .name {
   font-size: 4em;
@@ -93,7 +103,6 @@ section.album .in .head .content .info > * * {
   margin-right: 0.25em;
 }
 section.album .in .head .content .searchBar {
-  margin-top: 2em;
   align-items: center;
 }
 section.album .in .head .content .searchBar img {
