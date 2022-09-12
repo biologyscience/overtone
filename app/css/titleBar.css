@@ -1,10 +1,11 @@
 #titleBar {
   --fs: 22px;
+  -webkit-app-region: drag;
   font-size: var(--fs);
   height: var(--titleBarHeight);
   width: 100vw;
   background-color: var(--dark10);
-  -webkit-app-region: drag;
+  z-index: 3;
 }
 #titleBar .app {
   margin: 0 1em;

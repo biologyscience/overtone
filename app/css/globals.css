@@ -22,6 +22,7 @@ body::before
     width: 2px;
     background-color: var(--accent);
     left: 60vw;
+    z-index: 1;
 }
 
 #overlay
