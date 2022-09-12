@@ -1,26 +1,3 @@
-function showQueues()
-{
-    const displayLeft = document.getElementById('displayLeft');
-
-    displayLeft.style.transition = 'opacity ease 300ms';
-    displayLeft.style.opacity = '0.1';
-
-    document.getElementById('queueListMenu').classList.remove('displayNone');
-};
-
-function hideQueues()
-{
-    const displayLeft = document.getElementById('displayLeft');
-
-    displayLeft.style.transition = 'opacity ease 300ms';
-
-    displayLeft.style.opacity = '1';
-
-    setTimeout(() => displayLeft.style.transition = '', 300);
-
-    document.getElementById('queueListMenu').classList.add('displayNone');
-};
-
 function updateNumber({detail})
 {
     const thing = detail;
@@ -54,7 +31,7 @@ function chooseQueue(E)
 
         document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
 
-        hideQueues();
+        document.getElementById('queueListMenu').classList.add('displayNone')
 
         updateNumber({detail: {filePaths}});
     }
@@ -92,9 +69,9 @@ function displayQueueName({detail})
     document.getElementById('queueName').innerHTML = ul.dataset.queueName;
 };
 
-document.querySelector('section.queue .queueListWrapper').addEventListener('click', showQueues);
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', document.getElementById('queueListMenu').classList.remove('displayNone'));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
-document.querySelector('#queueListMenu .head .close').addEventListener('click', hideQueues);
+document.querySelector('#queueListMenu .head .close').addEventListener('click', document.getElementById('queueListMenu').classList.add('displayNone'));
 
 document.addEventListener('-selectedFilePaths', updateNumber);
 document.addEventListener('-current', updateNumber);

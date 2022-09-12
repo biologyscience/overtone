@@ -8,6 +8,16 @@
   background-color: var(--dark30);
   z-index: 1;
 }
+#queueListMenu::before {
+  position: fixed;
+  content: "";
+  height: var(--displayHeight);
+  top: var(--titleBarHeight);
+  left: 0;
+  width: 60vw;
+  background-color: black;
+  opacity: 0.1;
+}
 #queueListMenu .head {
   padding: 0.7em 0.5em;
 }

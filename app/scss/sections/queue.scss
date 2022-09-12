@@ -11,6 +11,18 @@
     background-color: var(--dark30);
     z-index: 1;
 
+    &::before
+    {
+        position: fixed;
+        content: '';
+        height: var(--displayHeight);
+        top: var(--titleBarHeight);
+        left: 0;
+        width: 60vw;
+        background-color: black;
+        opacity: .1;
+    }
+
     .head
     {
         padding: .7em .5em;
