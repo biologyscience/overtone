@@ -13,13 +13,8 @@ let a = setTimeout(() =>
 
     // display none to divs
     [
-        'section.queue',
         '#queueListMenu',
-
-        'section.folder',
-        'section.folder .in',
-
-        'section.album', 'section.artist', 'section.genre', 'section.library', 'section.extras', 'section.search'
+        'section.folder .in'
     ].forEach(x => document.querySelector(x).classList.add('displayNone'));
 
 });
