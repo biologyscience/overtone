@@ -7,10 +7,11 @@ nav
 
     $height: .15em;
 
+    font-size: 20px;
     height: var(--navbarHeight);
     width: 100vw;
     background-color: var(--dark10);
-    font-size: 20px;
+    z-index: 3;
 
     * { pointer-events: none; }
 

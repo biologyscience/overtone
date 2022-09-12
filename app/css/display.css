@@ -3,6 +3,7 @@
   top: var(--titleBarHeight);
   transition: transform ease 250ms;
   background-color: var(--dark25);
+  z-index: 0;
 }
 #displayLeft section {
   height: var(--displayHeight);
@@ -15,4 +16,5 @@
   width: 40vw;
   top: var(--titleBarHeight);
   background-color: var(--dark25);
+  z-index: 0;
 }
