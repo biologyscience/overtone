@@ -9,6 +9,7 @@
     left: 100;
     border-radius: 5px;
     background-color: var(--dark30);
+    box-shadow: 0 1vh 50px .5vw black;
     z-index: 1;
 
     &::before
@@ -19,8 +20,6 @@
         top: var(--titleBarHeight);
         left: 0;
         width: 60vw;
-        background-color: black;
-        opacity: .1;
     }
 
     .head
@@ -62,6 +61,7 @@
         padding: 0;
         margin: 0;
         overflow-y: scroll;
+        flex-grow: 1;
 
         li
         {

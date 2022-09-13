@@ -1,24 +1,3 @@
-// window.resizeTo(screen.availWidth, screen.availHeight);
-
-let a = setTimeout(() =>
-{
-    // floating queue list
-    const head = document.querySelector('#queueListMenu .head');
-
-    const queueListMenu = document.getElementById('queueListMenu');
-
-    const math = queueListMenu.offsetHeight - (head.offsetHeight + 2);
-
-    document.getElementById('queueList').style.height = `${math}px`;
-
-    // display none to divs
-    [
-        '#queueListMenu',
-        'section.folder .in'
-    ].forEach(x => document.querySelector(x).classList.add('displayNone'));
-
-});
-
 /**
  * misc
  */
@@ -61,7 +40,7 @@ let d = setTimeout(() =>
 
 let timeout = setTimeout(() =>
 {
-    [a, b, c, d, timeout].forEach((x) =>
+    [b, c, d, timeout].forEach((x) =>
     {
         clearTimeout(x);
 
