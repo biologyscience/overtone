@@ -1,8 +1,35 @@
-@mixin divider
+@mixin divider($pseudo, $position)
 {
-    content: '';
-    position: absolute;
-    height: 2px;
-    width: 100%;    
-    background-color: var(--dark40);
+    &::#{$pseudo}
+    {
+        content: '';
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        background-color: var(--dark40);
+
+        @if $position == 'TopLeft'
+        {
+            top: 0;
+            left: 0;
+        }
+
+        @if $position == 'TopRight'
+        {
+            top: 0;
+            right: 0;
+        }
+
+        @if $position == 'BottomLeft'
+        {
+            bottom: 0;
+            left: 0;
+        }
+
+        @if $position == 'BottomRight'
+        {
+            bottom: 0;
+            right: 0;
+        }
+    }
 }

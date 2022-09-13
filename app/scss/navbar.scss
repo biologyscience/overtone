@@ -14,13 +14,8 @@ nav
     z-index: 3;
 
     * { pointer-events: none; }
-
-    &::before
-    {
-        @include util.divider;
-        top: 0;
-        left: 0;
-    }
+    
+    @include util.divider(before, TopLeft);
 
     ul
     {

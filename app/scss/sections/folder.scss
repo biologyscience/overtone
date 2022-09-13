@@ -71,12 +71,7 @@ section.folder
         {
             padding: 1.5em 1em;
 
-            &::after
-            {
-                @include util.divider;
-                bottom: 0;
-                left: 0;
-            }
+            @include util.divider(after, BottomLeft);
         }
 
         .folderOptions
@@ -131,13 +126,8 @@ section.folder
             grid-template-columns: auto auto 1fr;
             padding: .5em 0;
 
-            &::after
-            {
-                @include util.divider;
-                bottom: 0;
-                left: 0;
-            }
-            
+            @include util.divider(after, BottomLeft);
+
             & > *
             {
                 margin: 0 1em;

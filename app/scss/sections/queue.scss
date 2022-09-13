@@ -27,12 +27,7 @@
     {
         padding: .7em .5em;
 
-        &::after
-        {
-            @include util.divider;
-            bottom: 0;
-            left: 0;
-        }
+        @include util.divider(after, BottomLeft);
 
         & > img
         {
@@ -154,12 +149,7 @@ section.queue
         font-size: 20px;
         padding: .5em 0;
 
-        &::after
-        {
-            @include util.divider;
-            bottom: 0;
-            left: 0;
-        }
+        @include util.divider(after, BottomLeft);
     }
 
     #queuesHolder
