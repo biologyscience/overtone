@@ -168,7 +168,7 @@ section.album
 
         .body
         {
-            $number: 2vw;
+            $number: 2.5vw;
             $song: 43vw;
             $plays: 7vw;
 
@@ -213,11 +213,9 @@ section.album
                 padding: 0;
                 flex-grow: 1;
                 overflow-y: auto;
-                counter-reset: songNumbers;
                 
                 li
                 {
-                    counter-increment: songNumbers;
                     display: flex;
                     align-items: center;
                     padding: .5em 0;
@@ -262,7 +260,7 @@ section.album
 
                     &::before
                     {
-                        content: counter(songNumbers) ' ';
+                        content: attr(data-track-number);
                         width: $number;
                         text-align: center;
                     }

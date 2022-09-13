@@ -8,14 +8,14 @@ function showAlbum(E)
 
     if (!albumItem.classList.contains('albumItem')) return;
 
-    const { read, parseTime } = require('./js/util');
+    const { read, parseTime, sort } = require('./js/util');
 
     const
         id = albumItem.dataset.id,
         metadata = read.metadata(),
         { album, artist, rawDuration, songs, year } = read.albums()[id];
 
-    songs.forEach((x) =>
+    songs.sort(sort.byTrackNumber).forEach((x) =>
     {
         const li = document.createElement('li');
 
@@ -30,6 +30,7 @@ function showAlbum(E)
         `;
         
         li.dataset.songName = metadata[x].title.toLowerCase();
+        li.dataset.trackNumber = metadata[x].track.no;
         
         songListInAlbum.append(li);
     });

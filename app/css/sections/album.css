@@ -144,7 +144,7 @@ section.album .in .body .columnDividers img {
   width: 1.5em;
 }
 section.album .in .body .columnDividers .number {
-  width: 2vw;
+  width: 2.5vw;
   border-left: 0.2em solid transparent;
 }
 section.album .in .body .columnDividers .duration {
@@ -164,10 +164,8 @@ section.album .in .body #songListInAlbum {
   padding: 0;
   flex-grow: 1;
   overflow-y: auto;
-  counter-reset: songNumbers;
 }
 section.album .in .body #songListInAlbum li {
-  counter-increment: songNumbers;
   display: flex;
   align-items: center;
   padding: 0.5em 0;
@@ -202,7 +200,7 @@ section.album .in .body #songListInAlbum li:hover {
   border-color: var(--accent);
 }
 section.album .in .body #songListInAlbum li::before {
-  content: counter(songNumbers) " ";
-  width: 2vw;
+  content: attr(data-track-number);
+  width: 2.5vw;
   text-align: center;
 }

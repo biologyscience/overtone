@@ -219,6 +219,18 @@ function validateMusicFileFormat(fileLocation)
     return validator.test(fileLocation);
 };
 
+const sort = 
+{
+    byTrackNumber(x, y)
+    {
+        const
+            trackNumberX = read.metadata()[x].track.no,
+            trackNumberY = read.metadata()[y].track.no;
+
+        return trackNumberX - trackNumberY;
+    }
+};
+
 //
 
 module.exports =
@@ -234,5 +246,6 @@ module.exports =
     getAudioInfo,
     json,
     read,
-    validateMusicFileFormat
+    validateMusicFileFormat,
+    sort
 };
