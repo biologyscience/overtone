@@ -69,9 +69,11 @@ function displayQueueName({detail})
     document.getElementById('queueName').innerHTML = ul.dataset.queueName;
 };
 
-document.querySelector('section.queue .queueListWrapper').addEventListener('click', document.getElementById('queueListMenu').classList.remove('displayNone'));
+function queueListMenu() { document.getElementById('queueListMenu').classList.toggle('displayNone') };
+
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', queueListMenu);
+document.querySelector('#queueListMenu .head .close').addEventListener('click', queueListMenu);
 document.getElementById('queueList').addEventListener('click', chooseQueue);
-document.querySelector('#queueListMenu .head .close').addEventListener('click', document.getElementById('queueListMenu').classList.add('displayNone'));
 
 document.addEventListener('-selectedFilePaths', updateNumber);
 document.addEventListener('-current', updateNumber);
