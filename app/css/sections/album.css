@@ -137,6 +137,7 @@ section.album .in .body .columnDividers::after {
   width: 100%;
   background-color: var(--dark40);
   bottom: 0;
+  left: 0;
 }
 section.album .in .body .columnDividers img {
   height: 1.5em;

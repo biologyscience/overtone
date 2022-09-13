@@ -51,12 +51,7 @@ section.album
             padding: 2.5em 0;
             gap: 2em;
 
-            &::after
-            {
-                @include util.divider;
-                bottom: 0;
-                left: 0;
-            }
+            @include util.divider(after, BottomLeft);
 
             #backToAlbumOut
             {
@@ -186,11 +181,7 @@ section.album
                 align-items: center;
                 padding: 1em 0;
 
-                &::after
-                {
-                    @include util.divider;
-                    bottom: 0;
-                }
+                @include util.divider(after, BottomLeft);
 
                 img
                 {
