@@ -85,16 +85,14 @@ function play({detail} = '')
 
     //
 
-    let temp = false;
+    let temp = true;
 
     const queues = read.queues();
 
-    for (x in queues)
-    {
+    for (const x in queues)
+    {    
         if (queues[x].join('') === queueList.join(''))
         { return temp = false; }
-
-        else { temp = true; }
     }
 
     if (temp)
