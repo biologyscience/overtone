@@ -1,107 +1,158 @@
 @use '../util';
 
-#queueListMenu
-{
-    font-size: 20px;
-    width: calc(60vw * .7);
-    height: calc(100vh * .8);
-    top: 50;
-    left: 100;
-    border-radius: 5px;
-    background-color: var(--dark30);
-    box-shadow: 0 1vh 50px .5vw black;
-    z-index: 1;
-
-    &::before
-    {
-        position: fixed;
-        content: '';
-        height: var(--displayHeight);
-        top: var(--titleBarHeight);
-        left: 0;
-        width: 60vw;
-    }
-
-    .head
-    {
-        padding: .7em .5em;
-
-        @include util.divider(after, BottomLeft);
-
-        & > img
-        {
-            height: 1.5em;
-            width: 1.5em;
-            align-self: center;
-            margin-left: 1em;
-        }
-
-        & > span
-        {
-            font-size: 1.5em;
-            margin-left: .7em;
-        }
-
-        .close
-        {
-            align-self: center;
-            right: 5%;
-
-            img
-            {
-                height: 1em;
-                width: 1em;
-            }
-        }
-    }
-
-    #queueList
-    {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        overflow-y: scroll;
-        flex-grow: 1;
-
-        li
-        {
-            grid-template-columns: 1fr 8fr 1fr;
-            margin: 0 .1em;
-            padding: .5em 0;
-            transition: border-color ease 150ms;
-
-            &:first-of-type { margin-top: .3em; }
-
-            &:last-of-type { margin-bottom: .3em; }
-
-            img
-            {
-                height: 1em;
-                width: 1em;
-            }
-
-            .dragger img { z-index: -1; }
-        }
-
-        &::-webkit-scrollbar
-        {
-            background: none;
-            width: 1px;
-        }
-        
-        &::-webkit-scrollbar-thumb
-        {
-            background-color: var(--dark80);
-        }
-    }
-    
-    .queueNames { pointer-events: none; }
-}
-
-//
-
 section.queue
 {
+    #queueListMenu
+    {
+        $width: 60vw * .6;
+        $height: calc(var(--displayHeight) * .75);
+    
+        font-size: 20px;
+        width: $width;
+        height: $height;
+        top: calc((var(--displayHeight) - $height) / 2);
+        left: calc((60vw - $width) / 2);
+        border-radius: 5px;
+        background-color: var(--dark30);
+        box-shadow: 0 1vh 50px .5vw black;
+        z-index: 1;
+        animation: slideOut 250ms ease forwards;
+    
+        &.visible
+        {
+            animation: slideIn 250ms ease forwards;  
+        }
+    
+        @keyframes slideOut
+        {
+            0%
+            {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+    
+            50%
+            {
+                transform: translateY(2.5%);
+                opacity: 1;
+            }
+    
+            99%
+            {
+                transform: translateY(2.5%);
+                opacity: 0;
+            }
+    
+            100%
+            {
+                transform: translateY(200%);
+                opacity: 0;
+            }
+        }
+    
+        @keyframes slideIn
+        {
+            0%
+            {
+                transform: translateY(200%);
+                opacity: 0;
+            }
+    
+            1%
+            {
+                transform: translateY(2.5%);
+                opacity: 0;
+            }
+    
+            50%
+            {
+                transform: translateY(2.5%);
+                opacity: 1;
+            }
+    
+            100%
+            {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+        }
+    
+        .head
+        {
+            padding: .7em .5em;
+    
+            @include util.divider(after, BottomLeft);
+    
+            & > img
+            {
+                height: 1.5em;
+                width: 1.5em;
+                align-self: center;
+                margin-left: 1em;
+            }
+    
+            & > span
+            {
+                font-size: 1.5em;
+                margin-left: .7em;
+            }
+    
+            .close
+            {
+                align-self: center;
+                right: 5%;
+    
+                img
+                {
+                    height: 1em;
+                    width: 1em;
+                }
+            }
+        }
+    
+        #queueList
+        {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: scroll;
+            flex-grow: 1;
+    
+            li
+            {
+                grid-template-columns: 1fr 8fr 1fr;
+                margin: 0 .1em;
+                padding: .5em 0;
+                transition: border-color ease 150ms;
+    
+                &:first-of-type { margin-top: .3em; }
+    
+                &:last-of-type { margin-bottom: .3em; }
+    
+                img
+                {
+                    height: 1em;
+                    width: 1em;
+                }
+    
+                .dragger img { z-index: -1; }
+            }
+    
+            &::-webkit-scrollbar
+            {
+                background: none;
+                width: 1px;
+            }
+            
+            &::-webkit-scrollbar-thumb
+            {
+                background-color: var(--dark80);
+            }
+        }
+        
+        .queueNames { pointer-events: none; }
+    }
+
     .headTop
     {
         width: 100%;
