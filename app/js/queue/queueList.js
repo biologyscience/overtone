@@ -31,7 +31,7 @@ function chooseQueue(E)
 
         document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
 
-        document.getElementById('queueListMenu').classList.add('displayNone')
+        document.getElementById('queueListMenu').classList.toggle('visible')
 
         updateNumber({detail: {filePaths}});
     }
@@ -69,10 +69,8 @@ function displayQueueName({detail})
     document.getElementById('queueName').innerHTML = ul.dataset.queueName;
 };
 
-function queueListMenu() { document.getElementById('queueListMenu').classList.toggle('displayNone') };
-
-document.querySelector('section.queue .queueListWrapper').addEventListener('click', queueListMenu);
-document.querySelector('#queueListMenu .head .close').addEventListener('click', queueListMenu);
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
+document.querySelector('#queueListMenu .head .close').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
 
 document.addEventListener('-selectedFilePaths', updateNumber);

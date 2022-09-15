@@ -78,16 +78,6 @@
             </div>
         </div>
 
-        <div id="queueListMenu" class="absolute flexCol displayNone">
-            <div class="head flex relative">
-                <img src="svg/queue.svg">
-                <span>Queues</span>
-                <button class="close absolute">
-                    <img src="svg/close.svg">
-                </button>
-            </div>
-            <ul id="queueList"></ul>
-        </div>
 
 
 
@@ -96,7 +86,17 @@
 
         <div id="displayLeft" class="flex fixed left0">
           
-            <section class="queue flexCol">
+            <section class="queue flexCol relative">
+                <div id="queueListMenu" class="absolute flexCol">
+                    <div class="head flex relative">
+                        <img src="svg/queue.svg">
+                        <span>Queues</span>
+                        <button class="close absolute">
+                            <img src="svg/close.svg">
+                        </button>
+                    </div>
+                    <ul id="queueList"></ul>
+                </div>
                 <div class="headTop flex">
                     <div class="queueListWrapper flex cursorPointer relative">
                         <span id="queueNumber">Queue Number</span>
