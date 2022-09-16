@@ -2,7 +2,7 @@ function math(offset)
 {
     let x, req, tot;
 
-    tot = parseInt(getComputedStyle(document.querySelector('nav ul'), '::after').width.split('px')[0]);
+    tot = parseInt(getComputedStyle(document.querySelector('nav'), '::after').width.split('px')[0]);
 
     x = parseInt(getComputedStyle(document.querySelector('nav')).getPropertyValue('--size').split('px')[0]);
 
@@ -45,7 +45,7 @@ function navbarStartup()
     const startUpHighlight = navbar.items[1];
     // const startUpHighlight = navbar.items[2];
 
-    navbar.div.style.setProperty('--left', math(startUpHighlight.offsetLeft) + 'px');
+    navbar.div.style.setProperty('--left', `${math(startUpHighlight.offsetLeft)}px`);
 
     show(startUpHighlight);
 };

@@ -17,24 +17,24 @@ nav
     
     @include util.divider(before, TopLeft);
 
+    &::after
+    {
+        content: '';
+        position: absolute;
+        bottom: calc($height + 2px);
+        left: var(--left);
+        height: $height;
+        width: calc( var(--size) * 1.7 );
+        background-color: var(--accent);
+        transition: left ease 250ms;
+    }
+
     ul
     {
         list-style: none;
         padding: 0;
         margin: 0;
         justify-content: space-evenly;
-
-        &::after
-        {
-            content: '';
-            position: absolute;
-            bottom: calc($height + 2px);
-            left: var(--left);
-            height: $height;
-            width: calc( var(--size) * 1.7 );
-            background-color: var(--accent);
-            transition: left ease 250ms;
-        }
 
         li
         {

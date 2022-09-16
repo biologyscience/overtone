@@ -19,13 +19,7 @@ nav::before {
   top: 0;
   left: 0;
 }
-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  justify-content: space-evenly;
-}
-nav ul::after {
+nav::after {
   content: "";
   position: absolute;
   bottom: calc(0.15em + 2px);
@@ -34,6 +28,12 @@ nav ul::after {
   width: calc(var(--size) * 1.7);
   background-color: var(--accent);
   transition: left ease 250ms;
+}
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: space-evenly;
 }
 nav ul li {
   display: block;
