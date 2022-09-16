@@ -5,4 +5,4 @@ function handleResize()
     document.dispatchEvent(event);
 };
 
-window.addEventListener('resize', handleResize);
+document.addEventListener('-AppLoaded', () => window.addEventListener('resize', handleResize));
