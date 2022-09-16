@@ -1,7 +1,11 @@
 /**
  * misc
  */
-let b = setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 1000);
+let b = setTimeout(() =>
+{
+    document.getElementById('overlay').style.display = 'none';
+    document.dispatchEvent(new Event('-AppLoaded'));
+}, 1000);
 
 
 /**
