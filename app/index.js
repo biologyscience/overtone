@@ -12,6 +12,7 @@ function ready()
         width: 1280,
         height: 720,
         frame: false,
+        title: 'OverTone',
         // icon: '',
         webPreferences:
         {
