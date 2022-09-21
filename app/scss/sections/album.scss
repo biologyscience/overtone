@@ -22,14 +22,18 @@ section.album
     
             .albumItem
             {
+                * { pointer-events: none; }
+
                 $picSize: 150px;
     
                 text-align: center;
                 width: $picSize;
                 padding: .5em;
-    
-                * { pointer-events: none; }
-    
+                opacity: 0;
+                transition: opacity 250ms ease;
+
+                &.visible { opacity: 1; }
+
                 &:hover { cursor: pointer; }
     
                 img
