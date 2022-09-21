@@ -6,7 +6,7 @@ function makeAlbumList()
         albums = read.albums(),
         albumNames = [...new Map(Object.entries(albums)).keys()];
 
-    const appendIn = document.querySelector('section.album .body');
+    const appendIn = document.querySelector('section.album .out .body');
 
     albumNames.forEach((x) =>
     {
@@ -23,7 +23,8 @@ function makeAlbumList()
 
         appendIn.append(albumItem);
     });
+
+    document.dispatchEvent(new Event('-AlbumSectionReady'));
 };
 
-// document.addEventListener('-makeAlbumList', makeAlbumList);
 makeAlbumList();

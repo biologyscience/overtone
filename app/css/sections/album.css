@@ -12,9 +12,14 @@ section.album .out .body .albumItem {
   text-align: center;
   width: 150px;
   padding: 0.5em;
+  opacity: 0;
+  transition: opacity 250ms ease;
 }
 section.album .out .body .albumItem * {
   pointer-events: none;
+}
+section.album .out .body .albumItem.visible {
+  opacity: 1;
 }
 section.album .out .body .albumItem:hover {
   cursor: pointer;
