@@ -177,22 +177,26 @@ section.folder
                 $sweetSpot: .87;
                 grid-template-columns: calc(60vw * $sweetSpot) auto;
 
-                & > div { margin: .5em 2.5em; }
+                & > div
+                {
+                    $marginLeftRight: 2.5em;
+                    margin: .5em $marginLeftRight;
+
+                    &::after
+                    {
+                        content: attr(data-song-duration);
+                        position: absolute;
+                        font-size: .8em;
+                        bottom: 0;
+                        right: -$marginLeftRight;
+                    }
+                }
 
                 .songName { font-size: 1.2em; }
 
                 .artistName, .albumName { font-size: .7em; }
 
                 img { @include rootIMG; }
-
-                &::after
-                {
-                    content: attr(data-song-duration);
-                    position: absolute;
-                    font-size: .8em;
-                    bottom: 0;
-                    right: 0;
-                }
             }
         }
     }

@@ -147,6 +147,13 @@ section.folder .in #songListInFolder li {
 section.folder .in #songListInFolder li > div {
   margin: 0.5em 2.5em;
 }
+section.folder .in #songListInFolder li > div::after {
+  content: attr(data-song-duration);
+  position: absolute;
+  font-size: 0.8em;
+  bottom: 0;
+  right: -2.5em;
+}
 section.folder .in #songListInFolder li .songName {
   font-size: 1.2em;
 }
@@ -156,11 +163,4 @@ section.folder .in #songListInFolder li .artistName, section.folder .in #songLis
 section.folder .in #songListInFolder li img {
   height: 1em;
   width: 1em;
-}
-section.folder .in #songListInFolder li::after {
-  content: attr(data-song-duration);
-  position: absolute;
-  font-size: 0.8em;
-  bottom: 0;
-  right: 0;
 }
