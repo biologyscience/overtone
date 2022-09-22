@@ -30,7 +30,7 @@ section.album
                 width: $picSize;
                 padding: .5em;
                 opacity: 0;
-                transition: opacity 250ms ease;
+                transition: opacity 250ms ease 100ms;
 
                 &.visible { opacity: 1; }
 

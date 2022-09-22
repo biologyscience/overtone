@@ -1,21 +1,62 @@
-function startObserve()
+function sorter()
 {
-    const outBody = document.querySelector('section.album .out .body');
+    const albumList = document.querySelector('section.album .out .body');
+    const albums = Array.from(albumList.children);
 
-    const observer = new IntersectionObserver((albums) =>
+    albumObservers.MO.disconnect();
+
+    albums.sort((a, b) =>
     {
-        albums.forEach((album) =>
+        const albumName =
         {
-            album.target.classList.remove('visible');
+            A: a.querySelector('span').innerHTML,
+            B: b.querySelector('span').innerHTML
+        };
 
-            if (!album.isIntersecting) return;
-            
-            album.target.classList.add('visible');
-            
-        });
-    }, {root: outBody, threshold: 0.25});
+        return albumName.A.localeCompare(albumName.B);
+    });
 
-    Array.from(outBody.children).forEach(x => observer.observe(x));
+    Array.from(albumList.children).forEach(x => x.remove());
+
+    albums.forEach(x => albumList.append(x));
+
+    albumObservers.MO.observe(albumList, { childList: true });
 };
 
-startObserve();
+const albumObservers =
+{
+    IO: new IntersectionObserver((albums) =>
+    {
+        albums.forEach(({target, isIntersecting}) =>
+        {
+            if (isIntersecting) return target.classList.add('visible');
+            
+            target.classList.remove('visible');
+        });
+    }, { root: document.querySelector('section.album .out .body') }),
+
+    MO: new MutationObserver((albums) =>
+    {
+        albums.forEach(({addedNodes}) =>
+        {
+            const target = addedNodes[0];
+
+            sorter();
+
+            if (target.isConnected) return albumObservers.IO.observe(target);
+    
+            albumObservers.IO.disconnect(target);
+        });
+    })
+};
+
+/* this part should be used in later stages (ref js/album/make.js)
+
+albumObservers.MO.observe(document.querySelector('section.album .out .body'), { childList: true });
+*/
+
+/* below code should not be used in later stages, instead use above */
+
+module.exports = albumObservers;
+
+/* this is used in js/album/make.js */

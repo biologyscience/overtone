@@ -13,7 +13,7 @@ section.album .out .body .albumItem {
   width: 150px;
   padding: 0.5em;
   opacity: 0;
-  transition: opacity 250ms ease;
+  transition: opacity 250ms ease 100ms;
 }
 section.album .out .body .albumItem * {
   pointer-events: none;
