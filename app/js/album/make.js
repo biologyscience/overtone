@@ -22,6 +22,10 @@ function makeAlbumList()
         albumItem.dataset.id = x;
 
         appendIn.append(albumItem);
+
+        /* below code should not be used in later stages (ref js/album/observer.js) */
+        const albumObservers = require('./js/album/observer');
+        albumObservers.IO.observe(albumItem);
     });
 
     document.dispatchEvent(new Event('-AlbumSectionReady'));
