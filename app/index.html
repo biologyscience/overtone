@@ -159,8 +159,17 @@
 
             <section class="album">
                 <div class="out inheritHeight flexCol">
-                    <div class="head displayNone">
-                        <input id="outAlbumInput" type="text">
+                    <div class="head flex">
+                        <div class="searchBar flex">
+                            <img src="svg/search.svg">
+                            <input id="outAlbumInput" type="text" placeholder="Search in this list">
+                        </div>
+                        <div class="misc">
+                            <div class="count flex">
+                                <img src="svg/hash.svg">
+                                <span id="albumCount"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="body flex"></div>
                 </div>
