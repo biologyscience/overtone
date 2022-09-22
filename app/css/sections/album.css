@@ -1,5 +1,39 @@
-section.album .out .head input {
+section.album .out .head {
+  margin: 1em;
+}
+section.album .out .head .searchBar {
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.25em;
+}
+section.album .out .head .searchBar img {
+  height: 1.5em;
+  aspect-ratio: 1;
+}
+section.album .out .head .searchBar input {
   background: none;
+  border: none;
+  margin: 0;
+  width: 42vw;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.5s ease;
+}
+section.album .out .head .searchBar input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+section.album .out .head .misc {
+  font-size: 1.5em;
+  margin-left: auto;
+  margin-right: 0;
+}
+section.album .out .head .misc .count {
+  align-items: center;
+  gap: 0.25em;
+}
+section.album .out .head .misc .count img {
+  height: 1.25em;
+  aspect-ratio: 1;
 }
 section.album .out .body {
   flex-wrap: wrap;
@@ -24,13 +58,17 @@ section.album .out .body .albumItem.visible {
 section.album .out .body .albumItem:hover {
   cursor: pointer;
 }
+section.album .out .body .albumItem:hover img {
+  border-radius: 0.25em;
+  box-shadow: 0px 2.75em 20px 0px var(--dark20);
+}
 section.album .out .body .albumItem img {
   height: 150px;
   width: 150px;
-  padding: 0.25em 0;
+  transition: all 250ms ease;
 }
 section.album .out .body .albumItem .albumName {
-  padding: 0.25em 0;
+  padding: 0.5em 0;
 }
 section.album .in .head {
   padding: 2.5em 0;
@@ -109,6 +147,7 @@ section.album .in .head .content .info > * * {
 }
 section.album .in .head .content .searchBar {
   align-items: center;
+  gap: 0.25em;
 }
 section.album .in .head .content .searchBar img {
   height: 1.5em;
@@ -116,7 +155,7 @@ section.album .in .head .content .searchBar img {
 }
 section.album .in .head .content .searchBar input {
   width: 100%;
-  margin: 0 0.25em;
+  margin: 0;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;

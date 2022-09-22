@@ -28,7 +28,9 @@ function makeAlbumList()
         albumObservers.IO.observe(albumItem);
     });
 
-    document.dispatchEvent(new Event('-AlbumSectionReady'));
+    // document.dispatchEvent(new Event('-AlbumSectionReady'));
+
+    document.getElementById('albumCount').innerHTML = `${albumNames.length} Album${albumNames.length > 1 ? 's' : ''}`;
 };
 
 makeAlbumList();
