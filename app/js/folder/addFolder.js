@@ -5,7 +5,7 @@ let
 const
     { readdirSync, statSync } = require('fs'),
     { join } = require('path'),
-    { json, validateMusicFileFormat } = require('./js/util');
+    { json, validateMusicFileFormat, getMetaData } = require('./js/util');
 
 function getAllFolders(path)
 {
@@ -114,9 +114,13 @@ function addFolder()
             .forEach(x => songList.push(x));
         });
 
-        document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: songList}));
-        document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: songList}));
         document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: filtered}));
+
+        Promise.all(songList.map(getMetaData)).then((tags) =>
+        {
+            document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: {tags, songList}}));
+            document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: {tags, songList}}));
+        });
 
         allFolders = [];
         filtered = [];
