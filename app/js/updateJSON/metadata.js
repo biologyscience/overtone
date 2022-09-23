@@ -1,19 +1,15 @@
-function updateMetadata({detail})
+function updateMetadata({detail: {tags, songList}})
 {
-    const pathToSongs = detail;
-
-    const { getMetaData, json } = require('./js/util');
+    const { json } = require('./js/util');
     
     const
         metadata = new json('app/json/metadata.json'),
         data = metadata.read();
 
-    Promise.all(pathToSongs.map(getMetaData)).then((tags) =>
-    {
-        for (let i = 0; i < pathToSongs.length; i++) { data[pathToSongs[i]] = tags[i]; }
+    for (let i = 0; i < songList.length; i++)
+    { data[songList[i]] = tags[i]; }
 
-        metadata.save();
-    });
+    metadata.save();
 };
 
 document.addEventListener('-updateJSON/metadata', updateMetadata);
