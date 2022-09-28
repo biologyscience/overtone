@@ -21,32 +21,29 @@ function chooseQueue(E)
 {
     const span = E.target;
 
-    if (span.localName === 'span')
-    {
-        const queueName = span.dataset.queueName;
+    if (span.localName !== 'span') return;
+    
+    const queueName = span.dataset.queueName;
 
-        const { read } = require('./js/util');
+    const { read } = require('./js/util');
 
-        const filePaths = read.queues()[queueName];
+    const { filePaths } = read.queues().filter(x => x.queueName === queueName)[0];
 
-        document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
+    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
 
-        document.getElementById('queueListMenu').classList.toggle('visible')
+    document.getElementById('queueListMenu').classList.toggle('visible')
 
-        updateNumber({detail: {filePaths}});
-    }
+    updateNumber({detail: {filePaths}});
 };
 
-function addItemToQueueList({detail})
+function addItemToQueueList({detail: {queueName, position}})
 {
-    const queueName = detail;
-
     const data =
     `
     <div class="dragger flexCenter cursorGrab">
         <img src="svg/drag.svg" draggable="false">
     </div>
-    <span class="overflowPrevent cursorPointer" data-queue-name="${queueName}">${queueName}</span>
+    <span class="overflowPrevent cursorPointer" data-queue-name="${queueName}" data-position="${position}">${queueName}</span>
     <button class="options flexCenter">
         <img src="svg/moreHorizontal.svg" draggable="false">
     </button>

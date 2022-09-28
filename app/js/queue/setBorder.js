@@ -18,7 +18,7 @@ function clickSetBorder(E)
 
     const queueName = currentQueue.dataset.queueName;
 
-    const filePaths = read.queues()[queueName];
+    const { filePaths } = read.queues().filter(x => x.queueName === queueName)[0];
 
     const detail =
     {
