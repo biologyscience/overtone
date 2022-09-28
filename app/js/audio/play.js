@@ -63,13 +63,13 @@ function play({detail} = '')
 
             queueName = detail.queueName;
 
-            detail.current === undefined ? current = 0 : current = detail.current;
+            current = detail.current || 0;
         }
 
         else { current = detail; }
     }
 
-    const { getAudioDuration, read } = require('./js/util');
+    const { getAudioDuration } = require('./js/util');
 
     const fileLocation = queueList[current];
 
@@ -80,26 +80,10 @@ function play({detail} = '')
     getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+
+    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
         
     pauseORplay();
-
-    //
-
-    let temp = true;
-
-    const queues = read.queues();
-
-    for (const x in queues)
-    {    
-        if (queues[x].join('') === queueList.join(''))
-        { return temp = false; }
-    }
-
-    if (temp)
-    {
-        document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
-        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: queueName}));
-    }
 };
 
 function pauseORplay(x)

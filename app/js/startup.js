@@ -81,11 +81,8 @@ let timeout = setTimeout(() =>
 
     /* queue list */
     const queueList = read.queues();
-
-    for (detail in queueList)
-    {
-        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail}));
-    }
+    
+    queueList.forEach(detail => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail})));
 
     /* fill previous id */
     if (existsSync('./app/json/config.json'))
