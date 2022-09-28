@@ -87,10 +87,15 @@ section.queue #queueListMenu #queueList {
   flex-grow: 1;
 }
 section.queue #queueListMenu #queueList li {
-  grid-template-columns: 1fr 8fr 1fr;
+  display: flex;
+  gap: 1em;
+  align-items: center;
   margin: 0 0.1em;
   padding: 0.5em 0;
-  transition: border-color ease 150ms;
+}
+section.queue #queueListMenu #queueList li img {
+  height: 1em;
+  aspect-ratio: 1;
 }
 section.queue #queueListMenu #queueList li:first-of-type {
   margin-top: 0.3em;
@@ -98,12 +103,20 @@ section.queue #queueListMenu #queueList li:first-of-type {
 section.queue #queueListMenu #queueList li:last-of-type {
   margin-bottom: 0.3em;
 }
-section.queue #queueListMenu #queueList li img {
-  height: 1em;
-  width: 1em;
+section.queue #queueListMenu #queueList li .dragger {
+  margin-left: 1em;
 }
 section.queue #queueListMenu #queueList li .dragger img {
   z-index: -1;
+}
+section.queue #queueListMenu #queueList li .position {
+  font-size: 0.5em;
+}
+section.queue #queueListMenu #queueList li .queueName {
+  flex-grow: 1;
+}
+section.queue #queueListMenu #queueList li .options {
+  margin-right: 1em;
 }
 section.queue #queueListMenu #queueList::-webkit-scrollbar {
   background: none;
@@ -127,6 +140,9 @@ section.queue .headTop .queueListWrapper {
   border-radius: 0.5em;
   padding: 0.4em 0.7em;
   margin-left: 0.5em;
+}
+section.queue .headTop .queueListWrapper span {
+  white-space: pre;
 }
 section.queue .headTop .queueListWrapper img {
   height: 20px;

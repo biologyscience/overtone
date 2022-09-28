@@ -6,7 +6,7 @@ function updateNumber({detail})
     {
         const totalSongsInCurrentQueue = document.getElementById('totalSongsInCurrentQueue');
 
-        totalSongsInCurrentQueue.innerHTML = thing.filePaths.length;
+        totalSongsInCurrentQueue.innerHTML = thing.length;
     }
 
     else
@@ -27,13 +27,13 @@ function chooseQueue(E)
 
     const { read } = require('./js/util');
 
-    const { filePaths } = read.queues().filter(x => x.queueName === queueName)[0];
+    const queueData = read.queues().filter(x => x.queueName === queueName)[0];
 
-    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: {filePaths, queueName}}));
+    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueData}));
 
     document.getElementById('queueListMenu').classList.toggle('visible')
 
-    updateNumber({detail: {filePaths}});
+    updateNumber({detail: queueData.filePaths});
 };
 
 function addItemToQueueList({detail: {queueName, position}})
@@ -43,7 +43,8 @@ function addItemToQueueList({detail: {queueName, position}})
     <div class="dragger flexCenter cursorGrab">
         <img src="svg/drag.svg" draggable="false">
     </div>
-    <span class="overflowPrevent cursorPointer" data-queue-name="${queueName}" data-position="${position}">${queueName}</span>
+    <!-- <span class="position">${position}</span> -->
+    <span class="queueName overflowPrevent cursorPointer" data-queue-name="${queueName}">${queueName}</span>
     <button class="options flexCenter">
         <img src="svg/moreHorizontal.svg" draggable="false">
     </button>
@@ -64,6 +65,7 @@ function displayQueueName({detail})
     const ul = detail;
 
     document.getElementById('queueName').innerHTML = ul.dataset.queueName;
+    document.getElementById('queueNumber').innerHTML = ul.dataset.position;
 };
 
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
