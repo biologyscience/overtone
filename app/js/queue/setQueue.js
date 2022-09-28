@@ -11,7 +11,7 @@ function showQueue(queueName)
     });
 };
 
-function setQueue({detail: {filePaths, queueName}})
+function setQueue({detail: {filePaths, queueName, position}})
 {
     queueReady = false;
 
@@ -80,6 +80,7 @@ function setQueue({detail: {filePaths, queueName}})
             const ul = document.createElement('ul');
 
             ul.dataset.queueName = queueName;
+            ul.dataset.position = `${position}. `;
             
             for (let i = 0; i < list.time.length; i++)
             {

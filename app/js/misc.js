@@ -1,4 +1,0 @@
-document.getElementById('misc').onclick = () =>
-{
-    
-}
