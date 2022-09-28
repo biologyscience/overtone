@@ -1,3 +1,9 @@
+/*
+code not to be used later (ln 17 19 36) 
+reason: code should not be used in later stages (ref js/album/observer.js)
+instead use ln 39
+*/
+
 function makeAlbumList()
 {
     const { read } = require('./js/util');
@@ -7,6 +13,10 @@ function makeAlbumList()
         albumNames = [...new Map(Object.entries(albums)).keys()];
 
     const appendIn = document.querySelector('section.album .out .body');
+
+    const albumObservers = require('./js/album/observer');
+
+    albumObservers.MO.observe(appendIn, {childList: true});
 
     albumNames.forEach((x) =>
     {
@@ -23,8 +33,6 @@ function makeAlbumList()
 
         appendIn.append(albumItem);
 
-        /* below code should not be used in later stages (ref js/album/observer.js) */
-        const albumObservers = require('./js/album/observer');
         albumObservers.IO.observe(albumItem);
     });
 
