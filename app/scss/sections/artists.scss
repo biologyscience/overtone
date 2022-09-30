@@ -231,6 +231,8 @@ section.artist
             flex-wrap: wrap;
             gap: 1em;
 
+            &, * { pointer-events: none; }
+
             .albumItem
             {
                 $padding: 1em;
@@ -244,6 +246,7 @@ section.artist
                 padding-bottom: $padding * 2;
                 border-radius: $borderRad * 2;
                 transition: background-color $transDur ease;
+                pointer-events: all !important;
 
                 .imgWrapper
                 {
