@@ -1,0 +1,211 @@
+section.artist .out .head {
+  margin: 1em;
+}
+section.artist .out .head .searchBar {
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.25em;
+}
+section.artist .out .head .searchBar img {
+  height: 1.5em;
+  aspect-ratio: 1;
+}
+section.artist .out .head .searchBar input {
+  background: none;
+  border: none;
+  margin: 0;
+  width: 42vw;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.5s ease;
+}
+section.artist .out .head .searchBar input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+section.artist .out .head .misc {
+  font-size: 1.5em;
+  margin-left: auto;
+  margin-right: 0;
+}
+section.artist .out .head .misc .count {
+  align-items: center;
+  gap: 0.25em;
+}
+section.artist .out .head .misc .count img {
+  height: 1.25em;
+  aspect-ratio: 1;
+}
+section.artist .out .body {
+  flex-wrap: wrap;
+  gap: 2em;
+  padding: 0 4em;
+  justify-content: space-evenly;
+  overflow-y: auto;
+}
+section.artist .out .body .artistItem {
+  text-align: center;
+  width: 150px;
+  padding: 0.5em;
+  transition: opacity 250ms ease 100ms;
+}
+section.artist .out .body .artistItem * {
+  pointer-events: none;
+}
+section.artist .out .body .artistItem img {
+  height: 150px;
+  width: 150px;
+  transition: all 250ms ease;
+}
+section.artist .out .body .artistItem .artistName {
+  padding: 0.5em 0;
+}
+section.artist .out .body .artistItem:hover {
+  cursor: pointer;
+}
+section.artist .out .body .artistItem:hover img {
+  border-radius: 0.25em;
+  box-shadow: 0px 2.75em 20px 0px var(--dark20);
+}
+section.artist .in .head {
+  padding: 2.5em 0;
+  gap: 2em;
+}
+section.artist .in .head::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
+section.artist .in .head #backToArtistsOut {
+  aspect-ratio: 1;
+  height: 2em;
+  align-self: center;
+  margin-left: 1em;
+}
+section.artist .in .head #backToArtistsOut * {
+  pointer-events: none;
+}
+section.artist .in .head #artistPicture {
+  position: relative;
+}
+section.artist .in .head #artistPicture img {
+  height: 200px;
+  width: 200px;
+  box-shadow: 0 0 2px 1px none;
+  transition: border-radius 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
+}
+section.artist .in .head #artistPicture::after {
+  content: url(../../svg/play.svg);
+  position: absolute;
+  inset: 0;
+  padding: 3em;
+  transform: scale(0.45);
+  opacity: 0;
+  border: 1em solid var(--dark80);
+  border-radius: 50%;
+  transition: opacity 0.5s ease;
+}
+section.artist .in .head #artistPicture:hover {
+  cursor: pointer;
+}
+section.artist .in .head #artistPicture:hover img {
+  border-radius: 0.25em;
+  box-shadow: 0 0 2px 1px black;
+  opacity: 0.5;
+}
+section.artist .in .head #artistPicture:hover::after {
+  opacity: 1;
+}
+section.artist .in .head .content {
+  align-self: flex-end;
+  gap: 1.5em;
+}
+section.artist .in .head .content .name {
+  font-size: 4em;
+}
+section.artist .in .head .content .info {
+  font-size: 1.75em;
+}
+section.artist .in .head .content .info > * {
+  align-items: center;
+  gap: 0.25em;
+}
+section.artist .in .head .content .info > * img {
+  height: 1em;
+  width: 1em;
+}
+section.artist .in .head .content .searchBar {
+  align-items: center;
+  gap: 0.25em;
+}
+section.artist .in .head .content .searchBar img {
+  height: 1.5em;
+  width: 1.5em;
+}
+section.artist .in .head .content .searchBar input {
+  width: 100%;
+  margin: 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.5s ease;
+}
+section.artist .in .head .content .searchBar input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+section.artist .in #albumListInArtist {
+  margin: 0;
+  padding: 20px 0;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  gap: 1em;
+  justify-content: space-evenly;
+}
+section.artist .in #albumListInArtist .albumItem {
+  padding-top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-bottom: 2em;
+  border-radius: 0.5em;
+  transition: background-color 250ms ease;
+}
+section.artist .in #albumListInArtist .albumItem .imgWrapper {
+  position: relative;
+}
+section.artist .in #albumListInArtist .albumItem .imgWrapper img {
+  height: 150px;
+  aspect-ratio: 1;
+  border-radius: 0.25em;
+}
+section.artist .in #albumListInArtist .albumItem .imgWrapper::after {
+  content: url(../../svg/play.svg);
+  position: absolute;
+  height: 50px;
+  aspect-ratio: 1;
+  opacity: 0;
+  bottom: 1em;
+  right: 1em;
+  transition: bottom 250ms ease, opacity 125ms ease 125ms;
+}
+section.artist .in #albumListInArtist .albumItem .info {
+  gap: 0.25em;
+}
+section.artist .in #albumListInArtist .albumItem .info span {
+  width: 150px;
+}
+section.artist .in #albumListInArtist .albumItem .info .albumName {
+  font-size: 1.5em;
+}
+section.artist .in #albumListInArtist .albumItem:hover {
+  cursor: pointer;
+  background-color: var(--dark20);
+}
+section.artist .in #albumListInArtist .albumItem:hover .imgWrapper::after {
+  opacity: 1;
+  bottom: 2em;
+  transition: bottom 250ms ease 125ms, opacity 125ms ease;
+}

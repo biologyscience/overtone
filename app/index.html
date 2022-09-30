@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="css/navbar.css">
         <link rel="stylesheet" href="css/titleBar.css">
         <link rel="stylesheet" href="css/sections/album.css">
+        <link rel="stylesheet" href="css/sections/artists.css">
         <link rel="stylesheet" href="css/sections/queue.css">
         <link rel="stylesheet" href="css/sections/folder.css">
         <link rel="stylesheet" href="css/sections/extras.css">
@@ -44,6 +45,7 @@
 
         <script src="js/updateJSON/albumArt.js" defer></script>
         <script src="js/updateJSON/albums.js" defer></script>
+        <script src="js/updateJSON/artists.js" defer></script>
         <script src="js/updateJSON/metadata.js" defer></script>
         <script src="js/updateJSON/songList.js" defer></script>
 
@@ -57,7 +59,7 @@
 
     </head>
     <body class="flex overflowHidden">
-        <button style="background: none; top: 50vh; z-index: 10;" class="right0 absolute displayNone" id="misc">Misc Button</button>
+        <button style="background: none; top: 50vh; z-index: 10;" class="right0 absolute" id="misc">Misc Button</button>
         <div id="overlay" style="display: flex;">Loading ...</div>
 
         <div id="titleBar" class="fixed top0 left0 relative">
@@ -219,7 +221,45 @@
             </section>
 
             <section class="artist">
-                artist
+                <div class="out inheritHeight flexCol">
+                    <div class="head flex">
+                        <div class="searchBar flex">
+                            <img src="svg/search.svg">
+                            <input id="outArtistInput" type="text" placeholder="Search in this list">
+                        </div>
+                        <div class="misc">
+                            <div class="count flex">
+                                <img src="svg/hash.svg">
+                                <span id="artistCount"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="body flex"></div>
+                </div>
+                <div class="in displayNone inheritHeight flexCol">
+                    <div class="head flex relative">
+                        <button id="backToArtistsOut">
+                            <img src="svg/chevronLeft.svg">
+                        </button>
+                        <div id="artistPicture">
+                            <img>
+                        </div>
+                        <div class="content flexCol">
+                            <div class="name"></div>
+                            <div class="info flex">
+                                <div class="flex">
+                                    <img src="svg/hash.svg">
+                                    <span class="albumCount"></span>
+                                </div>
+                            </div>
+                            <div class="searchBar flex">
+                                <img src="svg/search.svg">
+                                <input id="inArtistInput" type="text" placeholder="Search in this list">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="albumListInArtist" class="flex"></div>
+                </div>
             </section>
 
             <section class="genre">
