@@ -168,6 +168,9 @@ section.artist .in #albumListInArtist {
   flex-wrap: wrap;
   gap: 1em;
 }
+section.artist .in #albumListInArtist, section.artist .in #albumListInArtist * {
+  pointer-events: none;
+}
 section.artist .in #albumListInArtist .albumItem {
   padding-top: 1em;
   padding-left: 1em;
@@ -175,6 +178,7 @@ section.artist .in #albumListInArtist .albumItem {
   padding-bottom: 2em;
   border-radius: 0.5em;
   transition: background-color 250ms ease;
+  pointer-events: all !important;
 }
 section.artist .in #albumListInArtist .albumItem .imgWrapper {
   position: relative;
