@@ -119,6 +119,7 @@ function addFolder()
         Promise.all(songList.map(getMetaData)).then((tags) =>
         {
             document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: {tags, songList}}));
+            document.dispatchEvent(new CustomEvent('-updateJSON/artists', {detail: tags}));
             document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: {tags, songList}}));
         });
 

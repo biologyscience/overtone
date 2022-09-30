@@ -206,6 +206,7 @@ const read =
     fs: require('fs'),
 
     albums() { return JSON.parse(this.fs.readFileSync('app/json/albums.json')); },
+    artists() { return JSON.parse(this.fs.readFileSync('app/json/artists.json')); },
     config() { return JSON.parse(this.fs.readFileSync('app/json/config.json')); },
     metadata() { return JSON.parse(this.fs.readFileSync('app/json/metadata.json')); },
     queues() { return JSON.parse(this.fs.readFileSync('app/json/queues.json')); },
