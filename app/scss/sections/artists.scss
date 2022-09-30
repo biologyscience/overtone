@@ -74,7 +74,10 @@ section.artist
                 text-align: center;
                 width: $picSize;
                 padding: .5em;
+                opacity: 0;
                 transition: opacity 250ms ease 100ms;
+
+                &.visible { opacity: 1; }
                 
                 img
                 {
@@ -109,7 +112,7 @@ section.artist
 
             @include util.divider(after, BottomLeft);
 
-            #backToArtistsOut
+            #backToArtistOut
             {
                 aspect-ratio: 1;
                 height: 2em;
@@ -223,11 +226,10 @@ section.artist
         #albumListInArtist
         {
             margin: 0;
-            padding: 20px 0;
+            padding: 1.5em;
             overflow-y: auto;
             flex-wrap: wrap;
             gap: 1em;
-            justify-content: space-evenly;
 
             .albumItem
             {
