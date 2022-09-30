@@ -46,10 +46,14 @@ section.artist .out .body .artistItem {
   text-align: center;
   width: 150px;
   padding: 0.5em;
+  opacity: 0;
   transition: opacity 250ms ease 100ms;
 }
 section.artist .out .body .artistItem * {
   pointer-events: none;
+}
+section.artist .out .body .artistItem.visible {
+  opacity: 1;
 }
 section.artist .out .body .artistItem img {
   height: 150px;
@@ -79,13 +83,13 @@ section.artist .in .head::after {
   bottom: 0;
   left: 0;
 }
-section.artist .in .head #backToArtistsOut {
+section.artist .in .head #backToArtistOut {
   aspect-ratio: 1;
   height: 2em;
   align-self: center;
   margin-left: 1em;
 }
-section.artist .in .head #backToArtistsOut * {
+section.artist .in .head #backToArtistOut * {
   pointer-events: none;
 }
 section.artist .in .head #artistPicture {
@@ -159,11 +163,10 @@ section.artist .in .head .content .searchBar input:focus {
 }
 section.artist .in #albumListInArtist {
   margin: 0;
-  padding: 20px 0;
+  padding: 1.5em;
   overflow-y: auto;
   flex-wrap: wrap;
   gap: 1em;
-  justify-content: space-evenly;
 }
 section.artist .in #albumListInArtist .albumItem {
   padding-top: 1em;
