@@ -6,7 +6,8 @@ section.album
     {
         .head
         {
-            margin: 1em;
+            position: relative;
+            padding: 1em;
 
             .searchBar
             {
@@ -55,13 +56,15 @@ section.album
                     }
                 }
             }
+
+            @include util.divider(after, BottomLeft);
         }
 
         .body
         {
             flex-wrap: wrap;
             gap: 2em;
-            padding: 0 4em;
+            padding: 1em 4em;
             justify-content: space-evenly;
             overflow-y: auto;
     
