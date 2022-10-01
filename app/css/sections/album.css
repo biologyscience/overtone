@@ -1,5 +1,6 @@
 section.album .out .head {
-  margin: 1em;
+  position: relative;
+  padding: 1em;
 }
 section.album .out .head .searchBar {
   align-self: flex-start;
@@ -35,10 +36,19 @@ section.album .out .head .misc .count img {
   height: 1.25em;
   aspect-ratio: 1;
 }
+section.album .out .head::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
 section.album .out .body {
   flex-wrap: wrap;
   gap: 2em;
-  padding: 0 4em;
+  padding: 1em 4em;
   justify-content: space-evenly;
   overflow-y: auto;
 }
