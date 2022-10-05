@@ -14,6 +14,8 @@ function showAlbum(E)
     document.querySelector('section.album .out .body').scrollTo({top: target.offsetTop - offset});
 
     target.click();
+    
+    target.classList.add('focus');
 };
 
 document.getElementById('albumListInArtist').addEventListener('click', showAlbum);
