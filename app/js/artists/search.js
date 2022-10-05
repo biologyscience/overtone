@@ -31,7 +31,7 @@ function searchOutArtist(E)
 
         if (outArtist.lastInput === input.value.toLowerCase()) return;
 
-        searchOutAlbum(E);
+        searchOutArtist(E);
     }, 500);
 };
         
@@ -61,7 +61,7 @@ function searchInArtist(E)
 
         if (inArtist.lastInput === input.value.toLowerCase()) return;
 
-        searchInAlbum(E);
+        searchInArtist(E);
     }, 500);
 };
 
