@@ -1,5 +1,14 @@
 @use '../util';
 
+@mixin shadow($item)
+{
+    #{$item}
+    {
+        border-radius: .25em;
+        box-shadow: 0px 2.75em 20px 0px var(--dark20);
+    }
+}
+
 section.artist
 {
     .out
@@ -91,16 +100,13 @@ section.artist
     
                 .artistName { padding: .5em 0; }
 
+                &.focus { @include shadow(img); }
+
                 &:hover
                 {
                     cursor: pointer;
 
-                    img
-                    {
-                        border-radius: .25em;
-                        box-shadow: 0px 2.75em 20px 0px var(--dark20);
-                    }
-
+                    @include shadow(img);
                 }
             }
         }

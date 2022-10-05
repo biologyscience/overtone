@@ -65,17 +65,21 @@ section.album .out .body .albumItem * {
 section.album .out .body .albumItem.visible {
   opacity: 1;
 }
+section.album .out .body .albumItem img {
+  height: 150px;
+  width: 150px;
+  transition: all 250ms ease;
+}
+section.album .out .body .albumItem.focus img {
+  border-radius: 0.25em;
+  box-shadow: 0px 2.75em 20px 0px var(--dark20);
+}
 section.album .out .body .albumItem:hover {
   cursor: pointer;
 }
 section.album .out .body .albumItem:hover img {
   border-radius: 0.25em;
   box-shadow: 0px 2.75em 20px 0px var(--dark20);
-}
-section.album .out .body .albumItem img {
-  height: 150px;
-  width: 150px;
-  transition: all 250ms ease;
 }
 section.album .out .body .albumItem .albumName {
   padding: 0.5em 0;
@@ -154,6 +158,29 @@ section.album .in .head .content .info > * img {
 }
 section.album .in .head .content .info > * * {
   margin-right: 0.25em;
+}
+section.album .in .head .content .info #albumArtistInAlbumItem {
+  position: relative;
+  line-height: 1.75;
+}
+section.album .in .head .content .info #albumArtistInAlbumItem::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  background-color: var(--accent);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 250ms ease;
+}
+section.album .in .head .content .info #albumArtistInAlbumItem:hover {
+  cursor: pointer;
+}
+section.album .in .head .content .info #albumArtistInAlbumItem:hover::after {
+  transform-origin: left;
+  transform: scaleX(1);
 }
 section.album .in .head .content .searchBar {
   align-items: center;

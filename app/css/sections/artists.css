@@ -73,6 +73,10 @@ section.artist .out .body .artistItem img {
 section.artist .out .body .artistItem .artistName {
   padding: 0.5em 0;
 }
+section.artist .out .body .artistItem.focus img {
+  border-radius: 0.25em;
+  box-shadow: 0px 2.75em 20px 0px var(--dark20);
+}
 section.artist .out .body .artistItem:hover {
   cursor: pointer;
 }

@@ -9,12 +9,6 @@ let b = setTimeout(() =>
 
 
 /**
- * navbar
- */
-let c = setTimeout(() => document.dispatchEvent(new Event('-navbarStartup')), 100);
-
-
-/**
  * title bar font size
  */
 let d = setTimeout(() =>
@@ -44,7 +38,7 @@ let d = setTimeout(() =>
 
 let timeout = setTimeout(() =>
 {
-    [b, c, d, timeout].forEach((x) =>
+    [b, d, timeout].forEach((x) =>
     {
         clearTimeout(x);
 
