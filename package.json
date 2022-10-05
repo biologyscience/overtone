@@ -1,6 +1,6 @@
 {
   "name": "overtone",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A free and open source Music Player for all your local music files !",
   "main": "app/index.js",
   "author": "biologyscience",
