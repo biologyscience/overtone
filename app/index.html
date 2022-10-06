@@ -11,9 +11,10 @@
         <link rel="stylesheet" href="css/titleBar.css">
         <link rel="stylesheet" href="css/sections/album.css">
         <link rel="stylesheet" href="css/sections/artists.css">
-        <link rel="stylesheet" href="css/sections/queue.css">
-        <link rel="stylesheet" href="css/sections/folder.css">
         <link rel="stylesheet" href="css/sections/extras.css">
+        <link rel="stylesheet" href="css/sections/folder.css">
+        <link rel="stylesheet" href="css/sections/queue.css">
+        <link rel="stylesheet" href="css/sections/visualizer.css">
         
         <script src="js/album/hover.js" defer></script>
         <script src="js/album/make.js" defer></script>
@@ -57,6 +58,9 @@
         <script src="js/updateJSON/artists.js" defer></script>
         <script src="js/updateJSON/metadata.js" defer></script>
         <script src="js/updateJSON/songList.js" defer></script>
+
+        <script src="js/visualizer/resizeCanvas.js" defer></script>
+        <script src="js/visualizer/visualizer.js" defer></script>
 
         <script src="js/getAlbumArt.js" defer></script>
         <script src="js/hover3D.js" defer></script>
@@ -280,7 +284,11 @@
             </section>
 
             <section class="visualizer">
-                <canvas height="200px" width="700px"></canvas>
+                <div id="audioVisualizers" data-bar-width="2" data-bar-gap="4">
+                    <canvas class="bass" height="100px" data-range="0-25"></canvas>
+                    <canvas class="vocals" height="100px" data-range="100-250"></canvas>
+                    <canvas class="highHats" height="100px" data-range="275-300"></canvas>
+                </div>
             </section>
 
             <section class="extras flexCol">

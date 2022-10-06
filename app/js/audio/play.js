@@ -90,8 +90,6 @@ function play({detail} = '')
     document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
         
     pauseORplay();
-
-    visualizer();
 };
 
 function pauseORplay(x)
@@ -109,7 +107,7 @@ function pauseORplay(x)
 
     else { audio.pause(); }
 
-    document.dispatchEvent(new CustomEvent('-/Audio/Analyser/Context', {detail: {audio, audioAnalyser, audioContext}}));
+    document.dispatchEvent(new CustomEvent('-audioAnalyser', {detail: audioAnalyser}));
 };
 
 function changeCurrentState(E)
@@ -258,35 +256,6 @@ function rearrange({detail: {from, to}})
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 
     document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
-};
-
-function visualizer()
-{
-    requestAnimationFrame(visualizer);
-
-    const
-        freqArray = new Uint8Array(audioAnalyser.frequencyBinCount),
-        bars = freqArray.length;
-    
-    audioAnalyser.getByteFrequencyData(freqArray);
-
-    const
-        canvas = document.querySelector('canvas'),
-        $ = canvas.getContext('2d');
-
-    $.clearRect(0, 0, canvas.width, canvas.height);
-    $.fillStyle = '#FFFFFF';
-    
-    for (let i = 0; i < bars; i++)
-    {
-        const
-            x = i * 4,
-            y = canvas.height,
-            w = 2,
-            h = -(freqArray[i] / 3);
-
-        $.fillRect(x, y, w, h);
-    }
 };
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
