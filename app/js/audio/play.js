@@ -115,7 +115,7 @@ function changeCurrentState(E)
     const
         imgPause = document.getElementById('imgPause'),
         imgPlay = document.getElementById('imgPlay'),
-        albumArtLyricsWrapper = document.getElementById('albumArtLyricsWrapper');
+        head = document.querySelector('#displayRight .head');
 
     if (E.type === 'pause')
     {
@@ -126,7 +126,7 @@ function changeCurrentState(E)
             play();
         }
 
-        albumArtLyricsWrapper.style.transform = 'scale(0.98)';
+        head.style.transform = 'scale(0.98)';
 
         imgPause.classList.add('opacity0');
         imgPlay.classList.remove('opacity0');
@@ -134,7 +134,7 @@ function changeCurrentState(E)
 
     else
     {
-        albumArtLyricsWrapper.style.transform = '';
+        head.style.transform = '';
 
         imgPlay.classList.add('opacity0');
         imgPause.classList.remove('opacity0');
