@@ -32,7 +32,7 @@ function updateTimeLine({detail})
         minutes = parseTime(currentTime * 1000).minutes.toString(),
         seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds;
 
-    div.theLine.style.setProperty('--scaleFactor', (currentTime / totalTime).toFixed(4));
+    div.theLine.style.setProperty('--width', `${(currentTime / totalTime).toFixed(4) * 100}%`);
 
     div.currentTime.innerHTML = minutes + ':' + seconds;
 };
