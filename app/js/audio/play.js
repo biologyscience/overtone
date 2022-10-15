@@ -258,6 +258,13 @@ function rearrange({detail: {from, to}})
     document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
 };
 
+function timeChange({detail})
+{
+    const percent = detail.toFixed(4);
+
+    audio.currentTime = percent * audio.duration;
+};
+
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('nextSong').onclick = skip;
 document.getElementById('previousSong').onclick = skip;
@@ -268,3 +275,4 @@ audio.addEventListener('play', audioPlay);
 document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedFilePaths', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
+document.addEventListener('-timeChange', timeChange);
