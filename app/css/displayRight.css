@@ -1,112 +1,78 @@
-#displayRight .wrapper
-{
-    --wrapperMarginTopBottom: 3vh;
-    grid-template-rows: auto 1fr;
-    margin: 0 1.25em;
+#displayRight {
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
 }
-
-#topWrapper
-{
-    justify-content: center;
-    align-self: self-start;
-    margin-top: var(--wrapperMarginTopBottom);
+#displayRight > * {
+  width: 92.5%;
 }
-
-#albumArtLyricsWrapper
-{
-    --size: calc(40vw / 1.55);
-    height: var(--size);
-    width: var(--size);
-    align-items: center;
-    transition: transform ease 200ms;
+#displayRight .head {
+  height: 25.8064516129vw;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 0;
+  isolation: isolate;
 }
-
-#lyricsWrapper
-{
-    padding: .5em;
-    inset: 0;
+#displayRight .head #albumArt {
+  position: absolute;
+  height: inherit;
+  aspect-ratio: 1;
+  z-index: 1;
 }
-
-#albumArt
-{
-    height: var(--size);
-    width: var(--size);
+#displayRight .head #albumArt[src="svg/empty.svg"] {
+  background-color: var(--dark25);
 }
-
-#bottomWrapper
-{
-    font-size: 2rem;
-    margin-bottom: var(--wrapperMarginTopBottom);
-    align-self: self-end;
+#displayRight .head #lyrics {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+  aspect-ratio: 1;
+  overflow-y: auto;
 }
-
-#songInfo
-{
-    margin: .3em 0;
+#displayRight .body {
+  font-size: 1.5em;
+  gap: 0.5em;
 }
-
-.miscButtons
-{
-    background: none;
-    border: none;
-    margin-right: 1em;
+#displayRight .body #artistName, #displayRight .body #albumName {
+  font-size: 0.5em;
 }
-
-.miscSVG
-{
-    height: 1.5rem;
+#displayRight .body .miscButtons {
+  gap: 0.75em;
+  align-items: center;
+  justify-content: flex-start;
 }
-
-#artistName, #albumName
-{
-    font-size: .5em;
+#displayRight .body .miscButtons button {
+  background: none;
+  border: none;
 }
-
-#timeLine
-{
-    font-size: 1rem;
-    margin: 1em 0;
-    grid-auto-flow: column;
-    grid-template-columns: auto 1fr auto;
+#displayRight .body .miscButtons button img {
+  height: 1.75em;
+  aspect-ratio: 1;
 }
-
-#theLine
-{
-    --scaleFactor: 0;
-    height: .25em;
-    width: auto;
-    background-color: var(--accent);
-    margin: auto 1em;
-    transform: scaleX(var(--scaleFactor));
-    transform-origin: left;
-    transition: transform ease 100ms;
+#displayRight .body #timeLine {
+  font-size: 0.5em;
+  grid-auto-flow: column;
+  grid-auto-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5em;
 }
-
-/*
-#mediaButtons
-{
-    justify-content: center;
-    margin-top: 1em;
+#displayRight .body #timeLine #theLine {
+  --scaleFactor: 0;
+  height: 0.25em;
+  width: auto;
+  background-color: var(--accent);
+  transform: scaleX(var(--scaleFactor));
+  transform-origin: left;
+  transition: transform ease 100ms;
 }
-
-#previousSong, #pauseORplay, #nextSong
-{
-    background: none;
-    border: none;
-    height: 35px;
-    width: 35px;
+#displayRight .body #mediaButtons {
+  gap: 7.5vw;
+  justify-content: center;
 }
-*/
-
-#mediaButtons
-{
-    grid-auto-flow: column;
-    grid-template-columns: 1fr auto 1fr;
-}
-
-.svg
-{
-    transition: opacity ease-in-out 150ms;
-    height: 35px;
-    width: 35px;
+#displayRight .body #mediaButtons img {
+  height: 35px;
+  aspect-ratio: 1;
+  transition: opacity ease-in-out 150ms;
 }
