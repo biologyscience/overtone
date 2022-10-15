@@ -77,7 +77,7 @@
   content: "";
   position: absolute;
   top: -0.375em;
-  right: 0;
+  right: -0.5em;
   height: 1em;
   aspect-ratio: 1;
   border-radius: 50%;

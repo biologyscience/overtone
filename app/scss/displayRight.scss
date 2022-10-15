@@ -95,8 +95,8 @@
                     {
                         content: '';
                         position: absolute;
-                        top: -(($circleHeight - $lineHeight)/ 2);
-                        right: 0;
+                        top: -(($circleHeight - $lineHeight) / 2);
+                        right: -$circleHeight / 2;
                         height: $circleHeight;
                         aspect-ratio: 1;
                         border-radius: 50%;
