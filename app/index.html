@@ -306,78 +306,71 @@
 <!--  -->
 
 
-        <div id="displayRight" class="fixed right0">
+        <div id="displayRight" class="flexCol fixed right0">
 
-            <div class="wrapper grid inheritHeight">
-                <div id="topWrapper" class="flex">
-                    <div id="albumArtLyricsWrapper" class="cursorPointer relative">
-                        <img id="albumArt" class="hover3D" src="svg/empty.svg">
-                        <!-- <div id="lyricsWrapper" class="absolute">
-                            LYRICS
-                        </div> -->
-                    </div>
-                </div>
-    
-                <div id="bottomWrapper">
-                    <div id="songInfo" class="grid">
-                        <div id="songName" class="overflowPrevent">
-                            Name of the Song
-                        </div>
-                        <div id="artistName" class="overflowPrevent">
-                            Name of the Artist
-                        </div>
-                        <div id="albumName" class="overflowPrevent">
-                            Name of the Album
-                        </div>
-                    </div>
-    
-                    <div>
-                        <button class="miscButtons" title="does nothing">
-                            <img src="svg/favorite.svg" class="miscSVG">
-                        </button>
-    
-                        <button class="miscButtons" title="does nothing">
-                            <img src="svg/info.svg" class="miscSVG">
-                        </button>
-    
-                        <button class="miscButtons" title="does nothing">
-                            <img src="svg/playlistAdd.svg" class="miscSVG">
-                        </button>
-    
-                        <button class="miscButtons" title="does nothing">
-                            <img src="svg/moreHorizontal.svg" class="miscSVG">
-                        </button>
-                    </div>
-    
-                    <div id="timeLine" class="grid">
-                        <div id="currentTime">
-                            Current Time
-                        </div>
-    
-                        <div id="theLine"></div>
-    
-                        <div id="totalTime">
-                            Total Time
-                        </div>
-                    </div>
-    
-                    <div id="mediaButtons" class="grid">
-                        <button id="previousSong">
-                            <img src="svg/previous.svg" class="svg" id="imgPrevious">
-                        </button>
-                        <button id="pauseORplay" class="relative">
-                            <img src="svg/play.svg" class="svg" id="imgPlay">                            
-                            <img src="svg/pause.svg" class="opacity0 absolute top0 left0" id="imgPause">
-                        </button>
-    
-                        <button id="nextSong">
-                            <img src="svg/next.svg" class="svg" id="imgNext">
-                        </button>
-                    </div>
-    
-                </div>
+            <div class="head flex cursorPointer relative">                
+                <img id="albumArt" class="hover3D" src="svg/empty.svg">
+                <span id="lyrics">Lyrics :)</span>
             </div>
 
+            <div class="body flexCol">
+                <div class="flexCol">
+                    <div id="songName" class="overflowPrevent">
+                        Name of the Song
+                    </div>
+                    <div id="artistName" class="overflowPrevent">
+                        Name of the Artist
+                    </div>
+                    <div id="albumName" class="overflowPrevent">
+                        Name of the Album
+                    </div>
+                </div>
+
+                <div class="miscButtons flex">
+                    <button title="does nothing">
+                        <img src="svg/favorite.svg">
+                    </button>
+
+                    <button title="does nothing">
+                        <img src="svg/info.svg">
+                    </button>
+
+                    <button title="does nothing">
+                        <img src="svg/playlistAdd.svg">
+                    </button>
+
+                    <button title="does nothing">
+                        <img src="svg/moreHorizontal.svg">
+                    </button>
+                </div>
+
+                <div id="timeLine" class="grid">
+                    <div id="currentTime">
+                        Current Time
+                    </div>
+
+                    <div id="theLine"></div>
+
+                    <div id="totalTime">
+                        Total Time
+                    </div>
+                </div>
+
+                <div id="mediaButtons" class="flex">
+                    <button id="previousSong">
+                        <img src="svg/previous.svg" id="imgPrevious">
+                    </button>
+
+                    <button id="pauseORplay" class="relative">
+                        <img src="svg/play.svg" id="imgPlay">                            
+                        <img src="svg/pause.svg" class="opacity0 absolute top0 left0" id="imgPause">
+                    </button>
+
+                    <button id="nextSong">
+                        <img src="svg/next.svg" id="imgNext">
+                    </button>
+                </div>
+            </div>
         </div>
 
 

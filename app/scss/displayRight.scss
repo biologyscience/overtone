@@ -1,0 +1,98 @@
+#displayRight
+{
+    align-items: center;
+    justify-content: center;
+    gap: 5vh;
+
+    & > * { width: 92.5%; }
+
+    .head
+    {
+        height: calc(40vw / 1.55);
+        justify-content: center;
+        align-items: center;
+        padding: .5em 0;
+        isolation: isolate;
+        
+        #albumArt
+        {
+            position: absolute;
+            height: inherit;
+            aspect-ratio: 1;
+            z-index: 1;
+
+            &[src="svg/empty.svg"] { background-color: var(--dark25); }
+        }
+
+        #lyrics
+        {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: inherit;
+            aspect-ratio: 1;
+            overflow-y: auto;
+        }
+    }
+
+    .body
+    {
+        font-size: 1.5em;
+        gap: .5em;
+
+        #artistName, #albumName { font-size: .5em; }
+
+        .miscButtons
+        {
+            gap: .75em;
+            align-items: center;
+            justify-content: flex-start;
+            
+            button
+            {
+                background: none;
+                border: none;
+
+                img
+                {
+                    height: 1.75em;
+                    aspect-ratio: 1;
+                }
+            }
+        }
+
+        #timeLine
+        {
+            font-size: .5em;
+            grid-auto-flow: column;
+            grid-auto-columns: auto 1fr auto;
+            align-items: center;
+            gap: 1.5em;
+
+            #theLine
+            {
+                --scaleFactor: 0;
+                height: .25em;
+                width: auto;
+                background-color: var(--accent);
+                transform: scaleX(var(--scaleFactor));
+                transform-origin: left;
+                transition: transform ease 100ms;
+            }
+        }
+
+        #mediaButtons
+        {
+            gap: 7.5vw;
+            justify-content: center;
+
+            img
+            {
+                height: 35px;
+                aspect-ratio: 1;
+                transition: opacity ease-in-out 150ms;
+            }
+        }
+    }
+}
