@@ -73,13 +73,45 @@
 
             #theLine
             {
-                --scaleFactor: 0;
-                height: .25em;
-                width: auto;
-                background-color: var(--accent);
-                transform: scaleX(var(--scaleFactor));
-                transform-origin: left;
-                transition: transform ease 100ms;
+                --width: 0%;
+                
+                $lineHeight: .25em;
+                $circleHeight: 1em;
+
+                align-items: center;
+                height: $lineHeight;
+                width: 100%;
+                background-color: var(--dark40);
+                border-radius: 1em;
+                
+                .line
+                {
+                    height: $lineHeight;
+                    width: var(--width);
+                    background-color: var(--accent);
+                    border-radius: 1em;
+
+                    &::after
+                    {
+                        content: '';
+                        position: absolute;
+                        top: -(($circleHeight - $lineHeight)/ 2);
+                        right: 0;
+                        height: $circleHeight;
+                        aspect-ratio: 1;
+                        border-radius: 50%;
+                        background-color: white;
+                        opacity: 0;
+                        transition: opacity 250ms ease;
+                    }
+                }
+
+                &:hover
+                {
+                    cursor: pointer;
+
+                    .line::after { opacity: 1; }
+                }
             }
         }
 
