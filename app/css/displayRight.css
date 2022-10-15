@@ -60,13 +60,36 @@
   gap: 1.5em;
 }
 #displayRight .body #timeLine #theLine {
-  --scaleFactor: 0;
+  --width: 0%;
+  align-items: center;
   height: 0.25em;
-  width: auto;
+  width: 100%;
+  background-color: var(--dark40);
+  border-radius: 1em;
+}
+#displayRight .body #timeLine #theLine .line {
+  height: 0.25em;
+  width: var(--width);
   background-color: var(--accent);
-  transform: scaleX(var(--scaleFactor));
-  transform-origin: left;
-  transition: transform ease 100ms;
+  border-radius: 1em;
+}
+#displayRight .body #timeLine #theLine .line::after {
+  content: "";
+  position: absolute;
+  top: -0.375em;
+  right: 0;
+  height: 1em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+#displayRight .body #timeLine #theLine:hover {
+  cursor: pointer;
+}
+#displayRight .body #timeLine #theLine:hover .line::after {
+  opacity: 1;
 }
 #displayRight .body #mediaButtons {
   gap: 7.5vw;
