@@ -42,8 +42,8 @@ function navbarStartup()
     };
 
     // const startUpHighlight = navbar.items[navbar.items.length - 1];
-    const startUpHighlight = navbar.items[1];
-    // const startUpHighlight = navbar.items[2];
+    // const startUpHighlight = navbar.items[1];
+    const startUpHighlight = navbar.items[6];
 
     navbar.div.style.setProperty('--left', `${math(startUpHighlight.offsetLeft)}px`);
 
