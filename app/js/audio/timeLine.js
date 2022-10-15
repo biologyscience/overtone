@@ -37,5 +37,53 @@ function updateTimeLine({detail})
     div.currentTime.innerHTML = minutes + ':' + seconds;
 };
 
+let
+    loop = false,
+    fraction;
+
+function mouseDOWN(E)
+{
+    loop = true;
+
+    const { left, right } = document.getElementById('theLine').getBoundingClientRect();
+
+    const
+        totalWidth = right - left,
+        num = E.x - left;
+
+    fraction = num / totalWidth;
+
+    document.getElementById('theLine').style.setProperty('--width', `${fraction.toFixed(4) * 100}%`);
+};
+
+function mouseMOVE(E)
+{
+    if (loop === false) return;
+
+    const { left, right } = document.getElementById('theLine').getBoundingClientRect();
+
+    const
+        totalWidth = right - left,
+        num = E.x - left;
+
+    fraction = num / totalWidth;
+
+    document.getElementById('theLine').style.setProperty('--width', `${fraction.toFixed(4) * 100}%`);
+};
+
+function loopFALSE()
+{
+    if (loop === false) return;
+
+    loop = false;
+
+    document.dispatchEvent(new CustomEvent('-timeChange', {detail: fraction}));
+}
+
+document.getElementById('theLine').addEventListener('mousedown', mouseDOWN);
+document.getElementById('theLine').addEventListener('mouseup', loopFALSE);
+document.getElementById('theLine').addEventListener('mouseleave', loopFALSE);
+document.getElementById('theLine').addEventListener('mousemove', mouseMOVE);
+
 document.addEventListener('-setTime', setTime);
 document.addEventListener('-updateTimeLine', updateTimeLine);
