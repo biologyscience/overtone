@@ -69,6 +69,6 @@ input { user-select: auto !important; }
 
 .hover3D:hover
 {
-    box-shadow: 0 0 40px black;
+    box-shadow: 0 0 25px black;
     border-radius: 7px;
 }
