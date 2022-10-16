@@ -58,6 +58,7 @@
   grid-auto-columns: auto 1fr auto;
   align-items: center;
   gap: 1.5em;
+  isolation: isolate;
 }
 #displayRight .body #timeLine #theLine {
   --width: 0%;
@@ -73,6 +74,22 @@
   background-color: var(--accent);
   border-radius: 1em;
 }
+#displayRight .body #timeLine #theLine .line::before {
+  position: absolute;
+  right: -24px;
+  bottom: 0.5em;
+  content: attr(data-current-time);
+  color: black;
+  height: 48px;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../svg/popUpTime.svg");
+  opacity: 0;
+  transition: opacity 250ms ease;
+  z-index: 1;
+}
 #displayRight .body #timeLine #theLine .line::after {
   content: "";
   position: absolute;
@@ -84,11 +101,12 @@
   background-color: white;
   opacity: 0;
   transition: opacity 250ms ease;
+  z-index: 1;
 }
 #displayRight .body #timeLine #theLine:hover {
   cursor: pointer;
 }
-#displayRight .body #timeLine #theLine:hover .line::after {
+#displayRight .body #timeLine #theLine:hover .line::before, #displayRight .body #timeLine #theLine:hover .line::after {
   opacity: 1;
 }
 #displayRight .body #mediaButtons {

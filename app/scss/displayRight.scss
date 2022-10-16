@@ -70,6 +70,7 @@
             grid-auto-columns: auto 1fr auto;
             align-items: center;
             gap: 1.5em;
+            isolation: isolate;
 
             #theLine
             {
@@ -91,18 +92,39 @@
                     background-color: var(--accent);
                     border-radius: 1em;
 
+                    &::before
+                    {
+                        $width: 48px;
+
+                        position: absolute;
+                        right: - ($width / 2);
+                        bottom: $circleHeight / 2;
+                        content: attr(data-current-time);
+                        color: black;
+                        height: $width;
+                        aspect-ratio: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-image: url('../svg/popUpTime.svg');
+                        opacity: 0;
+                        transition: opacity 250ms ease;
+                        z-index: 1;
+                    }
+
                     &::after
                     {
                         content: '';
                         position: absolute;
-                        top: -(($circleHeight - $lineHeight) / 2);
-                        right: -$circleHeight / 2;
+                        top: - (($circleHeight - $lineHeight) / 2);
+                        right: - ($circleHeight / 2);
                         height: $circleHeight;
                         aspect-ratio: 1;
                         border-radius: 50%;
                         background-color: white;
                         opacity: 0;
                         transition: opacity 250ms ease;
+                        z-index: 1;
                     }
                 }
 
@@ -110,7 +132,7 @@
                 {
                     cursor: pointer;
 
-                    .line::after { opacity: 1; }
+                    .line::before, .line::after { opacity: 1; }
                 }
             }
         }
