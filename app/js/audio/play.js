@@ -88,7 +88,7 @@ function play({detail} = '')
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 
     document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
-        
+
     pauseORplay();
 };
 
