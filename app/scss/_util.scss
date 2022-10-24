@@ -36,9 +36,9 @@
 
 @mixin slider($height, $width, $diameterMultiplier)
 {
-    $diameter: $height * $diameterMultiplier;
+    --progress: 0%;
 
-    $currentWidth: 25%;
+    $diameter: $height * $diameterMultiplier;
 
     position: relative;
     background-color: var(--dark40);
@@ -56,7 +56,7 @@
         top: 0;
         left: 0;
         height: inherit;
-        width: $currentWidth;
+        width: var(--progress);
         background-color: var(--accent);
         border-radius: inherit;
         z-index: 2;
@@ -67,7 +67,7 @@
         position: absolute;
         content: '';
         top: - (($diameter - $height) / 2);
-        left: calc($currentWidth - ($diameter / 2));
+        left: calc(var(--progress) - ($diameter / 2));
         height: $diameter;
         aspect-ratio: 1;
         border-radius: 50%;
