@@ -36,8 +36,6 @@
 
 @mixin slider($height, $width, $diameterMultiplier)
 {
-    --progress: 0%;
-
     $diameter: $height * $diameterMultiplier;
 
     position: relative;
