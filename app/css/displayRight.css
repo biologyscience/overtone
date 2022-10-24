@@ -61,28 +61,52 @@
   isolation: isolate;
 }
 #displayRight .body #timeLine #theLine {
-  --width: 0%;
-  align-items: center;
-  height: 0.25em;
-  width: 100%;
+  --progress: 0%;
+  position: relative;
   background-color: var(--dark40);
-  border-radius: 1em;
-}
-#displayRight .body #timeLine #theLine .line {
   height: 0.25em;
-  width: var(--width);
-  background-color: var(--accent);
+  width: auto;
   border-radius: 1em;
+  isolation: isolate;
+  z-index: 1;
 }
-#displayRight .body #timeLine #theLine .line::before {
+#displayRight .body #timeLine #theLine::before {
   position: absolute;
-  right: -24px;
+  content: "";
+  top: 0;
+  left: 0;
+  height: inherit;
+  width: var(--progress);
+  background-color: var(--accent);
+  border-radius: inherit;
+  z-index: 2;
+}
+#displayRight .body #timeLine #theLine::after {
+  position: absolute;
+  content: "";
+  top: -0.375em;
+  left: calc(var(--progress) - 0.5em);
+  height: 1em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  z-index: 3;
+}
+#displayRight .body #timeLine #theLine:hover {
+  cursor: pointer;
+}
+#displayRight .body #timeLine #theLine:hover::after {
+  opacity: 1;
+}
+#displayRight .body #timeLine #theLine .popUp {
+  position: absolute;
+  left: calc(-24px + var(--progress));
   bottom: 0.5em;
-  content: attr(data-current-time);
   color: black;
   height: 48px;
   aspect-ratio: 1;
-  display: flex;
   justify-content: center;
   align-items: center;
   background-image: url("../svg/popUpTime.svg");
@@ -90,23 +114,7 @@
   transition: opacity 250ms ease;
   z-index: 1;
 }
-#displayRight .body #timeLine #theLine .line::after {
-  content: "";
-  position: absolute;
-  top: -0.375em;
-  right: -0.5em;
-  height: 1em;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background-color: white;
-  opacity: 0;
-  transition: opacity 250ms ease;
-  z-index: 1;
-}
-#displayRight .body #timeLine #theLine:hover {
-  cursor: pointer;
-}
-#displayRight .body #timeLine #theLine:hover .line::before, #displayRight .body #timeLine #theLine:hover .line::after {
+#displayRight .body #timeLine #theLine:hover .popUp {
   opacity: 1;
 }
 #displayRight .body #mediaButtons {

@@ -1,3 +1,5 @@
+@use './util';
+
 #displayRight
 {
     align-items: center;
@@ -74,66 +76,30 @@
 
             #theLine
             {
-                --width: 0%;
-                
                 $lineHeight: .25em;
                 $circleHeight: 1em;
-
-                align-items: center;
-                height: $lineHeight;
-                width: 100%;
-                background-color: var(--dark40);
-                border-radius: 1em;
                 
-                .line
+                @include util.slider($lineHeight, auto, $circleHeight / $lineHeight);
+
+                .popUp
                 {
-                    height: $lineHeight;
-                    width: var(--width);
-                    background-color: var(--accent);
-                    border-radius: 1em;
+                    $width: 48px;
 
-                    &::before
-                    {
-                        $width: 48px;
-
-                        position: absolute;
-                        right: - ($width / 2);
-                        bottom: $circleHeight / 2;
-                        content: attr(data-current-time);
-                        color: black;
-                        height: $width;
-                        aspect-ratio: 1;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background-image: url('../svg/popUpTime.svg');
-                        opacity: 0;
-                        transition: opacity 250ms ease;
-                        z-index: 1;
-                    }
-
-                    &::after
-                    {
-                        content: '';
-                        position: absolute;
-                        top: - (($circleHeight - $lineHeight) / 2);
-                        right: - ($circleHeight / 2);
-                        height: $circleHeight;
-                        aspect-ratio: 1;
-                        border-radius: 50%;
-                        background-color: white;
-                        opacity: 0;
-                        transition: opacity 250ms ease;
-                        z-index: 1;
-                    }
+                    position: absolute;
+                    left: calc(($width / -2) + var(--progress));
+                    bottom: $circleHeight / 2;
+                    color: black;
+                    height: $width;
+                    aspect-ratio: 1;
+                    justify-content: center;
+                    align-items: center;
+                    background-image: url('../svg/popUpTime.svg');
+                    opacity: 0;
+                    transition: opacity 250ms ease;
+                    z-index: 1;
                 }
 
-                &:hover
-                {
-                    cursor: pointer;
-
-                    .line::before, .line::after { opacity: 1; }
-                }
+                &:hover .popUp { opacity: 1; }
             }
         }
 
