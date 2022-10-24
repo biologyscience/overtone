@@ -1,0 +1,65 @@
+*
+{
+    user-select: none;
+    color: white;
+    font-family: 'Andika';
+    // outline: .5px solid red;
+
+    &::-webkit-scrollbar
+    {
+        background: none;
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb { background-color: var(--dark-70); }
+}
+
+body
+{
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+
+    &::before
+    {
+        position: absolute;
+        content: '';
+        height: 100vh;
+        width: 2px;
+        background-color: var(--accent);
+        left: 60vw;
+        z-index: 1;
+    }
+}
+
+button
+{
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+
+    &:hover { cursor: pointer; }
+}
+
+input
+{
+    user-select: auto !important;
+    caret-color: var(--accent);
+}
+
+.hover3D
+{
+    transition:
+        transform ease-in 50ms,
+        border-radius cubic-bezier(1, 0, 1, 1) 1s,
+        box-shadow cubic-bezier(1, 0, 1, 1) 1s;
+    
+    &:hover
+    {
+        box-shadow: 0 0 25px black;
+        border-radius: 7px;
+    }
+}
