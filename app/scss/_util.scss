@@ -33,3 +33,54 @@
         }
     }
 }
+
+@mixin slider($height, $width, $diameterMultiplier)
+{
+    $diameter: $height * $diameterMultiplier;
+
+    $currentWidth: 25%;
+
+    position: relative;
+    background-color: var(--dark40);
+    height: $height;
+    width: $width;
+    margin-left: 5vw;
+    border-radius: 1em;
+    isolation: isolate;
+    z-index: 1;
+
+    &::before
+    {
+        position: absolute;
+        content: '';
+        top: 0;
+        left: 0;
+        height: inherit;
+        width: $currentWidth;
+        background-color: var(--accent);
+        border-radius: inherit;
+        z-index: 2;
+    }
+
+    &::after
+    {
+        position: absolute;
+        content: '';
+        top: - (($diameter - $height) / 2);
+        left: calc($currentWidth - ($diameter / 2));
+        height: $diameter;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: white;
+        opacity: 0;
+        transition: opacity 250ms ease;;
+        z-index: 3;
+    }
+
+    &:hover
+    {
+        cursor: pointer;
+        
+        &::after { opacity: 1; }
+    }
+}
