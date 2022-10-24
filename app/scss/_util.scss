@@ -37,6 +37,8 @@
 @mixin slider($height, $width, $diameterMultiplier)
 {
     $diameter: $height * $diameterMultiplier;
+    
+    --progress: 0%;
 
     position: relative;
     background-color: var(--dark40);
