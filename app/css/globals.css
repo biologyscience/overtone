@@ -8,7 +8,7 @@
   width: 2px;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: var(--dark-70);
+  background-color: var(--dark70);
 }
 
 body {
@@ -26,6 +26,16 @@ body::before {
   background-color: var(--accent);
   left: 60vw;
   z-index: 1;
+}
+body #overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-size: 5rem;
+  background-color: var(--dark25);
+  z-index: 5;
 }
 
 button {
