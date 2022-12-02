@@ -83,3 +83,10 @@
         &::after { opacity: 1; }
     }
 }
+
+@mixin inputBorderReset($tblf, $width)
+{
+    border-#{$tblf}-width: $width;
+    border-#{$tblf}-style: solid;
+    border-#{$tblf}-color: transparent;
+}

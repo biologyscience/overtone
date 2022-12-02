@@ -23,9 +23,11 @@ function searchOutAlbum(E)
 
     albumItems.forEach(x => x.classList.remove('displayNone'));
 
-    albumItems
-    .filter(x => !read.albums()[x.dataset.id].album.toLowerCase().includes(outAlbum.lastInput))
-    .forEach(x => x.classList.add('displayNone'));
+    const filtered = albumItems.filter(x => !read.albums()[x.dataset.id].album.toLowerCase().includes(outAlbum.lastInput));
+
+    filtered.length === albumItems.length ? input.classList.add('noMatch') : input.classList.remove('noMatch');
+    
+    filtered.forEach(x => x.classList.add('displayNone'));
 
     setTimeout(() =>
     {
@@ -53,9 +55,11 @@ function searchInAlbum(E)
 
     songList.forEach(displayRevert);
 
-    songList
-    .filter(x => !x.dataset.songName.includes(inAlbum.lastInput))
-    .forEach(displayNone);
+    const filtered = songList.filter(x => !x.dataset.songName.includes(inAlbum.lastInput));
+
+    filtered.length === songList.length ? input.classList.add('noMatch') : input.classList.remove('noMatch');
+    
+    filtered.forEach(displayNone);
 
     setTimeout(() =>
     {

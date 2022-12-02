@@ -13,15 +13,12 @@ section.artist .out .head .searchBar img {
 }
 section.artist .out .head .searchBar input {
   background: none;
-  border: none;
   margin: 0;
   width: 42vw;
-  border-bottom: 2px solid transparent;
   transition: border-bottom-color 0.5s ease;
-}
-section.artist .out .head .searchBar input:focus {
-  outline: none;
-  border-bottom-color: var(--accent);
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
 }
 section.artist .out .head .misc {
   font-size: 1.5em;
@@ -167,13 +164,10 @@ section.artist .in .head .content .searchBar input {
   width: 100%;
   margin: 0;
   background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
   transition: border-bottom-color 0.5s ease;
-}
-section.artist .in .head .content .searchBar input:focus {
-  outline: none;
-  border-bottom-color: var(--accent);
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
 }
 section.artist .in #albumListInArtist {
   margin: 0;

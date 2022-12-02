@@ -121,18 +121,15 @@ section.folder .in .body .searchBar {
   grid-template-columns: auto 1fr;
   align-items: center;
 }
-section.folder .in .body .searchBar #searchInput {
+section.folder .in .body .searchBar input {
   width: auto;
   background: none;
   padding: 0;
   margin: 0;
-  border: none;
-  border-bottom: 2px solid transparent;
   transition: border-bottom-color 0.5s ease;
-}
-section.folder .in .body .searchBar #searchInput:focus {
-  outline: none;
-  border-bottom-color: var(--accent);
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
 }
 section.folder .in #songListInFolder {
   list-style: none;

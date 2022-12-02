@@ -145,21 +145,15 @@ section.folder
                 grid-template-columns: auto 1fr;
                 align-items: center;
 
-                #searchInput
+                input
                 {
                     width: auto;
                     background: none;
                     padding: 0;
                     margin: 0;
-                    border: none;
-                    border-bottom: 2px solid transparent;
                     transition: border-bottom-color .5s ease;
 
-                    &:focus
-                    {
-                        outline: none;
-                        border-bottom-color: var(--accent);
-                    }
+                    @include util.inputBorderReset(bottom, 2px);
                 }
             }
         }
