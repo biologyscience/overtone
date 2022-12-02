@@ -60,6 +60,15 @@ input
 {
     user-select: auto !important;
     caret-color: var(--accent);
+    border: none;
+
+    &:focus
+    {
+        outline: none;
+        border-bottom-color: var(--accent) !important;
+    }
+
+    &.noMatch:focus { border-bottom-color: var(--accentRed1) !important; }
 }
 
 .hover3D

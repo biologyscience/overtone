@@ -3,10 +3,10 @@
         wait = false,
         lastInput;
 
-    const input = document.getElementById('searchInput');
-
-    function search()
+    function search(E)
     {
+        const input = E.target;
+
         if (wait) return;
     
         wait = true;
@@ -20,10 +20,12 @@
         const children = Array.from(songListInFolder.children);
     
         children.forEach(x => x.classList.remove('displayNone'));
-    
-        children
-        .filter(x => !x.dataset.title.includes(lastInput))
-        .forEach(x => x.classList.add('displayNone'));
+
+        const filtered = children.filter(x => !x.dataset.title.includes(lastInput));
+
+        filtered.length === children.length ? input.classList.add('noMatch') : input.classList.remove('noMatch');
+        
+        filtered.forEach(x => x.classList.add('displayNone'));
     
         setTimeout(() =>
         {
@@ -35,5 +37,5 @@
         }, 500);
     };
 
-    input.addEventListener('input', search);
+    document.getElementById('folderInput').addEventListener('input', search);
 }

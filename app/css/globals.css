@@ -51,6 +51,14 @@ button:hover {
 input {
   user-select: auto !important;
   caret-color: var(--accent);
+  border: none;
+}
+input:focus {
+  outline: none;
+  border-bottom-color: var(--accent) !important;
+}
+input.noMatch:focus {
+  border-bottom-color: var(--accentRed1) !important;
 }
 
 .hover3D {

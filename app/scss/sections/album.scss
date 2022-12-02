@@ -33,17 +33,11 @@ section.album
                 input
                 {
                     background: none;
-                    border: none;
                     margin: 0;
                     width: calc(.7 * 60vw);
-                    border-bottom: 2px solid transparent;
                     transition: border-bottom-color .5s ease;
-    
-                    &:focus
-                    {
-                        outline: none;
-                        border-bottom-color: var(--accent);
-                    }
+
+                    @include util.inputBorderReset(bottom, 2px);
                 }
             }
 
@@ -252,15 +246,9 @@ section.album
                         width: 100%;
                         margin: 0;
                         background: none;
-                        border: none;
-                        border-bottom: 2px solid transparent;
                         transition: border-bottom-color .5s ease;
 
-                        &:focus
-                        {
-                            outline: none;
-                            border-bottom-color: var(--accent);
-                        }
+                        @include util.inputBorderReset(bottom, 2px);
                     }
                 }
             }
