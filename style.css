@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
 body
@@ -21,7 +22,8 @@ div
 
 #title
 {
-    font-size: 60px;
+    font-family: 'Caveat Brush';
+    font-size: 70px;
     margin: 0 10%;
 }
 
