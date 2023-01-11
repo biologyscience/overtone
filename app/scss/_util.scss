@@ -34,7 +34,7 @@
     }
 }
 
-@mixin slider($height, $width, $diameterMultiplier)
+@mixin sliderHorizontal($height, $width, $diameterMultiplier)
 {
     $diameter: $height * $diameterMultiplier;
     
@@ -68,6 +68,56 @@
         top: - (($diameter - $height) / 2);
         left: calc(var(--progress) - ($diameter / 2));
         height: $diameter;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: white;
+        opacity: 0;
+        transition: opacity 250ms ease;;
+        z-index: 3;
+    }
+
+    &:hover
+    {
+        cursor: pointer;
+        
+        &::after { opacity: 1; }
+    }
+}
+
+@mixin sliderVertical($height, $width, $diameterMultiplier)
+{
+    $diameter: $width * $diameterMultiplier;
+    
+    --progress: 0%;
+
+    position: relative;
+    background-color: var(--dark40);
+    height: $height;
+    width: $width;
+    border-radius: 1em;
+    isolation: isolate;
+    z-index: 1;
+
+    &::before
+    {
+        position: absolute;
+        content: '';
+        top: 0;
+        left: 0;
+        height: var(--progress);
+        width: inherit;
+        background-color: var(--accent);
+        border-radius: inherit;
+        z-index: 2;
+    }
+
+    &::after
+    {
+        position: absolute;
+        content: '';
+        top: calc(var(--progress) - ($diameter / 2));
+        left: -(($diameter - $width) / 2);
+        width: $diameter;
         aspect-ratio: 1;
         border-radius: 50%;
         background-color: white;
