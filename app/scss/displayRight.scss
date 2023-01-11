@@ -79,7 +79,7 @@
                 $lineHeight: .25em;
                 $circleHeight: 1em;
                 
-                @include util.slider($lineHeight, auto, $circleHeight / $lineHeight);
+                @include util.sliderHorizontal($lineHeight, auto, $circleHeight / $lineHeight);
 
                 .popUp
                 {
@@ -105,14 +105,57 @@
 
         #mediaButtons
         {
-            gap: 7.5vw;
+            $imgSize: 35px;
+
+            gap: 6.5vw;
             justify-content: center;
+            align-items: center;
 
             img
             {
-                height: 35px;
+                height: $imgSize;
                 aspect-ratio: 1;
                 transition: opacity ease-in-out 150ms;
+            }
+
+            .volumeHousing
+            {
+                font-size: .5em;
+
+                .float
+                {
+                    $size: -8em;
+                    $width: $imgSize / 2;
+                    $paddingLeft: .75em;
+
+                    justify-content: center;
+                    align-items: center;
+                    gap: .25em;
+                    bottom: 6vh;
+                    left: calc((($imgSize - $width) / 2) - $paddingLeft);
+                    backdrop-filter: blur(1em);
+                    width: $width;
+                    padding: 0 $paddingLeft;
+                    padding-bottom: .75em;
+                    padding-top: .25em;
+                    border-radius: $size / -50;
+                    opacity: 0;
+                    transition: opacity 250ms ease;
+                    z-index: -10;
+
+                    &.visible
+                    {
+                        opacity: 1;
+                        z-index: 10;
+                    }
+
+                    .slider
+                    {
+                        @include util.sliderVertical($size / -1.25, .35em, 2);
+
+                        transform: rotate(180deg);
+                    }
+                }
             }
         }
     }

@@ -118,11 +118,76 @@
   opacity: 1;
 }
 #displayRight .body #mediaButtons {
-  gap: 7.5vw;
+  gap: 6.5vw;
   justify-content: center;
+  align-items: center;
 }
 #displayRight .body #mediaButtons img {
   height: 35px;
   aspect-ratio: 1;
   transition: opacity ease-in-out 150ms;
+}
+#displayRight .body #mediaButtons .volumeHousing {
+  font-size: 0.5em;
+}
+#displayRight .body #mediaButtons .volumeHousing .float {
+  justify-content: center;
+  align-items: center;
+  gap: 0.25em;
+  bottom: 6vh;
+  left: calc(8.75px - 0.75em);
+  backdrop-filter: blur(1em);
+  width: 17.5px;
+  padding: 0 0.75em;
+  padding-bottom: 0.75em;
+  padding-top: 0.25em;
+  border-radius: 0.16em;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  z-index: -10;
+}
+#displayRight .body #mediaButtons .volumeHousing .float.visible {
+  opacity: 1;
+  z-index: 10;
+}
+#displayRight .body #mediaButtons .volumeHousing .float .slider {
+  --progress: 0%;
+  position: relative;
+  background-color: var(--dark40);
+  height: 6.4em;
+  width: 0.35em;
+  border-radius: 1em;
+  isolation: isolate;
+  z-index: 1;
+  transform: rotate(180deg);
+}
+#displayRight .body #mediaButtons .volumeHousing .float .slider::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  height: var(--progress);
+  width: inherit;
+  background-color: var(--accent);
+  border-radius: inherit;
+  z-index: 2;
+}
+#displayRight .body #mediaButtons .volumeHousing .float .slider::after {
+  position: absolute;
+  content: "";
+  top: calc(var(--progress) - 0.35em);
+  left: -0.175em;
+  width: 0.7em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  z-index: 3;
+}
+#displayRight .body #mediaButtons .volumeHousing .float .slider:hover {
+  cursor: pointer;
+}
+#displayRight .body #mediaButtons .volumeHousing .float .slider:hover::after {
+  opacity: 1;
 }
