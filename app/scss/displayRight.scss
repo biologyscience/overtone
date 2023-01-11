@@ -149,6 +149,8 @@
                         z-index: 10;
                     }
 
+                    &::before { content: attr(data-percent); }
+
                     .slider
                     {
                         @include util.sliderVertical($size / -1.25, .35em, 2);
