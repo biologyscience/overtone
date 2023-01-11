@@ -13,13 +13,13 @@ function scrollVolume(E)
         totalHeight = bottom - top,
         num = bottom - E.y;
 
-    fraction = num / totalHeight;
+    const int = fractionToPercent(num / totalHeight, 0).split('%')[0];
 
-    const percent = fractionToPercent(fraction, 0);
-
-    volumeSlider.style.setProperty('--progress', percent);
+    volumeSlider.style.setProperty('--progress', `${int}%`);
     
-    volumeFloat.dataset.percent = percent.split('%')[0];
+    volumeFloat.dataset.percent = int;
+
+    document.dispatchEvent(new CustomEvent('-volumeChange', {detail: int / 100}));
 };
 
 function endScrollVolume()
