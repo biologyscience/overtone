@@ -162,6 +162,7 @@
   border-radius: 1em;
   isolation: isolate;
   z-index: 1;
+  --progress: 100%;
   transform: rotate(180deg);
 }
 #displayRight .body #mediaButtons .volumeHousing .float .slider::before {

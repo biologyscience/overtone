@@ -276,3 +276,4 @@ document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedFilePaths', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
+document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);

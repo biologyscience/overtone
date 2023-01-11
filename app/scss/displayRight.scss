@@ -154,7 +154,7 @@
                     .slider
                     {
                         @include util.sliderVertical($size / -1.25, .35em, 2);
-
+                        --progress: 100%;
                         transform: rotate(180deg);
                     }
                 }
