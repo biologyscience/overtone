@@ -3,14 +3,8 @@ let
     audioDuration,
     fraction;
 
-function fractionToPercent(frac)
-{
-    if (frac > 1) { return '100%'; }
+const { parseTime, fractionToPercent } = require('./js/util');
 
-    if (0 > frac) { return '0%'; }
-
-    if (1 > frac > 0) { return `${frac.toFixed(4) * 100}%`; }
-};
 
 function setTime({detail})
 {
@@ -36,8 +30,6 @@ function updateTimeLine({detail})
 {
     if (loop) return;
 
-    const { parseTime } = require('./js/util');
-
     const div =
     {
         currentTime: document.getElementById('currentTime'),
@@ -50,7 +42,7 @@ function updateTimeLine({detail})
         minutes = parseTime(currentTime * 1000).minutes.toString(),
         seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds;
 
-    div.theLine.style.setProperty('--progress', fractionToPercent(currentTime / totalTime));
+    div.theLine.style.setProperty('--progress', fractionToPercent(currentTime / totalTime, 4));
 
     div.currentTime.innerHTML = `${minutes}:${seconds}`;
     div.theLine.querySelector('.popUp').innerHTML = `${minutes}:${seconds}`;
@@ -63,8 +55,7 @@ function scrollTimeLine(E)
     const
         theLine = document.getElementById('theLine'),
         popUp = theLine.querySelector('.popUp'),
-        { left, right } = theLine.getBoundingClientRect(),
-        { parseTime } = require('./js/util');
+        { left, right } = theLine.getBoundingClientRect();
 
     const
         totalWidth = right - left,
@@ -72,7 +63,7 @@ function scrollTimeLine(E)
 
     fraction = num / totalWidth;
 
-    document.getElementById('theLine').style.setProperty('--progress', fractionToPercent(fraction));
+    document.getElementById('theLine').style.setProperty('--progress', fractionToPercent(fraction, 4));
 
     const
         currentTime = audioDuration * fraction,

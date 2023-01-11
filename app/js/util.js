@@ -232,6 +232,15 @@ const sort =
     }
 };
 
+function fractionToPercent(frac, fixed)
+{
+    if (frac > 1) { return '100%'; }
+
+    if (0 > frac) { return '0%'; }
+
+    if (1 > frac && frac > 0) { return `${(frac * 100).toFixed(fixed)}%`; }
+};
+
 //
 
 module.exports =
@@ -248,5 +257,6 @@ module.exports =
     json,
     read,
     validateMusicFileFormat,
-    sort
+    sort,
+    fractionToPercent
 };
