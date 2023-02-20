@@ -131,44 +131,52 @@ section.album
                 $boxShadowValues: 0 0 2px 1px;
                 $transitionStyle: .5s ease;
                 
-                position: relative;
+                display: flex;
+                align-items: center;
+
                 
-                img
-                {
-                    height: $size;
-                    width: $size;
-                    box-shadow: $boxShadowValues none;
-                    transition:
-                        border-radius $transitionStyle,
-                        box-shadow $transitionStyle,
-                        opacity $transitionStyle;
-                }
 
-                &::after
+                .wrapper
                 {
-                    content: url(../../svg/play.svg);
-                    position: absolute;
-                    inset: 0;
-                    padding: 3em;
-                    transform: scale(.45);
-                    opacity: 0;
-                    border: 1em solid var(--dark80);
-                    border-radius: 50%;
-                    transition: opacity $transitionStyle;
-                }
-
-                &:hover
-                {
-                    cursor: pointer;
+                    position: relative;
 
                     img
                     {
-                        border-radius: .25em;
-                        box-shadow: $boxShadowValues black;
-                        opacity: .5;
+                        height: $size;
+                        width: $size;
+                        box-shadow: $boxShadowValues none;
+                        transition:
+                            border-radius $transitionStyle,
+                            box-shadow $transitionStyle,
+                            opacity $transitionStyle;
                     }
 
-                    &::after { opacity: 1; }
+                    &::after
+                    {
+                        content: url(../../svg/play.svg);
+                        position: absolute;
+                        inset: 0;
+                        padding: 3em;
+                        transform: scale(.45);
+                        opacity: 0;
+                        border: 1em solid var(--dark80);
+                        border-radius: 50%;
+                        transition: opacity $transitionStyle;
+                    }
+
+                    &:hover
+                    {
+                        cursor: pointer;
+    
+                        img
+                        {
+                            border-radius: .25em;
+                            box-shadow: $boxShadowValues black;
+                            opacity: .5;
+                        }
+    
+                        &::after { opacity: 1; }
+                    }
                 }
             }
 

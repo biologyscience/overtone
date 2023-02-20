@@ -104,15 +104,19 @@ section.album .in .head #backToAlbumOut * {
   pointer-events: none;
 }
 section.album .in .head .albumArt {
+  display: flex;
+  align-items: center;
+}
+section.album .in .head .albumArt .wrapper {
   position: relative;
 }
-section.album .in .head .albumArt img {
+section.album .in .head .albumArt .wrapper img {
   height: 200px;
   width: 200px;
   box-shadow: 0 0 2px 1px none;
   transition: border-radius 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
 }
-section.album .in .head .albumArt::after {
+section.album .in .head .albumArt .wrapper::after {
   content: url(../../svg/play.svg);
   position: absolute;
   inset: 0;
@@ -123,15 +127,15 @@ section.album .in .head .albumArt::after {
   border-radius: 50%;
   transition: opacity 0.5s ease;
 }
-section.album .in .head .albumArt:hover {
+section.album .in .head .albumArt .wrapper:hover {
   cursor: pointer;
 }
-section.album .in .head .albumArt:hover img {
+section.album .in .head .albumArt .wrapper:hover img {
   border-radius: 0.25em;
   box-shadow: 0 0 2px 1px black;
   opacity: 0.5;
 }
-section.album .in .head .albumArt:hover::after {
+section.album .in .head .albumArt .wrapper:hover::after {
   opacity: 1;
 }
 section.album .in .head .content {
