@@ -241,6 +241,19 @@ function fractionToPercent(frac, fixed)
     if (1 > frac && frac > 0) { return `${(frac * 100).toFixed(fixed)}%`; }
 };
 
+function internet()
+{
+    return new Promise((solve) =>
+    {
+        let connection = true;
+
+        require('dns/promises')
+        .lookup('www.google.com')
+        .catch(() => connection = false)
+        .finally(() => solve(connection));
+    });
+};
+
 //
 
 module.exports =
@@ -258,5 +271,6 @@ module.exports =
     read,
     validateMusicFileFormat,
     sort,
-    fractionToPercent
+    fractionToPercent,
+    internet
 };
