@@ -12,12 +12,12 @@
     "watchSASS": "sass --watch app/scss/:app/css/ --no-source-map"
   },
   "dependencies": {
-    "@electron/remote": "^2.0.8",
+    "@electron/remote": "^2.0.9",
     "chokidar": "^3.5.3",
     "discord-rpc": "^4.0.1",
-    "electron": "^21.2.0",
-    "music-metadata": "^7.x",
-    "sharp": "^0.31.1",
+    "electron": "^23.1.1",
+    "music-metadata": "^7.13.3",
+    "sharp": "^0.31.3",
     "sortable-dnd": "^0.4.1"
   }
 }
