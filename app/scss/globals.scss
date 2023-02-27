@@ -75,12 +75,13 @@ input
 {
     transition:
         transform ease-in 50ms,
-        border-radius cubic-bezier(1, 0, 1, 1) 1s,
-        box-shadow cubic-bezier(1, 0, 1, 1) 1s;
+        border-radius ease-in 150ms,
+        box-shadow ease-in 150ms;
     
     &:hover
     {
-        box-shadow: 0 0 25px black;
-        border-radius: 7px;
+        cursor: pointer;
+        box-shadow: 0 0 15px black;
+        border-radius: 5px;
     }
 }
