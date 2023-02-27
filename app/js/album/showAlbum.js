@@ -4,7 +4,7 @@ function showAlbum(E)
 
     Array.from(songListInAlbum.children).forEach(x => x.remove());
 
-    const albumItem = E.path[0];
+    const albumItem = E.target;
 
     if (!albumItem.classList.contains('albumItem')) return;
 

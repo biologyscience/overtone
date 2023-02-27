@@ -1,7 +1,5 @@
-document.querySelector('section.artist .out .body').addEventListener('mouseover', ({path}) =>
+document.querySelector('section.artist .out .body').addEventListener('mouseover', ({target}) =>
 {
-    const target = path[0];
-
     if (!target.classList.contains('artistItem')) return;
 
     if (!target.classList.contains('focus')) return;

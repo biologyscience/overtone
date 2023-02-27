@@ -7,7 +7,7 @@ function showFolder(E)
         totalTime = 0;
 
     const
-        path = E.path[0].dataset.path,
+        path = E.target.dataset.path,
         name = path.split('\\');
     
     const
