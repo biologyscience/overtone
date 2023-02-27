@@ -27,11 +27,11 @@ const artistsObservers =
 {
     IO: new IntersectionObserver((albums) =>
     {
-        albums.forEach(({target, isIntersecting}) =>
+        albums.forEach(({currentTarget, isIntersecting}) =>
         {
-            if (isIntersecting) return target.classList.add('visible');
+            if (isIntersecting) return currentTarget.classList.add('visible');
             
-            target.classList.remove('visible');
+            currentTarget.classList.remove('visible');
         });
     }, { root: document.querySelector('section.artist .out .body') }),
 
@@ -39,13 +39,13 @@ const artistsObservers =
     {
         albums.forEach(({addedNodes}) =>
         {
-            const target = addedNodes[0];
+            const currentTarget = addedNodes[0];
 
             sorter();
 
-            if (target.isConnected) return artistsObservers.IO.observe(target);
+            if (currentTarget.isConnected) return artistsObservers.IO.observe(currentTarget);
     
-            artistsObservers.IO.disconnect(target);
+            artistsObservers.IO.disconnect(currentTarget);
         });
     })
 };

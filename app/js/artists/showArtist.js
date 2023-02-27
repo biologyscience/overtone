@@ -1,10 +1,10 @@
-function showArtist(E)
+function showArtist({currentTarget})
 {
     const albumListInArtist = document.getElementById('albumListInArtist');
 
     Array.from(albumListInArtist.children).forEach(x => x.remove());
 
-    const artistItem = E.target;
+    const artistItem = currentTarget;
 
     if (!artistItem.classList.contains('artistItem')) return;
 

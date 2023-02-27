@@ -141,11 +141,11 @@ function changeCurrentState(E)
     }
 };
 
-function skip(E)
+function skip({currentTarget})
 {
     pauseORplay();
 
-    const id = E.target.id;
+    const id = currentTarget.id;
 
     const int = setInterval(() =>
     {

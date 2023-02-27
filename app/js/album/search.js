@@ -7,7 +7,7 @@ function displayRevert(x) { x.style.display = ''; };
 
 function searchOutAlbum(E)
 {
-    const input = E.target;
+    const input = E.currentTarget;
 
     if (outAlbum.wait) return;
 
@@ -41,7 +41,7 @@ function searchOutAlbum(E)
         
 function searchInAlbum(E)
 {
-    const input = E.target;
+    const input = E.currentTarget;
     
     if (inAlbum.wait) return;
     

@@ -1,13 +1,13 @@
 let FOCUS = false;
 
-function removeFolder(E)
+function removeFolder({currentTarget})
 {
-    if (FOCUS === false || E.target.tagName !== 'IMG') return;
+    if (FOCUS === false || currentTarget.tagName !== 'IMG') return;
 
     const { json } = require('./js/util');
 
     const
-        folderItem = E.parentElement,
+        folderItem = currentTarget.parentElement,
         path = folderItem.dataset.path,
 
         config = new json('app/json/config.json'),

@@ -1,4 +1,4 @@
-function showFolder(E)
+function showFolder({currentTarget})
 {
     const { read, parseTime } = require('./js/util');
 
@@ -7,7 +7,7 @@ function showFolder(E)
         totalTime = 0;
 
     const
-        path = E.target.dataset.path,
+        path = currentTarget.dataset.path,
         name = path.split('\\');
     
     const

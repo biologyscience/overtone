@@ -1,8 +1,8 @@
-document.querySelector('section.album .out .body').addEventListener('mouseover', ({target}) =>
+document.querySelector('section.album .out .body').addEventListener('mouseover', ({currentTarget}) =>
 {
-    if (!target.classList.contains('albumItem')) return;
+    if (!currentTarget.classList.contains('albumItem')) return;
 
-    if (!target.classList.contains('focus')) return;
+    if (!currentTarget.classList.contains('focus')) return;
 
-    target.classList.remove('focus');
+    currentTarget.classList.remove('focus');
 });

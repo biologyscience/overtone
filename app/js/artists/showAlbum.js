@@ -1,8 +1,8 @@
-function showAlbum(E)
+function showAlbum({currentTarget})
 {
     const { formatter } = require('./js/util');
 
-    const { albumName } = E.target.dataset;
+    const { albumName } = currentTarget.dataset;
 
     const
         artistName = document.querySelector('section.artist .in .head .content .name').textContent,

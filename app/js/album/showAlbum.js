@@ -1,10 +1,10 @@
-function showAlbum(E)
+function showAlbum({currentTarget})
 {
     const songListInAlbum = document.getElementById('songListInAlbum');
 
     Array.from(songListInAlbum.children).forEach(x => x.remove());
 
-    const albumItem = E.target;
+    const albumItem = currentTarget;
 
     if (!albumItem.classList.contains('albumItem')) return;
 

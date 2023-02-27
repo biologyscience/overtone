@@ -7,7 +7,7 @@ function displayRevert(x) { x.style.display = ''; };
 
 function searchOutArtist(E)
 {
-    const input = E.target;
+    const input = E.currentTarget;
 
     if (outArtist.wait) return;
 
@@ -39,7 +39,7 @@ function searchOutArtist(E)
         
 function searchInArtist(E)
 {
-    const input = E.target;
+    const input = E.currentTarget;
     
     if (inArtist.wait) return;
     

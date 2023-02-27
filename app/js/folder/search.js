@@ -3,9 +3,9 @@
         wait = false,
         lastInput;
 
-    function search(E)
+    function search({currentTarget})
     {
-        const input = E.target;
+        const input = currentTarget;
 
         if (wait) return;
     

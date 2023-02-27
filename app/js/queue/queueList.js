@@ -17,9 +17,9 @@ function updateNumber({detail})
     }
 };
 
-function chooseQueue(E)
+function chooseQueue({currentTarget})
 {
-    const span = E.target;
+    const span = currentTarget;
 
     if (span.localName !== 'span') return;
     

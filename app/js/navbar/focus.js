@@ -24,7 +24,7 @@ function show(li)
 
 function changeNavbarItemFocus(E)
 {
-    const li = typeof(E.detail) === 'string' ? document.querySelector(`[data-display-section="${E.detail}"]`) : E.target;
+    const li = typeof(E.detail) === 'string' ? document.querySelector(`[data-display-section="${E.detail}"]`) : E.currentTarget;
 
     document.querySelector('nav').style.setProperty('--left', math(li.offsetLeft) + 'px');
 
