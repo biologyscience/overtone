@@ -2,7 +2,7 @@ function showAlbum(E)
 {
     const { formatter } = require('./js/util');
 
-    const { albumName } = E.path[0].dataset;
+    const { albumName } = E.target.dataset;
 
     const
         artistName = document.querySelector('section.artist .in .head .content .name').textContent,

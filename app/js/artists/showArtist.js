@@ -4,7 +4,7 @@ function showArtist(E)
 
     Array.from(albumListInArtist.children).forEach(x => x.remove());
 
-    const artistItem = E.path[0];
+    const artistItem = E.target;
 
     if (!artistItem.classList.contains('artistItem')) return;
 
