@@ -4,9 +4,9 @@ const
     perspective = 1000,
     scale = 1.025;
 
-function move({clientX, clientY, target})
+function move({clientX, clientY, currentTarget})
 {
-    const { top, bottom, left, right } = target.getBoundingClientRect();
+    const { top, bottom, left, right } = currentTarget.getBoundingClientRect();
 
     const
         extent = 7,
@@ -15,7 +15,7 @@ function move({clientX, clientY, target})
         rotationX = extent * (midY - (clientY - top)) / midY,
         rotationY = -extent * (midx - (clientX - left)) / midx;
 
-    target.style.transform = `perspective(${perspective}px) scale(${scale}) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        currentTarget.style.transform = `perspective(${perspective}px) scale(${scale}) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
 };
 
 hover3D.forEach((x) =>

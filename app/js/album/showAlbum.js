@@ -37,7 +37,7 @@ function showAlbum(E)
 
     const head = document.querySelector('section.album .in .head');
 
-    head.querySelector('.albumArt img').setAttribute('src', `webp/${id}.webp`);
+    head.querySelector('.albumArt').setAttribute('src', `webp/${id}.webp`);
     head.querySelector('.content .name').innerHTML = album;
     head.querySelector('.content #albumArtistInAlbumItem').innerHTML = artist;
     head.querySelector('.content .year').innerHTML = year;
