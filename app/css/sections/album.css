@@ -104,15 +104,9 @@ section.album .in .head #backToAlbumOut * {
   pointer-events: none;
 }
 section.album .in .head .albumArt {
-  display: flex;
-  align-items: center;
-}
-section.album .in .head .albumArt img {
+  align-self: center;
   height: 200px;
   width: 200px;
-}
-section.album .in .head .albumArt:hover {
-  cursor: pointer;
 }
 section.album .in .head .content {
   align-self: flex-end;
