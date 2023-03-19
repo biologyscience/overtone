@@ -40,7 +40,7 @@ function showAlbum(E)
     head.querySelector('.albumArt').setAttribute('src', `webp/${id}.webp`);
     head.querySelector('.content .name').innerHTML = album;
     head.querySelector('.content #albumArtistInAlbumItem').innerHTML = artist;
-    head.querySelector('.content .year').innerHTML = year;
+    head.querySelector('.content .year').innerHTML = new String(year).length !== 4 ? 2000 + year : year;
     head.querySelector('.content .songCount').innerHTML = songs.length;
     head.querySelector('.content .duration').innerHTML = Object.values(parseTime(rawDuration)).join(':');
 
