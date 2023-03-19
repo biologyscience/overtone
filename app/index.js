@@ -1,7 +1,8 @@
 const
     remote = require('@electron/remote/main'),
     { app, BrowserWindow, ipcMain } = require('electron'),
-    { existsSync, writeFileSync } = require('fs');
+    { existsSync, writeFileSync } = require('fs'),
+    { join } = require('path');
 
 remote.initialize();
 
@@ -16,8 +17,9 @@ function ready()
         // icon: '',
         webPreferences:
         {
+            contextIsolation: false,
             nodeIntegration: true,
-            contextIsolation: false
+            // preload: join(__dirname, 'preload.js')
         }
     });
 
