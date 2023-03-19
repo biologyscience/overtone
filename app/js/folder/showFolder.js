@@ -67,7 +67,7 @@ function hideFolder()
 {
     document.querySelector('section.folder .in').classList.add('displayNone');
     document.querySelector('section.folder .out').classList.remove('displayNone');
-    document.getElementById('searchInput').value = '';
+    document.getElementById('folderInput').value = '';
 };
 
 document.getElementById('folders').addEventListener('click', showFolder);
