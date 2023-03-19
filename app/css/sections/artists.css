@@ -53,7 +53,6 @@ section.artist .out .body .artistItem {
   text-align: center;
   width: 150px;
   padding: 0.5em;
-  opacity: 0;
   transition: opacity 250ms ease 100ms;
 }
 section.artist .out .body .artistItem * {
