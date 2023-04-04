@@ -63,6 +63,7 @@
         <script src="js/visualizer/resizeCanvas.js" defer></script>
         <script src="js/visualizer/visualizer.js" defer></script>
 
+        <script src="js/fonts.js" defer></script>
         <script src="js/getAlbumArt.js" defer></script>
         <script src="js/hover3D.js" defer></script>
         <script src="js/misc.js" defer></script>
@@ -296,6 +297,13 @@
                 <div class="rpc flexCol alignItemsCenter">
                     <input id="discordAppID" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
                     <button id="connect">Connect</button>
+                </div>
+                <div class="fontSelection relative">
+                    <button class="choose flexCenter" data-is-open="false">
+                        Choose a Font
+                        <img src="svg/chevronLeft.svg">
+                    </button>
+                    <ul class="checkboxes absolute"></ul>
                 </div>
             </section>
 
