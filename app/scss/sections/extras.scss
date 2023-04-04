@@ -39,4 +39,50 @@ section.extras
             padding: 0 .5em;
         }
     }
+
+    .fontSelection
+    {
+        margin-top: 6em;
+        margin-left: 3em;
+        
+        .choose
+        {
+            font-size: 2.5em;
+            
+            img
+            {
+                height: .75em;
+                aspect-ratio: 1;
+                rotate: 180deg;
+                margin-left: .2em;
+            }
+        }
+
+        .checkboxes
+        {
+            font-size: 1.5em;
+            top: 0;
+            left: 11em;
+            margin: 0;
+            visibility: hidden;
+
+            li
+            {
+                margin: .75em 0;
+                padding-left: .5em;
+                border-left: .2em solid transparent;
+                transition: border-color 150ms ease;
+
+                &.currentFont { border-color: var(--accent) !important; }
+
+                &:hover
+                {
+                    border-color: var(--accentPurple1);
+                    cursor: pointer;
+                }
+
+                &::marker { content: ''; }
+            }
+        }
+    }
 }
