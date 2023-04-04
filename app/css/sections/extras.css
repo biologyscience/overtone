@@ -32,3 +32,39 @@ section.extras .rpc #connect {
   border-radius: 0.2em;
   padding: 0 0.5em;
 }
+section.extras .fontSelection {
+  margin-top: 6em;
+  margin-left: 3em;
+}
+section.extras .fontSelection .choose {
+  font-size: 2.5em;
+}
+section.extras .fontSelection .choose img {
+  height: 0.75em;
+  aspect-ratio: 1;
+  rotate: 180deg;
+  margin-left: 0.2em;
+}
+section.extras .fontSelection .checkboxes {
+  font-size: 1.5em;
+  top: 0;
+  left: 11em;
+  margin: 0;
+  visibility: hidden;
+}
+section.extras .fontSelection .checkboxes li {
+  margin: 0.75em 0;
+  padding-left: 0.5em;
+  border-left: 0.2em solid transparent;
+  transition: border-color 150ms ease;
+}
+section.extras .fontSelection .checkboxes li.currentFont {
+  border-color: var(--accent) !important;
+}
+section.extras .fontSelection .checkboxes li:hover {
+  border-color: var(--accentPurple1);
+  cursor: pointer;
+}
+section.extras .fontSelection .checkboxes li::marker {
+  content: "";
+}
