@@ -2,7 +2,7 @@
 {
     user-select: none;
     color: white;
-    font-family: 'Andika';
+    font-family: var(--currentFont);
     // outline: .5px solid red;
 
     &::-webkit-scrollbar
