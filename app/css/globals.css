@@ -1,7 +1,7 @@
 * {
   user-select: none;
   color: white;
-  font-family: "Andika";
+  font-family: var(--currentFont);
 }
 *::-webkit-scrollbar {
   background: none;

@@ -7,3 +7,13 @@
     font-family: 'Fira';
     src: url('../fonts/FiraSans-Medium.ttf');
 }
+
+@font-face {
+    font-family: 'Caveat Brush';
+    src: url('../fonts/Caveat Brush.ttf');
+}
+
+@font-face {
+    font-family: 'Euclid Flex';
+    src: url('../fonts/Euclid Flex.ttf');
+}
