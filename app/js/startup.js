@@ -57,9 +57,6 @@ let timeout = setTimeout(() =>
 
 
 
-
-
-
 {
     const { existsSync, readFileSync } = require('fs');
     const { read } = require('./js/util');
@@ -73,10 +70,10 @@ let timeout = setTimeout(() =>
         watcher.on('all', () => window.location.reload());
     });
 
-    /* queue list */
-    const queueList = read.queues();
+    // /* queue list */
+    // const queueList = read.queues();
     
-    queueList.forEach(detail => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail})));
+    // queueList.forEach(detail => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail})));
 
     /* fill previous id */
     if (existsSync('./app/json/config.json'))
@@ -86,8 +83,10 @@ let timeout = setTimeout(() =>
         if (config.discordAppID !== undefined)
         {
             const discordAppID = document.getElementById('discordAppID');
-            
             discordAppID.value = config.discordAppID;
+
+            const font = config.font;
+            document.dispatchEvent(new CustomEvent('-setFont', {detail: font}));
         }
     }
         
