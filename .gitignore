@@ -5,4 +5,4 @@ app/temp
 app/webp/*
 !app/webp/empty.file
 node_modules
-npm start.vbs
+npm run dev.vbs
