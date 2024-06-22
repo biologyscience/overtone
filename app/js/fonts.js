@@ -1,3 +1,5 @@
+const { readFileSync, writeFileSync } = require('fs');
+
 const fonts = [];
 
 document.fonts.forEach(x => fonts.push(x.family));
@@ -13,6 +15,14 @@ function choose(E)
     target.classList.add('currentFont');
 
     document.querySelector(':root').style.setProperty('--currentFont', target.innerHTML);
+
+    const
+        config = 'app/json/config.json',
+        read = JSON.parse(readFileSync(config));
+
+    read.font = target.innerHTML;
+
+    writeFileSync(config, JSON.stringify(read, null, 4));
 };
 
 function showFontList({target})
