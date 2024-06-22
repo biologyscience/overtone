@@ -17,7 +17,7 @@
     "chokidar": "^3.6.0",
     "discord-rpc": "^4.0.1",
     "electron": "^31.0.2",
-    "music-metadata": "^8.3.0",
+    "music-metadata": "^7.14.0",
     "sharp": "^0.33.4",
     "sortable-dnd": "^0.6.15"
   }
