@@ -1,9 +1,5 @@
 const { readFileSync, writeFileSync } = require('fs');
 
-const fonts = [];
-
-document.fonts.forEach(x => fonts.push(x.family));
-
 const checkbox = document.querySelector('section.extras .fontSelection .checkboxes');
 
 function choose(E)
@@ -42,14 +38,14 @@ function showFontList({target})
     }
 };
 
-fonts.forEach((x) =>
+document.fonts.forEach(({family}) =>
 {
     const li = document.createElement('li');
 
-    li.innerHTML = x;
-    li.style.fontFamily = x;
+    li.innerHTML = family;
+    li.style.fontFamily = family;
 
-    if (` "${x}"` === getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont')) li.classList.add('currentFont');
+    if (` "${family}"` === getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont')) li.classList.add('currentFont');
 
     checkbox.append(li);
 
