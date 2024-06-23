@@ -13,6 +13,8 @@ function showAlbum(E)
         metadata = util.read.metadata(),
         { album, artist, rawDuration, songs, year } = util.read.albums()[id];
 
+    let i = 0;
+
     songs.sort(util.sort.byTrackNumber).forEach((x) =>
     {
         const li = document.createElement('li');
@@ -27,7 +29,8 @@ function showAlbum(E)
         <div class="duration">${metadata[x].duration}</div>
         `;
         
-        li.dataset.songName = metadata[x].title.toLowerCase();
+        li.dataset.fileLocation = x;
+        li.dataset.position = i++;
         li.dataset.trackNumber = metadata[x].track.no;
         
         songListInAlbum.append(li);

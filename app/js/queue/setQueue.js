@@ -11,7 +11,7 @@ function showQueue(queueName)
     });
 };
 
-function setQueue({detail: {filePaths, queueName, position}})
+function setQueue({detail: {album, albumArtist, position}})
 {
     queueReady = false;
 
@@ -25,7 +25,7 @@ function setQueue({detail: {filePaths, queueName, position}})
         time: []
     };
 
-    filePaths.forEach((x) =>
+    util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber).forEach((x) =>
     {
         list.metadata.push(util.getMetaData(x));
 
@@ -77,7 +77,7 @@ function setQueue({detail: {filePaths, queueName, position}})
 
             const ul = document.createElement('ul');
 
-            ul.dataset.queueName = queueName;
+            ul.dataset.queueName = album;
             ul.dataset.position = `${position}. `;
             
             for (let i = 0; i < list.time.length; i++)
@@ -89,7 +89,7 @@ function setQueue({detail: {filePaths, queueName, position}})
 
             document.getElementById('queuesHolder').append(ul);
 
-            showQueue(queueName);
+            showQueue(album);
 
             document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
 
@@ -100,7 +100,7 @@ function setQueue({detail: {filePaths, queueName, position}})
     });
 };
 
-document.addEventListener('-selectedFilePaths', setQueue);
+document.addEventListener('-selectedAlbum', setQueue);
 
 document.addEventListener('-chooseQueue', (obj) =>
 {
