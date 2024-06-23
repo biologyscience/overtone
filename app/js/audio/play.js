@@ -272,3 +272,4 @@ document.addEventListener('-selectedAlbum', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
+document.addEventListener('-currentQueueReady', ({detail}) => { queueName = detail; queueList = util.read.queues()[queueName]});
