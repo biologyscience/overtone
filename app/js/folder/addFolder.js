@@ -2,11 +2,11 @@ let
     allFolders = [],
     filtered = [];
 
-function getAllFolders(path)
+function getAllFolders(folderPath)
 {
-    fs.readdirSync(path).filter(x => fs.statSync(path.join(path, x)).isDirectory()).forEach((y) =>
+    fs.readdirSync(folderPath).filter(x => fs.statSync(path.join(folderPath, x)).isDirectory()).forEach((y) =>
     {
-        const fullPath = path.join(path, y);
+        const fullPath = path.join(folderPath, y);
 
         allFolders.push(fullPath);
 
