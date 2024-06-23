@@ -14,18 +14,7 @@ function clickSetBorder(E)
 
     li.style.borderColor = 'var(--accent)';
 
-    const queueName = currentQueue.dataset.queueName;
-
-    const { filePaths } = util.read.queues().filter(x => x.queueName === queueName)[0];
-
-    const detail =
-    {
-        filePaths,
-        queueName,
-        current: children.indexOf(li)
-    };
-
-    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail}));
+    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: children.indexOf(li)}));
 };
 
 function queueSetBorder({detail})
