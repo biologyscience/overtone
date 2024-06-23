@@ -2,8 +2,6 @@ const checkbox = document.querySelector('section.extras .fontSelection .checkbox
 
 function choose(E)
 {
-    if (E === undefined) return document.querySelector(':root').style.setProperty('--currentFont', util.read.config().font);
-
     [...checkbox.children].forEach(x => x.classList.remove('currentFont'));
 
     let target = E.type == '-setFont' ? [...checkbox.children].filter(x => x.innerHTML == E.detail)[0] : E.target;
@@ -38,21 +36,24 @@ function showFontList({target})
     }
 };
 
-document.fonts.forEach(({family}) =>
-{
-    const li = document.createElement('li');
-
-    li.innerHTML = family;
-    li.style.fontFamily = family;
-
-    if (` "${family}"` === getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont')) li.classList.add('currentFont');
-
-    checkbox.append(li);
-
-    li.addEventListener('click', choose);
-});
-
 document.querySelector('section.extras .fontSelection .choose').addEventListener('click', showFontList);
 document.addEventListener('-setFont', choose);
 
-choose();
+document.querySelector(':root').style.setProperty('--currentFont', util.read.config().font);
+
+document.addEventListener('-AppLoaded', () =>
+{
+    document.fonts.forEach(({family}) =>
+    {
+        const li = document.createElement('li');
+        
+        li.innerHTML = family;
+        li.style.fontFamily = family;
+        
+        if (family === getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont')) li.classList.add('currentFont');
+
+        checkbox.append(li);
+        
+        li.addEventListener('click', choose);
+    });
+});
