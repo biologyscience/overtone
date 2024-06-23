@@ -54,4 +54,5 @@ document.fonts.forEach(({family}) =>
 
 document.querySelector('section.extras .fontSelection .choose').addEventListener('click', showFontList);
 document.addEventListener('-setFont', choose);
+
 choose();
