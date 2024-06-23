@@ -19,11 +19,19 @@ function queueSetBorder({detail})
 {
     const current = detail;
 
-    const children = Array.from(document.querySelector('#queuesHolder .current').children);
+    const int = setInterval(() =>
+    {
+        if (Array.from(document.querySelector('#queuesHolder .current').children).length > 0)
+        {
+            clearInterval(int);
     
-    children.forEach(x => x.style.borderColor = '');
-
-    children[current].style.borderColor = 'var(--accent)';
+            const children = Array.from(document.querySelector('#queuesHolder .current').children);
+    
+            children.forEach(x => x.style.borderColor = '');
+        
+            children[current].style.borderColor = 'var(--accent)';
+        }
+    });
 };
 
 document.querySelector('section.queue #queuesHolder').addEventListener('click', clickSetBorder);
