@@ -10,9 +10,9 @@ function showQueue(queueName)
         else { x.classList.remove('current'); }
     });
 
-    document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
-
     queueReady = true;
+
+    document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
 
     document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: queueName}));
 };
