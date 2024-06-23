@@ -50,9 +50,7 @@ function addItemToQueueList({detail})
 
 function displayQueueName({detail})
 {
-    const ul = detail;
-
-    document.getElementById('queueName').innerHTML = ul.dataset.queueName;
+    document.getElementById('queueName').innerHTML = detail;
 };
 
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
