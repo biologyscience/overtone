@@ -70,11 +70,14 @@ let timeout = setTimeout(() =>
         watcher.on('all', () => window.location.reload());
     });
 
-    // /* queue list */
-    // const queueList = read.queues();
-    
-    // queueList.forEach(detail => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail})));
+    /* queue list */
+    const queueList = read.queues();
 
+    for (const x in queueList)
+    {
+        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x}));
+    }
+    
     /* fill previous id */
     if (existsSync('./app/json/config.json'))
     {
