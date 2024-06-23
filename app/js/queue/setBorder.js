@@ -14,7 +14,7 @@ function clickSetBorder(E)
 
     li.style.borderColor = 'var(--accent)';
 
-    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: children.indexOf(li)}));
+    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: {position: children.indexOf(li), queueNameInList: currentQueue.dataset.queueName}}));
 };
 
 function queueSetBorder({detail})

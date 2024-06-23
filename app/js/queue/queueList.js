@@ -31,9 +31,17 @@ function chooseQueue(E)
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
-    document.getElementById('queueListMenu').classList.toggle('visible')
+    const int = setInterval(() => 
+    {
+        if (queueReady)
+        {
+            clearInterval(int);
+    
+            document.getElementById('queueListMenu').classList.toggle('visible');
 
-    updateNumber({detail: -1});
+            updateNumber({detail: -1});
+        }
+    });
 };
 
 function addItemToQueueList({detail})
