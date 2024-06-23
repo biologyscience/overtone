@@ -260,6 +260,19 @@ function timeChange({detail})
     audio.currentTime = percent * audio.duration;
 };
 
+function volumeChange({detail})
+{
+    audio.volume = detail;
+
+    const
+        config = new util.json('app/json/config.json'),
+        read = config.read();
+    
+    read.volume = audio.volume;
+
+    config.save();
+};
+
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('nextSong').onclick = skip;
 document.getElementById('previousSong').onclick = skip;
@@ -271,4 +284,6 @@ document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedAlbum', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
-document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
+document.addEventListener('-volumeChange', volumeChange);
+
+audio.volume = util.read.config().volume;
