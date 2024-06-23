@@ -9,8 +9,7 @@
   "scripts": {
     "start": "electron app/index.js",
     "buildCSS": "sass app/scss/:app/css/ --no-source-map",
-    "watchSASS": "sass --watch app/scss/:app/css/ --no-source-map",
-    "dev": "electron app/index.js && sass --watch app/scss/:app/css/ --no-source-map"
+    "watchSASS": "sass --watch app/scss/:app/css/ --no-source-map"
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",

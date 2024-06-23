@@ -272,6 +272,8 @@ section.album
                     border-radius: .5em;
                     transition: border-color 300ms ease;
 
+                    * { pointer-events: none; }
+
                     .song
                     {
                         width: $song;

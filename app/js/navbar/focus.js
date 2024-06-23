@@ -41,8 +41,10 @@ function navbarStartup()
         items: document.querySelectorAll('nav li')
     };
 
-    const startUpHighlight = navbar.items[1];
-
+    //
+    const startUpHighlight = navbar.items[2];
+    //
+    
     navbar.div.style.setProperty('--left', `${math(startUpHighlight.offsetLeft)}px`);
 
     show(startUpHighlight);

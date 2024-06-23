@@ -222,6 +222,9 @@ section.album .in .body #songListInAlbum li {
   border-radius: 0.5em;
   transition: border-color 300ms ease;
 }
+section.album .in .body #songListInAlbum li * {
+  pointer-events: none;
+}
 section.album .in .body #songListInAlbum li .song {
   width: 43vw;
   display: flex;

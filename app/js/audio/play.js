@@ -61,11 +61,12 @@ function play({detail} = '')
     {
         if (typeof(detail) === 'object')
         {
-            queueList = [...detail.filePaths];
+            const { album, albumArtist, position } = detail;
 
-            queueName = detail.queueName;
-
-            current = detail.current || 0;
+            queueName = album;
+            current = position;
+        
+            queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
         }
 
         else { current = detail; }
@@ -267,7 +268,7 @@ audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
 
 document.addEventListener('-clickedQueueItem', pauseThenPlay);
-document.addEventListener('-selectedFilePaths', pauseThenPlay);
+document.addEventListener('-selectedAlbum', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);

@@ -1,20 +1,11 @@
 function updateNumber({detail})
 {
-    const thing = detail;
-    
-    if (typeof(thing) === 'object')
-    {
-        const totalSongsInCurrentQueue = document.getElementById('totalSongsInCurrentQueue');
+    if (typeof(detail) === 'number') return document.getElementById('currentSongIndex').innerHTML = detail + 1;
 
-        totalSongsInCurrentQueue.innerHTML = thing.length;
-    }
+    const { album, albumArtist, position } = detail;
 
-    else
-    {
-        const currentSongIndex = document.getElementById('currentSongIndex');
-
-        currentSongIndex.innerHTML = thing + 1;
-    }
+    document.getElementById('totalSongsInCurrentQueue').innerHTML = util.read.albums()[util.formatter(album, albumArtist)].songs.length;
+    document.getElementById('currentSongIndex').innerHTML = position + 1;
 };
 
 function chooseQueue(E)
@@ -24,7 +15,6 @@ function chooseQueue(E)
     if (span.localName !== 'span') return;
     
     const queueName = span.dataset.queueName;
-
 
     const queueData = util.read.queues().filter(x => x.queueName === queueName)[0];
 
@@ -71,7 +61,7 @@ document.querySelector('section.queue .queueListWrapper').addEventListener('clic
 document.querySelector('#queueListMenu .head .close').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
 
-document.addEventListener('-selectedFilePaths', updateNumber);
+document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-current', updateNumber);
 document.addEventListener('-addItemToQueueList', addItemToQueueList);
 document.addEventListener('-currentQueueReady', displayQueueName);
