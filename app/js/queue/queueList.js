@@ -1,7 +1,7 @@
 function updateNumber(data)
 {
     if (typeof(data) === 'number') return document.getElementById('currentSongIndex').innerHTML = data === -1 ? '-' : data + 1;
-    
+
     const { album, albumArtist, position } = data.detail;
 
     document.getElementById('totalSongsInCurrentQueue').innerHTML = util.read.albums()[util.formatter(album, albumArtist)].songs.length;
@@ -16,9 +16,9 @@ function chooseQueue(E)
     
     const queueName = span.dataset.queueName;
 
-    const queueData = util.read.queues().filter(x => x.queueName === queueName)[0];
+    // const queueData = util.read.queues().filter(x => x.queueName === queueName)[0];
 
-    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueData}));
+    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
     document.getElementById('queueListMenu').classList.toggle('visible')
 
