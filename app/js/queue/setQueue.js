@@ -107,28 +107,11 @@ function setQueue({detail})
             queuesHolder.append(ul);
 
             showQueue(queueName);
-
-            // document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
-
-            // queueReady = true;
-
-            // document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
         });
     });
 };
 
-document.addEventListener('-selectedAlbum', setQueue);
-
-document.addEventListener('-chooseQueue', (obj) =>
-{
-    // const element = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === obj.detail.queueName);
-
-    // element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);
-
-    // showQueue(obj.detail.queueName);
-
-    setQueue(obj);
-});
+['-selectedAlbum', '-chooseQueue'].forEach(x => document.addEventListener(x, setQueue));
 
 document.addEventListener('-current', (obj) =>
 {
