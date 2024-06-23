@@ -2,13 +2,11 @@ function clickSetBorder(E)
 {
     const li = util.getElement('li', E);
 
-    if (li === undefined) return;
-
     const currentQueue = document.querySelector('#queuesHolder .current');
-
+    
     const children = Array.from(currentQueue.children);
 
-    if (children.length === 0) return;
+    if (li === undefined || children.length === 0) return;
 
     children.forEach(x => x.style.borderColor = '');
 
