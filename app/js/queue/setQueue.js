@@ -9,13 +9,21 @@ function showQueue(queueName)
 
         else { x.classList.remove('current'); }
     });
+
+    document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
+
+    queueReady = true;
+
+    document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
 };
 
-function setQueue({detail: {album, albumArtist, position}})
+function setQueue({detail})
 {
     queueReady = false;
 
-    let id = 0;
+    let
+        id = 0,
+        paths = util.read.queues()[detail];
 
     const list =
     {
@@ -25,15 +33,25 @@ function setQueue({detail: {album, albumArtist, position}})
         time: []
     };
 
-    util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber).forEach((x) =>
+    if (typeof(detail) !== 'string') paths = util.read.albums()[util.formatter(detail.album, detail.albumArtist)].songs.sort(util.sort.byTrackNumber);
+
+    paths.forEach((x) =>
     {
         list.metadata.push(util.getMetaData(x));
-
+            
         list.audioDuration.push(util.getAudioDuration(x));
     });
 
     Promise.all(list.metadata).then((x) =>
     {
+        let album = x[0].album;
+
+        const queueName = detail.album || album;
+
+        const queuesHolder = document.getElementById('queuesHolder');
+
+        if (Array.from(queuesHolder.children).filter(x => x.dataset.queueName === queueName).length > 0) return showQueue(queueName);
+
         x.forEach((tags) =>
         {
             const data =
@@ -77,8 +95,7 @@ function setQueue({detail: {album, albumArtist, position}})
 
             const ul = document.createElement('ul');
 
-            ul.dataset.queueName = album;
-            ul.dataset.position = `${position}. `;
+            ul.dataset.queueName = queueName;
             
             for (let i = 0; i < list.time.length; i++)
             {
@@ -87,15 +104,15 @@ function setQueue({detail: {album, albumArtist, position}})
                 ul.append(list.li[i]);
             }
 
-            document.getElementById('queuesHolder').append(ul);
+            queuesHolder.append(ul);
 
-            showQueue(album);
+            showQueue(queueName);
 
-            document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
+            // document.dispatchEvent(new CustomEvent('-changeNavbarItemFocus', {detail: 'queue'}));
 
-            queueReady = true;
+            // queueReady = true;
 
-            document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
+            // document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
         });
     });
 };
@@ -104,9 +121,13 @@ document.addEventListener('-selectedAlbum', setQueue);
 
 document.addEventListener('-chooseQueue', (obj) =>
 {
-    const element = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === obj.detail.queueName);
+    // const element = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === obj.detail.queueName);
 
-    element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);
+    // element.length > 0 ? showQueue(obj.detail.queueName) : setQueue(obj);
+
+    // showQueue(obj.detail.queueName);
+
+    setQueue(obj);
 });
 
 document.addEventListener('-current', (obj) =>
