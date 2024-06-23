@@ -25,9 +25,8 @@ function chooseQueue(E)
     
     const queueName = span.dataset.queueName;
 
-    const { read } = require('./js/util');
 
-    const queueData = read.queues().filter(x => x.queueName === queueName)[0];
+    const queueData = util.read.queues().filter(x => x.queueName === queueName)[0];
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueData}));
 

@@ -8,14 +8,12 @@ function showAlbum(E)
 
     if (!albumItem.classList.contains('albumItem')) return;
 
-    const { read, parseTime, sort } = require('./js/util');
-
     const
         id = albumItem.dataset.id,
-        metadata = read.metadata(),
-        { album, artist, rawDuration, songs, year } = read.albums()[id];
+        metadata = util.read.metadata(),
+        { album, artist, rawDuration, songs, year } = util.read.albums()[id];
 
-    songs.sort(sort.byTrackNumber).forEach((x) =>
+    songs.sort(util.sort.byTrackNumber).forEach((x) =>
     {
         const li = document.createElement('li');
 
@@ -42,7 +40,7 @@ function showAlbum(E)
     head.querySelector('.content #albumArtistInAlbumItem').innerHTML = artist;
     head.querySelector('.content .year').innerHTML = new String(year).length !== 4 ? 2000 + year : year;
     head.querySelector('.content .songCount').innerHTML = songs.length;
-    head.querySelector('.content .duration').innerHTML = Object.values(parseTime(rawDuration)).join(':');
+    head.querySelector('.content .duration').innerHTML = Object.values(util.parseTime(rawDuration)).join(':');
 
     document.querySelector('section.album .out').classList.add('displayNone');
     document.querySelector('section.album .in').classList.remove('displayNone');

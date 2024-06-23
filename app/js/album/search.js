@@ -14,8 +14,6 @@ function searchOutAlbum(E)
     outAlbum.wait = true;
 
     if (outAlbum.lastInput === input.value.toLowerCase()) return outAlbum.wait = false;
-    
-    const { read } = require('./js/util');
 
     outAlbum.lastInput = input.value.toLowerCase();
 
@@ -23,7 +21,7 @@ function searchOutAlbum(E)
 
     albumItems.forEach(x => x.classList.remove('displayNone'));
 
-    const filtered = albumItems.filter(x => !read.albums()[x.dataset.id].album.toLowerCase().includes(outAlbum.lastInput));
+    const filtered = albumItems.filter(x => !util.read.albums()[x.dataset.id].album.toLowerCase().includes(outAlbum.lastInput));
 
     filtered.length === albumItems.length ? input.classList.add('noMatch') : input.classList.remove('noMatch');
     

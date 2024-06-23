@@ -1,5 +1,3 @@
-const sortable = require('sortable-dnd');
-
 new sortable(document.getElementById('queueList'),
 {
     draggable: '.dragger',

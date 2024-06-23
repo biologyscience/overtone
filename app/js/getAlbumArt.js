@@ -1,15 +1,9 @@
 function chooseFiles()
 {
     const
-        { parseFile } = require('music-metadata'),
-        { dialog, BrowserWindow } = require('@electron/remote'),
-        { existsSync, mkdirSync, writeFileSync } = require('fs'),
-        { formatter, read } = require('./js/util');
-
-    const
         options =
         {
-            filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFileFormats } ],
+            filters: [ { name: 'Music Files', extensions: util.read.config().allowedMusicFileFormats } ],
             properties: ['multiSelections', 'showHiddenFiles']
         },
 
@@ -19,12 +13,12 @@ function chooseFiles()
             config: './app/json/config.json'
         };
 
-    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), options)
+    remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), options)
     .then((selected) =>
     {
         if (selected.canceled) return;
 
-        Promise.all([...selected.filePaths.map(x => parseFile(x))]).then((x) =>
+        Promise.all([...selected.filePaths.map(x => musicMetadata.parseFile(x))]).then((x) =>
         {
             x.forEach((tags) =>
             {
@@ -32,15 +26,15 @@ function chooseFiles()
                 {
                     const
                         picture = tags.common.picture[0],
-                        formatted = formatter(tags.common.album, tags.common.albumartist);
+                        formatted = util.formatter(tags.common.album, tags.common.albumartist);
 
-                    if (existsSync(dir.albumArts) === false) { mkdirSync(dir.albumArts); }
+                    if (fs.existsSync(dir.albumArts) === false) { fs.mkdirSync(dir.albumArts); }
                     
                     const fileLocation = dir.albumArts + '/' + formatted + '.' + picture.format.split('/')[1];
 
-                    if (existsSync(fileLocation)) return;
+                    if (fs.existsSync(fileLocation)) return;
 
-                    writeFileSync(fileLocation, picture.data);
+                    fs.writeFileSync(fileLocation, picture.data);
                 }
             });
         })

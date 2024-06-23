@@ -1,19 +1,15 @@
-const { watch } = require('chokidar');
-
-const watcher = watch(require('./js/util').read.config().checkMusicIn);
+const watcher = chokidar.watch(util.read.config().checkMusicIn);
 
 function add(path)
 {
-    const { json, validateMusicFileFormat } = require('./js/util');
-
-    if (!validateMusicFileFormat(path)) return;
+    if (!util.validateMusicFileFormat(path)) return;
 
     const
         split = path.split('\\'),
         file = split[split.length - 1],
         folder = split.splice(0, split.length - 1).join('\\'),
 
-        songList = new json('app/json/songList.json'),
+        songList = new util.json('app/json/songList.json'),
         data = songList.read();
 
     data[folder].push(file);
@@ -23,16 +19,14 @@ function add(path)
 
 function unlink(path)
 {
-    const { json, validateMusicFileFormat } = require('./js/util');
-
-    if (!validateMusicFileFormat(path)) return;
+    if (!util.validateMusicFileFormat(path)) return;
 
     const
         split = path.split('\\'),
         file = split[split.length - 1],
         folder = split.splice(0, split.length - 1).join('\\'),
 
-        songList = new json('app/json/songList.json'),
+        songList = new util.json('app/json/songList.json'),
         data = songList.read(),
         int = data[folder].indexOf(file);
 
@@ -43,13 +37,11 @@ function unlink(path)
 
 function addDir(path)
 {
-    const { json, validateMusicFileFormat } = require('./js/util');
-
-    const songs = require('fs').readdirSync(path).filter(validateMusicFileFormat);
+    const songs = fs.readdirSync(path).filter(util.validateMusicFileFormat);
 
     if (songs.length === 0) return;
 
-    const config = new json('app/json/config.json');
+    const config = new util.json('app/json/config.json');
 
     config.read().checkMusicIn.push(path);
     config.save();
@@ -61,13 +53,11 @@ function addDir(path)
 
 function unlinkDir(path)
 {
-    const { read, json } = require('./js/util');
-
-    if (!read.config().checkMusicIn.includes(path)) return;
+    if (!util.read.config().checkMusicIn.includes(path)) return;
 
     const
-        songList = new json('app/json/songList.json'),
-        config = new json('app/json/config.json'),
+        songList = new util.json('app/json/songList.json'),
+        config = new util.json('app/json/config.json'),
         songListData = songList.read(),
         configData = config.read(),
         int = configData.checkMusicIn.indexOf(path);

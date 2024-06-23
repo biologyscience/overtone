@@ -1,9 +1,7 @@
 function updateAlbums({detail: {tags, songList}})
 {
-    const { json, formatter } = require('./js/util');
-    
     const
-        albums = new json('app/json/albums.json'),
+        albums = new util.json('app/json/albums.json'),
         data = albums.read();
 
     for (let i = 0; i < songList.length; i++)
@@ -12,7 +10,7 @@ function updateAlbums({detail: {tags, songList}})
 
         const { album, albumArtist, year, rawDuration } = tags[i];
         
-        if (album !== undefined && albumArtist !== undefined) { formattedName = formatter(album, albumArtist); }
+        if (album !== undefined && albumArtist !== undefined) { formattedName = util.formatter(album, albumArtist); }
 
         const albumInJSON = data[formattedName];
 

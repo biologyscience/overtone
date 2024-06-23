@@ -3,9 +3,6 @@ let
     audioDuration,
     fraction;
 
-const { parseTime, fractionToPercent } = require('./js/util');
-
-
 function setTime({detail})
 {
     const time = detail;
@@ -39,10 +36,10 @@ function updateTimeLine({detail})
     const
         currentTime = detail.currentTime,
         totalTime = detail.duration,
-        minutes = parseTime(currentTime * 1000).minutes.toString(),
-        seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds;
+        minutes = util.parseTime(currentTime * 1000).minutes.toString(),
+        seconds = util.parseTime(currentTime * 1000).seconds.toString().length > 1 ? util.parseTime(currentTime * 1000).seconds : '0' + util.parseTime(currentTime * 1000).seconds;
 
-    div.theLine.style.setProperty('--progress', fractionToPercent(currentTime / totalTime, 4));
+    div.theLine.style.setProperty('--progress', util.fractionToPercent(currentTime / totalTime, 4));
 
     div.currentTime.innerHTML = `${minutes}:${seconds}`;
     div.theLine.querySelector('.popUp').innerHTML = `${minutes}:${seconds}`;
@@ -63,12 +60,12 @@ function scrollTimeLine(E)
 
     fraction = num / totalWidth;
 
-    document.getElementById('theLine').style.setProperty('--progress', fractionToPercent(fraction, 4));
+    document.getElementById('theLine').style.setProperty('--progress', util.fractionToPercent(fraction, 4));
 
     const
         currentTime = audioDuration * fraction,
-        minutes = parseTime(currentTime * 1000).minutes.toString(),
-        seconds = parseTime(currentTime * 1000).seconds.toString().length > 1 ? parseTime(currentTime * 1000).seconds : '0' + parseTime(currentTime * 1000).seconds;
+        minutes = util.parseTime(currentTime * 1000).minutes.toString(),
+        seconds = util.parseTime(currentTime * 1000).seconds.toString().length > 1 ? util.parseTime(currentTime * 1000).seconds : '0' + util.parseTime(currentTime * 1000).seconds;
 
     popUp.innerHTML = `${minutes}:${seconds}`;
 };

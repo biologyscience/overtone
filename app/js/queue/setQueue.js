@@ -17,8 +17,6 @@ function setQueue({detail: {filePaths, queueName, position}})
 
     let id = 0;
 
-    const { getAudioDuration, getMetaData } = require('./js/util');
-
     const list =
     {
         metadata: [],
@@ -29,9 +27,9 @@ function setQueue({detail: {filePaths, queueName, position}})
 
     filePaths.forEach((x) =>
     {
-        list.metadata.push(getMetaData(x));
+        list.metadata.push(util.getMetaData(x));
 
-        list.audioDuration.push(getAudioDuration(x));
+        list.audioDuration.push(util.getAudioDuration(x));
     });
 
     Promise.all(list.metadata).then((x) =>

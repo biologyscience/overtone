@@ -1,5 +1,3 @@
-const { readFileSync, writeFileSync } = require('fs');
-
 const checkbox = document.querySelector('section.extras .fontSelection .checkboxes');
 
 function choose(E)
@@ -13,12 +11,12 @@ function choose(E)
     document.querySelector(':root').style.setProperty('--currentFont', target.innerHTML);
 
     const
-        config = 'app/json/config.json',
-        read = JSON.parse(readFileSync(config));
+        config = new util.json('app/json/config.json'),
+        configData = config.read();
 
-    read.font = target.innerHTML;
+    configData.font = target.innerHTML;
 
-    writeFileSync(config, JSON.stringify(read, null, 4));
+    config.save();
 };
 
 function showFontList({target})

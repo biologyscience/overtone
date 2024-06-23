@@ -1,8 +1,7 @@
 function storeQueue({detail: {queueList, queueName}})
 {
     const
-        { json } = require('./js/util'),
-        queues = new json('app/json/queues.json'),
+        queues = new util.json('app/json/queues.json'),
         queuesData = queues.read();
 
     let alreadyExists = false;

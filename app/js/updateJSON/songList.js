@@ -2,22 +2,16 @@ function updateSongList({detail})
 {
     const folderDirs = [...detail];
 
-    const { readdirSync, statSync } = require('fs');
-
-    const { join } = require('path');
-
-    const { json, validateMusicFileFormat } = require('./js/util');
-
     const
-        songList = new json('app/json/songList.json'),
+        songList = new util.json('app/json/songList.json'),
         data = songList.read();
 
     folderDirs.forEach((dir) =>
     {
-        const songListInFolder = readdirSync(dir)
-        .filter(a => !statSync(join(dir, a)).isDirectory())
-        .filter(validateMusicFileFormat)
-        .map(b => join(dir, b));
+        const songListInFolder = fs.readdirSync(dir)
+        .filter(a => !fs.statSync(path.join(dir, a)).isDirectory())
+        .filter(util.validateMusicFileFormat)
+        .map(b => path.join(dir, b));
 
         data[dir] = songListInFolder;
     });
