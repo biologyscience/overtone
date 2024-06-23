@@ -34,6 +34,3 @@ volumeSlider.addEventListener('mousedown', (E) => { scrolling = true; scrollVolu
 volumeFloat.addEventListener('mousemove', scrollVolume);
 volumeFloat.addEventListener('mouseup', endScrollVolume);
 volumeFloat.addEventListener('mouseleave', endScrollVolume);
-
-volumeSlider.style.setProperty('--progress', `${util.read.config().volume * 100}%`);
-volumeFloat.dataset.percent = util.read.config().volume * 100;

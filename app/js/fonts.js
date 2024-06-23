@@ -31,8 +31,6 @@ function showFontList({target})
 document.querySelector('section.extras .fontSelection .choose').addEventListener('click', showFontList);
 document.addEventListener('-setFont', choose);
 
-document.querySelector(':root').style.setProperty('--currentFont', util.read.config().font);
-
 document.addEventListener('-AppLoaded', () =>
 {
     document.fonts.forEach(({family}) =>

@@ -282,7 +282,19 @@ function closeApp()
     config.save();
 
     electron.ipcRenderer.send('ipc-close');
-}
+};
+
+function setVariables({detail})
+{
+    const { volume, src, currentTime, QueueList, QueueName, Current } = detail;
+
+    audio.volume = volume;
+    audio.src = src;
+    audio.currentTime = currentTime;
+    queueList = QueueList;
+    queueName = QueueName;
+    current = Current;
+};
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('nextSong').onclick = skip;
@@ -297,5 +309,4 @@ document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
-
-audio.volume = util.read.config().volume;
+document.addEventListener('-setVariables', setVariables);
