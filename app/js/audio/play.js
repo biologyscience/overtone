@@ -260,18 +260,29 @@ function timeChange({detail})
     audio.currentTime = percent * audio.duration;
 };
 
-function volumeChange({detail})
+function closeApp()
 {
-    audio.volume = detail;
-
     const
         config = new util.json('app/json/config.json'),
-        read = config.read();
-    
-    read.volume = audio.volume;
+        configData = config.read();
 
+    configData.font = getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont');
+    configData.volume = audio.volume;
+    configData.lastQueueState =
+    {
+        queueName,
+        position: current,
+        time:
+        {
+            current: util.parseTime(audio.currentTime * 1000),
+            total: util.parseTime(audio.duration * 1000)
+        }
+    };
+    
     config.save();
-};
+
+    electron.ipcRenderer.send('ipc-close');
+}
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
 document.getElementById('nextSong').onclick = skip;
@@ -284,6 +295,7 @@ document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedAlbum', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
-document.addEventListener('-volumeChange', volumeChange);
+document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
+document.addEventListener('-closeApp', closeApp);
 
 audio.volume = util.read.config().volume;

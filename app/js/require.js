@@ -6,4 +6,5 @@ const
     remote = require('@electron/remote'),
     path = require('path'),
     sharp = require('sharp'),
-    chokidar = require('chokidar');
+    chokidar = require('chokidar'),
+    electron = require('electron');
