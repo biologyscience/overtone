@@ -61,12 +61,12 @@ function play({detail} = '')
     {
         if (typeof(detail) === 'object')
         {
-            const { album, albumArtist, position } = detail;
+            const { album, albumArtist, position, queueNameInList } = detail;
 
-            queueName = album;
+            queueName = queueNameInList || album;
             current = position;
         
-            queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
+            queueList = util.read.queues()[queueNameInList] || util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
         }
 
         else { current = detail; }
@@ -272,4 +272,3 @@ document.addEventListener('-selectedAlbum', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
-document.addEventListener('-currentQueueReady', ({detail}) => { queueName = detail; queueList = util.read.queues()[queueName]});
