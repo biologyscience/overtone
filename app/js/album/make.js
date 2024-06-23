@@ -1,15 +1,13 @@
 /*
-code not to be used later (ln 17 19 36) 
+code not to be used later (ln 15 17 34) 
 reason: code should not be used in later stages (ref js/album/observer.js)
-instead use ln 39
+instead use ln 37
 */
 
 function makeAlbumList()
 {
-    const { read } = require('./js/util');
-
     const
-        albums = read.albums(),
+        albums = util.read.albums(),
         albumNames = [...new Map(Object.entries(albums)).keys()];
 
     const appendIn = document.querySelector('section.album .out .body');

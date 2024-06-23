@@ -2,16 +2,11 @@ let
     allFolders = [],
     filtered = [];
 
-const
-    { readdirSync, statSync } = require('fs'),
-    { join } = require('path'),
-    { json, validateMusicFileFormat, getMetaData } = require('./js/util');
-
 function getAllFolders(path)
 {
-    readdirSync(path).filter(x => statSync(join(path, x)).isDirectory()).forEach((y) =>
+    fs.readdirSync(path).filter(x => fs.statSync(path.join(path, x)).isDirectory()).forEach((y) =>
     {
-        const fullPath = join(path, y);
+        const fullPath = path.join(path, y);
 
         allFolders.push(fullPath);
 
@@ -23,11 +18,11 @@ function filterFolders()
 {
     allFolders.forEach((x) =>
     {
-        const files = readdirSync(x).filter(y => !statSync(join(x, y)).isDirectory());
+        const files = fs.readdirSync(x).filter(y => !fs.statSync(path.join(x, y)).isDirectory());
 
         for (const file of files)
         {
-            if (validateMusicFileFormat(file))
+            if (util.validateMusicFileFormat(file))
             {
                 filtered.push(x);
                 break;
@@ -38,15 +33,13 @@ function filterFolders()
 
 function addFolder()
 {
-    const { dialog, BrowserWindow } = require('@electron/remote');
-
-    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {properties: ['openDirectory', 'multiSelections']})
+    remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), {properties: ['openDirectory', 'multiSelections']})
     .then((selected) =>
     {
         if (selected.canceled) return;
 
         const
-            config = new json('app/json/config.json'),
+            config = new util.json('app/json/config.json'),
             data = config.read();
 
         selected.filePaths.forEach((x) =>
@@ -107,16 +100,16 @@ function addFolder()
 
         filtered.forEach((dir) =>
         {
-            readdirSync(dir)
-            .filter(a => !statSync(join(dir, a)).isDirectory())
-            .filter(b => validateMusicFileFormat(b))
-            .map(c => join(dir, c))
+            fs.readdirSync(dir)
+            .filter(a => !fs.statSync(path.join(dir, a)).isDirectory())
+            .filter(b => util.validateMusicFileFormat(b))
+            .map(c => path.join(dir, c))
             .forEach(x => songList.push(x));
         });
 
         document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: filtered}));
 
-        Promise.all(songList.map(getMetaData)).then((tags) =>
+        Promise.all(songList.map(util.getMetaData)).then((tags) =>
         {
             document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: {tags, songList}}));
             document.dispatchEvent(new CustomEvent('-updateJSON/artists', {detail: tags}));

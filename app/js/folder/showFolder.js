@@ -1,7 +1,5 @@
 function showFolder(E)
 {
-    const { read, parseTime } = require('./js/util');
-
     let
         duration,
         totalTime = 0;
@@ -11,8 +9,8 @@ function showFolder(E)
         name = path.split('\\');
     
     const
-        metadata = read.metadata(),
-        songList = read.songList();
+        metadata = util.read.metadata(),
+        songList = util.read.songList();
 
     document.getElementById('folderName').innerHTML = name[name.length - 1];
     document.getElementById('songCount').innerHTML = `${songList[path].length} songs`;
@@ -51,7 +49,7 @@ function showFolder(E)
     });
 
     const
-        time = parseTime(totalTime),
+        time = util.parseTime(totalTime),
         hours = time.hours,
         minutes = time.minutes,
         seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;

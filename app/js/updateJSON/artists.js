@@ -4,10 +4,8 @@ function updateArtists({detail})
         tags = detail,
         temp = [];
 
-    const { json } = require('./js/util');
-
     const
-        artists = new json('app/json/artists.json'),
+        artists = new util.json('app/json/artists.json'),
         data = artists.read();
 
     tags.forEach((tag) =>

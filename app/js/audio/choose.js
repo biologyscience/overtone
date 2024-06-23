@@ -1,16 +1,12 @@
 function choose()
 {
-    const
-        { dialog, BrowserWindow } = require('@electron/remote'),
-        { read } = require('./js/util');
-
     const options = 
     {
-        filters: [ { name: 'Music Files', extensions: read.config().allowedMusicFileFormats } ],
+        filters: [ { name: 'Music Files', extensions: util.read.config().allowedMusicFileFormats } ],
         properties: ['showHiddenFiles', 'multiSelections']
     };
 
-    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), options)
+    remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), options)
     .then((selected) =>
     {
         if (selected.canceled) return;

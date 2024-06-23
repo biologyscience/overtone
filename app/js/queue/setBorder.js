@@ -1,8 +1,6 @@
 function clickSetBorder(E)
 {
-    const { getElement, read } = require('./js/util');
-
-    const li = getElement('li', E);
+    const li = util.getElement('li', E);
 
     if (li === undefined) return;
 
@@ -18,7 +16,7 @@ function clickSetBorder(E)
 
     const queueName = currentQueue.dataset.queueName;
 
-    const { filePaths } = read.queues().filter(x => x.queueName === queueName)[0];
+    const { filePaths } = util.read.queues().filter(x => x.queueName === queueName)[0];
 
     const detail =
     {

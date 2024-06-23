@@ -1,9 +1,6 @@
 function create({detail: {filePath, picName}})
 {
-    const sharp = require('sharp');
-    const { getAlbumArt } = require('./js/util');
-
-    getAlbumArt(filePath).then((pic) =>
+    util.getAlbumArt(filePath).then((pic) =>
     {
         if (pic.buffer === undefined) return;
         

@@ -4,13 +4,11 @@ function removeFolder(E)
 {
     if (FOCUS === false || E.target.tagName !== 'IMG') return;
 
-    const { json } = require('./js/util');
-
     const
         folderItem = E.parentElement,
         path = folderItem.dataset.path,
 
-        config = new json('app/json/config.json'),
+        config = new util.json('app/json/config.json'),
         data = config.read(),
         index = data.checkMusicIn.indexOf(path);
 

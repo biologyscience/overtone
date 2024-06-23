@@ -1,15 +1,13 @@
 /*
-code not to be used later (ln 17 19 36) 
+code not to be used later (ln 15 17 34) 
 reason: code should not be used in later stages (ref js/artists/observer.js)
-instead use ln 39
+instead use ln 37
 */
 
 function makeArtistsList()
 {
-    const { read } = require('./js/util');
-
     const
-        artists = read.artists(),
+        artists = util.read.artists(),
         artistNames = [...new Map(Object.entries(artists)).keys()];
 
     const appendIn = document.querySelector('section.artist .out .body');

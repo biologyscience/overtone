@@ -8,15 +8,13 @@ function showArtist(E)
 
     if (!artistItem.classList.contains('artistItem')) return;
 
-    const { read, formatter } = require('./js/util');
-
     const
         artistName = artistItem.dataset.artist,
-        albumList = read.artists()[artistName];
+        albumList = util.read.artists()[artistName];
 
     albumList.forEach((x) =>
     {
-        const id = formatter(x, artistName);
+        const id = util.formatter(x, artistName);
 
         const div = document.createElement('div');
 
@@ -27,7 +25,7 @@ function showArtist(E)
         </div>
         <div class="info flexCol">
             <span class="albumName overflowPrevent">${x}</span>
-            <span class="year">${read.albums()[id].year}</span>
+            <span class="year">${util.read.albums()[id].year}</span>
         </div
         `;
 
@@ -40,7 +38,7 @@ function showArtist(E)
     const head = document.querySelector('section.artist .in .head');
 
     head.querySelector('.content .name').innerHTML = artistName;
-    head.querySelector('.content .albumCount').innerHTML = `${read.artists()[artistName].length} Album${read.artists()[artistName].length > 1 ? 's' : ''}`;
+    head.querySelector('.content .albumCount').innerHTML = `${util.read.artists()[artistName].length} Album${util.read.artists()[artistName].length > 1 ? 's' : ''}`;
 
     document.querySelector('section.artist .out').classList.add('displayNone');
     document.querySelector('section.artist .in').classList.remove('displayNone');

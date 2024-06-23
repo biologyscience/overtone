@@ -14,15 +14,11 @@ let
 
 function emitMetaData(fileLocation)
 {
-    const { getAlbumArt, read, buffer2DataURL } = require('./js/util');
-
-    const tags = read.metadata()[fileLocation];
+    const tags = util.read.metadata()[fileLocation];
 
     if (tags === undefined)
     {
-        const { parseFile } = require('music-metadata');
-
-        parseFile(fileLocation).then((tag) =>
+        musicMetadata.parseFile(fileLocation).then((tag) =>
         {
             const { album, albumartist, title, picture } = tag.common;
 
@@ -39,7 +35,7 @@ function emitMetaData(fileLocation)
             {
                 format: picture[0]?.format,
                 buffer: picture[0]?.data,
-                URL: buffer2DataURL(picture[0]?.format, picture[0]?.data)
+                URL: util.buffer2DataURL(picture[0]?.format, picture[0]?.data)
             };
 
             document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: send}));
@@ -50,7 +46,7 @@ function emitMetaData(fileLocation)
     {
         document.dispatchEvent(new CustomEvent('-updateRPC', {detail: tags}));
 
-        getAlbumArt(fileLocation).then((pic) =>
+        util.getAlbumArt(fileLocation).then((pic) =>
         {
             tags.picture = pic;
 
@@ -75,15 +71,13 @@ function play({detail} = '')
         else { current = detail; }
     }
 
-    const { getAudioDuration } = require('./js/util');
-
     const fileLocation = queueList[current];
 
     audio.src = fileLocation;
 
     emitMetaData(fileLocation);
 
-    getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
+    util.getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 

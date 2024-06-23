@@ -1,9 +1,7 @@
 function updateMetadata({detail: {tags, songList}})
-{
-    const { json } = require('./js/util');
-    
+{    
     const
-        metadata = new json('app/json/metadata.json'),
+        metadata = new util.json('app/json/metadata.json'),
         data = metadata.read();
 
     for (let i = 0; i < songList.length; i++)
