@@ -40,7 +40,7 @@ function ready()
 
     if (existsSync(path) === false)
     {
-        x === 'config' ? data = { "allowedMusicFileFormats": [ "mp3", "flac", "ogg" ], "font": "Andika" } : null;
+        x === 'config' ? data = { 'allowedMusicFileFormats': [ 'mp3', 'flac', 'ogg' ], 'font': 'Andika', 'volume' : 1 } : null;
 
         writeFileSync(path, JSON.stringify(data, null, 4));
     }
