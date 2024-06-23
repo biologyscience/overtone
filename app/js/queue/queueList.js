@@ -1,11 +1,24 @@
 function updateNumber(data)
 {
-    if (typeof(data) === 'number') return document.getElementById('currentSongIndex').innerHTML = data === -1 ? '-' : data + 1;
+    const
+        currentSongIndex = document.getElementById('currentSongIndex'),
+        totalSongsInCurrentQueue = document.getElementById('totalSongsInCurrentQueue');
 
-    const { album, albumArtist, position } = data.detail;
 
-    document.getElementById('totalSongsInCurrentQueue').innerHTML = util.read.albums()[util.formatter(album, albumArtist)].songs.length;
-    document.getElementById('currentSongIndex').innerHTML = position + 1;
+    if (typeof(data.detail) === 'number')
+    {
+        currentSongIndex.innerHTML = data.detail === -1 ? '-' : data.detail + 1;
+        totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerHTML].length;
+    }
+
+    else
+    {
+        const { album, albumArtist, position } = data.detail;
+    
+        currentSongIndex.innerHTML = position + 1;
+        totalSongsInCurrentQueue.innerHTML = util.read.albums()[util.formatter(album, albumArtist)].songs.length;
+    }
+
 };
 
 function chooseQueue(E)
@@ -16,13 +29,11 @@ function chooseQueue(E)
     
     const queueName = span.dataset.queueName;
 
-    // const queueData = util.read.queues().filter(x => x.queueName === queueName)[0];
-
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
     document.getElementById('queueListMenu').classList.toggle('visible')
 
-    updateNumber(-1);
+    updateNumber({detail: -1});
 };
 
 function addItemToQueueList({detail})
@@ -48,11 +59,6 @@ function addItemToQueueList({detail})
     ql.append(li);
 };
 
-function displayQueueName({detail})
-{
-    document.getElementById('queueName').innerHTML = detail;
-};
-
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
 document.querySelector('#queueListMenu .head .close').addEventListener('click', () => document.getElementById('queueListMenu').classList.toggle('visible'));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
@@ -60,7 +66,7 @@ document.getElementById('queueList').addEventListener('click', chooseQueue);
 document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-current', updateNumber);
 document.addEventListener('-addItemToQueueList', addItemToQueueList);
-document.addEventListener('-currentQueueReady', displayQueueName);
+document.addEventListener('-currentQueueReady', ({detail}) => document.getElementById('queueName').innerHTML = detail);
 
 /*
 
