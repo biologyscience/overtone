@@ -10,7 +10,7 @@ let currentQueue;
 
 function initiateDrag({detail})
 {
-    const ul = detail;
+    const ul = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === detail)[0];
 
     const options =
     {

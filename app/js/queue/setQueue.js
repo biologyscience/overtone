@@ -14,7 +14,7 @@ function showQueue(queueName)
 
     queueReady = true;
 
-    document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: ul}));
+    document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: queueName}));
 };
 
 function setQueue({detail})
