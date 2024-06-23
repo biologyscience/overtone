@@ -1,11 +1,9 @@
+['minimize', 'maximize', 'close'].forEach((x) =>
 {
-    const { ipcRenderer } = require('electron');
-
-    ['minimize', 'maximize', 'close'].forEach((x) =>
+    document.getElementById(x).addEventListener('click', () =>
     {
-        document.getElementById(x).addEventListener('click', () =>
-        {
-            ipcRenderer.send(`ipc-${x}`);
-        });
+        if (x === 'close') document.dispatchEvent(new Event('-closeApp'));
+
+        else electron.ipcRenderer.send(`ipc-${x}`);
     });
-}
+});

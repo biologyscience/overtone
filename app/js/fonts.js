@@ -9,14 +9,6 @@ function choose(E)
     target.classList.add('currentFont');
 
     document.querySelector(':root').style.setProperty('--currentFont', target.innerHTML);
-
-    const
-        config = new util.json('app/json/config.json'),
-        configData = config.read();
-
-    configData.font = target.innerHTML;
-
-    config.save();
 };
 
 function showFontList({target})
