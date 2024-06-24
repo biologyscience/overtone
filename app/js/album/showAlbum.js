@@ -43,7 +43,7 @@ function showAlbum(E)
     head.querySelector('.content #albumArtistInAlbumItem').innerHTML = artist;
     head.querySelector('.content .year').innerHTML = new String(year).length !== 4 ? 2000 + year : year;
     head.querySelector('.content .songCount').innerHTML = songs.length;
-    head.querySelector('.content .duration').innerHTML = Object.values(util.parseTime(rawDuration)).join(':');
+    head.querySelector('.content .duration').innerHTML = Object.values(util.parseTime(rawDuration)).slice(1, -1).join(':');
 
     document.querySelector('section.album .out').classList.add('displayNone');
     document.querySelector('section.album .in').classList.remove('displayNone');
