@@ -1,14 +1,4 @@
 /**
- * misc
- */
-let b = setTimeout(() =>
-{
-    document.getElementById('overlay').style.display = 'none';
-    document.dispatchEvent(new Event('-AppLoaded'));
-}, 1000);
-
-
-/**
  * title bar font size
  */
 let d = setTimeout(() =>
@@ -38,7 +28,7 @@ let d = setTimeout(() =>
 
 let timeout = setTimeout(() =>
 {
-    [b, d, timeout].forEach((x) =>
+    [d, timeout].forEach((x) =>
     {
         clearTimeout(x);
 
@@ -165,6 +155,9 @@ let timeout = setTimeout(() =>
         document.getElementById('songName').innerHTML = title;
         document.getElementById('artistName').innerHTML = albumArtist;
         document.getElementById('albumName').innerHTML = album;
+
+        document.getElementById('overlay').style.display = 'none';
+        document.dispatchEvent(new Event('-AppLoaded'));
     });
 
     util.getAlbumArt(songLocation).then(({URL}) => document.getElementById('albumArt').setAttribute('src', URL));
