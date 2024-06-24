@@ -10,9 +10,21 @@ function showArtist(E)
 
     const
         artistName = artistItem.dataset.artist,
-        albumList = util.read.artists()[artistName];
+        albumList = util.read.artists()[artistName],
+        sortedByYear = [];
 
-    albumList.forEach((x) =>
+    let temp = [];
+
+    for (const albumInfo of albumList)
+    {
+        const { album, year } = albumInfo;
+
+        temp.push([album, year]);
+    }
+
+    temp.sort((a, b) => b[1] - a[1]).forEach(x => sortedByYear.push(x.reverse().pop()));
+
+    sortedByYear.forEach((x) =>
     {
         const id = util.formatter(x, artistName);
 

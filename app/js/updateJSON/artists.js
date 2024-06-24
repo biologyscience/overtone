@@ -10,7 +10,7 @@ function updateArtists({detail})
 
     tags.forEach((tag) =>
     {
-        const { albumArtist, album } = tag;
+        const { albumArtist, album, year } = tag;
 
         if (!temp.includes(albumArtist))
         {
@@ -19,7 +19,11 @@ function updateArtists({detail})
             data[albumArtist] = [];
         }
 
-        if (!data[albumArtist].includes(album)) data[albumArtist].push(album);
+        let albumExists = false;
+
+        data[albumArtist].forEach((x) => x.album === album ? albumExists = true : null);
+
+        if (!albumExists) data[albumArtist].push({ album, year });
     });
 
     artists.save();
