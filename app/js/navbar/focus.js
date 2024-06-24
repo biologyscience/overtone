@@ -52,4 +52,4 @@ function navbarStartup()
 
 document.querySelectorAll('nav li').forEach(x => x.addEventListener('click', changeNavbarItemFocus));
 document.addEventListener('-changeNavbarItemFocus', changeNavbarItemFocus);
-navbarStartup();
+document.addEventListener('-AppLoaded', navbarStartup);
