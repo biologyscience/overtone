@@ -293,7 +293,7 @@ function setVariables({detail})
     audio.volume = volume;
     audio.src = src;
     audio.currentTime = 0 || currentTime;
-    queueList = [] || QueueList;
+    queueList = QueueList === undefined ? [] : QueueList;
     queueName = QueueName;
     current = 0 || Current;
 };
