@@ -17,13 +17,14 @@ function showQueue(queueName)
     document.dispatchEvent(new CustomEvent('-currentQueueReady', {detail: queueName}));
 };
 
-function setQueue({detail})
+function setQueue(E)
 {
     queueReady = false;
 
     let
         id = 0,
-        paths = util.read.queues()[detail];
+        paths = util.read.queues()[E.detail],
+        queueName = E.detail;
 
     const list =
     {
@@ -33,7 +34,28 @@ function setQueue({detail})
         time: []
     };
 
-    if (typeof(detail) !== 'string') paths = util.read.albums()[util.formatter(detail.album, detail.albumArtist)].songs.sort(util.sort.byTrackNumber);
+    if (E.type === '-selectedAlbum')
+    {
+        paths = util.read.albums()[util.formatter(E.detail.album, E.detail.albumArtist)].songs.sort(util.sort.byTrackNumber);
+
+        queueName = E.detail.album;
+    }
+
+    if (E.type === '-selectedArtist')
+    {
+        paths = [];
+
+        const artistName = E.detail;
+
+        util.read.artists()[artistName]
+        .sort((a, b) => b.year - a.year)
+        .forEach((x) =>
+        {
+            util.read.albums()[util.formatter(x.album, artistName)].songs
+            .sort(util.sort.byTrackNumber)
+            .forEach(y => paths.push(y));
+        });
+    }
 
     paths.forEach((x) =>
     {
@@ -44,10 +66,6 @@ function setQueue({detail})
 
     Promise.all(list.metadata).then((x) =>
     {
-        let album = x[0].album;
-
-        const queueName = detail.album || album;
-
         const queuesHolder = document.getElementById('queuesHolder');
 
         if (Array.from(queuesHolder.children).filter(x => x.dataset.queueName === queueName).length > 0) return showQueue(queueName);
@@ -107,11 +125,13 @@ function setQueue({detail})
             queuesHolder.append(ul);
 
             showQueue(queueName);
+
+            document.dispatchEvent(new CustomEvent('-playArtist', {detail: {QueueName: queueName, QueueList: paths}}));
         });
     });
 };
 
-['-selectedAlbum', '-chooseQueue'].forEach(x => document.addEventListener(x, setQueue));
+['-selectedAlbum', '-selectedArtist', '-chooseQueue'].forEach(x => document.addEventListener(x, setQueue));
 
 document.addEventListener('-current', (obj) =>
 {

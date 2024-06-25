@@ -132,6 +132,8 @@ section.artist
                 $transitionStyle: .5s ease;
                 
                 position: relative;
+
+                * { pointer-events: none; }
                 
                 img
                 {

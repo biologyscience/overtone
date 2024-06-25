@@ -20,3 +20,4 @@ function selectAlbum()
 
 document.getElementById('songListInAlbum').addEventListener('click', select);
 document.querySelector('section.album .in .head .albumArt').addEventListener('click', selectAlbum);
+document.getElementById('artistPicture').addEventListener('click', (E) => document.dispatchEvent(new CustomEvent('-selectedArtist', {detail: E.target.dataset.artistName})));

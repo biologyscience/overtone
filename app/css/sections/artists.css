@@ -105,6 +105,9 @@ section.artist .in .head #backToArtistOut * {
 section.artist .in .head #artistPicture {
   position: relative;
 }
+section.artist .in .head #artistPicture * {
+  pointer-events: none;
+}
 section.artist .in .head #artistPicture img {
   height: 200px;
   width: 200px;

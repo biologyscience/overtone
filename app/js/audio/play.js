@@ -55,21 +55,26 @@ function emitMetaData(fileLocation)
     }
 };
 
-function play({detail} = '')
+function play(E)
 {
-    if (detail !== undefined)
+    if (E.type === '-selectedAlbum')
     {
-        if (typeof(detail) === 'object')
-        {
-            const { album, albumArtist, position, queueNameInList } = detail;
+        const { album, albumArtist, position, queueNameInList } = E.detail;
 
-            queueName = queueNameInList || album;
-            current = position;
-        
-            queueList = util.read.queues()[queueNameInList] || util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
-        }
+        queueName = queueNameInList || album;
+        current = position;
+        queueList = util.read.queues()[queueNameInList] || util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
+    }
 
-        else { current = detail; }
+    else if (E.type === '-clickedQueueItem') { current = E.detail; }
+
+    else if (E.type === '-playArtist')
+    {
+        const { QueueName, QueueList } = E.detail;
+
+        queueName = QueueName;
+        current = 0;
+        queueList = QueueList;
     }
 
     const fileLocation = queueList[current];
@@ -291,8 +296,8 @@ function setVariables({detail})
     const { volume, src, currentTime, QueueList, QueueName, Current } = detail;
 
     audio.volume = volume;
-    audio.src = src;
-    audio.currentTime = 0 || currentTime;
+    if (src !== undefined) audio.src = src;
+    audio.currentTime = currentTime === undefined ? 0 : currentTime;
     queueList = QueueList === undefined ? [] : QueueList;
     queueName = QueueName;
     current = 0 || Current;
@@ -307,6 +312,7 @@ audio.addEventListener('play', audioPlay);
 
 document.addEventListener('-clickedQueueItem', pauseThenPlay);
 document.addEventListener('-selectedAlbum', pauseThenPlay);
+document.addEventListener('-playArtist', pauseThenPlay);
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
