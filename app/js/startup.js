@@ -48,12 +48,8 @@ let timeout = setTimeout(() =>
 
 
 {
-    const { existsSync, readFileSync } = require('fs');
-    const { read } = require('./js/util');
-    const { watch } = require('chokidar');
-
     /* watch files */
-    const watcher = watch(['app/css', 'app/js', 'app/index.html']);
+    const watcher = chokidar.watch(['app/css', 'app/js', 'app/index.html']);
 
     watcher.on('ready', () =>
     {
@@ -61,7 +57,7 @@ let timeout = setTimeout(() =>
     });
 
     /* queue list */
-    const queueList = read.queues();
+    const queueList = util.read.queues();
 
     for (const x in queueList)
     {
@@ -69,9 +65,9 @@ let timeout = setTimeout(() =>
     }
     
     /* fill previous id */
-    if (existsSync('./app/json/config.json'))
+    if (fs.existsSync('./app/json/config.json'))
     {
-        const config = JSON.parse(readFileSync('./app/json/config.json'));
+        const config = JSON.parse(fs.readFileSync('./app/json/config.json'));
         
         if (config.discordAppID !== undefined)
         {
@@ -84,7 +80,7 @@ let timeout = setTimeout(() =>
     }
         
     /* fill the folders */
-    const checkMusicIn = read.config().checkMusicIn;
+    const checkMusicIn = util.read.config().checkMusicIn;
     
     if (checkMusicIn !== undefined)
     {
@@ -127,7 +123,7 @@ let timeout = setTimeout(() =>
         detail = { volume: config.volume };
         
     document.querySelector(':root').style.setProperty('--currentFont', config.font);
-    
+
     if (config.lastQueueState !== undefined)
     {
         const
