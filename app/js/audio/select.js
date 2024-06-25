@@ -9,4 +9,14 @@ function select({target})
     document.dispatchEvent(new CustomEvent('-selectedAlbum', {detail: {album, albumArtist, position}}));
 };
 
+function selectAlbum()
+{
+    const
+        album = document.querySelector('section.album .in .head .content .name').innerHTML,
+        albumArtist = document.getElementById('albumArtistInAlbumItem').innerHTML;
+    
+    document.dispatchEvent(new CustomEvent('-selectedAlbum', {detail: {album, albumArtist, position: 0}}));
+};
+
 document.getElementById('songListInAlbum').addEventListener('click', select);
+document.querySelector('section.album .in .head .albumArt').addEventListener('click', selectAlbum);
