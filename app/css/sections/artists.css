@@ -195,16 +195,6 @@ section.artist .in #albumListInArtist .albumItem .imgWrapper img {
   aspect-ratio: 1;
   border-radius: 0.25em;
 }
-section.artist .in #albumListInArtist .albumItem .imgWrapper::after {
-  content: url(../../svg/play.svg);
-  position: absolute;
-  height: 50px;
-  aspect-ratio: 1;
-  opacity: 0;
-  bottom: 1em;
-  right: 1em;
-  transition: bottom 250ms ease, opacity 125ms ease 125ms;
-}
 section.artist .in #albumListInArtist .albumItem .info {
   gap: 0.25em;
 }
@@ -217,9 +207,4 @@ section.artist .in #albumListInArtist .albumItem .info .albumName {
 section.artist .in #albumListInArtist .albumItem:hover {
   cursor: pointer;
   background-color: var(--dark20);
-}
-section.artist .in #albumListInArtist .albumItem:hover .imgWrapper::after {
-  opacity: 1;
-  bottom: 2em;
-  transition: bottom 250ms ease 125ms, opacity 125ms ease;
 }
