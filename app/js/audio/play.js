@@ -8,7 +8,7 @@ audioAnalyser.connect(audioContext.destination);
 
 let
     queueList = [],
-    queueName = null,
+    queueName = undefined,
     current = 0,
     interval = null;
 
@@ -279,6 +279,8 @@ function closeApp()
         }
     };
     
+    if (queueName === undefined) delete configData.lastQueueState;
+    
     config.save();
 
     electron.ipcRenderer.send('ipc-close');
@@ -290,10 +292,10 @@ function setVariables({detail})
 
     audio.volume = volume;
     audio.src = src;
-    audio.currentTime = currentTime;
-    queueList = QueueList;
+    audio.currentTime = 0 || currentTime;
+    queueList = [] || QueueList;
     queueName = QueueName;
-    current = Current;
+    current = 0 || Current;
 };
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
