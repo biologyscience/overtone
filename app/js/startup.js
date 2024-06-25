@@ -1,94 +1,27 @@
-/**
- * title bar font size
- */
-let d = setTimeout(() =>
 {
-    const titleBar = document.getElementById('titleBar');
-    const name = document.querySelector('#titleBar .name');
+    const
+        config = util.read.config(),
+        detail = { volume: config.volume };
 
-    let resizeValue = getComputedStyle(titleBar).getPropertyValue('--fs').split('px')[0];
-
-    function resize()
-    {
-        if (name.offsetHeight < titleBar.offsetHeight) return;
-
-        resizeValue = resizeValue - 0.01;
-
-        titleBar.style.setProperty('--fs', `${resizeValue}px`);
-
-        resize();
-    };
-
-    resize();
-}, 100);
-
-//
-
-
-
-let timeout = setTimeout(() =>
-{
-    [d, timeout].forEach((x) =>
-    {
-        clearTimeout(x);
-
-        x = null;
-    });
-}, 2 * 1000);
-
-
-
-
-
-
-
-
-
-
-
-
-{
     /* watch files */
     const watcher = chokidar.watch(['app/css', 'app/js', 'app/index.html']);
 
-    watcher.on('ready', () =>
-    {
-        watcher.on('all', () => window.location.reload());
-    });
+    watcher.on('ready', () => watcher.on('all', () => window.location.reload()));
 
     /* queue list */
-    const queueList = util.read.queues();
-
-    for (const x in queueList)
-    {
-        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x}));
-    }
+    for (const x in util.read.queues()) document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x}));
     
     /* fill previous id */
-    if (fs.existsSync('./app/json/config.json'))
-    {
-        const config = JSON.parse(fs.readFileSync('./app/json/config.json'));
-        
-        if (config.discordAppID !== undefined)
-        {
-            const discordAppID = document.getElementById('discordAppID');
-            discordAppID.value = config.discordAppID;
-
-            const font = config.font;
-            document.dispatchEvent(new CustomEvent('-setFont', {detail: font}));
-        }
-    }
+    config.discordAppID !== undefined ? document.getElementById('discordAppID').value = config.discordAppID : null;
         
     /* fill the folders */
-    const checkMusicIn = util.read.config().checkMusicIn;
-    
-    if (checkMusicIn !== undefined)
+    if (config.checkMusicIn !== undefined)
     {
         const folders = document.getElementById('folders');
         
         const paths = Array.from(folders.children).map(x => x.dataset.path);
         
-        checkMusicIn.forEach((x) =>
+        config.checkMusicIn.forEach((x) =>
         {
             if (paths.includes(x) === false)
             {
@@ -114,16 +47,8 @@ let timeout = setTimeout(() =>
             }
         });
     }
-}
 
-// preload previous session
-{
-    const
-        config = util.read.config(),
-        detail = { volume: config.volume };
-        
-    document.querySelector(':root').style.setProperty('--currentFont', config.font);
-
+    // preload previous session
     if (config.lastQueueState !== undefined)
     {
         const
@@ -142,7 +67,6 @@ let timeout = setTimeout(() =>
     
         theLine.querySelector('.popUp').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
     
-    
         volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
         volumeFloat.dataset.percent = config.volume * 100;
     
@@ -160,6 +84,7 @@ let timeout = setTimeout(() =>
     
             document.getElementById('overlay').style.display = 'none';
             document.dispatchEvent(new Event('-AppLoaded'));
+            document.dispatchEvent(new CustomEvent('-setFont', {detail: config.font}));
         });
     
         util.getAlbumArt(songLocation).then(({URL}) => document.getElementById('albumArt').setAttribute('src', URL));
