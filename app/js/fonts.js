@@ -2,9 +2,11 @@ const checkbox = document.querySelector('section.extras .fontSelection .checkbox
 
 function choose(E)
 {
-    [...checkbox.children].forEach(x => x.classList.remove('currentFont'));
+    const children = Array.from(checkbox.children);
 
-    let target = E.type == '-setFont' ? [...checkbox.children].filter(x => x.innerHTML == E.detail)[0] : E.target;
+    children.forEach(x => x.classList.remove('currentFont'));
+
+    let target = E.type == '-setFont' ? children.filter(x => x.innerHTML === E.detail)[0] : E.target;
     
     target.classList.add('currentFont');
 
