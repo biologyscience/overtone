@@ -4,19 +4,30 @@ function updateNumber(data)
         currentSongIndex = document.getElementById('currentSongIndex'),
         totalSongsInCurrentQueue = document.getElementById('totalSongsInCurrentQueue');
 
-
-    if (typeof(data.detail) === 'number')
+    if (data.type === '-current')
     {
         currentSongIndex.innerHTML = data.detail === -1 ? '-' : data.detail + 1;
         totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerHTML].length;
     }
 
-    else
+    else if (data.type === '-selectedAlbum')
     {
         const { album, albumArtist, position } = data.detail;
     
         currentSongIndex.innerHTML = position + 1;
         totalSongsInCurrentQueue.innerHTML = util.read.albums()[util.formatter(album, albumArtist)].songs.length;
+    }
+
+    else if (data.type === '-selectedArtist')
+    {
+        let counter = 0;
+
+        const artistName = data.detail;
+
+        util.read.artists()[artistName].forEach(x => counter += util.read.albums()[util.formatter(x.album, artistName)].songs.length);
+
+        currentSongIndex.innerHTML = 1;
+        totalSongsInCurrentQueue.innerHTML = counter;
     }
 
 };
@@ -46,6 +57,10 @@ function chooseQueue(E)
 
 function addItemToQueueList({detail})
 {
+    const ql = document.getElementById('queueList');
+
+    if (ql.querySelectorAll(`.queueName[data-queue-name="${detail}"]`).length === 1) return;
+
     const data =
     `
     <div class="dragger flexCenter cursorGrab">
@@ -58,7 +73,6 @@ function addItemToQueueList({detail})
     `;
 
     const li = document.createElement('li');
-    const ql = document.getElementById('queueList');
 
     li.classList.add('grid');
 
@@ -72,6 +86,7 @@ document.querySelector('#queueListMenu .head .close').addEventListener('click', 
 document.getElementById('queueList').addEventListener('click', chooseQueue);
 
 document.addEventListener('-selectedAlbum', updateNumber);
+document.addEventListener('-selectedArtist', updateNumber);
 document.addEventListener('-current', updateNumber);
 document.addEventListener('-addItemToQueueList', addItemToQueueList);
 document.addEventListener('-currentQueueReady', ({detail}) => document.getElementById('queueName').innerHTML = detail);

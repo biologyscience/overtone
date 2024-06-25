@@ -4,14 +4,11 @@ function storeQueue({detail: {queueList, queueName}})
         queues = new util.json('app/json/queues.json'),
         queuesData = queues.read();
 
-    if (queuesData[queueName] === undefined)
-    {
-        queuesData[queueName] = queueList;
+    queuesData[queueName] = queueList;
         
-        queues.save();
+    queues.save();
 
-        document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: queueName}));
-    }
+    document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: queueName}));
 };
 
 document.addEventListener('-storeQueue', storeQueue);

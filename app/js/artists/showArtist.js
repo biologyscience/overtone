@@ -47,6 +47,8 @@ function showArtist(E)
         albumListInArtist.append(div);
     });
 
+    document.getElementById('artistPicture').dataset.artistName = artistName;
+
     const head = document.querySelector('section.artist .in .head');
 
     head.querySelector('.content .name').innerHTML = artistName;
