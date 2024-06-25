@@ -120,57 +120,60 @@ let timeout = setTimeout(() =>
     }
 }
 
-// preload
+// preload previous session
 {
     const
         config = util.read.config(),
-        currentTime = config.lastQueueState.time.current,
-        totalTime = config.lastQueueState.time.total,
-        queueName = config.lastQueueState.queueName,
-        position = config.lastQueueState.position,
-        queueList = util.read.queues()[queueName],
-        songLocation = queueList[position],
-        theLine = document.getElementById('theLine');
-
-    document.getElementById('currentTime').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
-    document.getElementById('totalTime').innerHTML = `${totalTime.minutes}:${totalTime.seconds}`;
-
-    theLine.style.setProperty('--progress', `${(currentTime.ms / totalTime.ms) * 100}%`);
-
-    theLine.querySelector('.popUp').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
-
+        detail = { volume: config.volume };
+        
     document.querySelector(':root').style.setProperty('--currentFont', config.font);
-
-    volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
-    volumeFloat.dataset.percent = config.volume * 100;
-
-    document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
-    document.dispatchEvent(new CustomEvent('-setBorder', {detail: position}));
-
-    document.getElementById('currentSongIndex').innerHTML = position + 1;
-    document.getElementById('totalSongsInCurrentQueue').innerHTML = queueList.length;
-
-    util.getMetaData(songLocation).then(({title, albumArtist, album}) =>
+    
+    if (config.lastQueueState !== undefined)
     {
-        document.getElementById('songName').innerHTML = title;
-        document.getElementById('artistName').innerHTML = albumArtist;
-        document.getElementById('albumName').innerHTML = album;
+        const
+            currentTime = config.lastQueueState.time.current,
+            totalTime = config.lastQueueState.time.total,
+            queueName = config.lastQueueState.queueName,
+            position = config.lastQueueState.position,
+            queueList = util.read.queues()[queueName],
+            songLocation = queueList[position],
+            theLine = document.getElementById('theLine');
 
-        document.getElementById('overlay').style.display = 'none';
-        document.dispatchEvent(new Event('-AppLoaded'));
-    });
-
-    util.getAlbumArt(songLocation).then(({URL}) => document.getElementById('albumArt').setAttribute('src', URL));
-
-    const detail =
-    {
-        volume: config.volume,
-        src: songLocation,
-        currentTime: currentTime.ms / 1000,
-        QueueList: queueList,
-        QueueName: queueName,
-        Current: position
-    };
+        document.getElementById('currentTime').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
+        document.getElementById('totalTime').innerHTML = `${totalTime.minutes}:${totalTime.seconds}`;
+    
+        theLine.style.setProperty('--progress', `${(currentTime.ms / totalTime.ms) * 100}%`);
+    
+        theLine.querySelector('.popUp').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
+    
+    
+        volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
+        volumeFloat.dataset.percent = config.volume * 100;
+    
+        document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
+        document.dispatchEvent(new CustomEvent('-setBorder', {detail: position}));
+    
+        document.getElementById('currentSongIndex').innerHTML = position + 1;
+        document.getElementById('totalSongsInCurrentQueue').innerHTML = queueList.length;
+    
+        util.getMetaData(songLocation).then(({title, albumArtist, album}) =>
+        {
+            document.getElementById('songName').innerHTML = title;
+            document.getElementById('artistName').innerHTML = albumArtist;
+            document.getElementById('albumName').innerHTML = album;
+    
+            document.getElementById('overlay').style.display = 'none';
+            document.dispatchEvent(new Event('-AppLoaded'));
+        });
+    
+        util.getAlbumArt(songLocation).then(({URL}) => document.getElementById('albumArt').setAttribute('src', URL));
+    
+        detail.src = songLocation;
+        detail.currentTime = currentTime.ms / 1000;
+        detail.QueueList = queueList;
+        detail.QueueName = queueName;
+        detail.Current = position;
+    }
 
     document.dispatchEvent(new CustomEvent('-setVariables', {detail}));
 }
