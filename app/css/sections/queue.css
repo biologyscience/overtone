@@ -221,6 +221,9 @@ section.queue #queuesHolder ul li:first-of-type {
 section.queue #queuesHolder ul li:last-of-type {
   margin-bottom: 0.3em;
 }
+section.queue #queuesHolder ul li.current {
+  border-color: var(--accent);
+}
 section.queue #queuesHolder ul li img {
   font-size: 20px;
   height: 1em;

@@ -8,9 +8,9 @@ function clickSetBorder(E)
 
     if (li === undefined || children.length === 0) return;
 
-    children.forEach(x => x.style.borderColor = '');
+    children.forEach(x => x.classList.remove('current'));
 
-    li.style.borderColor = 'var(--accent)';
+    li.classList.add('current');
 
     document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: {position: children.indexOf(li), queueNameInList: currentQueue.dataset.queueName}}));
 };
@@ -27,9 +27,9 @@ function queueSetBorder({detail})
     
             const children = Array.from(document.querySelector('#queuesHolder .current').children);
     
-            children.forEach(x => x.style.borderColor = '');
+            children.forEach(x => x.classList.remove('current'));
         
-            children[current].style.borderColor = 'var(--accent)';
+            children[current].classList.add('current');
         }
     });
 };
