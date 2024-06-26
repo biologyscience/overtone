@@ -236,7 +236,7 @@ function closeApp()
         config = new util.json('app/json/config.json'),
         configData = config.read();
 
-    configData.font = getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont').split(`'`)[1];
+    configData.font = getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont');
     configData.volume = audio.volume;
     configData.lastQueueState =
     {
