@@ -16,43 +16,14 @@ function emitMetaData(fileLocation)
 {
     const tags = util.read.metadata()[fileLocation];
 
-    if (tags === undefined)
+    document.dispatchEvent(new CustomEvent('-updateRPC', {detail: tags}));
+
+    util.getAlbumArt(fileLocation).then((pic) =>
     {
-        musicMetadata.parseFile(fileLocation).then((tag) =>
-        {
-            const { album, albumartist, title, picture } = tag.common;
+        tags.picture = pic;
 
-            const send =
-            {
-                title,
-                albumArtist: albumartist,
-                album
-            };
-
-            document.dispatchEvent(new CustomEvent('-updateRPC', {detail: send}));
-
-            send.picture =
-            {
-                format: picture[0]?.format,
-                buffer: picture[0]?.data,
-                URL: util.buffer2DataURL(picture[0]?.format, picture[0]?.data)
-            };
-
-            document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: send}));
-        });
-    }
-
-    else
-    {
-        document.dispatchEvent(new CustomEvent('-updateRPC', {detail: tags}));
-
-        util.getAlbumArt(fileLocation).then((pic) =>
-        {
-            tags.picture = pic;
-
-            document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags}));
-        });
-    }
+        document.dispatchEvent(new CustomEvent('-updateMetaData', {detail: tags}));
+    });
 };
 
 function play(E)
@@ -92,20 +63,12 @@ function play(E)
     pauseORplay();
 };
 
-function pauseORplay(x)
+function pauseORplay()
 {
-    if (audio.paused)
-    {
-        if (audio.src.length === 0)
-        {
-            if (x)
-            { return alert('Choose a song first !'); }
-        }
+    if (audio.src.length === 0) return;
 
-        else { audio.play(); }
-    }
-
-    else { audio.pause(); }
+    if (audio.paused) audio.play();
+    else audio.pause();
 
     document.dispatchEvent(new CustomEvent('-audioAnalyser', {detail: audioAnalyser}));
 };
@@ -141,11 +104,11 @@ function changeCurrentState(E)
     }
 };
 
-function skip(E)
+function skip({target})
 {
     pauseORplay();
 
-    const id = E.target.id;
+    const id = target.id;
 
     const int = setInterval(() =>
     {
@@ -168,7 +131,7 @@ function skip(E)
             {
                 if (current === 0) return play();
             
-                current = current - 1;
+                current--;
                 
                 play(); 
             }
@@ -304,15 +267,12 @@ function setVariables({detail})
 };
 
 document.getElementById('pauseORplay').onclick = pauseORplay;
-document.getElementById('nextSong').onclick = skip;
-document.getElementById('previousSong').onclick = skip;
+['nextSong', 'previousSong'].forEach(x => document.getElementById(x).onclick = skip);
 
 audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
 
-document.addEventListener('-clickedQueueItem', pauseThenPlay);
-document.addEventListener('-selectedAlbum', pauseThenPlay);
-document.addEventListener('-playArtist', pauseThenPlay);
+['-clickedQueueItem', '-selectedAlbum', '-playArtist'].forEach(x => document.addEventListener(x, pauseThenPlay));
 document.addEventListener('-rearrange', rearrange);
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
