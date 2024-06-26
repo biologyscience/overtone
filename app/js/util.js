@@ -25,11 +25,10 @@ function parseTime(ms)
 		days: round(ms / (24 * 60 * 60 * 1000)),
 		hours: round(ms / (60 * 60 * 1000)) % 24,
 		minutes: round(ms / (60 * 1000)) % 60,
-		seconds: round(ms / 1000) % 60,
-        ms
+		seconds: round(ms / 1000) % 60
 	};
 
-    // data.timeStamp = '';
+    data.ms = ms;
 
 	return data;
 };
