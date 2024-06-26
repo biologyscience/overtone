@@ -2,7 +2,7 @@ function clickSetBorder(E)
 {
     const li = util.getElement('li', E);
 
-    const currentQueue = document.querySelector('#queuesHolder .current');
+    const currentQueue = document.querySelector('#queuesHolder ul.current');
     
     const children = Array.from(currentQueue.children);
 
@@ -12,7 +12,7 @@ function clickSetBorder(E)
 
     li.classList.add('current');
 
-    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: {position: children.indexOf(li), queueNameInList: currentQueue.dataset.queueName}}));
+    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: {position: parseInt(li.dataset.id), queueNameInList: currentQueue.dataset.queueName}}));
 };
 
 function queueSetBorder({detail})
@@ -21,11 +21,12 @@ function queueSetBorder({detail})
 
     const int = setInterval(() =>
     {
-        if (Array.from(document.querySelector('#queuesHolder .current').children).length > 0)
+        const currentQueue = document.querySelector('#queuesHolder ul.current');
+        const children = Array.from(currentQueue.children);
+
+        if (children.length > 0)
         {
             clearInterval(int);
-    
-            const children = Array.from(document.querySelector('#queuesHolder .current').children);
     
             children.forEach(x => x.classList.remove('current'));
         
