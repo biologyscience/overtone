@@ -59,13 +59,12 @@
             queueList = util.read.queues()[queueName],
             songLocation = queueList[position],
             theLine = document.getElementById('theLine');
-
-        document.getElementById('currentTime').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
-        document.getElementById('totalTime').innerHTML = `${totalTime.minutes}:${totalTime.seconds}`;
     
         theLine.style.setProperty('--progress', `${(currentTime.ms / totalTime.ms) * 100}%`);
     
-        theLine.querySelector('.popUp').innerHTML = `${currentTime.minutes}:${currentTime.seconds}`;
+        document.getElementById('currentTime').innerHTML = `${currentTime.minutes}:${currentTime.seconds >= 10 ? currentTime.seconds : `0${currentTime.seconds}`}`;
+        document.getElementById('totalTime').innerHTML = `${totalTime.minutes}:${totalTime.seconds >= 10 ? totalTime.seconds : `0${totalTime.seconds}`}`;
+        theLine.querySelector('.popUp').innerHTML = `${currentTime.minutes}:${currentTime.seconds >= 10 ? currentTime.seconds : `0${currentTime.seconds}`}`;
     
         volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
         volumeFloat.dataset.percent = config.volume * 100;
