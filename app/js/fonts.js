@@ -6,7 +6,7 @@ function choose(E)
 
     children.forEach(x => x.classList.remove('currentFont'));
 
-    let target = E.type == '-setFont' ? children.filter(x => x.innerHTML === E.detail)[0] : E.target;
+    let target = E.type === '-setFont' ? children.filter(x => x.innerHTML === E.detail)[0] : E.target;
     
     target.classList.add('currentFont');
 
