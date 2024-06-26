@@ -92,10 +92,15 @@ section.queue #queueListMenu #queueList li {
   align-items: center;
   margin: 0 0.1em;
   padding: 0.5em 0;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
 }
 section.queue #queueListMenu #queueList li img {
   height: 1em;
   aspect-ratio: 1;
+}
+section.queue #queueListMenu #queueList li.current {
+  border-color: var(--accent);
 }
 section.queue #queueListMenu #queueList li:first-of-type {
   margin-top: 0.3em;
