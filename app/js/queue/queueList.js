@@ -7,7 +7,7 @@ function updateNumber(data)
     if (data.type === '-current')
     {
         currentSongIndex.innerHTML = data.detail === -1 ? '-' : data.detail + 1;
-        totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerHTML].length;
+        totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerText].length;
     }
 
     else if (data.type === '-selectedAlbum')
@@ -42,15 +42,23 @@ function chooseQueue(E)
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
+    Array.from(document.getElementById('queueList').children).forEach(x => x.classList.remove('current'));
+    E.target.parentElement.classList.add('current');
+
     const int = setInterval(() => 
     {
         if (queueReady)
         {
             clearInterval(int);
     
-            document.getElementById('queueListMenu').classList.toggle('visible');
+            const queueListMenu = document.getElementById('queueListMenu');
 
-            updateNumber({detail: -1});
+            if (queueListMenu.classList.contains('visible'))
+            {
+                queueListMenu.classList.toggle('visible');
+
+                updateNumber({detail: -1, type: '-current'});
+            }
         }
     });
 };

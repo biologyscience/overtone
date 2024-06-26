@@ -127,12 +127,16 @@ section.queue
                 align-items: center;
                 margin: 0 .1em;
                 padding: .5em 0;
-
+                border: 2px solid transparent;
+                border-radius: .5rem;
+                
                 img
                 {
                     height: 1em;
                     aspect-ratio: 1;
                 }
+                
+                &.current { border-color: var(--accent); }
 
                 &:first-of-type { margin-top: .3em; }
     

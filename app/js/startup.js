@@ -69,7 +69,7 @@
         volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
         volumeFloat.dataset.percent = config.volume * 100;
     
-        document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
+        document.getElementById('queueList').querySelector(`li span[data-queue-name="${queueName}"]`).click();
         document.dispatchEvent(new CustomEvent('-setBorder', {detail: position}));
     
         document.getElementById('currentSongIndex').innerHTML = position + 1;
