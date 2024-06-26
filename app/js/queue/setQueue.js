@@ -126,7 +126,7 @@ function setQueue(E)
 
             showQueue(queueName);
 
-            document.dispatchEvent(new CustomEvent('-playArtist', {detail: {QueueName: queueName, QueueList: paths}}));
+            if (E.type === '-selectedArtist') document.dispatchEvent(new CustomEvent('-playArtist', {detail: {QueueName: queueName, QueueList: paths}}));
         });
     });
 };

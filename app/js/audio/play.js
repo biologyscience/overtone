@@ -30,14 +30,14 @@ function play(E)
 {
     if (E.type === '-selectedAlbum')
     {
-        const { album, albumArtist, position, queueNameInList } = E.detail;
+        const { album, albumArtist, position } = E.detail;
 
-        queueName = queueNameInList || album;
+        queueName = album;
         current = position;
-        queueList = util.read.queues()[queueNameInList] || util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
+        queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
     }
 
-    else if (E.type === '-clickedQueueItem') { current = E.detail; }
+    else if (E.type === '-clickedQueueItem') { current = E.detail.position; }
 
     else if (E.type === '-playArtist')
     {
@@ -50,9 +50,9 @@ function play(E)
 
     const fileLocation = queueList[current];
 
-    audio.src = fileLocation;
-
     emitMetaData(fileLocation);
+
+    audio.src = fileLocation;
 
     util.getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
 
@@ -75,6 +75,8 @@ function pauseORplay()
 
 function changeCurrentState(E)
 {
+    emitMetaData(queueList[current]);
+
     const
         imgPause = document.getElementById('imgPause'),
         imgPlay = document.getElementById('imgPlay'),
@@ -260,8 +262,8 @@ function setVariables({detail})
 
     audio.volume = volume;
     if (src !== undefined) audio.src = src;
-    audio.currentTime = currentTime === undefined ? 0 : currentTime;
-    queueList = QueueList === undefined ? [] : QueueList;
+    if (currentTime !== undefined) audio.currentTime = currentTime;
+    if (QueueList !== undefined) queueList = QueueList;
     queueName = QueueName;
     current = 0 || Current;
 };
@@ -278,3 +280,7 @@ document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
 document.addEventListener('-setVariables', setVariables);
+
+setInterval(() => {
+    // console.log(audio.paused);
+});
