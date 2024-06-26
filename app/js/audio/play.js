@@ -280,7 +280,3 @@ document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
 document.addEventListener('-setVariables', setVariables);
-
-setInterval(() => {
-    // console.log(audio.paused);
-});
