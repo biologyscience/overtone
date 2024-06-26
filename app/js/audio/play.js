@@ -37,7 +37,12 @@ function play(E)
         queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
     }
 
-    else if (E.type === '-clickedQueueItem') { current = E.detail.position; }
+    else if (E.type === '-clickedQueueItem')
+    {
+        queueName = E.detail.queueNameInList;
+        current = E.detail.position;
+        queueList = util.read.queues()[queueName];
+    }
 
     else if (E.type === '-playArtist')
     {
