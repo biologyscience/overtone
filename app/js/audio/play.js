@@ -218,7 +218,7 @@ function rearrange({detail: {from, to}})
     {
         x.dataset.id = i;
 
-        x.style.borderColor === 'var(--accent)' ? current = i : null;
+        x.classList.contains('current') ? current = i : null;
         
         i++;
     });

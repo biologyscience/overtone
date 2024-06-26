@@ -273,6 +273,8 @@ section.queue
 
                 &:last-of-type { margin-bottom: .3em; }
 
+                &.current { border-color: var(--accent); }
+
                 img
                 {
                     font-size: 20px;
