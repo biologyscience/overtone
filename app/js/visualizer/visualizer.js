@@ -79,15 +79,26 @@ function visualizer()
         vocals.fillRect(x, y, w, h);
     }
 
-    for (let i = range.highHats[0], pos = 0; i < range.highHats[1]; i++ && pos++)
+    for (let i = range.highHats[0], pos = 0; i < range.highHats[1]; i+=28 && pos++)
     {
         const
             x = pos * barGap,
             y = height.highHats,
-            w = barWidth,
-            h = -(freqArray[i] / 3);
+            w = barWidth;
+            // h = -(freqArray[i] / 3);
 
-        highHats.fillRect(x, y, w, h);
+        let
+            j = i,
+            value = freqArray[i];
+
+        for (j = i; j < i + 27 || j < range.highHats[1]; j++)
+        {
+            value += freqArray[j];
+        }
+
+        const rip = (0.5 * (value / (j - i + 1))) + (0.2 * freqArray[range.highHats[0] + pos]);
+
+        highHats.fillRect(x, y, w, -rip);
     }
 };
 
