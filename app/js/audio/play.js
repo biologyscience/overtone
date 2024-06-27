@@ -59,7 +59,11 @@ function play(E)
 
     audio.src = fileLocation;
 
-    util.getAudioDuration(fileLocation).then(time => document.dispatchEvent(new CustomEvent('-setTime', {detail: time})));
+    const tags = util.read.metadata()[fileLocation];
+
+    const detail = { duration: tags.duration, rawDuration: tags.rawDuration };
+
+    document.dispatchEvent(new CustomEvent('-setTime', {detail}));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 
