@@ -5,9 +5,7 @@ let
 
 function setTime({detail})
 {
-    const time = detail;
-
-    audioDuration = (time.minutes * 60) + time.seconds;
+    audioDuration = Math.floor(detail.rawDuration / 1000);
 
     const div =
     {
@@ -15,12 +13,8 @@ function setTime({detail})
         totalTime: document.getElementById('totalTime')
     };
 
-    const
-        minutes = time.minutes.toString(),
-        seconds = time.seconds.toString().length > 1 ? time.seconds : '0' + time.seconds;
-
     div.currentTime.innerHTML = '0:00';
-    div.totalTime.innerHTML = `${minutes}:${seconds}`;
+    div.totalTime.innerHTML = detail.duration;
 };
 
 function updateTimeLine({detail})
