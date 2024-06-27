@@ -93,11 +93,36 @@ function changeCurrentState(E)
 
     if (E.type === 'pause')
     {
-        if (audio.duration === audio.currentTime && queueList.length !== (current + 1))
+        if (audio.currentTime >= audio.duration)
         {
-            current++;
+            if (queueList.length === current + 1)
+            {
+                const queues = util.read.queues();
+                const { queuePositions } = queues;
+    
+                if (queuePositions[queueName] + 1 === queuePositions.newQueuePosition) return;                    
+    
+                const newQueuePosition = queuePositions[queueName] + 1;
+    
+                for (const x in queuePositions)
+                {
+                    if (queuePositions[x] === newQueuePosition)
+                    {
+                        queueName = x;
+                        break;
+                    }
+                }
+    
+                document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
+                document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
+            }
 
-            play();
+            else
+            {
+                current++;
+
+                play();
+            }
         }
 
         head.style.transform = 'scale(0.98)';
@@ -177,6 +202,8 @@ function audioPause(E)
 
 function pauseThenPlay(obj)
 {
+    if (audio.paused) return play(obj);
+ 
     pauseORplay();
 
     const int = setInterval(() =>
