@@ -4,7 +4,6 @@ function storeQueue({detail: {queueList, queueName}})
         queues = new util.json('app/json/queues.json'),
         queuesData = queues.read();
 
-
     if (queuesData[queueName] === undefined)
     {
         queuesData.queuePositions[queueName] = queuesData.queuePositions.newQueuePosition;

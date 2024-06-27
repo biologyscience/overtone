@@ -40,7 +40,26 @@ function ready()
 
     if (existsSync(path) === false)
     {
-        x === 'config' ? data = { 'allowedMusicFileFormats': [ 'mp3', 'flac', 'ogg' ], 'font': 'Fira', 'volume' : 1 } : null;
+        if (x === 'config')
+        {
+            data =
+            {
+                allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
+                font: 'Fira',
+                volume: 1
+            };
+        }
+        
+        if (x === 'queues')
+        {
+            data =
+            {
+                queuePositions:
+                {
+                    newQueuePosition: 0
+                }
+            };
+        }
 
         writeFileSync(path, JSON.stringify(data, null, 4));
     }
