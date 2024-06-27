@@ -28,7 +28,7 @@ function emitMetaData(fileLocation)
 
 function play(E)
 {
-    if (E.type === '-selectedAlbum')
+    if (E?.type === '-selectedAlbum')
     {
         const { album, albumArtist, position } = E.detail;
 
@@ -37,14 +37,14 @@ function play(E)
         queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
     }
 
-    else if (E.type === '-clickedQueueItem')
+    else if (E?.type === '-clickedQueueItem')
     {
         queueName = E.detail.queueNameInList;
         current = E.detail.position;
         queueList = util.read.queues()[queueName];
     }
 
-    else if (E.type === '-playArtist')
+    else if (E?.type === '-playArtist')
     {
         const { QueueName, QueueList } = E.detail;
 
