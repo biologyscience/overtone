@@ -1,37 +1,86 @@
-let FOCUS = false;
-
-function removeFolder(E)
+function removeFolder(obj)
 {
-    if (FOCUS === false || E.target.tagName !== 'IMG') return;
+    const foldersToRemove = obj.detail === undefined ? obj : obj.detail;
 
     const
-        folderItem = E.parentElement,
-        path = folderItem.dataset.path,
-
         config = new util.json('app/json/config.json'),
-        data = config.read(),
-        index = data.checkMusicIn.indexOf(path);
+        songList = new util.json('app/json/songList.json'),
+        metadata = new util.json('app/json/metadata.json'),
+        albums = new util.json('app/json/albums.json'),
+        albumsData = albums.read(),
+        metadataData = metadata.read(),
+        songListData = songList.read(),
+        configData = config.read(),
+        newFolders = configData.checkMusicIn.filter(x => !foldersToRemove.includes(x));
+        
+    configData.checkMusicIn = newFolders;
+    foldersToRemove.forEach(x => delete songListData[x]);
 
-    data.checkMusicIn.splice(index, 1);
+    for (const x in metadataData)
+    {
+        foldersToRemove.forEach((y) =>
+        {
+            if (x.startsWith(y))
+            {
+                delete metadataData[x];
+            }
+        });
+    }
 
+    for (const x in albumsData)
+    {
+        const newSongList = albumsData[x].songs.filter((y) =>
+        {
+            foldersToRemove.forEach((z) =>
+            {
+                if (y.startsWith(z)) return false;
+            });
+
+            return true;
+        });
+
+        if (newSongList.length === 0) delete albumsData[x];
+    }
+    
     config.save();
+    songList.save();
+    metadata.save();
+    albums.save();
+};
 
-    Array.from(document.getElementById('folders').children).filter(x => x.dataset.path === path)[0].remove();
+function clickInFolder(E)
+{
+    if (E.target.tagName !== 'IMG') return;
 
-    shiftFocus();
+    const folderPath = E.parentElement.dataset.path;
+
+    const removeFolderButton = document.getElementById('removeFolder');
+
+    const toRemove = JSON.parse(removeFolderButton.dataset.paths).push(folderPath);
+
+    removeFolderButton.dataset.paths = toRemove;
 };
 
 function shiftFocus()
 {
     const
-        removeFolder = document.getElementById('removeFolder'),
-        span = removeFolder.querySelector('span'),
+        removeFolderButton = document.getElementById('removeFolder'),
+        span = removeFolderButton.querySelector('span'),
         deleteFolder = document.querySelectorAll('.deleteFolder');
     
-    if (FOCUS)
+    if (span.innerHTML === 'Done')
     {
+        const foldersToRemove = JSON.parse(removeFolderButton.dataset.paths);
+
+        if (foldersToRemove.length > 0)
+        {
+            Array.from(document.getElementById('folders').children).filter(foldersToRemove.includes).forEach(x => x.remove());
+
+            removeFolder(foldersToRemove);
+        }
+
         span.innerHTML = 'Remove a folder';
-        removeFolder.style.borderColor = '';
+        removeFolderButton.style.borderColor = '';
 
         deleteFolder.forEach((x) =>
         {
@@ -53,8 +102,6 @@ function shiftFocus()
             ], {duration: 1000, easing: 'ease', fill: 'forwards'});
         });
 
-        FOCUS = false;
-
         deleteFolder.forEach(x => x.classList.add('pointerEventsNone'));
     }
 
@@ -63,7 +110,7 @@ function shiftFocus()
         deleteFolder.forEach(x => x.classList.remove('pointerEventsNone'));
         
         span.innerHTML = 'Done';
-        removeFolder.style.borderColor = 'var(--accent)';
+        removeFolderButton.style.borderColor = 'var(--accent)';
 
         deleteFolder.forEach((x) =>
         {
@@ -84,10 +131,9 @@ function shiftFocus()
                 }
             ], {duration: 1000, easing: 'ease', fill: 'forwards'});
         });
-
-        FOCUS = true;
     }
 };
 
 document.getElementById('removeFolder').addEventListener('click', shiftFocus);
-document.getElementById('folders').addEventListener('click', removeFolder);
+document.getElementById('folders').addEventListener('click', clickInFolder);
+document.addEventListener('-removeFolder', removeFolder);
