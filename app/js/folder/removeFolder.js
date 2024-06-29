@@ -31,15 +31,16 @@ function removeFolder(obj)
     {
         const newSongList = albumsData[x].songs.filter((y) =>
         {
-            foldersToRemove.forEach((z) =>
-            {
-                if (y.startsWith(z)) return false;
-            });
+            let check = true;
 
-            return true;
+            foldersToRemove.forEach(z => y.startsWith(z) ? check = false : null);
+
+            return check;
         });
 
         if (newSongList.length === 0) delete albumsData[x];
+
+        else albumsData[x].songs = newSongList;
     }
     
     config.save();
@@ -52,13 +53,17 @@ function clickInFolder(E)
 {
     if (E.target.tagName !== 'IMG') return;
 
-    const folderPath = E.parentElement.dataset.path;
+    const folderPath = E.target.parentElement.dataset.path;
 
     const removeFolderButton = document.getElementById('removeFolder');
 
-    const toRemove = JSON.parse(removeFolderButton.dataset.paths).push(folderPath);
+    const foldersToRemove = JSON.parse(removeFolderButton.dataset.paths);
 
-    removeFolderButton.dataset.paths = toRemove;
+    if (foldersToRemove.includes(folderPath)) return;
+
+    foldersToRemove.push(folderPath);    
+
+    removeFolderButton.dataset.paths = JSON.stringify(foldersToRemove);
 };
 
 function shiftFocus()
@@ -74,7 +79,7 @@ function shiftFocus()
 
         if (foldersToRemove.length > 0)
         {
-            Array.from(document.getElementById('folders').children).filter(foldersToRemove.includes).forEach(x => x.remove());
+            Array.from(document.getElementById('folders').children).filter(x => foldersToRemove.includes(x.dataset.path)).forEach(x => x.remove());
 
             removeFolder(foldersToRemove);
         }
