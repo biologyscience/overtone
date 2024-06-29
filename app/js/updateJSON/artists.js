@@ -2,9 +2,6 @@ function updateArtists({detail})
 {
     const
         tags = detail,
-        temp = [];
-
-    const
         artists = new util.json('app/json/artists.json'),
         data = artists.read();
 
@@ -12,18 +9,9 @@ function updateArtists({detail})
     {
         const { albumArtist, album, year } = tag;
 
-        if (!temp.includes(albumArtist))
-        {
-            temp.push(albumArtist);
+        if (data[albumArtist] === undefined) data[albumArtist] = [];
 
-            data[albumArtist] = [];
-        }
-
-        let albumExists = false;
-
-        data[albumArtist].forEach((x) => x.album === album ? albumExists = true : null);
-
-        if (!albumExists) data[albumArtist].push({ album, year });
+        if (data[albumArtist].filter(x => x.album === album).length === 0) data[albumArtist].push({album, year});
     });
 
     artists.save();
