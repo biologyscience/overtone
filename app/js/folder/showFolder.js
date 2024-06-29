@@ -1,5 +1,7 @@
 function showFolder(E)
 {
+    if (E.target.tagName === 'IMG') return;
+
     let
         duration,
         totalTime = 0;
