@@ -93,6 +93,11 @@ function changeCurrentState(E)
 
     if (E.type === 'pause')
     {
+        head.style.transform = 'scale(0.98)';
+
+        imgPause.classList.add('opacity0');
+        imgPlay.classList.remove('opacity0');
+        
         if (audio.currentTime >= audio.duration)
         {
             if (queueList.length === current + 1)
@@ -115,6 +120,7 @@ function changeCurrentState(E)
     
                 document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
                 document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
+
             }
 
             else
@@ -124,11 +130,6 @@ function changeCurrentState(E)
                 play();
             }
         }
-
-        head.style.transform = 'scale(0.98)';
-
-        imgPause.classList.add('opacity0');
-        imgPlay.classList.remove('opacity0');
     }
 
     else

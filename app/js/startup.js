@@ -18,34 +18,35 @@
     if (config.checkMusicIn !== undefined)
     {
         const folders = document.getElementById('folders');
-        
-        const paths = Array.from(folders.children).map(x => x.dataset.path);
-        
+
+        const foldersToRemove = [];
+                
         config.checkMusicIn.forEach((x) =>
         {
-            if (paths.includes(x) === false)
-            {
-                const li = document.createElement('li');
+            if (fs.existsSync(x) === false) return foldersToRemove.push(x);
+
+            const li = document.createElement('li');
                 
-                const name = x.split('\\');
-                
-                li.classList.add('folderItem', 'grid');
-                
-                li.dataset.path = x;
-                
-                li.innerHTML =
-                `
-                <img class="folder" src="svg/folder.svg">
-                <div class="flexCol">
-                    <span class="name">${name[name.length - 1]}</span>
-                    <span class="path">${name.join('/')}</span>
-                </div>
-                <img src="svg/close.svg" class="deleteFolder pointerEventsNone">
-                `;
-                
-                folders.append(li);
-            }
+            const name = x.split('\\');
+            
+            li.classList.add('folderItem', 'grid');
+            
+            li.dataset.path = x;
+            
+            li.innerHTML =
+            `
+            <img class="folder" src="svg/folder.svg">
+            <div class="flexCol">
+                <span class="name">${name[name.length - 1]}</span>
+                <span class="path">${name.join('/')}</span>
+            </div>
+            <img src="svg/close.svg" class="deleteFolder pointerEventsNone">
+            `;
+            
+            folders.append(li);
         });
+
+        if (foldersToRemove.length > 0) document.dispatchEvent(new CustomEvent('-removeFolder', {detail: foldersToRemove}));
     }
 
     // preload previous session
