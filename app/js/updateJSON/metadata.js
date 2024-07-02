@@ -5,7 +5,10 @@ function updateMetadata({detail: {tags, songList}})
         data = metadata.read();
 
     for (let i = 0; i < songList.length; i++)
-    { data[songList[i]] = tags[i]; }
+    {
+        data[songList[i]] = tags[i];
+        data[songList[i]].plays = 0;
+    }
 
     metadata.save();
 };
