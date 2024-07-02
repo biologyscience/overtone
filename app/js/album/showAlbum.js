@@ -25,7 +25,7 @@ function showAlbum(E)
             <span class="name">${metadata[x].title}</span>
             <span class="artist">${metadata[x].artists.join(', ')}</span>
         </div>
-        <div class="plays">${0}</div>
+        <div class="plays">${metadata[x].plays}</div>
         <div class="duration">${metadata[x].duration}</div>
         `;
         
