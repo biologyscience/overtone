@@ -1,9 +1,19 @@
 new sortable(document.getElementById('queueList'),
 {
-    draggable: '.dragger',
-    animation: 300,
+    handle: '.dragger',
+    draggable: 'li',
     chosenClass: 'greenBorder',
-    ghostClass: 'displayNone'
+    ghostClass: 'displayNone',
+    animation: 300,
+    autoScroll: true,
+    onDrop: (x) =>
+    {
+        const { oldIndex, newIndex } = x;
+
+        if (oldIndex === newIndex) return;
+
+        document.dispatchEvent(new CustomEvent('-rearrange', {detail: {oldIndex, newIndex}}));
+    }
 });
 
 let currentQueue;
@@ -14,20 +24,19 @@ function initiateDrag({detail})
 
     const options =
     {
-        draggable: '.dragger',
-        animation: 300,
+        handle: '.dragger',
+        draggable: 'li',
         chosenClass: 'greenBorder',
         ghostClass: 'displayNone',
+        animation: 300,
+        autoScroll: true,
         onDrop: (x) =>
         {
-            if (x.changed)
-            {
-                const from = x.from.node.dataset.id;
+            const { oldIndex, newIndex } = x;
 
-                const to = x.to.node.dataset.id;
+            if (oldIndex === newIndex) return;
 
-                document.dispatchEvent(new CustomEvent('-rearrange', {detail: {from, to}}));
-            }
+            document.dispatchEvent(new CustomEvent('-rearrange', {detail: {oldIndex, newIndex}}));
         }
     };
 
