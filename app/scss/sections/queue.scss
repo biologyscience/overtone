@@ -268,6 +268,10 @@ section.queue
                 border-radius: .5rem;
                 border: 2px solid transparent;
                 transition: border-color ease 150ms;
+                
+                * { pointer-events: none; }
+                
+                & > * { pointer-events: all; }
 
                 &:first-of-type { margin-top: .3em; }
 

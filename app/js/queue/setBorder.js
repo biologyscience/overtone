@@ -1,5 +1,7 @@
 function clickSetBorder(E)
 {
+    if (E.target.dataset.songDuration === undefined) return;
+
     const li = util.getElement('li', E);
 
     const currentQueue = document.querySelector('#queuesHolder ul.current');
