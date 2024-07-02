@@ -215,6 +215,12 @@ section.queue #queuesHolder ul li {
   border: 2px solid transparent;
   transition: border-color ease 150ms;
 }
+section.queue #queuesHolder ul li * {
+  pointer-events: none;
+}
+section.queue #queuesHolder ul li > * {
+  pointer-events: all;
+}
 section.queue #queuesHolder ul li:first-of-type {
   margin-top: 0.3em;
 }
