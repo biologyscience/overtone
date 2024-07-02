@@ -1,7 +1,8 @@
 const
     audio = new Audio(),
     audioContext = new AudioContext(),
-    audioAnalyser = new AnalyserNode(audioContext);
+    audioAnalyser = new AnalyserNode(audioContext),
+    timeSpent = {};
 
 audioContext.createMediaElementSource(audio).connect(audioAnalyser);
 audioAnalyser.connect(audioContext.destination);
@@ -58,6 +59,8 @@ function play(E)
     emitMetaData(fileLocation);
 
     audio.src = fileLocation;
+
+    if (timeSpent[fileLocation] === undefined) timeSpent[fileLocation] = 0;
 
     const tags = util.read.metadata()[fileLocation];
 
@@ -189,6 +192,8 @@ function audioPlay(E)
         };
 
         document.dispatchEvent(new CustomEvent('-updateTimeLine', {detail}));
+
+        timeSpent[queueList[current]]++;
     }, 1000);
 };
 
@@ -267,8 +272,42 @@ function timeChange({detail})
     audio.currentTime = percent * audio.duration;
 };
 
+function setVariables({detail})
+{
+    const { volume, src, currentTime, QueueList, QueueName, Current } = detail;
+
+    audio.volume = volume;
+    if (src !== undefined) audio.src = src;
+    if (currentTime !== undefined) audio.currentTime = currentTime;
+    if (QueueList !== undefined) queueList = QueueList;
+    queueName = QueueName;
+    current = 0 || Current;
+
+    timeSpent[queueList[current]] = 0;
+};
+
+function updatePlays()
+{
+    const
+        metadata = new util.json('app/json/metadata.json'),
+        data = metadata.read();
+    
+    for (const x in timeSpent)
+    {
+        const count = Math.floor(((timeSpent[x] / (data[x].rawDuration / 1000)) * 100) / 75);
+
+        data[x].plays = data[x].plays + count;
+
+        delete timeSpent[x];
+    }
+    
+    metadata.save();
+};
+
 function closeApp()
 {
+    updatePlays();
+    
     const
         config = new util.json('app/json/config.json'),
         configData = config.read();
@@ -293,18 +332,6 @@ function closeApp()
     electron.ipcRenderer.send('ipc-close');
 };
 
-function setVariables({detail})
-{
-    const { volume, src, currentTime, QueueList, QueueName, Current } = detail;
-
-    audio.volume = volume;
-    if (src !== undefined) audio.src = src;
-    if (currentTime !== undefined) audio.currentTime = currentTime;
-    if (QueueList !== undefined) queueList = QueueList;
-    queueName = QueueName;
-    current = 0 || Current;
-};
-
 document.getElementById('pauseORplay').onclick = pauseORplay;
 ['nextSong', 'previousSong'].forEach(x => document.getElementById(x).onclick = skip);
 
@@ -317,3 +344,4 @@ document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
 document.addEventListener('-setVariables', setVariables);
+document.addEventListener('-updatePlays', updatePlays);

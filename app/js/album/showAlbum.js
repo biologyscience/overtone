@@ -1,5 +1,7 @@
 function showAlbum(E)
 {
+    document.dispatchEvent(new Event('-updatePlays'));
+
     const songListInAlbum = document.getElementById('songListInAlbum');
 
     Array.from(songListInAlbum.children).forEach(x => x.remove());
