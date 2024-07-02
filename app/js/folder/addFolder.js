@@ -52,17 +52,7 @@ function addFolder()
 
         if (filtered.length === 0) return;
 
-        if (data.checkMusicIn === undefined)
-        { data.checkMusicIn = filtered; }
-
-        else
-        {
-            filtered.forEach((x) =>
-            {
-                if (data.checkMusicIn.includes(x) === false)
-                { data.checkMusicIn.push(x); }
-            });
-        }
+        data.checkMusicIn = data.checkMusicIn === undefined ? filtered : [...new Set([...data.checkMusicIn, ...filtered])];
 
         config.save();
 
