@@ -31,7 +31,7 @@
     align-items: center;
 }
 
-.displayNone { display: none; }
+.displayNone { display: none !important; }
 
 .visibilityHidden { visibility: hidden; }
 
@@ -65,3 +65,5 @@
 }
 
 .inheritHeight { height: inherit; }
+
+.greenBorder { border-color: var(--accentGreen3) !important; }
