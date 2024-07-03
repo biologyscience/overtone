@@ -111,7 +111,7 @@ function changeCurrentState(E)
                     
                 if (currentQueueIndex + 1 === queueOrder.length) return;
 
-                queueName = queueOrder[current + 1];
+                queueName = queueOrder[currentQueueIndex + 1];
 
                 document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
                 document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
@@ -128,7 +128,7 @@ function changeCurrentState(E)
 
     else
     {
-        head.style.transform = '';
+        head.style.transform = 'scale(1)';
 
         imgPlay.classList.add('opacity0');
         imgPause.classList.remove('opacity0');
