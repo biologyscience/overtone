@@ -11,8 +11,9 @@
   justify-content: center;
   align-items: center;
   padding: 0.5em 0;
-  transition: transform 150ms ease;
   isolation: isolate;
+  transform: scale(0.98);
+  transition: transform 150ms ease;
 }
 #displayRight .head #albumArt {
   position: absolute;
