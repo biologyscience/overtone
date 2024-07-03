@@ -9,7 +9,7 @@
     watcher.on('ready', () => watcher.on('all', () => window.location.reload()));
 
     /* queue list */
-    for (const x in util.read.queues()) document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x}));
+    util.read.queues().queueOrder.forEach(x => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x})));
     
     /* fill previous id */
     config.discordAppID !== undefined ? document.getElementById('discordAppID').value = config.discordAppID : null;
