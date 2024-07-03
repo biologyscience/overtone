@@ -54,10 +54,7 @@ function ready()
         {
             data =
             {
-                queuePositions:
-                {
-                    newQueuePosition: 0
-                }
+                queueOrder: []
             };
         }
 

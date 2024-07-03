@@ -244,15 +244,23 @@ function rearrange(E)
 
         else current = newIndex;
 
-        const selected = queueList[oldIndex];
+        const
+            qn = document.querySelector('#queuesHolder ul.current').dataset.queueName,
+            ql = queuesData[qn];
 
-        queueList.splice(oldIndex, 1);
+        const selected = ql[oldIndex];
 
-        queueList = [...queueList.slice(0, newIndex), selected, ...queueList.slice(newIndex)];
+        ql.splice(oldIndex, 1);
 
-        document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+        ql = [...ql.slice(0, newIndex), selected, ...ql.slice(newIndex)];
+
+        if (qn === queueName)
+        {
+            queueList = ql;
+            document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+        }
         
-        queuesData[queueName] = queueList;
+        queuesData[qn] = ql;
     }
 
     queues.save();
