@@ -231,15 +231,24 @@ function rearrange(E)
 
     if (oldIndex === newIndex) return;
 
-    console.log(oldIndex, newIndex);
-
     const
         queues = new util.json('app/json/queues.json'),
-        queuesData = queues.read();
+        queuesData = queues.read(),
+        { queueOrder } = queuesData;
+
+    if (E.type === '-rearrangeQueues')
+    {
+        const selected = queueOrder[oldIndex];
+
+        queueOrder.splice(oldIndex, 1);
+
+        const newOrder = [...queueOrder.slice(0, newIndex), selected, ...queueOrder.slice(newIndex)];
+
+        queuesData.queueOrder = newOrder;
+    }
 
     if (E.type === '-rearrangeSongs')
     {
-        
         if ((oldIndex > current && newIndex > current) || (oldIndex < current && newIndex < current)) null;
 
         else current = newIndex;
