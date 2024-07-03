@@ -223,46 +223,39 @@ function pauseThenPlay(obj)
     });
 };
 
-function rearrange({detail: {from, to}})
+function rearrange(E)
 {
     const
-        FROM = parseInt(from),
-        TO = parseInt(to);
+        oldIndex = E.detail.oldIndex,
+        newIndex = E.detail.newIndex;
 
-    const temp = queueList[FROM];
+    if (oldIndex === newIndex) return;
 
-    if (TO > FROM)
+    console.log(oldIndex, newIndex);
+
+    const
+        queues = new util.json('app/json/queues.json'),
+        queuesData = queues.read();
+
+    if (E.type === '-rearrangeSongs')
     {
-        queueList.splice(TO + 1, 0, temp);
-    
-        queueList.splice(FROM, 1);
-    }
-
-    else
-    {
-        queueList.splice(TO, 0, temp);
-    
-        queueList.splice(FROM + 1, 1);
-    }
-
-    const childern = Array.from(document.querySelector('#queuesHolder .current').children);
-
-    childern.splice(childern.length - 1, 1);
-
-    let i = 0;
-
-    childern.forEach((x) =>
-    {
-        x.dataset.id = i;
-
-        x.classList.contains('current') ? current = i : null;
         
-        i++;
-    });
+        if ((oldIndex > current && newIndex > current) || (oldIndex < current && newIndex < current)) null;
 
-    document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+        else current = newIndex;
 
-    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
+        const selected = queueList[oldIndex];
+
+        queueList.splice(oldIndex, 1);
+
+        queueList = [...queueList.slice(0, newIndex), selected, ...queueList.slice(newIndex)];
+
+        document.dispatchEvent(new CustomEvent('-current', {detail: current}));
+        
+        queuesData[queueName] = queueList;
+    }
+
+    queues.save();
 };
 
 function timeChange({detail})
@@ -339,7 +332,7 @@ audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
 
 ['-clickedQueueItem', '-selectedAlbum', '-playArtist'].forEach(x => document.addEventListener(x, pauseThenPlay));
-document.addEventListener('-rearrange', rearrange);
+['-rearrangeQueues', '-rearrangeSongs'].forEach(x => document.addEventListener(x, rearrange));
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
