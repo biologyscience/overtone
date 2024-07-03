@@ -12,7 +12,7 @@ new sortable(document.getElementById('queueList'),
 
         if (oldIndex === newIndex) return;
 
-        document.dispatchEvent(new CustomEvent('-rearrange', {detail: {oldIndex, newIndex}}));
+        document.dispatchEvent(new CustomEvent('-rearrangeQueues', {detail: {oldIndex, newIndex}}));
     }
 });
 
@@ -35,8 +35,8 @@ function initiateDrag({detail})
             const { oldIndex, newIndex } = x;
 
             if (oldIndex === newIndex) return;
-
-            document.dispatchEvent(new CustomEvent('-rearrange', {detail: {oldIndex, newIndex}}));
+            
+            document.dispatchEvent(new CustomEvent('-rearrangeSongs', {detail: {oldIndex, newIndex}}));
         }
     };
 
