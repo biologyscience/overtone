@@ -103,27 +103,18 @@ function changeCurrentState(E)
         
         if (audio.currentTime >= audio.duration)
         {
-            if (queueList.length === current + 1)
+            if (current + 1 === queueList.length)
             {
-                const queues = util.read.queues();
-                const { queuePositions } = queues;
-    
-                if (queuePositions[queueName] + 1 === queuePositions.newQueuePosition) return;                    
-    
-                const newQueuePosition = queuePositions[queueName] + 1;
-    
-                for (const x in queuePositions)
-                {
-                    if (queuePositions[x] === newQueuePosition)
-                    {
-                        queueName = x;
-                        break;
-                    }
-                }
-    
+                const
+                    { queueOrder } = util.read.queues(),
+                    currentQueueIndex = queueOrder.indexOf(queueName);
+                    
+                if (currentQueueIndex + 1 === queueOrder.length) return;
+
+                queueName = queueOrder[current + 1];
+
                 document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
                 document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
-
             }
 
             else
