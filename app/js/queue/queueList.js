@@ -65,8 +65,6 @@ function chooseQueue(E)
 
 function addItemToQueueList({detail})
 {
-    if (detail === 'queuePositions') return;
-
     const ql = document.getElementById('queueList');
 
     if (ql.querySelectorAll(`.queueName[data-queue-name="${detail}"]`).length === 1) return;
