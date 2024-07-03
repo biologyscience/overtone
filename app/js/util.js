@@ -35,9 +35,7 @@ function parseTime(ms)
 
 function getFileSize(fileLocation)
 {
-    const { statSync } = require('fs');
-
-    const byte = statSync(fileLocation).size;
+    const byte = fs.statSync(fileLocation).size;
 
     const round = byte > 0 ? Math.floor : Math.ceil;
 
@@ -60,12 +58,10 @@ function buffer2DataURL(format, buffer)
 };
 
 function getAudioDuration(fileLocation)
-{
-    const { parseFile } = require('music-metadata');
-    
+{    
     return new Promise((resolve) =>
     {
-        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
+        musicMetadata.parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
         {
             const ms = result.format.duration * 1000;
 
@@ -89,11 +85,9 @@ function getElement(localName, obj)
 
 function getAlbumArt(fileLocation)
 {
-    const { parseFile } = require('music-metadata');
-
     return new Promise((resolve) =>
     {
-        parseFile(fileLocation, {skipPostHeaders: true}).then((tags) =>
+        musicMetadata.parseFile(fileLocation, {skipPostHeaders: true}).then((tags) =>
         {
             const picture = tags.common?.picture?.[0];
 
@@ -111,11 +105,9 @@ function getAlbumArt(fileLocation)
 
 function getMetaData(fileLocation)
 {
-    const { parseFile } = require('music-metadata');
-
     return new Promise((resolve) =>
     {
-        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((tags) =>
+        musicMetadata.parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((tags) =>
         {
             const { album, albumartist, artists, bpm, disk, genre, title, track, year } = tags.common;
 
@@ -149,11 +141,9 @@ function getMetaData(fileLocation)
 
 function getAudioInfo(fileLocation)
 {
-    const { parseFile } = require('music-metadata');
-
     return new Promise((resolve) =>
     {
-        parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
+        musicMetadata.parseFile(fileLocation, {skipCovers: true, skipPostHeaders: true}).then((result) =>
         {
             const { bitrate, codec, duration, lossless, numberOfChannels, sampleRate } = result.format;
 
@@ -176,11 +166,8 @@ class json
     constructor(fileLocation)
     {
         this.fileLocation = fileLocation;
-
-        const { readFileSync, writeFileSync } = require('fs');
-
-        this.readFileSync = readFileSync;
-        this.writeFileSync = writeFileSync;
+        this.readFileSync = fs.readFileSync;
+        this.writeFileSync = fs.writeFileSync;
     };
 
     read()
@@ -203,14 +190,12 @@ class json
 
 const read =
 {
-    fs: require('fs'),
-
-    albums() { return JSON.parse(this.fs.readFileSync('app/json/albums.json')); },
-    artists() { return JSON.parse(this.fs.readFileSync('app/json/artists.json')); },
-    config() { return JSON.parse(this.fs.readFileSync('app/json/config.json')); },
-    metadata() { return JSON.parse(this.fs.readFileSync('app/json/metadata.json')); },
-    queues() { return JSON.parse(this.fs.readFileSync('app/json/queues.json')); },
-    songList() { return JSON.parse(this.fs.readFileSync('app/json/songList.json')); }
+    albums() { return JSON.parse(fs.readFileSync('app/json/albums.json')); },
+    artists() { return JSON.parse(fs.readFileSync('app/json/artists.json')); },
+    config() { return JSON.parse(fs.readFileSync('app/json/config.json')); },
+    metadata() { return JSON.parse(fs.readFileSync('app/json/metadata.json')); },
+    queues() { return JSON.parse(fs.readFileSync('app/json/queues.json')); },
+    songList() { return JSON.parse(fs.readFileSync('app/json/songList.json')); }
 };
 
 function validateMusicFileFormat(fileLocation)

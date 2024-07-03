@@ -1,6 +1,6 @@
 function updateMetaData({detail})
 {
-    const tags = detail;
+    const { title, album, albumArtist, picture } = detail;
 
     const div =
     {
@@ -11,11 +11,11 @@ function updateMetaData({detail})
 
     const img = { albumArt: document.getElementById('albumArt') };
 
-    tags.picture.buffer === undefined ? img.albumArt.setAttribute('src', 'svg/empty.svg') : img.albumArt.setAttribute('src', tags.picture.URL);
+    picture.buffer === undefined ? img.albumArt.setAttribute('src', 'svg/empty.svg') : img.albumArt.setAttribute('src', picture.URL);
 
-    div.songName.innerHTML = tags.title;
-    div.artistName.innerHTML = tags.albumArtist;
-    div.albumName.innerHTML = tags.album;
+    div.songName.innerHTML = title;
+    div.albumName.innerHTML = album;
+    div.artistName.innerHTML = albumArtist;
 };
 
 document.addEventListener('-updateMetaData', updateMetaData);
