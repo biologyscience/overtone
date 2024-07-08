@@ -1,17 +1,17 @@
 function updateMediaSessionMetaData({detail})
 {
-    const tags = detail;
+    const { title, albumArtist, album, picture } = detail;
 
     const mediaMetaData = 
     {
-        title: tags.title,
-        artist: tags.albumArtist,
-        album: tags.album,
+        title,
+        artist: albumArtist,
+        album,
         artwork:
         [
             {
-                src: tags.picture.URL,
-                format: tags.picture.format
+                src: picture.URL,
+                format: picture.format
             }
         ]
     };
