@@ -18,8 +18,10 @@ function show(li)
     const
         multiplier = li.dataset.multiplier,
         displayLeft = document.getElementById('displayLeft');
+        displayLeftOverlay = document.getElementById('displayLeftOverlay');
     
     displayLeft.style.transform = `translateX(calc(-60vw * ${multiplier}))`;
+    displayLeftOverlay.style.transform = `translateX(calc(60vw * ${multiplier}))`;
 };
 
 function changeNavbarItemFocus(E)
