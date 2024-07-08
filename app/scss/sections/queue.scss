@@ -15,7 +15,7 @@ section.queue
         border-radius: 5px;
         background-color: var(--dark30);
         box-shadow: 0 1vh 50px .5vw black;
-        z-index: 1;
+        z-index: 2;
         animation: slideOut 250ms ease forwards;
     
         &.visible

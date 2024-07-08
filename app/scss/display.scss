@@ -6,6 +6,27 @@
     background-color: var(--dark25);
     z-index: 0;
 
+    #displayLeftOverlay
+    {
+        height: var(--displayHeight);
+        width: 60vw;
+        background-color: var(--dark25);
+        z-index: -1;
+        opacity: 0;
+        filter: brightness(1);
+        transition:
+            opacity 250ms ease,
+            filter 250ms ease,
+            transform 250ms ease;
+
+        &.visible
+        {
+            z-index: 1;
+            opacity: 0.75;
+            filter: brightness(0.8);
+        }
+    }
+
     section
     {
         height: var(--displayHeight);
