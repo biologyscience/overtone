@@ -284,7 +284,7 @@ function setVariables({detail})
     queueName = QueueName;
     current = 0 || Current;
 
-    timeSpent[queueList[current]] = 0;
+    if (queueList.length !== 0) timeSpent[queueList[current]] = 0;
 };
 
 function updatePlays()
