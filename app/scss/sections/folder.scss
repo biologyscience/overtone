@@ -171,6 +171,8 @@ section.folder
                 $sweetSpot: .87;
                 grid-template-columns: calc(60vw * $sweetSpot) auto;
 
+                * { pointer-events: none; }
+
                 & > div
                 {
                     $marginLeftRight: 2.5em;
@@ -190,7 +192,11 @@ section.folder
 
                 .artistName, .albumName { font-size: .7em; }
 
-                img { @include rootIMG; }
+                img
+                {
+                    @include rootIMG;
+                    pointer-events: all;
+                }
             }
         }
     }
