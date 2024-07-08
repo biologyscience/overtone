@@ -53,6 +53,12 @@ function setQueue(E)
         });
     }
 
+    if (E.type === '-singleSong')
+    {
+        paths = [E.detail.path];
+        queueName = E.detail.title;
+    }
+
     const ul = document.createElement('ul');
 
     ul.dataset.queueName = queueName;
@@ -96,7 +102,7 @@ function setQueue(E)
     if (E.type === '-selectedArtist') document.dispatchEvent(new CustomEvent('-playArtist', {detail: {QueueName: queueName, QueueList: paths}}));
 };
 
-['-selectedAlbum', '-selectedArtist', '-chooseQueue'].forEach(x => document.addEventListener(x, setQueue));
+['-selectedAlbum', '-selectedArtist', '-chooseQueue', '-singleSong'].forEach(x => document.addEventListener(x, setQueue));
 
 document.addEventListener('-current', (obj) =>
 {

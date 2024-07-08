@@ -54,6 +54,15 @@ function play(E)
         queueList = QueueList;
     }
 
+    else if (E?.type === '-singleSong')
+    {
+        const { title, path } = E.detail;
+
+        queueName = title;
+        current = 0;
+        queueList = [path]
+    }
+
     const fileLocation = queueList[current];
 
     emitMetaData(fileLocation);
@@ -339,7 +348,7 @@ document.getElementById('pauseORplay').onclick = pauseORplay;
 audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
 
-['-clickedQueueItem', '-selectedAlbum', '-playArtist'].forEach(x => document.addEventListener(x, pauseThenPlay));
+['-clickedQueueItem', '-selectedAlbum', '-playArtist', '-singleSong'].forEach(x => document.addEventListener(x, pauseThenPlay));
 ['-rearrangeQueues', '-rearrangeSongs'].forEach(x => document.addEventListener(x, rearrange));
 document.addEventListener('-timeChange', timeChange);
 document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);

@@ -70,5 +70,23 @@ function hideFolder()
     document.getElementById('folderInput').value = '';
 };
 
+function chooseSong(li)
+{
+    const
+        { path } = li.dataset,
+        { title } = util.read.metadata()[path];
+
+    document.dispatchEvent(new CustomEvent('-singleSong', {detail: {title, path}}));
+};
+
 document.getElementById('folders').addEventListener('click', showFolder);
 document.getElementById('backIcon').addEventListener('click', hideFolder);
+
+document.getElementById('songListInFolder').addEventListener('click', (E) =>
+{
+    if (E.target.tagName === 'UL') return;
+
+    if (E.target.tagName === 'LI') chooseSong(E.target);
+
+    if (E.target.tagName === 'IMG') document.dispatchEvent(new CustomEvent('-showSongOptions', {detail: util.getElement('li', E).dataset.path}));
+});
