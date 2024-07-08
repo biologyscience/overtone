@@ -49,9 +49,13 @@
         if (foldersToRemove.length > 0) document.dispatchEvent(new CustomEvent('-removeFolder', {detail: foldersToRemove}));
     }
 
+    let forceStart = true;
+
     // preload previous session
     if (config.lastQueueState !== undefined)
     {
+        forceStart = false;
+
         const
             currentTime = config.lastQueueState.time.current,
             totalTime = config.lastQueueState.time.total,
@@ -94,6 +98,16 @@
         detail.QueueList = queueList;
         detail.QueueName = queueName;
         detail.Current = position;
+    }
+
+    if (forceStart)
+    {
+        setTimeout(() =>
+        {
+            document.getElementById('overlay').style.display = 'none';
+            document.dispatchEvent(new Event('-AppLoaded'));
+            document.dispatchEvent(new CustomEvent('-setFont', {detail: config.font}));
+        });
     }
 
     document.dispatchEvent(new CustomEvent('-setVariables', {detail}));
