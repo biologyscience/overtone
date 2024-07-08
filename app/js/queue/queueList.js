@@ -52,10 +52,12 @@ function chooseQueue(E)
             clearInterval(int);
     
             const queueListMenu = document.getElementById('queueListMenu');
+            const displayLeftOverlay = document.getElementById('displayLeftOverlay');
 
             if (queueListMenu.classList.contains('visible'))
             {
                 queueListMenu.classList.toggle('visible');
+                displayLeftOverlay.classList.toggle('visible');
 
                 updateNumber({detail: -1, type: '-current'});
             }
