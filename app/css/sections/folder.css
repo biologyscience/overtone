@@ -141,6 +141,9 @@ section.folder .in #songListInFolder {
 section.folder .in #songListInFolder li {
   grid-template-columns: 52.2vw auto;
 }
+section.folder .in #songListInFolder li * {
+  pointer-events: none;
+}
 section.folder .in #songListInFolder li > div {
   margin: 0.5em 2.5em;
 }
@@ -160,4 +163,5 @@ section.folder .in #songListInFolder li .artistName, section.folder .in #songLis
 section.folder .in #songListInFolder li img {
   height: 1em;
   width: 1em;
+  pointer-events: all;
 }
