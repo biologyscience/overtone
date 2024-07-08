@@ -299,7 +299,7 @@ function updatePlays()
 
         data[x].plays = data[x].plays + count;
 
-        delete timeSpent[x];
+        if (queueList[current] !== x) delete timeSpent[x];
     }
     
     metadata.save();
