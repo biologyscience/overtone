@@ -19,6 +19,116 @@
   opacity: 0.75;
   filter: brightness(0.8);
 }
+#displayLeft #leftContextMenu {
+  font-size: 20px;
+  width: 27vw;
+  height: calc(var(--displayHeight) * 0.75);
+  padding: 0 1em;
+  top: calc((var(--displayHeight) - var(--displayHeight) * 0.75) / 2);
+  left: 16.5vw;
+  border-radius: 5px;
+  background-color: var(--dark30);
+  box-shadow: 0 1vh 50px 0.5vw black;
+  z-index: 2;
+  animation: slideOut 250ms ease forwards;
+}
+#displayLeft #leftContextMenu.visible {
+  animation: slideIn 250ms ease forwards;
+}
+@keyframes slideOut {
+  0% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(2.5%);
+    opacity: 1;
+  }
+  99% {
+    transform: translateY(2.5%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+@keyframes slideIn {
+  0% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+  1% {
+    transform: translateY(2.5%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(2.5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+#displayLeft #leftContextMenu .head {
+  padding: 0.7em 0.5em;
+}
+#displayLeft #leftContextMenu .head::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background-color: var(--dark40);
+  bottom: 0;
+  left: 0;
+}
+#displayLeft #leftContextMenu .head span {
+  font-size: 1.5em;
+}
+#displayLeft #leftContextMenu .head .close {
+  align-self: center;
+  right: 5%;
+}
+#displayLeft #leftContextMenu .head .close img {
+  height: 1em;
+  width: 1em;
+}
+#displayLeft #leftContextMenu .contextItems {
+  list-style: none;
+  padding: 0 0.5em;
+  margin: 0;
+  overflow-y: scroll;
+}
+#displayLeft #leftContextMenu .contextItems li {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin: 0 0.1em;
+  padding: 0.5em 0;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+}
+#displayLeft #leftContextMenu .contextItems li img {
+  height: 1em;
+  aspect-ratio: 1;
+}
+#displayLeft #leftContextMenu .contextItems li span {
+  flex-grow: 1;
+}
+#displayLeft #leftContextMenu .contextItems li:first-of-type {
+  margin-top: 0.3em;
+}
+#displayLeft #leftContextMenu .contextItems li:last-of-type {
+  margin-bottom: 0.3em;
+}
+#displayLeft #leftContextMenu .contextItems::-webkit-scrollbar {
+  background: none;
+  width: 1px;
+}
+#displayLeft #leftContextMenu .contextItems::-webkit-scrollbar-thumb {
+  background-color: var(--dark80);
+}
 #displayLeft section {
   height: var(--displayHeight);
   width: 60vw;
