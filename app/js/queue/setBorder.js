@@ -1,6 +1,6 @@
 function clickSetBorder(E)
 {
-    if (E.target.dataset.songDuration === undefined) return;
+    if (!(E.target.dataset.songDuration !== undefined || E.target.tagName === 'BUTTON')) return;
 
     const li = util.getElement('li', E);
 
@@ -8,13 +8,21 @@ function clickSetBorder(E)
     
     const children = Array.from(currentQueue.children);
 
+    const detail =
+    {
+        position: parseInt(li.dataset.id),
+        queueNameInList: currentQueue.dataset.queueName
+    };
+
+    if (E.target.tagName === 'BUTTON') return document.dispatchEvent(new CustomEvent('-openContextMenuInQueue', {detail}));
+
     if (li === undefined || children.length === 0) return;
 
     children.forEach(x => x.classList.remove('current'));
 
     li.classList.add('current');
 
-    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail: {position: parseInt(li.dataset.id), queueNameInList: currentQueue.dataset.queueName}}));
+    document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail}));
 };
 
 function queueSetBorder({detail})

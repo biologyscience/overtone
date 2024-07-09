@@ -48,12 +48,10 @@ function chooseQueue(E)
             clearInterval(int);
     
             const queueListMenu = document.getElementById('queueListMenu');
-            const displayLeftOverlay = document.getElementById('displayLeftOverlay');
 
             if (queueListMenu.classList.contains('visible'))
             {
-                queueListMenu.classList.toggle('visible');
-                displayLeftOverlay.classList.toggle('visible');
+                closeOverlay();
 
                 updateNumber({detail: -1, type: '-current'});
             }
@@ -87,18 +85,51 @@ function addItemToQueueList({detail})
     ql.append(li);
 };
 
-['section.queue .queueListWrapper', '#queueListMenu .head .close', '#displayLeftOverlay'].forEach((x) =>
+function closeOverlay()
 {
-    document.querySelector(x).addEventListener('click', () =>
-    {
-        ['queueListMenu', 'displayLeftOverlay'].forEach(y => document.getElementById(y).classList.toggle('visible'));
-    });
-});
+    ['displayLeftOverlay', 'queueListMenu', 'leftContextMenu'].forEach(x => document.getElementById(x).classList.remove('visible'));
+};
 
+function rightClickInQueuesHolder(E)
+{
+    let
+        position = E?.detail?.position
+        queueName = E?.detail?.queueNameInList;
+
+    if (position === undefined)
+    {
+        const { target } = E;
+
+        if (target.parentElement.tagName !== 'LI') return;
+
+        const li = target.parentElement;
+
+        position = li.dataset.id;
+        queueName = li.parentElement.dataset.queueName;
+    }
+
+    const
+        fileLocation = util.read.queues()[queueName][position],
+        songName = util.read.metadata()[fileLocation].title;
+    
+    const leftContextMenu = document.getElementById('leftContextMenu');
+
+    leftContextMenu.dataset.fileLocation = fileLocation;
+    leftContextMenu.querySelector('.head span').innerHTML = songName;
+
+    ['leftContextMenu', 'displayLeftOverlay'].forEach(x => document.getElementById(x).classList.add('visible'));
+};
+
+['#displayLeftOverlay', '#queueListMenu .head .close', '#leftContextMenu .head .close'].forEach(x => document.querySelector(x).addEventListener('click', closeOverlay));
+
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['queueListMenu', 'displayLeftOverlay'].forEach(x => document.getElementById(x).classList.add('visible')));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
+document.getElementById('displayLeftOverlay').addEventListener('click', closeOverlay);
+document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
 
 document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-selectedArtist', updateNumber);
 document.addEventListener('-current', updateNumber);
 document.addEventListener('-addItemToQueueList', addItemToQueueList);
 document.addEventListener('-currentQueueReady', ({detail}) => document.getElementById('queueName').innerHTML = detail);
+document.addEventListener('-openContextMenuInQueue', rightClickInQueuesHolder);
