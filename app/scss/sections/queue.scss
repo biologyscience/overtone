@@ -179,13 +179,12 @@ section.queue
 
         .queueListWrapper
         {
-            $width: calc(60vw * .85);
             font-size: 25px;
-            width: $width;
+            width: 100%;
             border: .1em solid var(--dark40);
             border-radius: .5em;
             padding: .4em .7em;
-            margin-left: .5em;
+            margin: 0 .5em;
 
             span { white-space: pre; }
 
@@ -196,20 +195,6 @@ section.queue
                 width: $size;
                 align-self: center;
                 right: 1em;
-            }
-        }
-
-        #deleteCurrentQueue
-        {
-            align-self: center;
-            margin-left: auto;
-            margin-right: 1.5em;
-
-            img
-            {
-                $size: 25px;
-                height: $size;
-                width: $size;
             }
         }
     }
