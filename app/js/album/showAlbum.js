@@ -34,6 +34,7 @@ function showAlbum(E)
         li.dataset.fileLocation = x;
         li.dataset.position = i++;
         li.dataset.trackNumber = metadata[x].track.no;
+        li.dataset.songName = metadata[x].title;
         
         songListInAlbum.append(li);
     });
