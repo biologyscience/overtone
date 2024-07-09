@@ -140,11 +140,11 @@ section.queue .headTop {
 }
 section.queue .headTop .queueListWrapper {
   font-size: 25px;
-  width: 51vw;
+  width: 100%;
   border: 0.1em solid var(--dark40);
   border-radius: 0.5em;
   padding: 0.4em 0.7em;
-  margin-left: 0.5em;
+  margin: 0 0.5em;
 }
 section.queue .headTop .queueListWrapper span {
   white-space: pre;
@@ -154,15 +154,6 @@ section.queue .headTop .queueListWrapper img {
   width: 20px;
   align-self: center;
   right: 1em;
-}
-section.queue .headTop #deleteCurrentQueue {
-  align-self: center;
-  margin-left: auto;
-  margin-right: 1.5em;
-}
-section.queue .headTop #deleteCurrentQueue img {
-  height: 25px;
-  width: 25px;
 }
 section.queue .headBottom {
   width: 100%;
