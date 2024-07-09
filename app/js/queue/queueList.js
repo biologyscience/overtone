@@ -7,7 +7,7 @@ function updateNumber(data)
     if (data.type === '-current')
     {
         currentSongIndex.innerHTML = data.detail === -1 ? '-' : data.detail + 1;
-        totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerText].length;
+        setTimeout(() => { totalSongsInCurrentQueue.innerHTML = util.read.queues()[document.getElementById('queueName').innerText].length; });
     }
 
     else if (data.type === '-selectedAlbum')
@@ -29,7 +29,6 @@ function updateNumber(data)
         currentSongIndex.innerHTML = 1;
         totalSongsInCurrentQueue.innerHTML = counter;
     }
-
 };
 
 function chooseQueue(E)
