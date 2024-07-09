@@ -1,3 +1,5 @@
+@use './util';
+
 #displayLeft
 {  
     height: var(--displayHeight);
@@ -24,6 +26,148 @@
             z-index: 1;
             opacity: 0.75;
             filter: brightness(0.8);
+        }
+    }
+
+    #leftContextMenu
+    {
+        $width: 60vw * .45;
+        $height: calc(var(--displayHeight) * .75);
+    
+        font-size: 20px;
+        width: $width;
+        height: $height;
+        padding: 0 1em;
+        top: calc((var(--displayHeight) - $height) / 2);
+        left: calc((60vw - $width) / 2);
+        border-radius: 5px;
+        background-color: var(--dark30);
+        box-shadow: 0 1vh 50px .5vw black;
+        z-index: 2;
+        animation: slideOut 250ms ease forwards;
+    
+        &.visible
+        {
+            animation: slideIn 250ms ease forwards;  
+        }
+    
+        @keyframes slideOut
+        {
+            0%
+            {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+    
+            50%
+            {
+                transform: translateY(2.5%);
+                opacity: 1;
+            }
+    
+            99%
+            {
+                transform: translateY(2.5%);
+                opacity: 0;
+            }
+    
+            100%
+            {
+                transform: translateY(200%);
+                opacity: 0;
+            }
+        }
+    
+        @keyframes slideIn
+        {
+            0%
+            {
+                transform: translateY(200%);
+                opacity: 0;
+            }
+    
+            1%
+            {
+                transform: translateY(2.5%);
+                opacity: 0;
+            }
+    
+            50%
+            {
+                transform: translateY(2.5%);
+                opacity: 1;
+            }
+    
+            100%
+            {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+        }
+    
+        .head
+        {
+            padding: .7em .5em;
+    
+            @include util.divider(after, BottomLeft);
+    
+            span { font-size: 1.5em; }
+    
+            .close
+            {
+                align-self: center;
+                right: 5%;
+    
+                img
+                {
+                    height: 1em;
+                    width: 1em;
+                }
+            }
+        }
+    
+        .contextItems
+        {
+            list-style: none;
+            padding: 0 .5em;
+            margin: 0;
+            overflow-y: scroll;
+    
+            li
+            {
+                $gap: 1em;
+
+                display: flex;
+                gap: $gap;
+                align-items: center;
+                margin: 0 .1em;
+                padding: .5em 0;
+                border: 2px solid transparent;
+                border-radius: .5rem;
+
+                img
+                {
+                    height: 1em;
+                    aspect-ratio: 1;
+                }
+
+                span { flex-grow: 1; }
+                
+                &:first-of-type { margin-top: .3em; }
+    
+                &:last-of-type { margin-bottom: .3em; }
+            }
+    
+            &::-webkit-scrollbar
+            {
+                background: none;
+                width: 1px;
+            }
+            
+            &::-webkit-scrollbar-thumb
+            {
+                background-color: var(--dark80);
+            }
         }
     }
 
