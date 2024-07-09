@@ -71,11 +71,11 @@ function play(E)
 
     if (timeSpent[fileLocation] === undefined) timeSpent[fileLocation] = 0;
 
-    const tags = util.read.metadata()[fileLocation];
+    const { duration, rawDuration } = util.read.metadata()[fileLocation];
 
-    const detail = { duration: tags.duration, rawDuration: tags.rawDuration };
+    document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: queueName}));
 
-    document.dispatchEvent(new CustomEvent('-setTime', {detail}));
+    document.dispatchEvent(new CustomEvent('-setTime', {detail: {duration, rawDuration}}));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 

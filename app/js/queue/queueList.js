@@ -42,9 +42,6 @@ function chooseQueue(E)
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
-    Array.from(document.getElementById('queueList').children).forEach(x => x.classList.remove('current'));
-    E.target.parentElement.classList.add('current');
-
     const int = setInterval(() => 
     {
         if (queueReady)

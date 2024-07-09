@@ -74,8 +74,9 @@
         volumeSlider.style.setProperty('--progress', `${config.volume * 100}%`);
         volumeFloat.dataset.percent = config.volume * 100;
     
-        document.getElementById('queueList').querySelector(`li span[data-queue-name="${queueName}"]`).click();
+        document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
         document.dispatchEvent(new CustomEvent('-setBorder', {detail: position}));
+        document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: queueName}));
     
         document.getElementById('currentSongIndex').innerHTML = position + 1;
         document.getElementById('totalSongsInCurrentQueue').innerHTML = queueList.length;
