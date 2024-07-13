@@ -8,19 +8,23 @@ function clickSetBorder(E)
     
     const children = Array.from(currentQueue.children);
 
-    const detail =
-    {
-        position: parseInt(li.dataset.id),
-        queueNameInList: currentQueue.dataset.queueName
-    };
+    const
+        fileLocation = util.read.queues()[currentQueue.dataset.queueName][parseInt(li.dataset.id)],
+        { title } = util.read.metadata()[fileLocation];
 
-    if (E.target.tagName === 'BUTTON') return document.dispatchEvent(new CustomEvent('-openContextMenuInQueue', {detail}));
+    if (E.target.tagName === 'BUTTON') return document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
 
     if (li === undefined || children.length === 0) return;
 
     children.forEach(x => x.classList.remove('current'));
 
     li.classList.add('current');
+
+    const detail =
+    {
+        position: parseInt(li.dataset.id),
+        queueNameInList: currentQueue.dataset.queueName
+    };
 
     document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail}));
 };
