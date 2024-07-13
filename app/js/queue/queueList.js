@@ -51,7 +51,7 @@ function chooseQueue(E)
 
             if (queueListMenu.classList.contains('visible'))
             {
-                closeOverlay();
+                ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible'));
 
                 updateNumber({detail: -1, type: '-current'});
             }
@@ -85,11 +85,6 @@ function addItemToQueueList({detail})
     ql.append(li);
 };
 
-function closeOverlay()
-{
-    ['displayLeftOverlay', 'queueListMenu', 'leftContextMenu'].forEach(x => document.getElementById(x).classList.remove('visible'));
-};
-
 function rightClickInQueuesHolder(E)
 {
     let
@@ -110,21 +105,14 @@ function rightClickInQueuesHolder(E)
 
     const
         fileLocation = util.read.queues()[queueName][position],
-        songName = util.read.metadata()[fileLocation].title;
-    
-    const leftContextMenu = document.getElementById('leftContextMenu');
+        { title } = util.read.metadata()[fileLocation];
 
-    leftContextMenu.dataset.fileLocation = fileLocation;
-    leftContextMenu.querySelector('.head span').innerHTML = songName;
-
-    ['leftContextMenu', 'displayLeftOverlay'].forEach(x => document.getElementById(x).classList.add('visible'));
+    document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
 };
 
-['#displayLeftOverlay', '#queueListMenu .head .close', '#leftContextMenu .head .close'].forEach(x => document.querySelector(x).addEventListener('click', closeOverlay));
-
-document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['queueListMenu', 'displayLeftOverlay'].forEach(x => document.getElementById(x).classList.add('visible')));
+document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.add('visible')));
+document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible')));
 document.getElementById('queueList').addEventListener('click', chooseQueue);
-document.getElementById('displayLeftOverlay').addEventListener('click', closeOverlay);
 document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
 
 document.addEventListener('-selectedAlbum', updateNumber);
@@ -132,4 +120,3 @@ document.addEventListener('-selectedArtist', updateNumber);
 document.addEventListener('-current', updateNumber);
 document.addEventListener('-addItemToQueueList', addItemToQueueList);
 document.addEventListener('-currentQueueReady', ({detail}) => document.getElementById('queueName').innerHTML = detail);
-document.addEventListener('-openContextMenuInQueue', rightClickInQueuesHolder);
