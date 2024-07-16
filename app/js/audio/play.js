@@ -355,3 +355,5 @@ document.addEventListener('-volumeChange', ({detail}) => audio.volume = detail);
 document.addEventListener('-closeApp', closeApp);
 document.addEventListener('-setVariables', setVariables);
 document.addEventListener('-updatePlays', updatePlays);
+
+document.getElementById('currentSongOptions').addEventListener('click', () => document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'song', title: util.read.metadata()[queueList[current]].title}})));

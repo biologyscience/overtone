@@ -88,5 +88,12 @@ document.getElementById('songListInFolder').addEventListener('click', (E) =>
 
     if (E.target.tagName === 'LI') chooseSong(E.target);
 
-    if (E.target.tagName === 'IMG') document.dispatchEvent(new CustomEvent('-showSongOptions', {detail: util.getElement('li', E).dataset.path}));
+    if (E.target.tagName === 'IMG') document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'songInList', title: util.getElement('li', E).dataset.title}}));
+});
+
+document.getElementById('songListInFolder').addEventListener('contextmenu', (E) =>
+{
+    if (E.target.tagName === 'UL') return;
+
+    document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'songInList', title: util.getElement('li', E).dataset.title}}));
 });
