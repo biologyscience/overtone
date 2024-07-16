@@ -33,13 +33,13 @@
     {
         $width: 60vw * .45;
         $height: calc(var(--displayHeight) * .75);
-    
+
         font-size: 20px;
         width: $width;
         height: $height;
         padding: 0 1em;
         top: calc((var(--displayHeight) - $height) / 2);
-        left: calc((60vw - $width) / 2);
+        left: calc(calc((60vw - $width) / 2) + var(--offset));
         border-radius: 5px;
         background-color: var(--dark30);
         box-shadow: 0 1vh 50px .5vw black;
