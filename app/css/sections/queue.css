@@ -123,6 +123,9 @@ section.queue #queueListMenu #queueList li .queueName {
 section.queue #queueListMenu #queueList li .options {
   margin-right: 1em;
 }
+section.queue #queueListMenu #queueList li .options * {
+  pointer-events: none;
+}
 section.queue #queueListMenu #queueList::-webkit-scrollbar {
   background: none;
   width: 1px;

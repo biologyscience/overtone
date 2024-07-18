@@ -31,13 +31,9 @@ function updateNumber(data)
     }
 };
 
-function chooseQueue(E)
-{
-    const span = E.target;
-
-    if (span.localName !== 'span') return;
-    
-    const queueName = span.dataset.queueName;
+function chooseQueue(target)
+{    
+    const queueName = target.dataset.queueName;
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
@@ -112,8 +108,14 @@ function rightClickInQueuesHolder(E)
 
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.add('visible')));
 document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible')));
-document.getElementById('queueList').addEventListener('click', chooseQueue);
 document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
+
+document.getElementById('queueList').addEventListener('click', ({target}) =>
+{
+    if (target.localName === 'span') chooseQueue(target);
+
+    if (target.localName === 'button') queueOptions(target);
+});
 
 document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-selectedArtist', updateNumber);
