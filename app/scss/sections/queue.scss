@@ -1,5 +1,37 @@
 @use '../util';
 
+#queueOptions
+{
+    --top: 233px;
+
+    top: var(--top);
+    left: 50vw;
+    background-color: var(--dark30);
+    border-radius: .5em;
+    padding: .25em .85em;
+    transform: scale(1.5);
+    z-index: 3;
+
+    li
+    {
+        $gap: 1em;
+
+        display: flex;
+        gap: $gap;
+        align-items: center;
+        margin: .5em .1em;
+        border: 2px solid transparent;
+        border-radius: .5rem;
+        cursor: pointer;
+        
+        img
+        {
+            height: 1em;
+            aspect-ratio: 1;
+        }
+    }
+}
+
 section.queue
 {
     #queueListMenu

@@ -106,6 +106,12 @@ function rightClickInQueuesHolder(E)
     document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
 };
 
+function queueOptions(target)
+{
+    
+    document.getElementById('queueOptions').classList.remove('displayNone');
+};
+
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.add('visible')));
 document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible')));
 document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
