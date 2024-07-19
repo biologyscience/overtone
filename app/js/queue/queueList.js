@@ -134,7 +134,39 @@ function queueOptions(E)
 
     if (target.dataset.function === 'remove')
     {
+        const
+            { queueName } = queueOptions.dataset,
+            queues = new util.json('app/json/queues.json'),
+            queuesData = queues.read();
 
+        delete queuesData[queueName];
+        queuesData.queueOrder.splice(queuesData.queueOrder.indexOf(queueName), 1);
+        queues.save();
+
+        const queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement;
+
+        if (queueLI.classList.contains('current'))
+        {
+            const
+                queueItems = Array.from(document.getElementById('queueList').children),
+                index = queueItems.indexOf(queueLI);
+
+            let toChoose = index;
+
+            index === (queueItems.length - 1) ? toChoose-- : toChoose++;
+
+            if (queueItems.length === 1) return document.dispatchEvent(new Event('-resetDisplayRight'));
+            
+            chooseQueue(queueItems[toChoose].querySelector('span'));
+            
+            document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: queueItems[toChoose]}));
+
+            setTimeout(() => { document.querySelector('#queuesHolder ul.current li .info').click(); });
+        }
+        
+        queueLI.remove();
+
+        queueOptions.classList.remove('visible');
     }
 };
 

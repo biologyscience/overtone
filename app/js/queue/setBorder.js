@@ -55,7 +55,12 @@ function setPlayingQueueBorder({detail})
 
     Array.from(document.getElementById('queueList').children).forEach(x => x.classList.remove('current'));
 
-    setTimeout(() => { document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).parentElement.classList.add('current'); });
+    setTimeout(() =>
+    {
+        if (typeof(detail) !== 'string') return queueName.classList.add('current');
+        
+        document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).parentElement.classList.add('current');
+    });
 }
 
 document.querySelector('section.queue #queuesHolder').addEventListener('click', clickSetBorder);
