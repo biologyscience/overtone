@@ -1,12 +1,18 @@
 #queueOptions {
-  --top: 233px;
   top: var(--top);
   left: 50vw;
+  list-style: none;
+  margin: 0;
+  flex-grow: 1;
   background-color: var(--dark30);
   border-radius: 0.5em;
   padding: 0.25em 0.85em;
   transform: scale(1.5);
   z-index: 3;
+  display: none;
+}
+#queueOptions.visible {
+  display: block !important;
 }
 #queueOptions li {
   display: flex;
@@ -16,6 +22,9 @@
   border: 2px solid transparent;
   border-radius: 0.5rem;
   cursor: pointer;
+}
+#queueOptions li * {
+  pointer-events: none;
 }
 #queueOptions li img {
   height: 1em;

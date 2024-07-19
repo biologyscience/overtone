@@ -106,14 +106,40 @@ function rightClickInQueuesHolder(E)
     document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
 };
 
-function queueOptions(target)
+function queueOptions(E)
 {
-    
-    document.getElementById('queueOptions').classList.remove('displayNone');
+    const queueOptions = document.getElementById('queueOptions');
+
+    let target = E;
+
+    if (E?.target !== undefined) target = E.target;
+
+    if (target.localName === 'button')
+    {
+        const queueLI = target.parentElement;
+
+        queueOptions.dataset.queueName = queueLI.querySelector('.queueName').innerText;
+
+        const { top, height } = queueLI.getBoundingClientRect();
+
+        queueOptions.style.setProperty('--top', `${top - (height / 2)}px`);
+
+        queueOptions.classList.add('visible');
+    }
+
+    if (target.dataset.function === 'rename')
+    {
+        
+    }
+
+    if (target.dataset.function === 'remove')
+    {
+
+    }
 };
 
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.add('visible')));
-document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible')));
+document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu', 'queueOptions'].forEach(x => document.getElementById(x).classList.remove('visible')));
 document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
 
 document.getElementById('queueList').addEventListener('click', ({target}) =>
@@ -122,6 +148,7 @@ document.getElementById('queueList').addEventListener('click', ({target}) =>
 
     if (target.localName === 'button') queueOptions(target);
 });
+document.getElementById('queueOptions').addEventListener('click', queueOptions);
 
 document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-selectedArtist', updateNumber);
