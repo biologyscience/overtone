@@ -18,12 +18,12 @@ function openContextMenu({detail})
 
 function closeContextMenu()
 {
-    document.getElementById('displayLeftOverlay').classList.remove('visible');
-    document.getElementById('leftContextMenu').classList.remove('visible');
-
-    const queueListMenu = document.getElementById('queueListMenu');
-
-    if (queueListMenu.classList.contains('visible')) queueListMenu.classList.remove('visible');
+    [
+        'displayLeftOverlay',
+        'leftContextMenu',
+        'queueOptions',
+        'queueListMenu'
+    ].forEach(x => document.getElementById(x).classList.remove('visible'));
 };
 
 document.addEventListener('-contextMenu', openContextMenu);
