@@ -190,7 +190,17 @@ section.queue
 
                 .position { font-size: .5em; }
 
-                .queueName { flex-grow: 1; }
+                .queueName, input { flex-grow: 1; }
+
+                input
+                {
+                    background: none;
+                    margin: 0;
+                    font-size: inherit;
+                    transition: border-bottom-color .5s ease;
+
+                    @include util.inputBorderReset(bottom, 2px);
+                }
 
                 .options
                 {

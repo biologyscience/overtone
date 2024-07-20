@@ -150,8 +150,17 @@ section.queue #queueListMenu #queueList li .dragger img {
 section.queue #queueListMenu #queueList li .position {
   font-size: 0.5em;
 }
-section.queue #queueListMenu #queueList li .queueName {
+section.queue #queueListMenu #queueList li .queueName, section.queue #queueListMenu #queueList li input {
   flex-grow: 1;
+}
+section.queue #queueListMenu #queueList li input {
+  background: none;
+  margin: 0;
+  font-size: inherit;
+  transition: border-bottom-color 0.5s ease;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
 }
 section.queue #queueListMenu #queueList li .options {
   margin-right: 1em;
