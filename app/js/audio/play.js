@@ -286,12 +286,12 @@ function setVariables({detail})
 {
     const { volume, src, currentTime, QueueList, QueueName, Current } = detail;
 
-    audio.volume = volume;
-    if (src !== undefined) audio.src = src;
-    if (currentTime !== undefined) audio.currentTime = currentTime;
-    if (QueueList !== undefined) queueList = QueueList;
-    queueName = QueueName;
-    current = 0 || Current;
+    audio.volume = volume || audio.volume;
+    audio.src = src || audio.src;
+    audio.currentTime = currentTime || audio.currentTime;
+    queueList = QueueList || queueList;
+    queueName = QueueName || queueName;
+    current = Current || current || 0;
 
     if (queueList.length !== 0) timeSpent[queueList[current]] = 0;
 };
