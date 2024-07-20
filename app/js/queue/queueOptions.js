@@ -83,6 +83,16 @@ function queueOptions({target})
         delete queuesData[oldQueueName];
         queues.save();
 
+        const queueList = document.querySelector(`#queuesHolder [data-queue-name=${oldQueueName}]`);
+        
+        if (queueList.classList.contains('current'))
+        {
+            queueList.dataset.queueName = newQueueName;
+            document.getElementById('queueName').innerHTML = newQueueName;
+            
+            document.dispatchEvent(new CustomEvent('-setVariables', {detail: {QueueName: newQueueName}}));
+        }
+
         span.innerHTML = newQueueName;
         span.dataset.queueName = newQueueName;
     }
