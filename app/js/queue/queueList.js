@@ -107,126 +107,22 @@ function rightClickInQueuesHolder(E)
     document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
 };
 
-function queueOptions(E)
-{
-    const queueOptions = document.getElementById('queueOptions');
-
-    let target = E;
-
-    if (E?.target !== undefined) target = E.target;
-
-    if (target.localName === 'button')
-    {
-        const queueLI = target.parentElement;
-
-        queueOptions.dataset.queueName = queueLI.querySelector('.queueName').innerText;
-
-        const { top, height } = queueLI.getBoundingClientRect();
-
-        queueOptions.style.setProperty('--top', `calc(${top - (height / 2)}px)`);
-
-        queueOptions.classList.add('visible');
-    }
-
-    if (target.dataset.function === 'rename')
-    {
-        Array.from(queueOptions.children).forEach(x => x.classList.toggle('displayNone'));
-        queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(')').join(' + 1em)'));
-
-        const
-            { queueName } = queueOptions.dataset,
-            queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement,
-            span = queueLI.querySelector('span'),
-            input = queueLI.querySelector('input');
-
-        span.classList.add('displayNone');
-        input.value = queueName;
-        input.classList.remove('displayNone');
-        input.focus();
-    }
-
-    if (target.dataset.function === 'renameDone')
-    {
-        Array.from(queueOptions.children).forEach(x => x.classList.toggle('displayNone'));
-        queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(' + 1em)').join(')'));
-
-        const
-            oldQueueName = queueOptions.dataset.queueName,
-            queueLI = document.querySelector(`#queueList [data-queue-name="${oldQueueName}"]`).parentElement,
-            span = queueLI.querySelector('span'),
-            input = queueLI.querySelector('input'),
-            newQueueName = input.value;
-
-        span.classList.remove('displayNone');
-        input.classList.add('displayNone');
-
-        queueOptions.classList.remove('visible');
-
-        if (oldQueueName === newQueueName) return;
-
-        const
-            queues = new util.json('app/json/queues.json'),
-            queuesData = queues.read();
-        
-        queuesData.queueOrder[queuesData.queueOrder.indexOf(oldQueueName)] = newQueueName;
-        queuesData[newQueueName] = queuesData[oldQueueName];
-        delete queuesData[oldQueueName];
-        queues.save();
-
-        span.innerHTML = newQueueName;
-        span.dataset.queueName = newQueueName;
-    }
-
-    if (target.dataset.function === 'remove')
-    {
-        const
-            { queueName } = queueOptions.dataset,
-            queues = new util.json('app/json/queues.json'),
-            queuesData = queues.read();
-
-        delete queuesData[queueName];
-        queuesData.queueOrder.splice(queuesData.queueOrder.indexOf(queueName), 1);
-        queues.save();
-
-        const queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement;
-
-        if (queueLI.classList.contains('current'))
-        {
-            const
-                queueItems = Array.from(document.getElementById('queueList').children),
-                index = queueItems.indexOf(queueLI);
-
-            let toChoose = index;
-
-            index === (queueItems.length - 1) ? toChoose-- : toChoose++;
-
-            if (queueItems.length === 1) return document.dispatchEvent(new Event('-resetDisplayRight'));
-            
-            chooseQueue(queueItems[toChoose].querySelector('span'));
-            
-            document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: queueItems[toChoose]}));
-
-            setTimeout(() => { document.querySelector('#queuesHolder ul.current li .info').click(); });
-        }
-        
-        queueLI.remove();
-
-        queueOptions.classList.remove('visible');
-    }
-};
-
 document.querySelector('section.queue .queueListWrapper').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.add('visible')));
-document.querySelector('#queueListMenu .head .close').addEventListener('click', () => ['displayLeftOverlay', 'queueListMenu', 'queueOptions'].forEach(x => document.getElementById(x).classList.remove('visible')));
 document.getElementById('queuesHolder').addEventListener('contextmenu', rightClickInQueuesHolder);
+
+document.querySelector('#queueListMenu .head .close').addEventListener('click', () =>
+{
+    ['displayLeftOverlay', 'queueListMenu'].forEach(x => document.getElementById(x).classList.remove('visible'));
+
+    document.dispatchEvent(new Event('-closeQueueOptions'));
+});
 
 document.getElementById('queueList').addEventListener('click', ({target}) =>
 {
     if (target.localName === 'span') chooseQueue(target);
 
-    if (target.localName === 'button') queueOptions(target);
+    if (target.localName === 'button') document.dispatchEvent(new CustomEvent('-openQueueOptions', {detail: target}));
 });
-
-document.getElementById('queueOptions').addEventListener('click', queueOptions);
 
 document.addEventListener('-selectedAlbum', updateNumber);
 document.addEventListener('-selectedArtist', updateNumber);
