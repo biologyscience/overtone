@@ -67,6 +67,7 @@ function addItemToQueueList({detail})
         <img src="svg/drag.svg" draggable="false">
     </div>
     <span class="queueName overflowPrevent cursorPointer" data-queue-name="${detail}">${detail}</span>
+    <input class="displayNone" value="${detail}"/>
     <button class="options flexCenter">
         <img src="svg/moreHorizontal.svg" draggable="false">
     </button>
@@ -122,14 +123,58 @@ function queueOptions(E)
 
         const { top, height } = queueLI.getBoundingClientRect();
 
-        queueOptions.style.setProperty('--top', `${top - (height / 2)}px`);
+        queueOptions.style.setProperty('--top', `calc(${top - (height / 2)}px)`);
 
         queueOptions.classList.add('visible');
     }
 
     if (target.dataset.function === 'rename')
     {
+        Array.from(queueOptions.children).forEach(x => x.classList.toggle('displayNone'));
+        queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(')').join(' + 1em)'));
+
+        const
+            { queueName } = queueOptions.dataset,
+            queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement,
+            span = queueLI.querySelector('span'),
+            input = queueLI.querySelector('input');
+
+        span.classList.add('displayNone');
+        input.value = queueName;
+        input.classList.remove('displayNone');
+        input.focus();
+    }
+
+    if (target.dataset.function === 'renameDone')
+    {
+        Array.from(queueOptions.children).forEach(x => x.classList.toggle('displayNone'));
+        queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(' + 1em)').join(')'));
+
+        const
+            oldQueueName = queueOptions.dataset.queueName,
+            queueLI = document.querySelector(`#queueList [data-queue-name="${oldQueueName}"]`).parentElement,
+            span = queueLI.querySelector('span'),
+            input = queueLI.querySelector('input'),
+            newQueueName = input.value;
+
+        span.classList.remove('displayNone');
+        input.classList.add('displayNone');
+
+        queueOptions.classList.remove('visible');
+
+        if (oldQueueName === newQueueName) return;
+
+        const
+            queues = new util.json('app/json/queues.json'),
+            queuesData = queues.read();
         
+        queuesData.queueOrder[queuesData.queueOrder.indexOf(oldQueueName)] = newQueueName;
+        queuesData[newQueueName] = queuesData[oldQueueName];
+        delete queuesData[oldQueueName];
+        queues.save();
+
+        span.innerHTML = newQueueName;
+        span.dataset.queueName = newQueueName;
     }
 
     if (target.dataset.function === 'remove')
@@ -180,6 +225,7 @@ document.getElementById('queueList').addEventListener('click', ({target}) =>
 
     if (target.localName === 'button') queueOptions(target);
 });
+
 document.getElementById('queueOptions').addEventListener('click', queueOptions);
 
 document.addEventListener('-selectedAlbum', updateNumber);
