@@ -37,6 +37,10 @@ body #overlay {
   background-color: var(--dark25);
   z-index: 5;
 }
+body #overlay img {
+  height: 80%;
+  aspect-ratio: 1;
+}
 
 button {
   padding: 0;
