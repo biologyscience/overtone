@@ -1,3 +1,18 @@
+function updateLibraryButton()
+{
+    const updateSongList = document.getElementById('updateSongList');
+
+    updateSongList.classList.toggle('current');
+    updateSongList.querySelector('img').classList.toggle('animate');
+
+    setTimeout(() => { if (updateSongList.classList.contains('current')) updateLibrary(); }, 500);
+};
+
+function updateLibraryUI()
+{
+// to do
+};
+
 function updateLibrary()
 {
     document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: util.read.config().checkMusicIn}));
@@ -19,22 +34,13 @@ function updateLibrary()
         
         Promise.all(addSongList.map(util.getMetaData)).then((tags) =>
         {
+            // also update other json
             document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: {tags, addSongList, removeSongList}}));
          
+            updateLibraryUI();
             updateLibraryButton();
         });            
     });
-
-};
-
-function updateLibraryButton()
-{
-    const updateSongList = document.getElementById('updateSongList');
-
-    updateSongList.classList.toggle('current');
-    updateSongList.querySelector('img').classList.toggle('animate');
-
-    setTimeout(() => { if (updateSongList.classList.contains('current')) updateLibrary(); }, 500);
 };
 
 document.getElementById('updateSongList').addEventListener('click', updateLibraryButton);
