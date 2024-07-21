@@ -10,8 +10,8 @@ function ready()
 {
     const WINDOW = new BrowserWindow
     ({
-        width: 1280,
-        height: 720,
+        width: 540,
+        height: 540,
         frame: false,
         title: 'OverTone',
         // icon: '',
@@ -25,7 +25,7 @@ function ready()
 
     remote.enable(WINDOW.webContents);
 
-    WINDOW.loadFile('index.html').then(() => WINDOW.maximize());
+    WINDOW.loadFile('index.html');
 
     ipcMain.on('ipc-minimize', () => WINDOW.minimize());
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());

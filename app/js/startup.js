@@ -89,6 +89,7 @@
     
             document.getElementById('overlay').style.display = 'none';
             document.dispatchEvent(new Event('-AppLoaded'));
+            electron.ipcRenderer.send('ipc-maximize');
             document.dispatchEvent(new CustomEvent('-setFont', {detail: config.font}));
         });
     
@@ -107,6 +108,7 @@
         {
             document.getElementById('overlay').style.display = 'none';
             document.dispatchEvent(new Event('-AppLoaded'));
+            electron.ipcRenderer.send('ipc-maximize');
             document.dispatchEvent(new CustomEvent('-setFont', {detail: config.font}));
         });
     }
