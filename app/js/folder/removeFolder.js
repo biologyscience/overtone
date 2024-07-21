@@ -85,7 +85,7 @@ function shiftFocus()
         }
 
         span.innerHTML = 'Remove a folder';
-        removeFolderButton.style.borderColor = '';
+        removeFolderButton.classList.remove('current');
 
         deleteFolder.forEach((x) =>
         {
@@ -115,7 +115,7 @@ function shiftFocus()
         deleteFolder.forEach(x => x.classList.remove('pointerEventsNone'));
         
         span.innerHTML = 'Done';
-        removeFolderButton.style.borderColor = 'var(--accent)';
+        removeFolderButton.classList.add('current');
 
         deleteFolder.forEach((x) =>
         {

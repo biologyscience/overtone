@@ -87,6 +87,8 @@ section.folder
             transition: border-color 150ms ease;
     
             * { pointer-events: none; }
+
+            &.current { border-color: var(--accent); }
     
             &:hover
             {
