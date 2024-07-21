@@ -72,6 +72,23 @@ section.folder .out .folderOptions:hover {
   border-color: var(--accent);
   cursor: pointer;
 }
+section.folder .out .folderOptions#updateSongList img {
+  animation: 0;
+}
+section.folder .out .folderOptions#updateSongList img.animate {
+  animation: rotate 1s linear forwards infinite;
+}
+@keyframes rotate {
+  0% {
+    rotate: 0deg;
+  }
+  50% {
+    rotate: -180deg;
+  }
+  100% {
+    rotate: -360deg;
+  }
+}
 section.folder .in {
   font-size: 20px;
 }

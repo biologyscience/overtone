@@ -93,6 +93,26 @@ section.folder
                 border-color: var(--accent);
                 cursor: pointer;
             }
+
+            &#updateSongList
+            {
+                img
+                {
+                    animation: 0;
+
+                    &.animate
+                    {
+                        animation: rotate 1s linear forwards infinite;
+
+                        @keyframes rotate
+                        {
+                            0% { rotate: calc(-360deg * 0); }
+                            50% { rotate: calc(-360deg * 0.5); }
+                            100% { rotate: calc(-360deg * 1); }
+                        }
+                    }
+                }
+            }
         }
     }
 
