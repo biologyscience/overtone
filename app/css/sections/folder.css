@@ -68,6 +68,9 @@ section.folder .out .folderOptions {
 section.folder .out .folderOptions * {
   pointer-events: none;
 }
+section.folder .out .folderOptions.current {
+  border-color: var(--accent);
+}
 section.folder .out .folderOptions:hover {
   border-color: var(--accent);
   cursor: pointer;
