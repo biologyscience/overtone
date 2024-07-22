@@ -35,9 +35,9 @@ function showFolder(E)
             <span class="artistName overflowPrevent">${metadata[x].albumArtist}</span>
             <span class="albumName overflowPrevent">${metadata[x].album}</span>
         </div>
-        <div class="flex flexCenter cursorPointer">
+        <button class="flex flexCenter cursorPointer">
             <img src="svg/moreHorizontal.svg" draggable="false">
-        </div>
+        </button>
         `;
 
         li.dataset.path = x;
@@ -84,11 +84,9 @@ document.getElementById('backIcon').addEventListener('click', hideFolder);
 
 document.getElementById('songListInFolder').addEventListener('click', (E) =>
 {
-    if (E.target.tagName === 'UL') return;
+    if (E.target.tagName === 'DIV') chooseSong(E.target.parentElement);
 
-    if (E.target.tagName === 'LI') chooseSong(E.target);
-
-    if (E.target.tagName === 'IMG') document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'songInList', title: util.getElement('li', E).dataset.title}}));
+    if (E.target.tagName === 'BUTTON') document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'songInList', title: util.getElement('li', E).dataset.title}}));
 });
 
 document.getElementById('songListInFolder').addEventListener('contextmenu', (E) =>
