@@ -191,22 +191,30 @@ section.folder
             li
             {
                 $sweetSpot: .87;
+                $topBottom: .3em;
                 grid-template-columns: calc(60vw * $sweetSpot) auto;
+                border: .1em solid transparent;
+                border-radius: .5em;
+                transition: border-color 300ms ease;
+                margin: $topBottom 0;
 
                 * { pointer-events: none; }
 
-                & > div
+                & > * { pointer-events: all; }
+
+                &:hover { border-color: var(--accent); }
+
+                div
                 {
-                    $marginLeftRight: 2.5em;
-                    margin: .5em $marginLeftRight;
+                    padding: $topBottom 2.5em;
 
                     &::after
                     {
                         content: attr(data-song-duration);
                         position: absolute;
                         font-size: .8em;
-                        bottom: 0;
-                        right: -$marginLeftRight;
+                        bottom: $topBottom;
+                        right: 0;
                     }
                 }
 
@@ -214,11 +222,7 @@ section.folder
 
                 .artistName, .albumName { font-size: .7em; }
 
-                img
-                {
-                    @include rootIMG;
-                    pointer-events: all;
-                }
+                img { @include rootIMG; }
             }
         }
     }
