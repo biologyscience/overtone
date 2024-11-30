@@ -1,6 +1,8 @@
-const discordClient = new rpc.Client({transport: 'ipc'});
-
-let rpcConnected = false;
+const discordRPC =
+{
+    client: new rpc.Client({transport: 'ipc'}),
+    connected: false
+};
 
 function rpcStart()
 {
@@ -9,42 +11,46 @@ function rpcStart()
         ID = util.read.config().discordAppID,
         pressence = 
         {
-            state: 'Name of the Song',
-            details: 'Name of the Artist'
+            details: 'Name of the Song',
+            state: 'Name of the Artist',
+            largeImageText: 'Logo',
+            largeImageKey: 'logo'
         };
 
-    discordClient.once('ready', () =>
-    {
-        discordClient.setActivity(pressence);
-
-    });
-
-    discordClient.login({clientId: ID}).then((detail) =>
+    discordRPC.client.login({clientId: ID}).then(() =>
     {
         connect.innerHTML = 'Connected';
         connect.style.borderColor = 'var(--accentGreen1)';
 
-        rpcConnected = true;
+        discordRPC.connected = true;
+
+        discordRPC.client.setActivity(pressence);
     });
 };
 
 function updateRPC({detail})
 {
-    console.log(rpcConnected);
+    if (!discordRPC.connected) return;
 
-    if (!rpcConnected) return;
-
-    const tags = detail;
+    const { title, albumArtist, album } = detail;
 
     const pressence = 
     {
-        details: tags.title,
-        state: tags.albumArtist,
-        largeImageKey: util.formatter(tags.album, tags.albumArtist),
-        largeImageText: tags.album
+        details: title,
+        state: albumArtist,
+        largeImageText: album
     };
 
-    discordClient.setActivity(pressence);
+    fetch(`https://itunes.apple.com/search?media=music&limit=5&term=${title} ${albumArtist}`).then(x => x.json()).then((x) =>
+    {
+        const URL100 = x.results?.[0]?.artworkUrl100;
+
+        const URL256 = URL100.split('100x100').join('256x256');
+
+        pressence.largeImageKey = URL256;
+
+        discordRPC.client.setActivity(pressence);
+    });
 };
 
 document.getElementById('connect').addEventListener('click', rpcStart);
