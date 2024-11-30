@@ -27,7 +27,6 @@ function closeQueueOptions()
     {
         x.querySelector('span').classList.remove('displayNone');
         x.querySelector('input').classList.add('displayNone');
-        // x.querySelector('input').setAttribute('value', x.querySelector('span').dataset.queueName);
     });
 
     options.forEach(x => x.classList.remove('displayNone'));
