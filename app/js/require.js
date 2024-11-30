@@ -8,4 +8,5 @@ const
     chokidar = require('chokidar'),
     electron = require('electron'),
     crypto = require('crypto'),
+    rpc = require('discord-rpc'),
     util = require('./js/util');

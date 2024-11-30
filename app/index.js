@@ -46,7 +46,8 @@ function ready()
             {
                 allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
                 font: 'Fira',
-                volume: 1
+                volume: 1,
+                discordAppID: '1312407617540456458'
             };
         }
         

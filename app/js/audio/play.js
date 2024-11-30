@@ -17,8 +17,6 @@ function emitMetaData(fileLocation)
 {
     const tags = util.read.metadata()[fileLocation];
 
-    document.dispatchEvent(new CustomEvent('-updateRPC', {detail: tags}));
-
     util.getAlbumArt(fileLocation).then((pic) =>
     {
         tags.picture = pic;

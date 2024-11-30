@@ -1,43 +1,51 @@
+const discordClient = new rpc.Client({transport: 'ipc'});
+
+let rpcConnected = false;
+
 function rpcStart()
 {
     const
         connect = document.getElementById('connect'),
-        ID = document.getElementById('discordAppID').value,
+        ID = util.read.config().discordAppID,
         pressence = 
         {
             state: 'Name of the Song',
             details: 'Name of the Artist'
         };
 
-    if (ID === 0) return alert('Please enter your Discord Application ID');
-
-    const
-        { Client } = require('discord-rpc'),
-        { json } = require('./js/util');
-
-    const client = new Client({transport: 'ipc'});
-
-    client.once('ready', () => client.setActivity(pressence));
-
-    client.login({clientId: ID}).then((detail) =>
+    discordClient.once('ready', () =>
     {
-        document.dispatchEvent(new CustomEvent('-RPC', {detail}));
+        discordClient.setActivity(pressence);
 
+    });
+
+    discordClient.login({clientId: ID}).then((detail) =>
+    {
         connect.innerHTML = 'Connected';
         connect.style.borderColor = 'var(--accentGreen1)';
 
-        try
-        {
-            const
-                file = new json('./app/json/config.json'),
-                data = file.read();
-
-            data.discordAppID = ID;
-
-            file.save();
-
-        } catch (e) { alert('Caannot write app id to config file !\nRestarting the app should fix it.'); }
+        rpcConnected = true;
     });
 };
 
+function updateRPC({detail})
+{
+    console.log(rpcConnected);
+
+    if (!rpcConnected) return;
+
+    const tags = detail;
+
+    const pressence = 
+    {
+        details: tags.title,
+        state: tags.albumArtist,
+        largeImageKey: util.formatter(tags.album, tags.albumArtist),
+        largeImageText: tags.album
+    };
+
+    discordClient.setActivity(pressence);
+};
+
 document.getElementById('connect').addEventListener('click', rpcStart);
+document.addEventListener('-updateMetaData', updateRPC);
