@@ -27,4 +27,6 @@ Now you can use the appropriate buttons to use the app and play around. If you h
 - And some other misc buttons. (currently functionless) -->
 
 ## How to use the built in Discord Rich Pressence ?
-Check it out [here](RPC.md).
+~~Check it out [here](RPC.md).~~
+
+Make sure you have a internet connection, and have discord opened. If everything is good, your RPC will be showing up as soon as you start listening to songs.

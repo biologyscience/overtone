@@ -1,4 +1,4 @@
-# RPC Guide
+# RPC Guide (DO NOT FOLLOW | OLD)
 If you don't know how to set up an Discord Application for Rich Presence, follow the steps below, if you do know to do it, jump to [Uploading the Album Arts](#uploading-the-album-arts)
 - Go to https://discord.com/developers/applications and (log in using your discord account if required) then press the **New Application** button on the top right of the screen.
 - You will be prompted to enter a name for your application. Keep in mind that this is the name which will be displayed in your discord profile as **PLAYING A GAME "The Name"** while you are using the app.
