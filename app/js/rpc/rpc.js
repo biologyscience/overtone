@@ -41,16 +41,36 @@ function updateRPC({detail})
         largeImageText: album
     };
 
-    fetch(`https://itunes.apple.com/search?media=music&limit=5&term=${title} ${albumArtist}`).then(x => x.json()).then((x) =>
+    const
+        itunesCache = new util.json('app/json/itunesCache.json'),
+        images = itunesCache.read();
+    
+    const md5 = util.formatter(album, albumArtist);
+
+    if (images[md5] === undefined)
     {
-        const URL100 = x.results?.[0]?.artworkUrl100;
+        fetch(`https://itunes.apple.com/search?media=music&limit=5&term=${title} ${albumArtist}`).then(x => x.json()).then((x) =>
+        {
+            const URL100 = x.results?.[0]?.artworkUrl100;
+        
+            const URL256 = URL100.split('100x100').join('256x256');
+        
+            pressence.largeImageKey = URL256;
+        
+            discordRPC.client.setActivity(pressence);
 
-        const URL256 = URL100.split('100x100').join('256x256');
+            images[md5] = URL256;
 
-        pressence.largeImageKey = URL256;
+            itunesCache.save();
+        });
+    }
+
+    else
+    {
+        pressence.largeImageKey = images[md5];
 
         discordRPC.client.setActivity(pressence);
-    });
+    }
 };
 
 document.getElementById('connect').addEventListener('click', rpcStart);
