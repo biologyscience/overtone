@@ -1,18 +1,5 @@
 function formatter(albumName, albumArtist = '')
 {
-    // const
-    //     allowedChars = 'abcdefghijklmnopqrstuvwxyz_-0123456789'.split(''),
-    //     replaceWith = '-';
-
-    // const array = 
-    // {
-    //     albumName: albumName.toLowerCase().split(' ').join('_').split(''),
-    //     albumArtist: albumArtist.toLowerCase().split(' ').join('_').split('')
-    // };
-
-    // array.albumName.forEach(x => allowedChars.includes(x) ? null : array.albumName[array.albumName.indexOf(x)] = replaceWith);
-    // array.albumArtist.forEach(x => allowedChars.includes(x) ? null : array.albumArtist[array.albumArtist.indexOf(x)] = replaceWith);
-
     const md5 = crypto.createHash('md5');
 
     md5.update(`${albumName}_${albumArtist}`);
@@ -242,8 +229,6 @@ function internet()
         .finally(() => solve(connection));
     });
 };
-
-//
 
 module.exports =
 {

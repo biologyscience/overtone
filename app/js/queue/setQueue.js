@@ -58,7 +58,6 @@ function setQueue(E)
 
     const ul = document.createElement('ul');
 
-    // ul.dataset.queueName = queueName;
     ul.dataset.queueNameHash = util.formatter(queueName);
 
     paths.forEach((x) =>

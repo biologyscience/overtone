@@ -1,5 +1,4 @@
 const
-    util = require('./js/util'),
     sortable = require('sortable-dnd'),
     musicMetadata = require('music-metadata'),
     fs = require('fs'),
@@ -8,4 +7,5 @@ const
     sharp = require('sharp'),
     chokidar = require('chokidar'),
     electron = require('electron'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    util = require('./js/util');
