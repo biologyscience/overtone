@@ -2,13 +2,10 @@ let queueReady = false;
 
 function showQueue(queueName)
 {
-    Array.from(document.getElementById('queuesHolder').children).forEach((x) =>
-    {
-        if (x.dataset.queueName === queueName)
-        { x.classList.add('current'); }
+    const queuesHolder = document.getElementById('queuesHolder');
 
-        else { x.classList.remove('current'); }
-    });
+    queuesHolder.querySelector('.current').classList.remove('current');
+    queuesHolder.querySelector(`[data-queue-name-hash="${util.formatter(queueName)}"]`).classList.add('current');
 
     queueReady = true;
 
@@ -35,7 +32,7 @@ function setQueue(E)
 
     const queuesHolder = document.getElementById('queuesHolder');
 
-    if (Array.from(queuesHolder.children).filter(x => x.dataset.queueName === queueName).length > 0) return showQueue(queueName);
+    if (Array.from(queuesHolder.children).filter(x => x.innerText === queueName).length > 0) return showQueue(queueName);
 
     if (E.type === '-selectedArtist')
     {
@@ -61,7 +58,8 @@ function setQueue(E)
 
     const ul = document.createElement('ul');
 
-    ul.dataset.queueName = queueName;
+    // ul.dataset.queueName = queueName;
+    ul.dataset.queueNameHash = util.formatter(queueName);
 
     paths.forEach((x) =>
     {

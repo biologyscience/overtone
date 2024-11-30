@@ -7,4 +7,5 @@ const
     path = require('path'),
     sharp = require('sharp'),
     chokidar = require('chokidar'),
-    electron = require('electron');
+    electron = require('electron'),
+    crypto = require('crypto');

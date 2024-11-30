@@ -6,7 +6,7 @@ function openQueueOptions({detail})
         queueOptions = document.getElementById('queueOptions'),
         queueLI = target.parentElement;
 
-    queueOptions.dataset.queueName = queueLI.querySelector('.queueName').innerText;
+    queueOptions.dataset.queueNameHash = util.formatter(queueLI.querySelector('.queueName').innerText);
 
     const { top, height } = queueLI.getBoundingClientRect();
 
@@ -27,7 +27,7 @@ function closeQueueOptions()
     {
         x.querySelector('span').classList.remove('displayNone');
         x.querySelector('input').classList.add('displayNone');
-        x.querySelector('input').setAttribute('value', x.querySelector('span').dataset.queueName);
+        // x.querySelector('input').setAttribute('value', x.querySelector('span').dataset.queueName);
     });
 
     options.forEach(x => x.classList.remove('displayNone'));
@@ -44,8 +44,8 @@ function queueOptions({target})
         queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(')').join(' + 1em)'));
 
         const
-            { queueName } = queueOptions.dataset,
-            queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement,
+            queueName = document.querySelector(`#queueList [data-queue-name-hash="${queueOptions.dataset.queueNameHash}"`).innerText,
+            queueLI = document.querySelector(`#queueList [data-queue-name-hash="${util.formatter(queueName)}"]`).parentElement,
             span = queueLI.querySelector('span'),
             input = queueLI.querySelector('input');
 
@@ -61,8 +61,8 @@ function queueOptions({target})
         queueOptions.style.setProperty('--top', queueOptions.style.getPropertyValue('--top').split(' + 1em)').join(')'));
 
         const
-            oldQueueName = queueOptions.dataset.queueName,
-            queueLI = document.querySelector(`#queueList [data-queue-name="${oldQueueName}"]`).parentElement,
+            oldQueueName = document.querySelector(`#queueList [data-queue-name-hash="${queueOptions.dataset.queueNameHash}"`).innerText,
+            queueLI = document.querySelector(`#queueList [data-queue-name-hash="${util.formatter(oldQueueName)}"]`).parentElement,
             span = queueLI.querySelector('span'),
             input = queueLI.querySelector('input'),
             newQueueName = input.value;
@@ -83,24 +83,24 @@ function queueOptions({target})
         delete queuesData[oldQueueName];
         queues.save();
 
-        const queueList = document.querySelector(`#queuesHolder [data-queue-name=${oldQueueName}]`);
+        const queueList = document.querySelector(`#queuesHolder [data-queue-name-hash="${util.formatter(oldQueueName)}"]`);
         
-        if (queueList.classList.contains('current'))
+        if (queueList?.classList?.contains('current'))
         {
-            queueList.dataset.queueName = newQueueName;
+            queueList.dataset.queueNameHash = util.formatter(newQueueName);
             document.getElementById('queueName').innerHTML = newQueueName;
             
             document.dispatchEvent(new CustomEvent('-setVariables', {detail: {QueueName: newQueueName}}));
         }
 
         span.innerHTML = newQueueName;
-        span.dataset.queueName = newQueueName;
+        span.dataset.queueNameHash = util.formatter(newQueueName);
     }
 
     if (target.dataset.function === 'remove')
     {
         const
-            { queueName } = queueOptions.dataset,
+            queueName = document.querySelector(`#queueList [data-queue-name-hash="${queueOptions.dataset.queueNameHash}"`).innerText,
             queues = new util.json('app/json/queues.json'),
             queuesData = queues.read();
 
@@ -108,9 +108,9 @@ function queueOptions({target})
         queuesData.queueOrder.splice(queuesData.queueOrder.indexOf(queueName), 1);
         queues.save();
 
-        const queueLI = document.querySelector(`#queueList [data-queue-name="${queueName}"]`).parentElement;
+        const queueLI = document.querySelector(`#queueList [data-queue-name-hash="${util.formatter(queueName)}"]`).parentElement;
 
-        if (queueLI.classList.contains('current'))
+        if (queueLI?.classList?.contains('current'))
         {
             const
                 queueItems = Array.from(document.getElementById('queueList').children),

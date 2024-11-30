@@ -20,7 +20,7 @@ let currentQueue;
 
 function initiateDrag({detail})
 {
-    const ul = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueName === detail)[0];
+    const ul = Array.from(document.getElementById('queuesHolder').children).filter(x => x.dataset.queueNameHash === util.formatter(detail))[0];
 
     const options =
     {
