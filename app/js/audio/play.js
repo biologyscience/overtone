@@ -342,8 +342,8 @@ function closeApp()
     electron.ipcRenderer.send('ipc-close');
 };
 
-document.getElementById('pauseORplay').onclick = pauseORplay;
-['nextSong', 'previousSong'].forEach(x => document.getElementById(x).onclick = skip);
+document.getElementById('pauseORplay').addEventListener('click', pauseORplay);
+['nextSong', 'previousSong'].forEach(x => document.getElementById(x).addEventListener('click', skip));
 
 audio.addEventListener('pause', audioPause);
 audio.addEventListener('play', audioPlay);
