@@ -33,7 +33,7 @@ function updateNumber(data)
 
 function chooseQueue(target)
 {    
-    const queueName = target.dataset.queueName;
+    const queueName = target.innerText;
 
     document.dispatchEvent(new CustomEvent('-chooseQueue', {detail: queueName}));
 
@@ -59,14 +59,16 @@ function addItemToQueueList({detail})
 {
     const ql = document.getElementById('queueList');
 
-    if (ql.querySelectorAll(`.queueName[data-queue-name="${detail}"]`).length === 1) return;
+    const md5 = util.formatter(detail);
+
+    if (ql.querySelectorAll(`.queueName[data-queue-name-hash="${md5}"]`).length > 0) return;
 
     const data =
     `
     <div class="dragger flexCenter cursorGrab">
         <img src="svg/drag.svg" draggable="false">
     </div>
-    <span class="queueName overflowPrevent cursorPointer" data-queue-name="${detail}">${detail}</span>
+    <span class="queueName overflowPrevent cursorPointer" data-queue-name-hash="${md5}">${detail}</span>
     <input class="displayNone" value="${detail}"/>
     <button class="options flexCenter">
         <img src="svg/moreHorizontal.svg" draggable="false">
@@ -97,7 +99,7 @@ function rightClickInQueuesHolder(E)
         const li = target.parentElement;
 
         position = li.dataset.id;
-        queueName = li.parentElement.dataset.queueName;
+        queueName = document.querySelector(`#queueList [data-queue-name-hash="${li.parentElement.dataset.queueNameHash}"`).innerText;
     }
 
     const

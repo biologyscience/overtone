@@ -1,19 +1,23 @@
-function formatter(albumName, albumArtist)
+function formatter(albumName, albumArtist = '')
 {
-    const
-        allowedChars = 'abcdefghijklmnopqrstuvwxyz_-0123456789'.split(''),
-        replaceWith = '-';
+    // const
+    //     allowedChars = 'abcdefghijklmnopqrstuvwxyz_-0123456789'.split(''),
+    //     replaceWith = '-';
 
-    const array = 
-    {
-        albumName: albumName.toLowerCase().split(' ').join('_').split(''),
-        albumArtist: albumArtist.toLowerCase().split(' ').join('_').split('')
-    };
+    // const array = 
+    // {
+    //     albumName: albumName.toLowerCase().split(' ').join('_').split(''),
+    //     albumArtist: albumArtist.toLowerCase().split(' ').join('_').split('')
+    // };
 
-    array.albumName.forEach(x => allowedChars.includes(x) ? null : array.albumName[array.albumName.indexOf(x)] = replaceWith);
-    array.albumArtist.forEach(x => allowedChars.includes(x) ? null : array.albumArtist[array.albumArtist.indexOf(x)] = replaceWith);
+    // array.albumName.forEach(x => allowedChars.includes(x) ? null : array.albumName[array.albumName.indexOf(x)] = replaceWith);
+    // array.albumArtist.forEach(x => allowedChars.includes(x) ? null : array.albumArtist[array.albumArtist.indexOf(x)] = replaceWith);
 
-    return array.albumName.join('') + '_' + array.albumArtist.join('');
+    const md5 = crypto.createHash('md5');
+
+    md5.update(`${albumName}_${albumArtist}`);
+
+    return md5.digest('hex');
 };
 
 function parseTime(ms)

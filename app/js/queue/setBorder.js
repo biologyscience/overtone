@@ -9,7 +9,8 @@ function clickSetBorder(E)
     const children = Array.from(currentQueue.children);
 
     const
-        fileLocation = util.read.queues()[currentQueue.dataset.queueName][parseInt(li.dataset.id)],
+        queueName = document.querySelector(`#queueList [data-queue-name-hash="${currentQueue.dataset.queueNameHash}"`).innerText,
+        fileLocation = util.read.queues()[queueName][parseInt(li.dataset.id)],
         { title } = util.read.metadata()[fileLocation];
 
     if (E.target.tagName === 'BUTTON') return document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'queueSong', title, dataset: {fileLocation}}}));
@@ -23,7 +24,7 @@ function clickSetBorder(E)
     const detail =
     {
         position: parseInt(li.dataset.id),
-        queueNameInList: currentQueue.dataset.queueName
+        queueNameInList: queueName
     };
 
     document.dispatchEvent(new CustomEvent('-clickedQueueItem', {detail}));
@@ -59,7 +60,7 @@ function setPlayingQueueBorder({detail})
     {
         if (typeof(detail) !== 'string') return queueName.classList.add('current');
         
-        document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).parentElement.classList.add('current');
+        document.querySelector(`#queueList li span[data-queue-name-hash="${util.formatter(queueName)}"]`).parentElement.classList.add('current');
     });
 }
 

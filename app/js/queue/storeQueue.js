@@ -1,10 +1,12 @@
-function storeQueue({detail: {queueList, queueName}})
+function storeQueue({detail: {queueList, queueName, store}})
 {
+    if (!store) return;
+
     const
         queues = new util.json('app/json/queues.json'),
         queuesData = queues.read();
 
-    if (queuesData[queueName] === undefined) queuesData.queueOrder.push(queueName);
+    queuesData.queueOrder.push(queueName);
 
     queuesData[queueName] = queueList;
         

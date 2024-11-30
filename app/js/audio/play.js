@@ -79,7 +79,7 @@ function play(E)
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 
-    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName}}));
+    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName, store: !(E?.type === '-clickedQueueItem')}}));
 
     pauseORplay();
 };
@@ -122,7 +122,7 @@ function changeCurrentState(E)
 
                 queueName = queueOrder[currentQueueIndex + 1];
 
-                document.querySelector(`#queueList li span[data-queue-name="${queueName}"]`).click();
+                document.querySelector(`#queueList li span[data-queue-name-hash="${util.formatter(queueName)}"]`).click();
                 document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
             }
 
@@ -254,7 +254,7 @@ function rearrange(E)
         else current = newIndex;
 
         const
-            qn = document.querySelector('#queuesHolder ul.current').dataset.queueName,
+            qn = document.querySelector(`#queueList [data-queue-name-hash="${document.querySelector('#queuesHolder ul.current').dataset.queueNameHash}"`).innerText,
             ql = queuesData[qn];
 
         const selected = ql[oldIndex];
