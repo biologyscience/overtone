@@ -1,7 +1,8 @@
 const discordRPC =
 {
     client: new rpc.Client({transport: 'ipc'}),
-    connected: false
+    connected: false,
+    connectionCount: 0
 };
 
 function rpcStart()
@@ -25,6 +26,15 @@ function rpcStart()
         discordRPC.connected = true;
 
         discordRPC.client.setActivity(pressence);
+    }).catch(() =>
+    {
+        discordRPC.connectionCount++;
+
+        console.warn(`Attempt ${discordRPC.connectionCount}: Cannot connect to discord. Either discord is not opened or internet connection is unavailable.\nRetrying in 30 seconds.`);
+
+        if (discordRPC.connectionCount < 6) return setTimeout(rpcStart, 30 * 1000);
+
+        console.warn('Autoconnect to Discord RPC disabled, connect manually.');
     });
 };
 
@@ -49,9 +59,11 @@ function updateRPC({detail})
 
     if (images[md5] === undefined)
     {
-        fetch(`https://itunes.apple.com/search?media=music&limit=5&term=${title} ${albumArtist}`).then(x => x.json()).then((x) =>
+        fetch(`https://itunes.apple.com/search?media=music&limit=5&term=${album} ${albumArtist}`).then(x => x.json()).then((x) =>
         {
-            const URL100 = x.results?.[0]?.artworkUrl100;
+            if (x.resultCount === 0) return;
+
+            const URL100 = x.results[0].artworkUrl100;
         
             const URL256 = URL100.split('100x100').join('256x256');
         
@@ -62,7 +74,7 @@ function updateRPC({detail})
             images[md5] = URL256;
 
             itunesCache.save();
-        });
+        }).catch(console.log);
     }
 
     else

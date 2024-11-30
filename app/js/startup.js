@@ -10,9 +10,6 @@
 
     /* queue list */
     util.read.queues().queueOrder.forEach(x => document.dispatchEvent(new CustomEvent('-addItemToQueueList', {detail: x})));
-    
-    /* fill previous id */
-    config.discordAppID !== undefined ? document.getElementById('discordAppID').value = config.discordAppID : null;
         
     /* fill the folders */
     if (config.checkMusicIn !== undefined)
@@ -114,4 +111,7 @@
     }
 
     document.dispatchEvent(new CustomEvent('-setVariables', {detail}));
+
+    /* auto connect RPC */
+    if (util.read.config().discordRPCautoconnect) document.getElementById('connect').click();
 }
