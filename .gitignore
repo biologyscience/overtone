@@ -6,3 +6,4 @@ app/webp/*
 !app/webp/empty.file
 node_modules
 npm start.vbs
+package-lock.json
