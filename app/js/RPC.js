@@ -33,6 +33,8 @@ const pressence =
 
 function rpcStart()
 {
+    if (discordRPC.connected) return;
+
     const
         connect = document.getElementById('connect'),
         ID = util.read.config().discordAppID;
