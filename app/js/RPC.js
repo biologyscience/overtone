@@ -13,12 +13,12 @@ const pressence =
 {
     startTimestamp: Date.now(),
     endTimestamp: Date.now(),
-    details: 'Name of the Song',
-    state: 'Name of the Artist',
+    // details: 'Name of the Song',
+    // state: 'Name of the Artist',
     largeImageText: 'Logo',
     largeImageKey: 'logo',
     smallImageText: 'Idle',
-    smallImageKey: 'idle',
+    smallImageKey: 'logo',
     buttons:
     [
         {
