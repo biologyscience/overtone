@@ -14,6 +14,8 @@ const pressence =
     state: 'Name of the Artist',
     largeImageText: 'Logo',
     largeImageKey: 'logo',
+    smallImageText: 'Idle',
+    smallImageKey: 'idle',
     buttons:
     [
         {
@@ -63,6 +65,8 @@ function updateRPC({detail})
     pressence.details = title;
     pressence.state = albumArtist;
     pressence.largeImageText = album;
+    pressence.smallImageText = 'Playing';
+    pressence.smallImageKey = 'play';
 
     const
         itunesCache = new util.json('app/json/itunesCache.json'),
@@ -70,31 +74,44 @@ function updateRPC({detail})
     
     const md5 = util.formatter(album, albumArtist);
 
-    if (images[md5] === undefined)
+    if (audio.paused)
     {
-        fetch(`https://itunes.apple.com/search?media=music&entity=album&limit=5&term=${album} ${albumArtist}`).then(x => x.json()).then((x) =>
-        {
-            if (x.resultCount === 0) return;
+        pressence.smallImageText = 'Paused';
+        pressence.smallImageKey = 'pause';
 
-            const URL100 = x.results[0].artworkUrl100;
-        
-            const URL256 = URL100.split('100x100').join('256x256');
-        
-            pressence.largeImageKey = URL256;
-        
-            discordRPC.client.setActivity(pressence);
+        pressence.largeImageKey = images[md5];
 
-            images[md5] = URL256;
-
-            itunesCache.save();
-        }).catch(console.warn);
+        discordRPC.client.setActivity(pressence);
     }
 
     else
     {
-        pressence.largeImageKey = images[md5];
-
-        discordRPC.client.setActivity(pressence);
+        if (images[md5] === undefined)
+        {
+            fetch(`https://itunes.apple.com/search?media=music&entity=album&limit=5&term=${album} ${albumArtist}`).then(x => x.json()).then((x) =>
+            {
+                if (x.resultCount === 0) return;
+        
+                const URL100 = x.results[0].artworkUrl100;
+                
+                const URL256 = URL100.split('100x100').join('256x256');
+                
+                pressence.largeImageKey = URL256;
+                
+                discordRPC.client.setActivity(pressence);
+        
+                images[md5] = URL256;
+        
+                itunesCache.save();
+            }).catch(console.warn);
+        }
+        
+        else
+        {
+            pressence.largeImageKey = images[md5];
+        
+            discordRPC.client.setActivity(pressence);
+        }
     }
 };
 
