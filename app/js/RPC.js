@@ -35,15 +35,12 @@ function rpcStart()
 {
     if (discordRPC.connected) return;
 
-    const
-        connect = document.getElementById('connect'),
-        ID = util.read.config().discordAppID;
+    const ID = util.read.config().discordAppID;
 
     discordRPC.client.login({clientId: ID}).then(() =>
     {
-        connect.innerHTML = 'Connected';
-        connect.style.borderColor = 'var(--accentGreen1)';
-
+        document.getElementById('RPCstatus').innerHTML = 'Connected';
+        
         discordRPC.connected = true;
 
         discordRPC.client.setActivity(pressence);
