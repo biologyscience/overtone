@@ -140,3 +140,44 @@
     border-#{$tblf}-style: solid;
     border-#{$tblf}-color: transparent;
 }
+
+@mixin toggleSwitch($scale)
+{
+    font-size: #{$scale}rem;
+    display: flex;
+    align-items: center;
+    appearance: none;
+    height: 3em;
+    width: 7em;
+    transform: skewX(-7deg);
+    border-radius: .5em;
+    background-color: var(--dark10);
+    transition: background-color 250ms ease;
+    cursor: pointer;
+
+    &::before
+    {
+        content: '';
+        display: flex;
+        margin: .5em 0;
+        margin-left: 12.5%;
+        height: 60%;
+        width: 35%;
+        background-color: var(--dark70);
+        border-radius: .25em;
+        transition:
+            margin-left 250ms ease,
+            background-color 250ms ease;
+    }
+
+    &:checked
+    {
+        background-color: var(--accent);
+
+        &::before
+        {
+            background-color: var(--dark10);
+            margin-left: 55%;
+        }
+    }
+}
