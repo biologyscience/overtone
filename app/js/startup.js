@@ -113,5 +113,5 @@
     document.dispatchEvent(new CustomEvent('-setVariables', {detail}));
 
     /* auto connect RPC */
-    if (util.read.config().discordRPCautoconnect) document.getElementById('connect').click();
+    if (util.read.config().discordRPCconnect) document.getElementById('connect').click();
 }

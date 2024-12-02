@@ -320,6 +320,7 @@ function closeApp()
         config = new util.json('app/json/config.json'),
         configData = config.read();
 
+    configData.discordRPCconnect = document.getElementById('connect').checked;
     configData.font = getComputedStyle(document.querySelector(':root')).getPropertyValue('--currentFont');
     configData.volume = audio.volume;
     configData.lastQueueState =

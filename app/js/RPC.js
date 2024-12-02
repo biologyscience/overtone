@@ -33,27 +33,35 @@ const pressence =
 
 function rpcStart()
 {
-    if (discordRPC.connected) return;
-
-    const ID = util.read.config().discordAppID;
-
-    discordRPC.client.login({clientId: ID}).then(() =>
+    if (discordRPC.connected)
     {
-        document.getElementById('RPCstatus').innerHTML = 'Connected';
-        
-        discordRPC.connected = true;
+        discordRPC.client.destroy();
 
-        discordRPC.client.setActivity(pressence);
-    }).catch(() =>
+        document.getElementById('RPCstatus').innerHTML = 'Disconnected';
+    }
+
+    else
     {
-        discordRPC.connectionCount++;
+        const ID = util.read.config().discordAppID;
 
-        console.warn(`Attempt ${discordRPC.connectionCount}: Cannot connect to discord. Either discord is not opened or internet connection is unavailable.\nRetrying in 30 seconds.`);
-
-        if (discordRPC.connectionCount < 6) return setTimeout(rpcStart, 30 * 1000);
-
-        console.warn('Autoconnect to Discord RPC disabled, connect manually.');
-    });
+        discordRPC.client.login({clientId: ID}).then(() =>
+        {
+            document.getElementById('RPCstatus').innerHTML = 'Connected';
+    
+            discordRPC.connected = true;
+    
+            discordRPC.client.setActivity(pressence);
+        }).catch(() =>
+        {
+            discordRPC.connectionCount++;
+    
+            console.warn(`Attempt ${discordRPC.connectionCount}: Cannot connect to discord. Either discord is not opened or internet connection is unavailable.\nRetrying in 30 seconds.`);
+    
+            if (discordRPC.connectionCount < 6) return setTimeout(rpcStart, 30 * 1000);
+    
+            console.warn('Autoconnect to Discord RPC disabled, connect manually.');
+        });
+    }
 };
 
 function updateRPC({detail})
