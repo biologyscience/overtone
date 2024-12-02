@@ -48,7 +48,7 @@ function ready()
                 font: 'Fira',
                 volume: 1,
                 discordAppID: '1312407617540456458',
-                discordRPCautoconnect: true
+                discordRPCconnect: true
             };
         }
         
