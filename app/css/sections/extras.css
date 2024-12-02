@@ -1,36 +1,48 @@
 section.extras {
   justify-content: center;
 }
-section.extras #choose, section.extras #getAlbumArt {
-  font-size: 50px;
-  color: white;
-  border: none;
-  background: none;
-  border-radius: 5px;
-  margin: 1rem 0;
-}
 section.extras .rpc {
   font-size: 20px;
 }
-section.extras .rpc #discordAppID {
-  font-size: 1.2em;
-  background: none;
-  width: 15em;
-  text-align: center;
-  margin: 1em 0;
-  border: 0.1em solid var(--accentOrange2);
-  border-radius: 0.2em;
+section.extras .rpc .connect {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-section.extras .rpc #discordAppID:focus {
-  outline: none;
+section.extras .rpc .connect #connect {
+  font-size: 0.5rem;
+  display: flex;
+  align-items: center;
+  appearance: none;
+  height: 3em;
+  width: 7em;
+  transform: skewX(-7deg);
+  border-radius: 0.5em;
+  background-color: var(--dark10);
+  transition: background-color 250ms ease;
+  cursor: pointer;
+  margin: 0 1em;
 }
-section.extras .rpc #connect {
-  font-size: 2rem;
-  background: none;
-  color: white;
-  border: 0.1em solid var(--accentLightBlue1);
-  border-radius: 0.2em;
-  padding: 0 0.5em;
+section.extras .rpc .connect #connect::before {
+  content: "";
+  display: flex;
+  margin: 0.5em 0;
+  margin-left: 12.5%;
+  height: 60%;
+  width: 35%;
+  background-color: var(--dark70);
+  border-radius: 0.25em;
+  transition: margin-left 250ms ease, background-color 250ms ease;
+}
+section.extras .rpc .connect #connect:checked {
+  background-color: var(--accent);
+}
+section.extras .rpc .connect #connect:checked::before {
+  background-color: var(--dark10);
+  margin-left: 55%;
+}
+section.extras .rpc .connect #RPCstatus {
+  margin: 0 0.5ch;
 }
 section.extras .fontSelection {
   margin-top: 6em;

@@ -337,11 +337,13 @@
             </section>
 
             <section class="extras flexCol">
-                <button id="choose">Choose a song</button>
-                <button id="getAlbumArt">Get Album Art</button>
                 <div class="rpc flexCol alignItemsCenter">
-                    <input id="discordAppID" class="IgnoreForSearch" type="text" placeholder="Your Discord Application ID" title="Your Discord Application ID">
-                    <button id="connect">Connect</button>
+                    <div class="connect">
+                        RPC Connect:
+                        <input type="checkbox" id="connect">
+                        Currently
+                        <span id="RPCstatus">Disconnected</span>
+                    </div>
                 </div>
                 <div class="fontSelection relative">
                     <button class="choose flexCenter" data-is-open="false">
