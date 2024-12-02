@@ -14,7 +14,7 @@ function ready()
         height: 540,
         frame: false,
         title: 'OverTone',
-        // icon: '',
+        icon: join(__dirname, 'logo.png'),
         webPreferences:
         {
             contextIsolation: false,
