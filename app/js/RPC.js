@@ -37,6 +37,11 @@ function rpcStart()
     {
         discordRPC.client.destroy();
 
+        discordRPC.connected = false;
+
+        delete discordRPC.client;
+        discordRPC.client = new rpc.Client({transport: 'ipc'});
+
         document.getElementById('RPCstatus').innerHTML = 'Disconnected';
     }
 
