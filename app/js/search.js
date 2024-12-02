@@ -40,4 +40,4 @@ function search(E)
     filtered.forEach(displayNone);
 };
 
-document.querySelectorAll('input').forEach(x => x.addEventListener('input', search));
+document.querySelectorAll('input:not([type="checkbox"])').forEach(x => x.addEventListener('input', search));
