@@ -8,8 +8,8 @@ audioContext.createMediaElementSource(audio).connect(audioAnalyser);
 audioAnalyser.connect(audioContext.destination);
 
 let
-    queueList = [],
-    queueName = undefined,
+    currentQueueList = [],
+    currentQueueName = undefined,
     current = 0,
     interval = null;
 
@@ -31,37 +31,37 @@ function play(E)
     {
         const { album, albumArtist, position } = E.detail;
 
-        queueName = album;
+        currentQueueName = album;
         current = position;
-        queueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
+        currentQueueList = util.read.albums()[util.formatter(album, albumArtist)].songs.sort(util.sort.byTrackNumber);
     }
 
     else if (E?.type === '-clickedQueueItem')
     {
-        queueName = E.detail.queueNameInList;
+        currentQueueName = E.detail.queueNameInList;
         current = E.detail.position;
-        queueList = util.read.queues()[queueName];
+        currentQueueList = util.read.queues()[currentQueueName];
     }
 
     else if (E?.type === '-playArtist')
     {
         const { QueueName, QueueList } = E.detail;
 
-        queueName = QueueName;
+        currentQueueName = QueueName;
         current = 0;
-        queueList = QueueList;
+        currentQueueList = QueueList;
     }
 
     else if (E?.type === '-singleSong')
     {
         const { title, path } = E.detail;
 
-        queueName = title;
+        currentQueueName = title;
         current = 0;
-        queueList = [path]
+        currentQueueList = [path]
     }
 
-    const fileLocation = queueList[current];
+    const fileLocation = currentQueueList[current];
 
     emitMetaData(fileLocation);
 
@@ -71,13 +71,13 @@ function play(E)
 
     const { duration, rawDuration } = util.read.metadata()[fileLocation];
 
-    document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: queueName}));
+    document.dispatchEvent(new CustomEvent('-setPlayingQueueBorder', {detail: currentQueueName}));
 
     document.dispatchEvent(new CustomEvent('-setTime', {detail: {duration, rawDuration}}));
 
     document.dispatchEvent(new CustomEvent('-current', {detail: current}));
 
-    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList, queueName, store: !(E?.type === '-clickedQueueItem')}}));
+    document.dispatchEvent(new CustomEvent('-storeQueue', {detail: {queueList: currentQueueList, queueName: currentQueueName, store: !(E?.type === '-clickedQueueItem')}}));
 
     pauseORplay();
 };
@@ -94,7 +94,7 @@ function pauseORplay()
 
 function changeCurrentState(E)
 {
-    emitMetaData(queueList[current]);
+    emitMetaData(currentQueueList[current]);
 
     const
         imgPause = document.getElementById('imgPause'),
@@ -110,17 +110,17 @@ function changeCurrentState(E)
         
         if (audio.currentTime >= audio.duration)
         {
-            if (current + 1 === queueList.length)
+            if (current + 1 === currentQueueList.length)
             {
                 const
                     { queueOrder } = util.read.queues(),
-                    currentQueueIndex = queueOrder.indexOf(queueName);
+                    currentQueueIndex = queueOrder.indexOf(currentQueueName);
                     
                 if (currentQueueIndex + 1 === queueOrder.length) return;
 
-                queueName = queueOrder[currentQueueIndex + 1];
+                currentQueueName = queueOrder[currentQueueIndex + 1];
 
-                document.querySelector(`#queueList li span[data-queue-name-hash="${util.formatter(queueName)}"]`).click();
+                document.querySelector(`#queueList li span[data-queue-name-hash="${util.formatter(currentQueueName)}"]`).click();
                 document.querySelector('#queuesHolder ul.current li[data-id="0"] .info').click();
             }
 
@@ -154,11 +154,11 @@ function skip({target})
         {
             clearInterval(int);
 
-            if (queueList.length === 0) return;
+            if (currentQueueList.length === 0) return;
 
             if (id === 'imgNext')
             {
-                if (queueList.length === (current + 1)) return play();
+                if (currentQueueList.length === (current + 1)) return play();
             
                 current++;
                 
@@ -191,7 +191,7 @@ function audioPlay(E)
 
         document.dispatchEvent(new CustomEvent('-updateTimeLine', {detail}));
 
-        timeSpent[queueList[current]]++;
+        timeSpent[currentQueueList[current]]++;
     }, 1000);
 };
 
@@ -251,19 +251,18 @@ function rearrange(E)
 
         else current = newIndex;
 
-        const
+        let
             qn = document.querySelector(`#queueList [data-queue-name-hash="${document.querySelector('#queuesHolder ul.current').dataset.queueNameHash}"`).innerText,
-            ql = queuesData[qn];
-
-        const selected = ql[oldIndex];
+            ql = queuesData[qn],
+            selected = ql[oldIndex];
 
         ql.splice(oldIndex, 1);
 
         ql = [...ql.slice(0, newIndex), selected, ...ql.slice(newIndex)];
 
-        if (qn === queueName)
+        if (qn === currentQueueName)
         {
-            queueList = ql;
+            currentQueueList = ql;
             document.dispatchEvent(new CustomEvent('-current', {detail: current}));
         }
         
@@ -287,11 +286,11 @@ function setVariables({detail})
     audio.volume = volume || audio.volume;
     audio.src = src || audio.src;
     audio.currentTime = currentTime || audio.currentTime;
-    queueList = QueueList || queueList;
-    queueName = QueueName || queueName;
+    currentQueueList = QueueList || currentQueueList;
+    currentQueueName = QueueName || currentQueueName;
     current = Current || current || 0;
 
-    if (queueList.length !== 0) timeSpent[queueList[current]] = 0;
+    if (currentQueueList.length !== 0) timeSpent[currentQueueList[current]] = 0;
 };
 
 function updatePlays()
@@ -306,7 +305,7 @@ function updatePlays()
 
         data[x].plays = data[x].plays + count;
 
-        if (queueList[current] !== x) delete timeSpent[x];
+        if (currentQueueList[current] !== x) delete timeSpent[x];
     }
     
     metadata.save();
@@ -325,7 +324,7 @@ function closeApp()
     configData.volume = audio.volume;
     configData.lastQueueState =
     {
-        queueName,
+        queueName: currentQueueName,
         position: current,
         time:
         {
@@ -334,7 +333,7 @@ function closeApp()
         }
     };
     
-    if (queueName === undefined) delete configData.lastQueueState;
+    if (currentQueueName === undefined) delete configData.lastQueueState;
     
     config.save();
 
@@ -355,4 +354,4 @@ document.addEventListener('-closeApp', closeApp);
 document.addEventListener('-setVariables', setVariables);
 document.addEventListener('-updatePlays', updatePlays);
 
-document.getElementById('currentSongOptions').addEventListener('click', () => document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'song', title: util.read.metadata()[queueList[current]].title}})));
+document.getElementById('currentSongOptions').addEventListener('click', () => document.dispatchEvent(new CustomEvent('-contextMenu', {detail: {ctx: 'song', title: util.read.metadata()[currentQueueList[current]].title}})));

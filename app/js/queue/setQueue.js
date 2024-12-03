@@ -4,8 +4,12 @@ function showQueue(queueName)
 {
     const queuesHolder = document.getElementById('queuesHolder');
 
-    queuesHolder.querySelector('.current').classList.remove('current');
-    queuesHolder.querySelector(`[data-queue-name-hash="${util.formatter(queueName)}"]`).classList.add('current');
+    Array.from(queuesHolder.children).forEach((x) =>
+    {
+        if (x.classList.contains('current')) x.classList.remove('current');
+        
+        if (x.dataset.queueNameHash === util.formatter(queueName)) x.classList.add('current');
+    });
 
     queueReady = true;
 
@@ -22,6 +26,8 @@ function setQueue(E)
         id = 0,
         queueName = E.detail;
         paths = util.read.queues()[queueName];
+    
+    const queuesHolder = document.getElementById('queuesHolder');
 
     if (E.type === '-selectedAlbum')
     {
@@ -29,10 +35,6 @@ function setQueue(E)
 
         queueName = E.detail.album;
     }
-
-    const queuesHolder = document.getElementById('queuesHolder');
-
-    if (Array.from(queuesHolder.children).filter(x => x.innerText === queueName).length > 0) return showQueue(queueName);
 
     if (E.type === '-selectedArtist')
     {
@@ -56,43 +58,46 @@ function setQueue(E)
         queueName = E.detail.title;
     }
 
-    const ul = document.createElement('ul');
-
-    ul.dataset.queueNameHash = util.formatter(queueName);
-
-    paths.forEach((x) =>
+    if (queuesHolder.querySelectorAll(`[data-queue-name-hash="${util.formatter(queueName)}"]`).length === 0)
     {
-        const tags = util.read.metadata()[x];
+        const ul = document.createElement('ul');
 
-        const data =
-        `
-        <div class="dragger flexCenter cursorGrab">
-            <img src="svg/drag.svg" draggable="false">
-        </div>
-        <div class="info flexCol relative cursorPointer" data-song-duration=${tags.duration}>
-            <span class="overflowPrevent">${tags.title}</span>
-            <span class="overflowPrevent">${tags.albumArtist}</span>
-            <span class="overflowPrevent">${tags.album}</span>
-        </div>
-        <button class="options flexCenter cursorPointer">
-            <img src="svg/moreHorizontal.svg" draggable="false">
-        </button>
-        `;
-
-        const li = document.createElement('li');
-
-        li.classList.add('grid');
-
-        li.innerHTML = data;
-
-        li.dataset.id = id;
-
-        id++;
-
-        ul.append(li);
-    });
-
-    queuesHolder.append(ul);
+        ul.dataset.queueNameHash = util.formatter(queueName);
+    
+        paths.forEach((x) =>
+        {
+            const tags = util.read.metadata()[x];
+    
+            const data =
+            `
+            <div class="dragger flexCenter cursorGrab">
+                <img src="svg/drag.svg" draggable="false">
+            </div>
+            <div class="info flexCol relative cursorPointer" data-song-duration=${tags.duration}>
+                <span class="overflowPrevent">${tags.title}</span>
+                <span class="overflowPrevent">${tags.albumArtist}</span>
+                <span class="overflowPrevent">${tags.album}</span>
+            </div>
+            <button class="options flexCenter cursorPointer">
+                <img src="svg/moreHorizontal.svg" draggable="false">
+            </button>
+            `;
+    
+            const li = document.createElement('li');
+    
+            li.classList.add('grid');
+    
+            li.innerHTML = data;
+    
+            li.dataset.id = id;
+    
+            id++;
+    
+            ul.append(li);
+        });
+    
+        queuesHolder.append(ul);
+    }
 
     showQueue(queueName);
 
