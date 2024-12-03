@@ -1,9 +1,6 @@
-app/album arts
-app/json/*
-!app/json/empty.file
 app/temp
-app/webp/*
-!app/webp/empty.file
+app/json
+app/webp
 node_modules
 npm start.vbs
 package-lock.json

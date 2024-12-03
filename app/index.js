@@ -1,7 +1,7 @@
 const
     remote = require('@electron/remote/main'),
     { app, BrowserWindow, ipcMain } = require('electron'),
-    { existsSync, writeFileSync } = require('fs'),
+    { existsSync, writeFileSync, mkdirSync } = require('fs'),
     { join } = require('path');
 
 remote.initialize();
@@ -31,6 +31,14 @@ function ready()
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
     ipcMain.on('ipc-close', () => WINDOW.close());
 };
+
+['json', 'webp'].forEach((x) =>
+{
+    const dir = `app/${x}/`;
+
+    if (!existsSync(dir)) mkdirSync(dir);
+});
+
 
 ['albums', 'artists', 'config', 'metadata', 'queues', 'songList', 'itunesCache'].forEach((x) =>
 {
