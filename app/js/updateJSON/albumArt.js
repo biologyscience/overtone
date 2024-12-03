@@ -5,7 +5,7 @@ function create({detail: {filePath, picName}})
         if (pic.buffer === undefined) return;
         
         sharp(pic.buffer)
-        .resize(500, 500)
+        .resize(512, 512)
         .toFormat('webp')
         .toFile(`app/webp/${picName}.webp`);
     });

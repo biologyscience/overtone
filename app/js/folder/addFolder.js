@@ -1,22 +1,28 @@
-let
-    allFolders = [],
-    filtered = [];
-
 function getAllFolders(folderPath)
 {
-    fs.readdirSync(folderPath).filter(x => fs.statSync(path.join(folderPath, x)).isDirectory()).forEach((y) =>
+    const folders = [];
+
+    const temp = [];
+
+    folderPath.forEach(x => temp.push(x));
+
+    while (temp.length > 0)
     {
-        const fullPath = path.join(folderPath, y);
+        const folder = temp.shift();
 
-        allFolders.push(fullPath);
+        folders.push(folder);
 
-        getAllFolders(fullPath);
-    });
+        fs.readdirSync(folder).filter(x => fs.statSync(path.join(folder, x)).isDirectory()).forEach(y => temp.push(path.join(folder, y)));
+    }
+
+    return folders;
 };
 
-function filterFolders()
+function filterFolders(folders)
 {
-    allFolders.forEach((x) =>
+    const filtered = [];
+
+    folders.forEach((x) =>
     {
         const files = fs.readdirSync(x).filter(y => !fs.statSync(path.join(x, y)).isDirectory());
 
@@ -29,6 +35,8 @@ function filterFolders()
             }
         }
     });
+
+    return filtered;
 };
 
 function addFolder()
@@ -42,17 +50,13 @@ function addFolder()
             config = new util.json('app/json/config.json'),
             data = config.read();
 
-        selected.filePaths.forEach((x) =>
-        {
-            allFolders.push(x);
-            getAllFolders(x);
-        });
+        const allFolders = getAllFolders(selected.filePaths);
 
-        filterFolders();
+        const filtered = filterFolders(allFolders);
 
         if (filtered.length === 0) return;
 
-        data.checkMusicIn = data.checkMusicIn === undefined ? filtered : [...new Set([...data.checkMusicIn, ...filtered])];
+        data.checkMusicIn = data.checkMusicIn === undefined ? filtered : Array.from(new Set([...data.checkMusicIn, ...filtered]));
 
         config.save();
 
@@ -86,28 +90,7 @@ function addFolder()
             }
         });
 
-        const songList = [];
-
-        filtered.forEach((dir) =>
-        {
-            fs.readdirSync(dir)
-            .filter(a => !fs.statSync(path.join(dir, a)).isDirectory())
-            .filter(b => util.validateMusicFileFormat(b))
-            .map(c => path.join(dir, c))
-            .forEach(x => songList.push(x));
-        });
-
         document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: filtered}));
-
-        Promise.all(songList.map(util.getMetaData)).then((tags) =>
-        {
-            document.dispatchEvent(new CustomEvent('-updateJSON/albums', {detail: {tags, songList}}));
-            document.dispatchEvent(new CustomEvent('-updateJSON/metadata', {detail: {tags, addSongList: songList}}));
-            document.dispatchEvent(new CustomEvent('-updateJSON/artists', {detail: tags}));
-        });
-
-        allFolders = [];
-        filtered = [];
     });
 };
 

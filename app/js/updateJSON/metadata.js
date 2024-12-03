@@ -1,16 +1,16 @@
-function updateMetadata({detail: {tags, addSongList, removeSongList}})
+function updateMetadata({detail: {tags, songsToAdd, songsToRemove}})
 {    
     const
         metadata = new util.json('app/json/metadata.json'),
         data = metadata.read();
 
-    for (let i = 0; i < addSongList.length; i++)
+    for (let i = 0; i < songsToAdd.length; i++)
     {
-        data[addSongList[i]] = tags[i];
-        data[addSongList[i]].plays = 0;
+        data[songsToAdd[i]] = tags[i];
+        data[songsToAdd[i]].plays = 0;
     }
 
-    if (removeSongList !== undefined) removeSongList.forEach(file => delete data[file]);
+    if (songsToRemove.length > 0) songsToRemove.forEach(file => delete data[file]);
 
     metadata.save();
 };
