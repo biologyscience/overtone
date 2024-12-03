@@ -46,30 +46,29 @@ function ready()
 
     let data = {};
 
-    if (existsSync(path) === false)
-    {
-        if (x === 'config')
-        {
-            data =
-            {
-                allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
-                font: 'Fira',
-                volume: 1,
-                discordAppID: '1312407617540456458',
-                discordRPCconnect: true
-            };
-        }
-        
-        if (x === 'queues')
-        {
-            data =
-            {
-                queueOrder: []
-            };
-        }
+    if (existsSync(path)) return;
 
-        writeFileSync(path, JSON.stringify(data, null, 4));
+    if (x === 'config')
+    {
+        data =
+        {
+            allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
+            font: 'Fira',
+            volume: 1,
+            discordAppID: '1312407617540456458',
+            discordRPCconnect: true
+        };
     }
+        
+    if (x === 'queues')
+    {
+        data =
+        {
+            queueOrder: []
+        };
+    }
+
+    writeFileSync(path, JSON.stringify(data, null, 4));
 });
 
 app.on('ready', ready);
