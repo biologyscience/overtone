@@ -5,14 +5,9 @@ function updateLibraryButton()
     updateSongList.classList.toggle('current');
     updateSongList.querySelector('img').classList.toggle('animate');
 
-    setTimeout(() =>
-    {
-        if (!updateSongList.classList.contains('current')) return;
-        
-        document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: util.read.config().checkMusicIn}));
+    if (!updateSongList.classList.contains('current')) return;
 
-        updateLibraryButton();
-    }, 500);
+    document.dispatchEvent(new CustomEvent('-updateJSON/songList', {detail: util.read.config().checkMusicIn}));
 };
 
 function updateLibraryUI()
