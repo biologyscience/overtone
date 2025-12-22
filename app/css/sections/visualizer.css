@@ -1,8 +1,0 @@
-section.visualizer {
-  align-items: center;
-}
-section.visualizer #audioVisualizers {
-  display: flex;
-  align-items: center;
-  margin: 1em 2em;
-}

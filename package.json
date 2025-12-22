@@ -1,23 +1,32 @@
 {
   "name": "overtone",
-  "version": "0.21.2",
+  "version": "0.50.0",
   "description": "A free and open source Music Player for all your local music files !",
-  "main": "app/index.js",
+  "main": "electron/index.js",
   "author": "biologyscience",
   "license": "GPL-3.0-only",
-  "homepage": "https://biologyscience.github.io/overtone",
+  "homepage": "https://overtone.js.org",
   "scripts": {
-    "start": "electron app/index.js",
-    "buildCSS": "sass app/scss/:app/css/ --no-source-map",
-    "watchSASS": "sass --watch app/scss/:app/css/ --no-source-map"
+    "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js\"",
+    "react" : "vite ./react --host",
+    "build": "vite build ./react"
   },
   "dependencies": {
-    "@electron/remote": "^2.1.2",
-    "chokidar": "^4.0.1",
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "chokidar": "^5.0.0",
     "discord-rpc": "^4.0.1",
-    "electron": "^33.2.1",
+    "electron": "^39.2.7",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
     "music-metadata": "^7.14.0",
-    "sharp": "^0.33.5",
-    "sortable-dnd": "^0.6.20"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.5",
+    "vite": "^7.2.4"
   }
 }
