@@ -1,6 +1,4 @@
-app/temp
-app/json
-app/webp
 node_modules
+react/dist
 npm start.vbs
 package-lock.json
