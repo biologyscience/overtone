@@ -7,9 +7,10 @@
   "license": "GPL-3.0-only",
   "homepage": "https://overtone.js.org",
   "scripts": {
+    "build": "vite build ./react",
     "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js\"",
     "react" : "vite ./react --host",
-    "build": "vite build ./react"
+    "start": "vite build ./react && electron electron/index.js --file"
   },
   "dependencies": {
     "@eslint/js": "^9.39.1",
