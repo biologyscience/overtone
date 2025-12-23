@@ -1,0 +1,71 @@
+.cursorPointer { cursor: pointer; }
+
+.cursorGrab { cursor: grab; }
+
+.pointerEventsNone { pointer-events: none; }
+
+.pointerEventsAll { pointer-events: all; }
+
+.relative { position: relative; }
+
+.absolute { position: absolute; }
+
+.fixed { position: fixed; }
+
+.grid { display: grid; }
+
+.block { display: block; }
+
+.flexROW
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.flexCOL
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.flexCenter
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.displayNone { display: none !important; }
+
+.visibilityHidden { visibility: hidden; }
+
+.left0 { left: 0; }
+
+.right0 { right: 0; }
+
+.top0 { top: 0; }
+
+.bottom0 { bottom: 0; }
+
+.opacity0 { opacity: 0; }
+
+.opacity1 { opacity: 1; }
+
+.alignItemsCenter { align-items: center; }
+
+.textAlignCenter { text-align: center; }
+
+.justifyContentCenter { justify-content: center; }
+
+.justifyItemsCenter { justify-items: center; }
+
+.overflowHidden { overflow: hidden; }
+
+.overflowPrevent
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.inheritHeight { height: inherit; }

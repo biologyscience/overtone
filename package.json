@@ -9,11 +9,16 @@
   "scripts": {
     "build": "vite build ./react",
     "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js\"",
-    "react" : "vite ./react --host",
+    "react": "vite ./react --host",
     "start": "vite build ./react && electron electron/index.js --file"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@eslint/js": "^9.39.1",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
+    "@svgr/rollup": "^8.1.0",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
@@ -27,6 +32,8 @@
     "music-metadata": "^7.14.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.11.0",
+    "sass": "^1.97.1",
     "sharp": "^0.34.5",
     "vite": "^7.2.4"
   }

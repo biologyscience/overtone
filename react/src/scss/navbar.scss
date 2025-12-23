@@ -1,0 +1,63 @@
+@use 'util';
+@use './colors.scss';
+
+nav
+{
+    --left: 0;
+
+    $height: 50px;
+    $width: $height / 1.1;
+
+    width: 100vw;
+    background-color: colors.$dark10;
+
+    * { pointer-events: none; }
+
+    position: relative;
+    @include util.divider(before, TopLeft);
+
+    &::after
+    {
+        content: '';
+        position: absolute;
+        bottom: .25em;
+        left: var(--left);
+        height: .25em;
+        width: $width;
+        background-color: colors.$accent;
+        transition: left ease 250ms;
+    }
+
+    ul
+    {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        justify-content: space-evenly;
+        align-items: center;
+
+        li
+        {
+            display: flex;
+            pointer-events: all;
+
+            svg
+            {
+                fill: colors.$dark70;
+                min-width: $height / 2;
+                min-height: $height / 2;
+            }
+
+            &.current svg
+            {
+                fill: white;
+                transition: fill ease 100ms;
+            }
+
+            &:hover { cursor: pointer; }
+        }
+    }
+}

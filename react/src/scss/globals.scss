@@ -1,0 +1,121 @@
+@use './colors.scss';
+
+@font-face
+{
+    font-family: 'Fira';
+    src: url('../fonts/Fira Sans.ttf');
+}
+
+*
+{
+    user-select: none;
+    color: white;
+    font-family: var(--currentFont);
+    // outline: .5px solid red;
+
+    &::-webkit-scrollbar
+    {
+        background: none;
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb { background-color: var(--dark70); }
+}
+
+#titlebar
+{
+    $height: 20px;
+
+    font-size: $height * 0.8;
+    height: $height;
+    width: 100vw;
+    background-color: colors.$dark10;
+    grid-template-columns: auto repeat(3, 2em);
+    
+    span
+    {
+        -webkit-app-region: drag;
+        align-self: center;
+        padding-left: .5em;
+    }
+    
+    button
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg
+        {
+            max-height: $height * 0.8;
+            pointer-events: none;
+            fill: white;
+        }
+
+        &:hover { background-color: colors.$dark30; }
+        &:last-of-type:hover { background-color: colors.$accentRed3; }
+    }
+}
+
+body
+{
+    display: grid;
+    grid-template-rows: 20px auto 50px;
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: colors.$dark25;
+
+    &::before
+    {
+        position: absolute;
+        content: '';
+        height: 100%;
+        width: 2px;
+        background-color: colors.$accent;
+        left: 60vw;
+        z-index: -1;
+    }
+}
+
+button
+{
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+
+    &:hover { cursor: pointer; }
+}
+
+input
+{
+    user-select: auto !important;
+    caret-color: colors.$accent;
+    border: none;
+
+    &:focus
+    {
+        outline: none;
+        border-bottom-color: colors.$accent !important;
+    }
+
+    &.noMatch:focus { border-bottom-color: colors.$accentRed1 !important; }
+}
+
+.hover3D
+{
+    transition:
+        transform ease-in 50ms,
+        border-radius ease-in 150ms,
+        box-shadow ease-in 150ms;
+    
+    &:hover
+    {
+        cursor: pointer;
+        box-shadow: 0 0 15px black;
+        border-radius: 5px;
+    }
+}
