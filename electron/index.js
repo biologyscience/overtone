@@ -6,8 +6,15 @@ function ready()
     ({
         width: 1920 / 1.5,
         height: 1200 / 1.5,
-        // frame: false,
-        title: 'OverTone'
+        frame: false,
+        title: 'OverTone',
+        icon: `${__dirname}/logo.png`,
+        webPreferences:
+        {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: `${__dirname}/preload.js`
+        }
     });
     
     if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
