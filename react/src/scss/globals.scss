@@ -44,6 +44,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: background-color 200ms ease;
 
         svg
         {
@@ -52,15 +53,19 @@
             fill: white;
         }
 
-        &:hover { background-color: colors.$dark30; }
-        &:last-of-type:hover { background-color: colors.$accentRed3; }
+        &:hover { background-color: colors.$dark20; }
+
+        &.minimize:hover svg { fill: colors.$accentOrange1; }
+        &.maximize:hover svg { fill: colors.$accentGreen2; }
+        &.close:hover svg { fill: colors.$accentRed3; }
     }
 }
 
 body
 {
+    position: relative;
     display: grid;
-    grid-template-rows: 20px auto 50px;
+    grid-template-rows: 20px auto 55px;
     font-size: 10px;
     margin: 0;
     padding: 0;
@@ -107,15 +112,101 @@ input
 
 .hover3D
 {
-    transition:
-        transform ease-in 50ms,
-        border-radius ease-in 150ms,
-        box-shadow ease-in 150ms;
+    overflow: hidden;
+    transition: all ease 50ms;
     
     &:hover
     {
         cursor: pointer;
         box-shadow: 0 0 15px black;
         border-radius: 5px;
+    }
+}
+
+.sliderWrapper
+{
+    $sliderThickness: .3rem;
+    $dotSize: 1rem;
+    $padding: .7rem;
+
+    height: auto;
+    width: 100%;
+    align-self: center;
+    padding: $padding 0;
+
+    & > * { pointer-events: none; }
+
+    .slider
+    {
+        position: relative;
+        background-color: colors.$dark50;
+        border-radius: 1rem;
+    
+        height: $sliderThickness;
+        width: inherit;
+    
+        &::before
+        {
+            content: '';
+            position: absolute;
+            height: inherit;
+            width: var(--progress);
+            left: 0;
+            background-color: white;
+            border-radius: 1rem;
+            transition: background-color 100ms ease;
+        }
+    
+        &::after
+        {
+            
+            content: '';
+            position: absolute;
+            height: $dotSize;
+            aspect-ratio: 1;
+            top: ($sliderThickness - $dotSize) / 2;
+            left: calc(var(--progress) - ($dotSize / 2));
+            background-color: white;
+            border-radius: 100%;
+            opacity: 0;
+            transition: opacity 100ms ease;
+        }
+    }
+    
+    &.vertical
+    {
+        height: 100%;
+        width: auto;
+        padding: 0 $padding;
+    
+        .slider
+        {
+            height: inherit;
+            width: $sliderThickness;
+
+            &::before
+            {
+                height: var(--progress);
+                width: inherit;
+                bottom: 0;
+            }
+        
+            &::after
+            {
+                top: calc((100% - var(--progress)) - ($dotSize / 2));
+                left: ($sliderThickness - $dotSize) / 2;
+            }
+        }
+    }
+
+    &:hover
+    {
+        cursor: pointer;
+
+        .slider
+        {
+            &::before { background-color: colors.$accent; }
+            &::after { opacity: 1; }
+        }
     }
 }
