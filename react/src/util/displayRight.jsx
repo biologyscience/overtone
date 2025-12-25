@@ -36,7 +36,7 @@ export default function displayRight()
         <COL id='displayRight' onClick={clickDisplayRight}>
             <ROW className='albumartWrapper'>
                 <Hover3D style={{display: 'flex'}}>
-                    <img className='albumart' src='https://unsplash.it/500'/>
+                    <img className='albumart' src='https://unsplash.it/500' draggable={false}/>
                 </Hover3D>
             </ROW>
             <COL className='info'>

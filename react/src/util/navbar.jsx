@@ -11,10 +11,12 @@ import
     SettingsRounded
 } from '@mui/icons-material';
 
+import eventBus from './events';
+
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(2);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 
@@ -32,6 +34,8 @@ export default function Navbar()
 
             if (i === index) x.classList.add('current');
         });
+
+        eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: index}));
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);

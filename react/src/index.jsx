@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { COL, ROW } from './util/components';
+import { ROW } from './util/components';
 
 import Titlebar from './util/titlebar';
+import DisplayLeft from './util/displayLeft';
 import DisplayRight from './util/displayRight';
 import Navbar from './util/navbar';
 
@@ -13,17 +14,11 @@ import './scss/displayRight.scss';
 import './scss/globals.scss';
 import './scss/navbar.scss';
 
-import 'rc-slider/assets/index.css';
-
 ReactDOM.createRoot(document.body).render(
     <React.StrictMode>
         <Titlebar/>
         <ROW id='main'>
-            <ROW id='displayLeft'>
-                <COL className='section'>woah1</COL>
-                <COL className='section'>woah2</COL>
-                <COL className='section'>woah3</COL>
-            </ROW>
+            <DisplayLeft/>
             <DisplayRight/>
         </ROW>
         <Navbar/>
