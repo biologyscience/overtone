@@ -1,7 +1,7 @@
 @use 'util';
 @use './colors.scss';
 
-nav
+#nav
 {
     --left: 0;
 
@@ -49,13 +49,10 @@ nav
                 fill: colors.$dark70;
                 min-width: $height / 2;
                 min-height: $height / 2;
-            }
-
-            &.current svg
-            {
-                fill: white;
                 transition: fill ease 100ms;
             }
+
+            &.current svg { fill: white; }
 
             &:hover { cursor: pointer; }
         }

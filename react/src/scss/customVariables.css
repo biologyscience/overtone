@@ -40,6 +40,9 @@
     --accent: var(--accentGreen1);
     --currentFont: 'Fira';
 
+    --displayLeftWidth: 60vw;
+    --displayRightWidth: 40vw;
+
     --titleBarHeight: 20px;
     --navbarHeight: 7.5vh;
     --displayHeight: calc(100vh - var(--navbarHeight) - var(--titleBarHeight));

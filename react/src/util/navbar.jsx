@@ -26,6 +26,13 @@ export default function Navbar()
         function handleResize() { setLeft(navRef.current.children[0].children[index].getBoundingClientRect().left - (value / 4)); }
         handleResize();
 
+        [...navRef.current.children[0].children].forEach((x, i) =>
+        {
+            x.classList.remove('current');
+
+            if (i === index) x.classList.add('current');
+        });
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [index]);

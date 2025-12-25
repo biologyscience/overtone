@@ -1,0 +1,122 @@
+@use './util';
+@use './colors.scss';
+
+#displayRight
+{
+    width: var(--displayRightWidth);
+    gap: 2.5vh;
+    justify-content: center;
+    padding: 3vh 0;
+    
+    & > * { padding: 0 2.5vw; }
+
+    .albumartWrapper
+    {
+        flex-grow: 1;
+        justify-content: center;
+        align-items: center;
+        
+        .albumart
+        {
+            height: 45vh;
+            aspect-ratio: 1;
+        }
+    }
+
+    .info
+    {
+        font-size: 1.25rem;
+        gap: .25em;
+
+        .small { font-size: .75em; }
+    }
+
+    .miscButtons
+    {
+        button
+        {
+            transition: scale 200ms ease;
+
+            svg
+            {
+                fill: colors.$dark80;
+                transition: fill 200ms ease;
+            }
+
+            &:hover
+            {
+                scale: 1.05;
+                svg { fill: white; }
+            }
+        }
+    }
+
+    .timeline
+    {
+        gap: 1em;
+        
+        & > span
+        {
+            font-size: .9rem;
+            min-width: 5ch;
+            align-self: center;
+            text-align: center;
+        }
+    }
+
+    .mediaButtons
+    {
+        position: relative;
+        justify-content: center;
+        gap: 5em;
+
+        button
+        {
+            transition: scale 200ms ease;
+
+            svg
+            {
+                height: 2em;
+                width: auto;
+                fill: colors.$dark80;
+                transition: fill 200ms ease;
+            }
+
+            &:first-of-type, &:last-of-type
+            {
+                padding: 0 2em;
+                svg { height: 1em; }
+            }
+
+            &:hover, &.current
+            {
+                scale: 1.05;
+                svg { fill: white; }
+            }
+        }
+
+        .volumeSlider
+        {
+            position: absolute;
+            gap: 2em;
+            top: 0;
+            bottom: 0;
+            left: 9vw;
+            right: 4em;
+            background-color: transparent;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            padding: 0 1em;
+            border: .2em solid colors.$accent;
+            border-radius: .5em;
+            box-sizing: border-box;
+            
+            span
+            {
+                font-size: 1rem;
+                width: 3ch;
+                text-align: center;
+            }
+        }
+    }
+}
