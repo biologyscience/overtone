@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { COL, ROW, Slider, Hover3D } from './components';
+import { COL, ROW, Slider, Hover3D } from '../util/components';
 
 import
 {

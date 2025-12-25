@@ -1,7 +1,15 @@
 import { useEffect, useRef } from 'react';
-import { COL, ROW } from './components';
+import { COL, ROW } from '../util/components';
 
-import eventBus from './events';
+import eventBus from '../util/events';
+
+// import Queue from './sections/queue';
+// import Folders from './sections/folders';
+// import Albums from './sections/albums';
+// import Artists from './sections/artists';
+// import Genres from './sections/genres';
+// import EQ from './sections/eq';
+// import Settings from './sections/settings';
 
 export default function displayRight()
 {
@@ -38,6 +46,13 @@ export default function displayRight()
             <COL className='section' style={{background: 'black'}}></COL>
             <COL className='section' style={{background: 'pink'}}></COL>
             <COL className='section' style={{background: 'purple'}}></COL>
+            {/* <Queue/>
+            <Folders/>
+            <Albums/>
+            <Artists/>
+            <Genres/>
+            <EQ/>
+            <Settings/> */}
         </ROW>
     )
 }

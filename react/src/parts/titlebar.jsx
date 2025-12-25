@@ -1,4 +1,4 @@
-import { GRID } from './components';
+import { GRID } from '../util/components';
 
 import { RemoveRounded, CropSquareRounded, CloseRounded } from '@mui/icons-material';
 

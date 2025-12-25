@@ -11,12 +11,12 @@ import
     SettingsRounded
 } from '@mui/icons-material';
 
-import eventBus from './events';
+import eventBus from '../util/events';
 
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(2);
+    const [index, setIndex] = useState(0);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 

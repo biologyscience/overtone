@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client';
 
 import { ROW } from './util/components';
 
-import Titlebar from './util/titlebar';
-import DisplayLeft from './util/displayLeft';
-import DisplayRight from './util/displayRight';
-import Navbar from './util/navbar';
+import Titlebar from './parts/titlebar';
+import DisplayLeft from './parts/displayLeft';
+import DisplayRight from './parts/displayRight';
+import Navbar from './parts/navbar';
 
 import './scss/customClasses.scss';
 import './scss/displayLeft.scss';
