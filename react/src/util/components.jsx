@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function ROW({ className, children, ...rest })
 {
@@ -109,6 +109,47 @@ function Hover3D({ className, children, ...rest })
     )
 }
 
+function SearchBox({searchSpace, matchSpace, ...rest})
+{
+    if (searchSpace === undefined) return;
+
+    const [noMatch, setNoMatch] = useState(false);
+    
+    const searchSpaceValues = [...searchSpace].map(x => new String(x).toLowerCase());
+    const [mathSpaceValues, setMatchSpaceValues] = matchSpace;
+
+    let
+        wait = false,
+        lastInput;
+    
+    function handleChange({target})
+    {
+        // if (wait) return;
+    
+        // wait = true;
+        
+        // if (lastInput === target.value.toLowerCase()) return wait = false;
+    
+        lastInput = target.value.toLowerCase();
+
+        searchSpaceValues.forEach((item, index) => item.includes(lastInput) ? mathSpaceValues[index] = true : mathSpaceValues[index] = false);
+
+        mathSpaceValues.includes(true) ? setNoMatch(false) : setNoMatch(true);
+
+        setMatchSpaceValues([...mathSpaceValues]);
+
+        // setTimeout(() =>
+        // {
+        //     wait = false;
+    
+        //     if (lastInput !== target.value.toLowerCase()) handleChange({target});
+
+        // }, 1000);
+    }
+
+    return <input type='text' onChange={handleChange} data-no-match={noMatch} {...rest}/>
+}
+
 function scrollToHash(hash)
 {
     const element = document.querySelector(`[data-hash="${hash}"]`);
@@ -166,4 +207,4 @@ function scrollToHash(hash)
 //     return <a href={to} onClick={handleClick} className={className}>{children}</a>
 // }
 
-export { ROW, COL, GRID, Slider, Hover3D, scrollToHash }
+export { ROW, COL, GRID, Slider, Hover3D, scrollToHash, SearchBox }
