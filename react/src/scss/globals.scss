@@ -107,7 +107,7 @@ input
         border-bottom-color: colors.$accent !important;
     }
 
-    &.noMatch:focus { border-bottom-color: colors.$accentRed1 !important; }
+    &[data-no-match="true"]:focus { border-bottom-color: colors.$accentRed1 !important; }
 }
 
 .hover3D

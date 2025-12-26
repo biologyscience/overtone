@@ -117,59 +117,54 @@
 
     .in
     {
-        font-size: 20px;
-        background-color: turquoise;
+        font-size: 1.25rem;
 
         .head
         {
             align-items: center;
             padding: 1em .5em;
+            gap: .5em;
 
-            #backIcon
+            svg
             {
-                $size: 1.5em;
-                height: $size;
-                width: $size;
-
-                &:hover { cursor: pointer; }
+                height: 1.5em;
+                width: auto;
             }
 
-            #folderName
-            {
-                font-size: 1.5em;
-                margin: 0 .5em;
-            }
+            .name { font-size: 1.5em; }
         }
 
-        .body
+        .info
         {
+            position: relative;
             grid-template-columns: auto auto 1fr;
-            padding: .5em 0;
+            gap: 1em;
+            padding: .5em 1em;
 
             @include util.divider(after, BottomLeft);
 
             & > *
             {
-                margin: 0 1em;
-
-                &:not(.searchBar) { align-items: center; }
-
-                .marginLeft { margin-left: .5em !important; }
+                gap: .25em;
+                align-items: center;
             }
 
-            img { @include rootIMG; }
+            svg
+            {
+                height: 1em;
+                width: auto;
+            }
 
             .searchBar
             {
                 width: auto;
                 grid-template-columns: auto 1fr;
-                align-items: center;
 
                 input
                 {
                     width: auto;
                     background: none;
-                    padding: 0;
+                    padding: .25em;
                     margin: 0;
                     transition: border-bottom-color .5s ease;
 
@@ -178,7 +173,7 @@
             }
         }
 
-        #songListInFolder
+        .songList
         {
             list-style: none;
             margin: 0;
@@ -188,39 +183,46 @@
 
             li
             {
-                $sweetSpot: .87;
-                $topBottom: .3em;
-                grid-template-columns: calc(60vw * $sweetSpot) auto;
+                display: grid;
+                grid-template-columns: 90% auto;
+                gap: 1.5em;
                 border: .1em solid transparent;
                 border-radius: .5em;
+                padding: 0 1.5em;
                 transition: border-color 300ms ease;
-                margin: $topBottom 0;
 
                 * { pointer-events: none; }
-
                 & > * { pointer-events: all; }
 
-                &:hover { border-color: var(--accent); }
-
-                div
+                &:hover
                 {
-                    padding: $topBottom 2.5em;
-
-                    &::after
-                    {
-                        content: attr(data-song-duration);
-                        position: absolute;
-                        font-size: .8em;
-                        bottom: $topBottom;
-                        right: 0;
-                    }
+                    cursor: pointer;
+                    border-color: colors.$accent;
                 }
 
-                .songName { font-size: 1.2em; }
+                .songData
+                {
+                    padding: .5em 0;
 
-                .artistName, .albumName { font-size: .7em; }
+                    .title { font-size: 1.2em; }
 
-                img { @include rootIMG; }
+                    .artist, .album, .duration { font-size: .7em; }
+
+                    .album { margin-right: auto; }
+                }
+
+                button
+                {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    svg
+                    {
+                        height: 1em;
+                        width: auto;
+                    }
+                }
             }
         }
     }
