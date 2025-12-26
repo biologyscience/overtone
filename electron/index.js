@@ -25,4 +25,49 @@ function ready()
     ipcMain.on('ipc-close', () => WINDOW.close());
 };
 
+ipcMain.handle('ipc-wantFolders', () => 
+{
+    const folderData = 
+    [
+        'C:/one2/waohj/folderPath1',
+        'C:/one2/waohj/folderPath2',
+        'C:/one2/waohj\\folderPath3',
+        'C:/one2/waohj\\yyoyo',
+        'C:/one2/waohj\\rPath3',
+    ];
+
+    return folderData;
+});
+
+ipcMain.handle('ipc-deleteFolders', (E, toDelete) => 
+{
+    const folderData = 
+    [
+        'C:/one2/waohj/folderPath1',
+        'C:/one2/waohj/folderPath2',
+        'C:/one2/waohj\\folderPath3',
+        'C:/one2/waohj\\yyoyo',
+        'C:/one2/waohj\\rPath3',
+    ];
+
+    toDelete.forEach((x) =>
+    {
+        const index = folderData.indexOf(x);
+
+        if (index !== -1)
+        {
+            folderData.splice(index, 1);
+
+            // update db
+        }
+        
+        else
+        {
+            // send error
+        }
+    });
+
+    return folderData;
+});
+
 app.on('ready', ready);

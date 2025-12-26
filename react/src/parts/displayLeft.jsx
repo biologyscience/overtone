@@ -4,7 +4,7 @@ import { COL, ROW } from '../util/components';
 import eventBus from '../util/events';
 
 // import Queue from './sections/queue';
-// import Folders from './sections/folders';
+import Folders from './sections/folders';
 // import Albums from './sections/albums';
 // import Artists from './sections/artists';
 // import Genres from './sections/genres';
@@ -40,14 +40,13 @@ export default function displayRight()
     return (
         <ROW ref={displayRef} id='displayLeft'>
             <COL className='section' style={{background: 'brown'}}></COL>
-            <COL className='section' style={{background: 'darkgreen'}}></COL>
+            <Folders/>
             <COL className='section' style={{background: 'cyan'}}></COL>
             <COL className='section' style={{background: 'orange'}}></COL>
             <COL className='section' style={{background: 'black'}}></COL>
             <COL className='section' style={{background: 'pink'}}></COL>
             <COL className='section' style={{background: 'purple'}}></COL>
             {/* <Queue/>
-            <Folders/>
             <Albums/>
             <Artists/>
             <Genres/>
