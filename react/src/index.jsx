@@ -14,6 +14,8 @@ import './scss/displayRight.scss';
 import './scss/globals.scss';
 import './scss/navbar.scss';
 
+import './scss/parts/folders.scss';
+
 ReactDOM.createRoot(document.body).render(
     <React.StrictMode>
         <Titlebar/>

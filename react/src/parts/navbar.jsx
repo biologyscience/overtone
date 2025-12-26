@@ -16,7 +16,7 @@ import eventBus from '../util/events';
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(1);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 
@@ -25,7 +25,12 @@ export default function Navbar()
         const value = parseInt(getComputedStyle(navRef.current, ':after').width.slice(0, -2));
         setWidth(value);
 
-        function handleResize() { setLeft(navRef.current.children[0].children[index].getBoundingClientRect().left - (value / 4)); }
+        function handleResize()
+        {
+            setLeft(navRef.current.children[0].children[index].getBoundingClientRect().left - (value / 4));
+            eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: index}));
+        }
+
         handleResize();
 
         [...navRef.current.children[0].children].forEach((x, i) =>
@@ -34,9 +39,7 @@ export default function Navbar()
 
             if (i === index) x.classList.add('current');
         });
-
-        eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: index}));
-
+        
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [index]);
