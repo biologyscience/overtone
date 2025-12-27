@@ -38,7 +38,7 @@ export default function albums()
             albumToSet.duration = `${hours}:${minutes}:${seconds}`;
             setAlbum(albumToSet);
 
-            eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: 2}));
+            eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 2}));
     
             setShowInside(true);
         });
@@ -121,7 +121,7 @@ export default function albums()
                         <ROW className='info'>
                             <ROW>
                                 <PersonRounded/>
-                                <span className={'linkToArtist'}>{album?.artist}</span>
+                                <span className={'linkToArtist'} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showArtist', {detail: album?.artist}))}>{album?.artist}</span>
                             </ROW>
                             <ROW>
                                 <CalendarMonthRounded/>
