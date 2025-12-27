@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { COL, ROW, Slider, Hover3D } from '../util/components';
+import { useEffect, useState } from 'react';
+import { COL, ROW, Slider, Hover3D, AudioPlayer } from '../util/components';
+
+import { parseTime } from '../util/functions';
 
 import
 {
@@ -15,10 +17,14 @@ import
 
 export default function displayRight()
 {
-    const [progress, setProgress] = useState(50);
+    const [progress, setProgress] = useState(0);
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-    const [volume, setVolume] = useState(40);
+    const [volume, setVolume] = useState(100);
     const [playState, setPlayState] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+
+    const [nowPlaying, setNowPlaying] = useState();
+    const [dragging, setDragging] = useState(false);
 
     function clickDisplayRight({clientX, clientY})
     {
@@ -32,17 +38,51 @@ export default function displayRight()
         }
     }
 
+    function CurrentTime()
+    {
+        const { minutes, seconds } = parseTime(currentTime);
+
+        return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
+    }
+ 
+    function TotalTime()
+    {
+        const { minutes, seconds } = parseTime(nowPlaying?.duration);
+
+        return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
+    }
+
+    useEffect(() =>
+    {
+        setProgress(100 * currentTime / nowPlaying?.duration);
+
+        if (currentTime.toFixed(2) === nowPlaying?.duration?.toFixed(2))
+        {
+            // next
+
+            // else
+            setPlayState(false);
+        }
+
+    }, [currentTime, nowPlaying]);
+
+    useEffect(() =>
+    {
+        window.ipc.invoke('ipc-nowPlaying').then(x => setNowPlaying(x));
+    }, []);
+
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
+            <AudioPlayer file={nowPlaying?.file} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume}/>
             <ROW className='albumartWrapper'>
                 <Hover3D style={{display: 'flex'}}>
-                    <img className='albumart' src='https://unsplash.it/1000' draggable={false}/>
+                    <img className='albumart' src={nowPlaying?.image} draggable={false}/>
                 </Hover3D>
             </ROW>
             <COL className='info'>
-                <span className='overflowPrevent'>Song Name</span>
-                <span className='small overflowPrevent'>Artist Name</span>
-                <span className='small overflowPrevent'>Album Name</span>
+                <span className='overflowPrevent'>{nowPlaying?.title}</span>
+                <span className='small overflowPrevent'>{nowPlaying?.artist}</span>
+                <span className='small overflowPrevent'>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
                 <button><CloseRounded/></button>
@@ -51,9 +91,9 @@ export default function displayRight()
                 <button><CloseRounded/></button>
             </ROW>
             <ROW className='timeline'>
-                <span>00:00</span>
-                <Slider progress={progress} setProgress={setProgress}/>
-                <span>59:59</span>
+                <CurrentTime/>
+                <Slider progressState={[progress, setProgress]} setDragging={setDragging}/>
+                <TotalTime/>
             </ROW>
             <ROW className='mediaButtons'>
                 <button onClick={() => setShowVolumeSlider(x => !x)} className={showVolumeSlider ? 'current' : ''}>
@@ -68,7 +108,7 @@ export default function displayRight()
                 {
                     showVolumeSlider ? (
                         <ROW className='volumeSlider'>
-                            <Slider progress={volume} setProgress={setVolume}/>
+                            <Slider progressState={[volume, setVolume]}/>
                             <span>{Math.round(volume)}</span>
                         </ROW>
                     ) : null
