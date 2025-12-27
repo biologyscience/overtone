@@ -27,7 +27,7 @@ function GRID({ className, children, ...rest })
     )
 }
 
-function Slider({ progress, setProgress, vertical, className, children, ...rest })
+function Slider({ progressState: [progress, setProgress], setDragging, vertical, className, children, ...rest })
 {
     let classtext = 'sliderWrapper';
 
@@ -40,6 +40,8 @@ function Slider({ progress, setProgress, vertical, className, children, ...rest 
     function mouseup()
     {
         pressing.current = false;
+
+        if (setDragging !== undefined) setDragging(pressing.current);
 
         // change audio current time here
     }
@@ -60,6 +62,8 @@ function Slider({ progress, setProgress, vertical, className, children, ...rest 
     function mousedown(E)
     {
         pressing.current = true;
+
+        if (setDragging !== undefined) setDragging(pressing.current);
 
         mousemove(E);
     }
@@ -150,13 +154,72 @@ function SearchBox({searchSpace, matchSpace, ...rest})
     return <input type='text' onChange={handleChange} data-no-match={noMatch} {...rest}/>
 }
 
-function scrollToHash(hash)
+function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel})
 {
-    const element = document.querySelector(`[data-hash="${hash}"]`);
-    
-    const offset = element.getBoundingClientRect().top + window.pageYOffset - 120;
-    
-    window.scrollTo({ top: offset, left: 0, behavior: 'smooth' });
+    const player = useRef();
+
+    useEffect(() =>
+    {
+        if (force) player.current.currentTime = (progressPercent || 0) * (player.current.duration || 0) / 100;
+
+    }, [progressPercent, force]);
+
+    useEffect(() =>
+    {
+        player.current.pause();
+        player.current.src = file;
+
+        setCurrentTime(0);
+
+    }, [file]);
+
+    useEffect(() =>
+    {
+        if (file === undefined) return;
+
+        if (playing) player.current.play();
+        else player.current.pause();
+
+    }, [file, playing]);
+
+
+    useEffect(() =>
+    {
+        player.current.volume = audioLevel / 100;
+
+    }, [audioLevel]);
+
+    useEffect(() =>
+    {
+        const audioPlayer = player.current;
+
+        if (audioPlayer === null) return;
+
+        let lastTime = -1;
+
+        function updateTime()
+        {
+            const { currentTime } = audioPlayer;
+
+            if (Math.abs(currentTime - lastTime) >= 1)
+            {
+                lastTime = currentTime;
+
+                setCurrentTime(lastTime);
+            }
+        }
+
+        audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
+        audioPlayer.addEventListener('timeupdate', updateTime);
+        
+        return () =>
+        {
+            audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
+            audioPlayer.removeEventListener('timeupdate', updateTime);
+        }
+    }, []);
+
+    return <audio ref={player}/>
 }
 
 // function RefreshOnNavigate()
@@ -207,4 +270,4 @@ function scrollToHash(hash)
 //     return <a href={to} onClick={handleClick} className={className}>{children}</a>
 // }
 
-export { ROW, COL, GRID, Slider, Hover3D, scrollToHash, SearchBox }
+export { ROW, COL, GRID, Slider, Hover3D, AudioPlayer, SearchBox }

@@ -1,5 +1,5 @@
-const { app, BrowserWindow, ipcMain, dialog} = require('electron');
-
+const { app, BrowserWindow, ipcMain, dialog, protocol, net } = require('electron');
+const metadata = require('music-metadata');
 const { readdirSync, statSync } = require('fs');
 const path = require('path');
 
@@ -288,6 +288,27 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
     return dummy;
 });
 
+ipcMain.handle('ipc-nowPlaying', async () =>
+{
+    const file = 'C:/Files/Music/gigolo.mp3';
+
+    const { format, common } = await metadata.parseFile(file);
+
+    const image = `data:${common.picture[0].format};base64,${common.picture[0].data.toString('base64')}`;
+
+    const dummy =
+    {
+        title: common.title,
+        artist: common.artists.join('; '),
+        album: common.album,
+        duration: format.duration,
+        image,
+        file
+    }
+
+    return dummy;
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
@@ -299,9 +320,10 @@ app.on('ready', () =>
         icon: `${__dirname}/logo.png`,
         webPreferences:
         {
+            webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
-            preload: `${__dirname}/preload.js`
+            preload: `${__dirname}/preload.js`,
         }
     });
 
@@ -311,4 +333,11 @@ app.on('ready', () =>
     ipcMain.on('ipc-minimize', () => WINDOW.minimize());
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
     ipcMain.on('ipc-close', () => WINDOW.close());
+
+    protocol.handle('music', (request) =>
+    {
+        const { pathname } = new URL(request.url);
+
+        return net.fetch(pathname.slice(1));
+    });
 });
