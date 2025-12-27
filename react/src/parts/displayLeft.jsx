@@ -6,7 +6,7 @@ import eventBus from '../util/events';
 // import Queue from './sections/queue';
 import Folders from './sections/folders';
 import Albums from './sections/albums';
-// import Artists from './sections/artists';
+import Artists from './sections/artists';
 // import Genres from './sections/genres';
 // import EQ from './sections/eq';
 // import Settings from './sections/settings';
@@ -44,12 +44,11 @@ export default function displayRight()
             <COL className='section' style={{background: 'brown'}}></COL>
             <Folders/>
             <Albums/>
-            <COL className='section' style={{background: 'orange'}}></COL>
+            <Artists/>
             <COL className='section' style={{background: 'black'}}></COL>
             <COL className='section' style={{background: 'pink'}}></COL>
             <COL className='section' style={{background: 'purple'}}></COL>
             {/* <Queue/>
-            <Artists/>
             <Genres/>
             <EQ/>
             <Settings/> */}

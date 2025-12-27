@@ -249,6 +249,45 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
     return dummy;
 });
 
+ipcMain.handle('ipc-wantArtists', () =>
+{
+    const dummy = [ 'lessgoo', 'song name one', 'yoyoyo', 'song name one', 'yoyoyo', 'yoyoyo', 'yoyoyo', 'yoyoyo', 'lessgoo', 'song name one', 'yoyoyo', 'song name one' ];
+
+    return [...dummy, ...dummy];
+});
+
+ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
+{
+    const dummy = [
+        {
+            album: 'lessgoo',
+            year: 1900 + Math.floor(Math.random() * 100)
+        },
+        {
+            album: 'song name one',
+            year: 1900 + Math.floor(Math.random() * 100)
+        },
+        {
+            album: 'yoyoyo',
+            year: 1900 + Math.floor(Math.random() * 100)
+        },
+        {
+            album: 'song name one',
+            year: 1900 + Math.floor(Math.random() * 100)
+        },
+        {
+            album: 'yoyoyo',
+            year: 1900 + Math.floor(Math.random() * 100)
+        },
+        {
+            album: 'lessgoo',
+            year: 1900 + Math.floor(Math.random() * 100)
+        }
+    ]
+
+    return dummy;
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
