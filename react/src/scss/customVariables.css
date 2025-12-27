@@ -43,7 +43,7 @@
     --displayLeftWidth: 60vw;
     --displayRightWidth: 40vw;
 
-    --titleBarHeight: 20px;
-    --navbarHeight: 7.5vh;
-    --displayHeight: calc(100vh - var(--navbarHeight) - var(--titleBarHeight));
+    --titlebarHeight: 20px;
+    --navbarHeight: 55px;
+    --displayHeight: calc(100vh - var(--navbarHeight) - var(--titlebarHeight));
 }

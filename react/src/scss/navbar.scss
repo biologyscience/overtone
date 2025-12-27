@@ -5,9 +5,7 @@
 {
     --left: 0;
 
-    $height: 50px;
-    $width: $height / 1.1;
-
+    height: var(--navbarHeight);
     width: 100vw;
     background-color: colors.$dark10;
 
@@ -23,7 +21,7 @@
         bottom: .25em;
         left: var(--left);
         height: .25em;
-        width: $width;
+        width: calc(var(--navbarHeight) / 1.1);;
         background-color: colors.$accent;
         transition: left ease 250ms;
     }
@@ -47,8 +45,8 @@
             svg
             {
                 fill: colors.$dark70;
-                min-width: $height / 2;
-                min-height: $height / 2;
+                min-width: calc(var(--navbarHeight) / 2);
+                min-height: calc(var(--navbarHeight) / 2);
                 transition: fill ease 100ms;
             }
 

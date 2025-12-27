@@ -10,6 +10,8 @@
 
     & > .section
     {
+        min-height: var(--displayHeight);
+        max-height: var(--displayHeight);
         min-width: var(--displayLeftWidth);
         max-width: var(--displayLeftWidth);
     }

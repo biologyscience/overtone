@@ -1,0 +1,159 @@
+import { useEffect, useState } from 'react';
+import { COL, ROW, GRID, SearchBox } from '../../util/components';
+
+import { parseTime } from '../../util/functions';
+
+import eventBus from '../../util/events';
+
+import
+{
+    ChevronLeftRounded,
+    NumbersRounded,
+    ScheduleRounded,
+    SearchRounded,
+    PersonRounded,
+    CalendarMonthRounded
+    
+} from '@mui/icons-material';
+
+export default function albums()
+{
+    const
+        [showInside, setShowInside] = useState(false),
+        [albumData, setAlbumData] = useState(),
+        [album, setAlbum] = useState(),
+        [inputSearchSpace, setInputSearchSpace] = useState(),
+        [inputMatchSpace, setInputMatchSpace] = useState();
+    
+    function showAlbum(album, artist)
+    {
+        window.ipc.invoke('ipc-wantAlbum', {album, artist}).then((data) =>
+        {
+            const albumToSet = structuredClone(data);
+
+            let totalDuration = 0;
+            data.songs.forEach(({duration}) => totalDuration += duration);
+            const { hours, minutes, seconds } = parseTime(totalDuration);
+
+            albumToSet.duration = `${hours}:${minutes}:${seconds}`;
+            setAlbum(albumToSet);
+
+            eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: 2}));
+    
+            setShowInside(true);
+        });
+    }
+
+    function Albums()
+    {
+        const components = [];
+    
+        albumData?.forEach(({artist, album}, i) =>
+        {
+            components.push(
+                <div key={i} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
+                    <img src='https://unsplash.it/200' draggable={false}/>
+                    <span className='albumName block overflowPrevent'>{album}</span>
+                </div>
+            );
+        });
+        
+        return components;
+    }
+
+    function Songs()
+    {
+        const components = [];
+
+        album?.songs?.sort((x, y) => x.track - y.track)?.forEach(({track, title, artists, plays, duration}, i) =>
+        {
+            const { minutes, seconds } = parseTime(duration);
+
+            components.push(
+                <li key={i} className='tableItem'>
+                    <span>{track}</span>
+                    <COL className={'placeLeft'}>
+                        <span className='title'>{title}</span>
+                        <span className='artists'>{artists.join('; ')}</span>
+                    </COL>
+                    <span>{plays}</span>
+                    <span>{`${minutes}:${seconds}`}</span>
+                </li>
+            );
+        });
+
+        return components;
+    }
+
+    useEffect(() =>
+    {
+        window.ipc.invoke('ipc-wantAlbums').then((albumData) =>
+        {
+            setAlbumData(albumData);
+            setInputSearchSpace([...albumData].map(x => x.album));
+            setInputMatchSpace([...albumData].map(x => true));
+        });
+
+        eventBus.addEventListener('ot-showAlbum', ({detail: {album, artist}}) => showAlbum(album, artist));
+    }, []);
+
+    return (
+        <COL className='section' id='albums'>
+            <COL className={`out ${showInside ? 'displayNone' : ''}`}>
+                <ROW className='head'>
+                    <ROW className={'searchBar'}>
+                        <SearchRounded/>
+                        <SearchBox searchSpace={inputSearchSpace} matchSpace={[inputMatchSpace, setInputMatchSpace]} placeholder='Search albums'/>
+                    </ROW>
+                    <ROW className={'count'}>
+                        <NumbersRounded/>
+                        <span>{inputMatchSpace?.filter(x => x === true)?.length}</span>
+                    </ROW>
+                </ROW>
+                <ROW className='body'><Albums/></ROW>
+            </COL>
+            <COL className={`in ${showInside ? '' : 'displayNone'}`}>
+                <ROW className='head'>
+                    <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
+                    <img className='albumart' src='https://unsplash.it/200' draggable={false}/>
+                    <COL className={'content'}>
+                        <span className='name'>{album?.album}</span>
+                        <ROW className='info'>
+                            <ROW>
+                                <PersonRounded/>
+                                <span className={'linkToArtist'}>{album?.artist}</span>
+                            </ROW>
+                            <ROW>
+                                <CalendarMonthRounded/>
+                                <span>{album?.year}</span>
+                            </ROW>
+                            <ROW>
+                                <NumbersRounded/>
+                                <span>{album?.songs?.length}</span>
+                            </ROW>
+                            <ROW>
+                                <ScheduleRounded/>
+                                <span>{album?.duration}</span>
+                            </ROW>
+                        </ROW>
+                        {/* <GRID className='searchBar'>
+                            <SearchRounded/>
+                            <SearchBox searchSpace={inputSearchSpace} matchSpace={[inputMatchSpace, setInputMatchSpace]} placeholder='Search song titles'/>
+                        </GRID> */}
+                    </COL>
+                </ROW>
+                <COL className={'body'}>
+                    <GRID className={'tableHead tableItem'}>
+                        <NumbersRounded/>
+                        <span className='placeLeft'>TITLE</span>
+                        <span>PLAYS</span>
+                        <ScheduleRounded/>
+                    </GRID>
+                    <ul className='songList'>
+                        <Songs/>
+                    </ul>
+                </COL>
+            </COL>
+        </COL>
+    )
+}

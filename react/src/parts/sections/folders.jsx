@@ -127,11 +127,26 @@ export default function folders()
 
     function Songs()
     {
+        function click({target})
+        {
+            const { filePath } = target.parentElement.dataset;
+
+            if (target.tagName === 'BUTTON')
+            {
+                // options
+            }
+
+            else
+            {
+                // play filePath
+            }
+        }
+
         const components = [];
     
         let totalDuration = 0;
 
-        songsData?.forEach(({title, artist, album, duration}, i) =>
+        songsData?.forEach(({title, artist, album, duration, location}, i) =>
         {
             totalDuration += duration;
     
@@ -140,7 +155,7 @@ export default function folders()
                 durationText = `${minutes}:${seconds}`;
     
             components.push(
-                <li key={i} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
+                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location}>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
@@ -206,9 +221,7 @@ export default function folders()
                         <SearchBox searchSpace={inputSearchSpace} matchSpace={[inputMatchSpace, setInputMatchSpace]} placeholder='Search song titles'/>
                     </GRID>
                 </GRID>
-                <ul className='songList'>
-                    <Songs/>
-                </ul>
+                <ul className='songList'><Songs/></ul>
             </COL>
         </COL>
     )
