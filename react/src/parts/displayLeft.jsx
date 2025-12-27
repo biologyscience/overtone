@@ -5,7 +5,7 @@ import eventBus from '../util/events';
 
 // import Queue from './sections/queue';
 import Folders from './sections/folders';
-// import Albums from './sections/albums';
+import Albums from './sections/albums';
 // import Artists from './sections/artists';
 // import Genres from './sections/genres';
 // import EQ from './sections/eq';
@@ -27,12 +27,14 @@ export default function displayRight()
             displayRef.current.scrollTo({left: index * visibleWidth, behavior: 'smooth'});
         }
 
-        element.addEventListener('wheel', e => e.preventDefault(), {passive: false});
+        function preventXScroll(E) { if (E.shiftKey || E.deltaX !== 0) return E.preventDefault(); }
+
+        element.addEventListener('wheel', preventXScroll, {passive: false});
         eventBus.addEventListener('ot-navChange', scroll);
 
         return () =>
         {
-            element.removeEventListener('wheel', e => e.preventDefault(), {passive: false});
+            element.removeEventListener('wheel', preventXScroll, {passive: false});
             eventBus.removeEventListener('ot-navChange', scroll);
         }
     }, []);
@@ -41,13 +43,12 @@ export default function displayRight()
         <ROW ref={displayRef} id='displayLeft'>
             <COL className='section' style={{background: 'brown'}}></COL>
             <Folders/>
-            <COL className='section' style={{background: 'cyan'}}></COL>
+            <Albums/>
             <COL className='section' style={{background: 'orange'}}></COL>
             <COL className='section' style={{background: 'black'}}></COL>
             <COL className='section' style={{background: 'pink'}}></COL>
             <COL className='section' style={{background: 'purple'}}></COL>
             {/* <Queue/>
-            <Albums/>
             <Artists/>
             <Genres/>
             <EQ/>

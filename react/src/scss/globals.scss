@@ -16,7 +16,7 @@
     &::-webkit-scrollbar
     {
         background: none;
-        width: 2px;
+        width: 10px;
     }
 
     &::-webkit-scrollbar-thumb { background-color: var(--dark70); }
@@ -24,10 +24,8 @@
 
 #titlebar
 {
-    $height: 20px;
-
-    font-size: $height * 0.8;
-    height: $height;
+    font-size: calc(var(--titlebarHeight) * .8);
+    height: var(--titlebarHeight);
     width: 100vw;
     background-color: colors.$dark10;
     grid-template-columns: auto repeat(3, 2em);
@@ -48,7 +46,7 @@
 
         svg
         {
-            max-height: $height * 0.8;
+            max-height: calc(var(--titlebarHeight) * .8);
             pointer-events: none;
             fill: white;
         }

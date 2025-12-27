@@ -15,6 +15,7 @@ import './scss/globals.scss';
 import './scss/navbar.scss';
 
 import './scss/parts/folders.scss';
+import './scss/parts/albums.scss';
 
 ReactDOM.createRoot(document.body).render(
     <React.StrictMode>

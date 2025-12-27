@@ -3,7 +3,8 @@
 
 #displayRight
 {
-    width: var(--displayRightWidth);
+    min-width: var(--displayRightWidth);
+    max-width: var(--displayRightWidth);
     gap: 2.5vh;
     justify-content: center;
     padding: 3vh 0;
@@ -68,7 +69,7 @@
     {
         position: relative;
         justify-content: center;
-        gap: 5em;
+        gap: 3vw;
 
         button
         {
@@ -82,9 +83,15 @@
                 transition: fill 200ms ease;
             }
 
-            &:first-of-type, &:last-of-type
+            &:first-of-type
             {
-                padding: 0 2em;
+                margin-right: auto;
+                svg { height: 1em; }
+            }
+
+            &:last-of-type
+            {
+                margin-left: auto;
                 svg { height: 1em; }
             }
 
@@ -101,8 +108,8 @@
             gap: 2em;
             top: 0;
             bottom: 0;
-            left: 9vw;
-            right: 4em;
+            left: 3vh * 3;
+            right: 3vh;
             background-color: transparent;
             backdrop-filter: blur(10px);
             align-items: center;

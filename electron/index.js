@@ -88,22 +88,164 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
             title: 'song name one',
             album: 'lessgoo',
             artist: 'damn bro',
-            duration: 289
+            duration: 289,
+            location: 'C:/lol/one/song.mp3'
         },
         {
             album: 'song name one',
             artist: 'lessgoo',
             title: 'damn bro',
-            duration: 510
+            duration: 510,
+            location: 'C:/lol/two/song.mp3'
         },
         {
             artist: 'song name one',
             title: 'lessgoo',
             album: 'damn bro',
-            duration: 100
+            duration: 100,
+            location: 'C:/oof/song.mp3'
         }
     ]
     
+    return dummy;
+});
+
+ipcMain.handle('ipc-wantAlbums', () =>
+{
+    const dummy = [
+        {
+            album: 'lessgoo',
+            artist: 'damn bro',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        },
+        {
+            artist: 'song name one',
+            album: 'damn bro',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        },
+        {
+            artist: 'song name one',
+            album: 'damn bro',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        },
+        {
+            artist: 'song name one',
+            album: 'damn bro',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        },
+        {
+            artist: 'song name one',
+            album: 'damn bro',
+        },
+        {
+            album: 'song name one',
+            artist: 'lessgoo',
+        }
+    ]
+    
+    return [...dummy, ...dummy];
+});
+
+ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
+{
+    const dummy =
+    {
+        album,
+        artist,
+        year: 2020,
+        songs: 
+        [
+            {
+                title: 'song name one',
+                duration: 289,
+                location: 'C:/lol/one/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist, 'abc'],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'damn bro',
+                duration: 510,
+                location: 'C:/lol/two/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'lessgoo',
+                duration: 100,
+                location: 'C:/oof/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'damn bro',
+                duration: 510,
+                location: 'C:/lol/two/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'lessgoo',
+                duration: 100,
+                location: 'C:/oof/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'damn bro',
+                duration: 510,
+                location: 'C:/lol/two/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'lessgoo',
+                duration: 100,
+                location: 'C:/oof/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'damn bro',
+                duration: 510,
+                location: 'C:/lol/two/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            },
+            {
+                title: 'lessgoo',
+                duration: 100,
+                location: 'C:/oof/song.mp3',
+                track: Math.floor(Math.random() * 10),
+                artists: [artist],
+                plays: Math.floor(Math.random() * 10)
+            }
+        ]
+    };
+
     return dummy;
 });
 
