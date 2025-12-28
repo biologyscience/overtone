@@ -157,6 +157,8 @@ function SearchBox({searchSpace, matchSpace, ...rest})
 function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel})
 {
     const player = useRef();
+    const preGainRef = useRef();
+    const filtersRef = useRef();
 
     useEffect(() =>
     {
@@ -209,11 +211,63 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
             }
         }
 
+        function init()
+        {
+            const ctx = new AudioContext();
+
+            const source = ctx.createMediaElementSource(audioPlayer);
+
+            preGainRef.current = ctx.createGain();
+
+            const bands = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+
+            const filters = bands.map((band) =>
+            {
+                const filter = ctx.createBiquadFilter();
+
+                filter.type = 'peaking';
+                filter.frequency.value = band;
+                filter.Q.value = 1;
+                filter.gain.value = 0;
+
+                return filter;
+            });
+
+            filtersRef.current = filters;
+
+            let node = source;
+
+            [preGainRef.current, ...filters, ctx.destination].forEach((filter) =>
+            {
+                node.connect(filter);
+                node = filter;
+            });
+
+            node.connect(ctx.destination);
+        }
+
+        function eqChange(index)
+        {
+            const eqs = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [2.6, 2.6, 1.3, -0.4, -2.8, -3.5, -2.6, -0.4, 1.8, 2.6]
+            ];
+
+            preGainRef.current.gain.value = Math.pow(10, -(Math.max(...eqs[index])) / 20);
+
+            filtersRef.current.forEach((x, i) => x.gain.value = eqs[index][i]);
+        }
+
+        window.addEventListener('ot-eq0', () => eqChange(0));
+        window.addEventListener('ot-eq1', () => eqChange(1));
+
+        audioPlayer.addEventListener('play', init);
         audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
         audioPlayer.addEventListener('timeupdate', updateTime);
         
         return () =>
         {
+            audioPlayer.removeEventListener('play', init);
             audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
