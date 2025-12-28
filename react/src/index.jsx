@@ -14,6 +14,7 @@ import './scss/displayRight.scss';
 import './scss/globals.scss';
 import './scss/navbar.scss';
 
+import './scss/parts/queues.scss';
 import './scss/parts/folders.scss';
 import './scss/parts/albums.scss';
 import './scss/parts/artists.scss';

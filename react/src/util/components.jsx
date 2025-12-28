@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+import Backdrop from '@mui/material/Backdrop';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import Box from '@mui/material/Box';
+
 function ROW({ className, children, ...rest })
 {
     return (
@@ -88,8 +93,8 @@ function Hover3D({ className, children, ...rest })
 {
     const parentRef = useRef();
 
-    function slight() { parentRef.current.style.transform = 'perspective(1000px) scale(1.025) rotateX(0) rotateY(0)'; }
-    function zoom() { parentRef.current.style.transform = 'perspective(1000px) scale(1.05) rotateX(0) rotateY(0)'; }
+    function slight() { parentRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; }
+    function zoom() { parentRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; }
 
     function move({clientX, clientY})
     {
@@ -102,7 +107,7 @@ function Hover3D({ className, children, ...rest })
             rotationX = extent * (midY - (clientY - top)) / midY,
             rotationY = -extent * (midx - (clientX - left)) / midx;
 
-        parentRef.current.style.transform = `perspective(1000px) scale(1.1) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        parentRef.current.style.transform = `perspective(1000px) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
     }
 
     return (
@@ -162,7 +167,9 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
 
     useEffect(() =>
     {
-        if (force) player.current.currentTime = (progressPercent || 0) * (player.current.duration || 0) / 100;
+        if (!force) return;
+        
+        player.current.currentTime = (progressPercent || 0) * (player.current.duration || 0) / 100;
 
     }, [progressPercent, force]);
 
@@ -185,11 +192,7 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
     }, [file, playing]);
 
 
-    useEffect(() =>
-    {
-        player.current.volume = audioLevel / 100;
-
-    }, [audioLevel]);
+    useEffect(() => { player.current.volume = audioLevel / 100; }, [audioLevel]);
 
     useEffect(() =>
     {
@@ -268,7 +271,7 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
         return () =>
         {
             audioPlayer.removeEventListener('play', init);
-            audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
+            audioPlayer.removeEventListener('ended', () => setCurrentTime(audioPlayer.duration));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
     }, []);
@@ -276,52 +279,30 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
     return <audio ref={player}/>
 }
 
-// function RefreshOnNavigate()
-// {
-//     const location = useLocation();
+function CustomModal({visibility: [open, setOpen], parentRef, children})
+{
+    return (
+        <Modal
+            closeAfterTransition
+            container={parentRef?.current}
+            open={open}
+            onClose={() => setOpen(false)}
+            sx={{ position: 'absolute', inset: 0 }}
+            slots={{ backdrop: Backdrop }}
+            slotProps={{ backdrop: { timeout: 500, sx: { position: 'absolute', inset: 0, zIndex: 0 } }}}>
+            <Fade in={open}>
+                <div style={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                }}>
+                    {children}
+                </div>
+            </Fade>
+        </Modal>
+    );
+}
 
-//     function refresh()
-//     {
-//         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-
-//         document.querySelectorAll('img').forEach(x => x.setAttribute('draggable', false));
-
-//         const titleKey = location.pathname.split('/')[1];
-
-//         const title =
-//         {
-//             '': 'VizTexa',
-//             'app': 'Coming Soon ... VizTexa',
-//             'pricing': 'Pricing | VizTexa',
-//             'contact': 'Contact Us | VizTexa'
-//         };
-
-//         document.title = title[titleKey];
-
-//         if (window.location.hash.length === 0) return;
-
-//         scrollToHash(window.location.hash);
-//     };
-
-//     useEffect(refresh, [location]);
-
-//     return null;
-// }
-
-// function CustomLink({to, children, className})
-// {
-//     const navigate = useNavigate();
-
-//     function handleClick(E)
-//     {
-//         if (E.metaKey || E.ctrlKey || E.shiftKey || E.altKey || E.button !== 0) return;
-
-//         E.preventDefault();
-
-//         navigate(to);
-//     }
-
-//     return <a href={to} onClick={handleClick} className={className}>{children}</a>
-// }
-
-export { ROW, COL, GRID, Slider, Hover3D, AudioPlayer, SearchBox }
+export { ROW, COL, GRID, Slider, Hover3D, AudioPlayer, SearchBox, CustomModal }
