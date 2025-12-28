@@ -3,7 +3,7 @@ import { COL, ROW } from '../util/components';
 
 import eventBus from '../util/events';
 
-// import Queue from './sections/queue';
+import Queue from './sections/queues';
 import Folders from './sections/folders';
 import Albums from './sections/albums';
 import Artists from './sections/artists';
@@ -41,7 +41,7 @@ export default function displayRight()
 
     return (
         <ROW ref={displayRef} id='displayLeft'>
-            <COL className='section' style={{background: 'brown'}}></COL>
+            <Queue/>
             <Folders/>
             <Albums/>
             <Artists/>

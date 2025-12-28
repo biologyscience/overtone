@@ -13,6 +13,8 @@
     font-family: var(--currentFont);
     // outline: .5px solid red;
 
+    &:focus-within { outline: none; }
+
     &::-webkit-scrollbar
     {
         background: none;

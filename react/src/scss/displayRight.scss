@@ -8,6 +8,7 @@
     gap: 2.5vh;
     justify-content: center;
     padding: 3vh 0;
+    overflow: hidden;
     
     & > * { padding: 0 2.5vw; }
 
@@ -16,12 +17,15 @@
         flex-grow: 1;
         justify-content: center;
         align-items: center;
+        transition: scale 200ms ease;
         
         .albumart
         {
             height: 45vh;
             aspect-ratio: 1;
         }
+
+        &.paused { scale: 0.975; }
     }
 
     .info

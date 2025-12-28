@@ -74,7 +74,7 @@ export default function displayRight()
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
             <AudioPlayer file={nowPlaying?.file} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume}/>
-            <ROW className='albumartWrapper'>
+            <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
                 <Hover3D style={{display: 'flex'}}>
                     <img className='albumart' src={nowPlaying?.image} draggable={false}/>
                 </Hover3D>
@@ -85,8 +85,8 @@ export default function displayRight()
                 <span className='small overflowPrevent'>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
-                <button><CloseRounded/></button>
-                <button><CloseRounded/></button>
+                <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><CloseRounded/></button>
+                <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><CloseRounded/></button>
                 <button><CloseRounded/></button>
                 <button><CloseRounded/></button>
             </ROW>
