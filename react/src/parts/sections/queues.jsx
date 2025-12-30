@@ -1,5 +1,6 @@
 import {  useEffect, useRef, useState } from 'react';
-import { COL, ROW, CustomModal, SortableList } from '../../util/components';
+import { COL, ROW, CustomModal } from '../../util/components';
+import SortableList from '../../util/sortable';
 
 import { parseTime } from '../../util/functions';
 

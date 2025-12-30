@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { COL, ROW, Slider, Hover3D, AudioPlayer } from '../util/components';
+import { COL, ROW, Slider, Hover3D } from '../util/components';
+import { AudioPlayer } from '../util/audio';
 
 import { parseTime } from '../util/functions';
 
