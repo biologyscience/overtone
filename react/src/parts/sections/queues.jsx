@@ -1,5 +1,5 @@
 import {  useEffect, useRef, useState } from 'react';
-import { COL, ROW, CustomModal } from '../../util/components';
+import { COL, ROW, CustomModal, SortableList } from '../../util/components';
 
 import { parseTime } from '../../util/functions';
 
@@ -27,7 +27,8 @@ export default function queues()
         [folderDuration, setFoldarDuration] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState(),
-        [showModal, setShowModal] = useState(false);
+        [showModal, setShowModal] = useState(false),
+        [currentQueueList, setCurrentQueueList] = useState();
     
     function handleFolderClick({target})
     {
@@ -123,7 +124,22 @@ export default function queues()
         )
     }
 
-    function Songs()
+    useEffect(() =>
+    {
+        window.ipc.invoke('ipc-wantFolders').then((folderData) =>
+        {
+            setFolderPaths(folderData);
+            setSelectedFolders([...folderData].map(x => false));
+        });
+        
+        window.ipc.invoke('ipc-wantFolder').then((songData) =>
+        {
+            setSongsData(songData);
+        });
+
+    }, []);
+
+    useEffect(() =>
     {
         function click({target})
         {
@@ -140,46 +156,31 @@ export default function queues()
             }
         }
 
-        const components = [];
+        setCurrentQueueList(
+            songsData?.map(({title, artist, album, duration, location}, i) =>
+            {
+                const
+                    { minutes, seconds } = parseTime(duration),
+                    durationText = `${minutes}:${seconds}`;
 
-        songsData?.forEach(({title, artist, album, duration, location}, i) =>
-        {
-            const
-                { minutes, seconds } = parseTime(duration),
-                durationText = `${minutes}:${seconds}`;
-    
-            components.push(
-                <li key={i} onClick={click} data-file-path={location}>
-                    <button className='drag'><DragHandleRounded/></button>
-                    <COL className='songData'>
-                        <span className='title overflowPrevent'>{title}</span>
-                        <span className='artist overflowPrevent'>{artist}</span>
-                        <ROW>
-                            <span className='album overflowPrevent'>{album}</span>
-                            <span className='duration'>{durationText}</span>
-                        </ROW>
-                    </COL>
-                    <button><MoreHorizRounded/></button>
-                </li>
-            );
-        });
-        
-        return components;
-    }
+                return (
+                    <div key={i} id={crypto.randomUUID()} className='listItem' onClick={click} data-file-path={location}>
+                        <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
+                        <COL className='songData'>
+                            <span className='title overflowPrevent'>{title}</span>
+                            <span className='artist overflowPrevent'>{artist}</span>
+                            <ROW>
+                                <span className='album overflowPrevent'>{album}</span>
+                                <span className='duration'>{durationText}</span>
+                            </ROW>
+                        </COL>
+                        <button><MoreHorizRounded/></button>
+                    </div>
+                )
+            })
+        );
 
-    useEffect(() =>
-    {
-        window.ipc.invoke('ipc-wantFolders').then((folderData) =>
-        {
-            setFolderPaths(folderData);
-            setSelectedFolders([...folderData].map(x => false));
-        });
-        
-        window.ipc.invoke('ipc-wantFolder').then((songData) =>
-        {
-            setSongsData(songData);
-        });
-    }, []);
+    }, [songsData]);
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
@@ -192,7 +193,9 @@ export default function queues()
                     <ChevronRightRounded/>
                 </ROW>
             </COL>
-            <ul className='currentQueueList'><Songs/></ul>
+            <div className='currentQueueList'>
+                <SortableList>{currentQueueList}</SortableList>
+            </div>
         </COL>
     )
 }

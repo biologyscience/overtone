@@ -290,7 +290,7 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
 
 ipcMain.handle('ipc-nowPlaying', async () =>
 {
-    const file = 'C:/Files/Music/gigolo.mp3';
+    const file = 'C:/Files/Music/All Me.flac';
 
     const { format, common } = await metadata.parseFile(file);
 
