@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, cloneElement } from 'react';
 
 import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
-import Box from '@mui/material/Box';
+
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { useSortable, arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 function ROW({ className, children, ...rest })
 {
@@ -305,4 +307,65 @@ function CustomModal({visibility: [open, setOpen], parentRef, children})
     );
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, AudioPlayer, SearchBox, CustomModal }
+function SortableList({children})
+{
+    if (children === undefined) return;
+
+    const [items, setItems] = useState(children);
+
+    const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+    function handleDragEnd(event)
+    {
+        const { active, over } = event;
+        
+        if (active.id !== over.id)
+        {
+            setItems((items) =>
+            {
+                const ids = [...items].map(x => x.props.id);
+
+                const oldIndex = ids.indexOf(active.id);
+                const newIndex = ids.indexOf(over.id);
+
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    }
+
+    function SortableItem({id, children})
+    {
+        const { children: _, className, ...rest } = children.props;
+
+        const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({id});
+
+        const actualChildren = [];
+
+        function toArray(x) { return Array.isArray(x) ? x : [x]; }
+
+        toArray(children.props.children).forEach((child, i) =>
+        {
+            let toPush = cloneElement(child, {key: i});
+
+            if (child.props['data-is-drag-handle']) toPush = cloneElement(child, {key: i, ...listeners});
+
+            actualChildren.push(toPush);
+        });
+
+        return (
+            <div ref={setNodeRef} className={`${className} ${isDragging ? 'dragging' : ''}`} style={{transform: `translateX(${transform?.x}px) translateY(${transform?.y}px)`}} {...attributes} {...rest}>
+                {actualChildren}
+            </div>
+        );
+    }
+
+    return (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={[...items].map(x => x.props.id)} strategy={verticalListSortingStrategy}>
+                {items.map((item, i) => <SortableItem key={i} id={item.props.id}>{item}</SortableItem>)}
+            </SortableContext>
+        </DndContext>
+    )
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, AudioPlayer, SearchBox, CustomModal, SortableList };

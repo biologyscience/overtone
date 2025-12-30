@@ -382,14 +382,12 @@
     
     .currentQueueList
     {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        height: inherit;
+        overflow-x: hidden;
         overflow-y: auto;
 
-        li
+        .listItem
         {
+            position: relative;
             font-size: 1rem;
             display: grid;
             grid-template-columns: auto 1fr auto;
@@ -399,7 +397,7 @@
             box-sizing: border-box;
             border-radius: 5px;
             border: 2px solid transparent;
-            transition: border-color ease 150ms;
+            transition: all ease 100ms;
             
             * { pointer-events: none; }
 
@@ -410,12 +408,19 @@
                 &:hover { cursor: pointer; }
             }
 
-            &.current, &:first-of-type { border-color: var(--accent); }
-
-            .drag
+            &.dragging
             {
+                border-color: white;
+                scale: 1.025;
+                background-color: colors.$dark30;
+                // box-shadow: 0 0 20px -10px white;
+                z-index: 1;
                 cursor: grab;
             }
+
+            &:first-of-type { border-color: var(--accent); }
+
+            .drag { cursor: grab; }
             
             .songData
             {
