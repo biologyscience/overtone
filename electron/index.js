@@ -173,180 +173,97 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
 
 ipcMain.handle('ipc-wantAlbums', () =>
 {
-    const dummy = [
-        {
-            album: 'lessgoo',
-            artist: 'damn bro',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        },
-        {
-            artist: 'song name one',
-            album: 'damn bro',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        },
-        {
-            artist: 'song name one',
-            album: 'damn bro',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        },
-        {
-            artist: 'song name one',
-            album: 'damn bro',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        },
-        {
-            artist: 'song name one',
-            album: 'damn bro',
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-        }
-    ]
+    const songMetadata = appdata.get('songMetadata');
+
+    const albums = [];
+
+    for (const filepath in songMetadata)
+    {
+        let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+        const { album, albumartist, albumartID } = songMetadata[filepath];
+
+        if (albumartID !== undefined) albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+
+        albums.push(JSON.stringify({album, artist: albumartist, albumart}));
+    }
+
+    const unique = [...new Set(albums)].map(JSON.parse);
     
-    return [...dummy, ...dummy];
+    return [...unique];
 });
 
 ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 {
-    const dummy =
-    {
-        album,
-        artist,
-        year: 2020,
-        songs: 
-        [
-            {
-                title: 'song name one',
-                duration: 289,
-                location: 'C:/lol/one/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist, 'abc'],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'damn bro',
-                duration: 510,
-                location: 'C:/lol/two/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'lessgoo',
-                duration: 100,
-                location: 'C:/oof/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'damn bro',
-                duration: 510,
-                location: 'C:/lol/two/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'lessgoo',
-                duration: 100,
-                location: 'C:/oof/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'damn bro',
-                duration: 510,
-                location: 'C:/lol/two/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'lessgoo',
-                duration: 100,
-                location: 'C:/oof/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'damn bro',
-                duration: 510,
-                location: 'C:/lol/two/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            },
-            {
-                title: 'lessgoo',
-                duration: 100,
-                location: 'C:/oof/song.mp3',
-                track: Math.floor(Math.random() * 10),
-                artists: [artist],
-                plays: Math.floor(Math.random() * 10)
-            }
-        ]
-    };
+    const songMetadata = appdata.get('songMetadata');
 
-    return dummy;
+    const albumData = { album, artist, songs: [] };
+
+    for (const filepath in songMetadata)
+    {
+        if ((songMetadata[filepath].album !== album) || (songMetadata[filepath].albumartist !== artist)) continue;
+
+        const { title, rawDuration, track, artists, year, albumartID } = songMetadata[filepath];
+
+        if (albumData.year === undefined && year !== undefined) albumData.year = year;
+        if (albumData.albumart === undefined && albumartID !== undefined) albumData.albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+
+        albumData.songs.push({
+            title,
+            artists,
+            duration: rawDuration,
+            location: filepath,
+            track: track?.no || 0,
+            plays: Math.floor(Math.random() * 10)
+        });
+    }
+
+    if (albumData.albumart === undefined) albumData.albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+    return albumData;
 });
 
 ipcMain.handle('ipc-wantArtists', () =>
 {
-    const dummy = [ 'lessgoo', 'song name one', 'yoyoyo', 'song name one', 'yoyoyo', 'yoyoyo', 'yoyoyo', 'yoyoyo', 'lessgoo', 'song name one', 'yoyoyo', 'song name one' ];
+    const songMetadata = appdata.get('songMetadata');
 
-    return [...dummy, ...dummy];
+    const artists = [];
+
+    for (const filepath in songMetadata) artists.push(songMetadata[filepath].artists[0]);
+
+    const unique = [...new Set(artists)];
+
+    return unique;
 });
 
 ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
 {
-    const dummy = [
-        {
-            album: 'lessgoo',
-            year: 1900 + Math.floor(Math.random() * 100)
-        },
-        {
-            album: 'song name one',
-            year: 1900 + Math.floor(Math.random() * 100)
-        },
-        {
-            album: 'yoyoyo',
-            year: 1900 + Math.floor(Math.random() * 100)
-        },
-        {
-            album: 'song name one',
-            year: 1900 + Math.floor(Math.random() * 100)
-        },
-        {
-            album: 'yoyoyo',
-            year: 1900 + Math.floor(Math.random() * 100)
-        },
-        {
-            album: 'lessgoo',
-            year: 1900 + Math.floor(Math.random() * 100)
-        }
-    ]
+    const songMetadata = appdata.get('songMetadata');
 
-    return dummy;
+    const albums = {};
+
+    for (const filepath in songMetadata)
+    {
+        if (songMetadata[filepath].artists[0] !== artist) continue;
+
+        const { album, year, albumartID } = songMetadata[filepath];
+
+        if (albums?.[album]?.year === undefined && year !== undefined) albums[album] === undefined ? albums[album] = { year } : albums[album].year = year;
+        if (albums?.[album]?.albumart === undefined && albumartID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `./appdata/webp/${albumartID}.webp`) } : albums[album].albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+    }
+
+    const toSend = [];
+
+    for (const album in albums)
+    {
+        toSend.push({
+            album,
+            year: albums[album].year,
+            albumart: albums[album].albumart || 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png'
+        });
+    }
+
+    return [...toSend];
 });
 
 ipcMain.handle('ipc-nowPlaying', async () =>
