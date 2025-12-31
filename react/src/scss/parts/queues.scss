@@ -1,45 +1,6 @@
 @use '../util';
 @use '../colors.scss';
 
-#queueOptions
-{   
-    top: var(--top);
-    left: 50vw;
-    list-style: none;
-    margin: 0;
-    flex-grow: 1;
-    background-color: var(--dark30);
-    border-radius: .5em;
-    padding: .25em .85em;
-    transform: scale(1.5);
-    z-index: 3;
-
-    display: none;
-    
-    &.visible { display: block !important; }
-
-    li
-    {
-        $gap: 1em;
-
-        display: flex;
-        gap: $gap;
-        align-items: center;
-        margin: .5em .1em;
-        border: 2px solid transparent;
-        border-radius: .5rem;
-        cursor: pointer;
-
-        * { pointer-events: none; }
-        
-        img
-        {
-            height: 1em;
-            aspect-ratio: 1;
-        }
-    }
-}
-
 .section#queues
 {
     & > *
@@ -48,338 +9,114 @@
         padding-right: 1em !important;
     }
 
-    #queueListMenu
+    .queuesHolder
     {
-        $width: 60vw * .6;
-        $height: calc(var(--displayHeight) * .75);
-    
-        font-size: 20px;
-        width: $width;
-        height: $height;
-        top: calc((var(--displayHeight) - $height) / 2);
-        left: calc((60vw - $width) / 2);
+        font-size: 1rem;
+        height: 50vh;
+        aspect-ratio: .9/1;
+        background-color: colors.$dark30;
         border-radius: 5px;
-        background-color: var(--dark30);
-        box-shadow: 0 1vh 50px .5vw black;
-        z-index: 2;
-        animation: slideOut 250ms ease forwards;
-    
-        &.visible
-        {
-            animation: slideIn 250ms ease forwards;  
-        }
-    
-        @keyframes slideOut
-        {
-            0%
-            {
-                transform: translateY(0%);
-                opacity: 1;
-            }
-    
-            50%
-            {
-                transform: translateY(2.5%);
-                opacity: 1;
-            }
-    
-            99%
-            {
-                transform: translateY(2.5%);
-                opacity: 0;
-            }
-    
-            100%
-            {
-                transform: translateY(200%);
-                opacity: 0;
-            }
-        }
-    
-        @keyframes slideIn
-        {
-            0%
-            {
-                transform: translateY(200%);
-                opacity: 0;
-            }
-    
-            1%
-            {
-                transform: translateY(2.5%);
-                opacity: 0;
-            }
-    
-            50%
-            {
-                transform: translateY(2.5%);
-                opacity: 1;
-            }
-    
-            100%
-            {
-                transform: translateY(0%);
-                opacity: 1;
-            }
-        }
-    
+
         .head
         {
-            padding: .7em .5em;
-    
+            font-size: 1.5em;
+            margin: 0;
+            padding: .5em .75em;
+
+            & > *:last-child { margin-left: auto; }
+            
             @include util.divider(after, BottomLeft);
-    
-            & > img
+
+            svg
             {
-                height: 1.5em;
-                width: 1.5em;
-                align-self: center;
-                margin-left: 1em;
+                height: 1.25em;
+                width: 1.25em;
             }
+        }
+
+        .queuesList
+        {
+            overflow-x: hidden;
+            overflow-y: auto;
+            margin: .5em 0;
     
-            & > span
+            .listItem
+            {
+                position: relative;
+                font-size: 1.15rem;
+                display: grid;
+                grid-template-columns: auto 1fr auto auto;
+                gap: 1em;
+                margin: 0 .1em;
+                padding: .2em 1em;
+                align-items: center;
+                box-sizing: border-box;
+                border-radius: 5px;
+                border: 2px solid transparent;
+                transition: all ease 100ms;
+                
+                & > *:hover { cursor: pointer; }
+    
+                &.dragging
+                {
+                    border-color: white;
+                    scale: 1.015;
+                    background-color: colors.$dark40;
+                    // box-shadow: 0 0 20px -10px white;
+                    z-index: 1;
+                    cursor: grab;
+                }
+    
+                &:first-of-type { border-color: var(--accent); }
+    
+                .drag { cursor: grab; }
+            }
+        }
+    }
+
+    .head
+    {
+        margin: .5em 0;
+        gap: 1em;
+
+        .queueSelector
+        {
+            font-size: 1rem;
+            padding: .5em 2ch;
+            border: .1em solid colors.$dark50;
+            border-radius: 5px;
+            align-items: center;
+    
+            .name
             {
                 font-size: 1.5em;
-                margin-left: .7em;
+                margin-right: auto;
             }
     
-            .close
-            {
-                align-self: center;
-                right: 5%;
+            svg { rotate: 90deg; }
     
-                img
-                {
-                    height: 1em;
-                    width: 1em;
-                }
-            }
-        }
-    
-        #queueList
-        {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: scroll;
-            flex-grow: 1;
-    
-            li
-            {
-                $gap: 1em;
-
-                display: flex;
-                gap: $gap;
-                align-items: center;
-                margin: 0 .1em;
-                padding: .5em 0;
-                border: 2px solid transparent;
-                border-radius: .5rem;
-                
-                img
-                {
-                    height: 1em;
-                    aspect-ratio: 1;
-                }
-                
-                &.current { border-color: var(--accent); }
-
-                &:first-of-type { margin-top: .3em; }
-    
-                &:last-of-type { margin-bottom: .3em; }
-
-                .dragger
-                {
-                    margin-left: $gap;
-
-                    img { z-index: -1; }
-                }
-
-                .position { font-size: .5em; }
-
-                .queueName, input { flex-grow: 1; }
-
-                input
-                {
-                    background: none;
-                    margin: 0;
-                    font-size: inherit;
-                    transition: border-bottom-color .5s ease;
-
-                    @include util.inputBorderReset(bottom, 2px);
-                }
-
-                .options
-                {
-                    margin-right: $gap;
-
-                    * { pointer-events: none; }
-                }
-            }
-    
-            &::-webkit-scrollbar
-            {
-                background: none;
-                width: 1px;
-            }
-            
-            &::-webkit-scrollbar-thumb
-            {
-                background-color: var(--dark80);
-            }
+            &:hover { cursor: pointer; }
         }
         
-        .queueNames { pointer-events: none; }
-    }
-
-    .headTop
-    {
-        width: 100%;
-        font-size: 20px;
-        padding: .5em 0;
-
-        .queueListWrapper
+        .currentQueueInfo
         {
-            font-size: 25px;
-            width: 100%;
-            border: .1em solid var(--dark40);
-            border-radius: .5em;
-            padding: .4em .7em;
-            margin: 0 .5em;
-
-            span { white-space: pre; }
-
-            img
-            {
-                $size: 20px;
-                height: $size;
-                width: $size;
-                align-self: center;
-                right: 1em;
-            }
-        }
-    }
-
-    .headBottom
-    {
-        width: 100%;
-        font-size: 20px;
-        padding: .5em 0;
-
-        @include util.divider(after, BottomLeft);
-    }
-
-    #queuesHolder
-    {
-        width: 100%;
-        font-size: 20px;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        overflow: hidden;
-
-        ul
-        {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            height: inherit;
-            overflow-y: auto;
-            display: none;
-
-            &.current
-            {
-                display: flex !important;
-                flex-direction: column;
-            }
-
-            &::-webkit-scrollbar
-            {
-                background: none;
-                width: 1px;
-            }
-
-            &::-webkit-scrollbar-thumb
-            {
-                background-color: white;
-                border-radius: 10em;
-            }
-
-            li
-            {
-                display: grid;
-                grid-template-columns: 1fr 8fr 1fr;
-                margin: 0 .1em;
-                padding: .5em 0;
-                box-sizing: border-box;
-                border-radius: .5rem;
-                border: 2px solid transparent;
-                transition: border-color ease 150ms;
-                
-                * { pointer-events: none; }
-                
-                & > * { pointer-events: all; }
-
-                &:first-of-type { margin-top: .3em; }
-
-                &:last-of-type { margin-bottom: .3em; }
-
-                &.current { border-color: var(--accent); }
-
-                img
-                {
-                    font-size: 20px;
-                    height: 1em;
-                    width: 1em;
-                }
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            gap: 10vw;
+            padding-bottom: 1em;
     
-                .dragger img { z-index: -1; }
-
-                .info
-                {
-                    & > *
-                    {
-                        font-size: .7em;
-
-                        &:first-of-type { font-size: 1.2em; }
-                    }
-
-                    &::after
-                    {
-                        content: attr(data-song-duration);
-                        position: absolute;
-                        font-size: .8em;
-                        bottom: 0;
-                        right: 0;
-                    }
-                }
+            & > *
+            {
+                font-size: 1rem;
+                gap: .25em;
+                align-items: center;
             }
+
+            @include util.divider(after, BottomLeft);
         }
     }
 
-    .queueListMenu
-    {
-        // position: relative;
-        font-size: 1rem;
-        padding: .5em 2ch;
-        margin: .5em 0;
-        border: .1em solid colors.$dark50;
-        border-radius: 5px;
-        align-items: center;
-
-        // @include util.divider(after, BottomLeft);
-
-        .name
-        {
-            font-size: 1.5em;
-            margin-right: auto;
-        }
-
-        svg { rotate: 90deg; }
-
-        &:hover { cursor: pointer; }
-    }
-    
     .currentQueueList
     {
         overflow-x: hidden;
