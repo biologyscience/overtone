@@ -1,3 +1,4 @@
+electron/appdata
 node_modules
 react/dist
 npm start.vbs

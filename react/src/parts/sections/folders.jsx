@@ -87,13 +87,11 @@ export default function folders()
 
     function FolderList()
     {
-        const components = [];
-    
-        folderPaths.forEach((folderPath, i) =>
+        return folderPaths.map((folderPath, i) =>
         {
             const folderName = folderPath.split('/').pop().split('\\').pop();
 
-            components.push(
+            return (
                 <li className={`folder ${selectedFolders?.[i] ? 'delete' : ''}`} onClick={handleFolderClick} key={i} data-index={i}>
                     <FolderRounded/>
                     <COL>
@@ -104,8 +102,6 @@ export default function folders()
                 </li>
             );
         });
-
-        return components;
     }
 
     function DeleteText()
@@ -142,11 +138,9 @@ export default function folders()
             }
         }
 
-        const components = [];
-    
         let totalDuration = 0;
 
-        songsData?.forEach(({title, artist, album, duration, location}, i) =>
+        return songsData?.map(({title, artist, album, duration, location}, i) =>
         {
             totalDuration += duration;
     
@@ -154,7 +148,7 @@ export default function folders()
                 { minutes, seconds } = parseTime(duration),
                 durationText = `${minutes}:${seconds}`;
     
-            components.push(
+            return (
                 <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location}>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
@@ -168,8 +162,6 @@ export default function folders()
                 </li>
             );
         });
-        
-        return components;
     }
 
     useEffect(() =>

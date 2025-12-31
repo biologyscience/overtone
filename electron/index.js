@@ -1,47 +1,58 @@
 const { app, BrowserWindow, ipcMain, dialog, protocol, net } = require('electron');
 const metadata = require('music-metadata');
-const { readdirSync, statSync } = require('fs');
+const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
 const path = require('path');
+const sharp = require('sharp');
+const crypto = require('crypto')
+
+const { appdata, parseTime } = require('./util');
 
 let WINDOW = null;
 
+if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
+if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
+
+['albums', 'artists', 'config', 'metadata', 'queues', 'songList', 'itunesCache'].forEach((x) =>
+{
+    const filepath = path.join(__dirname, `./appdata/${x}.json`);
+
+    let data = {};
+
+    if (existsSync(filepath)) return;
+
+    if (x === 'config')
+    {
+        data =
+        {
+            allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
+            font: 'Fira',
+            volume: 1,
+            discordAppID: '1312407617540456458',
+            discordRPCconnect: false,
+            checkMusicIn: [],
+            lastQueueState: {}
+        };
+    }
+
+    writeFileSync(filepath, JSON.stringify(data, null, 4));
+});
+
 ipcMain.handle('ipc-wantFolders', () => 
 {
-    const folderData = 
-    [
-        'C:\\Files\\Music',
-        'C:\\Files\\Music\\Mashups',
-        'C:\\Files\\Music\\MegaMix',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 1',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 2',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 3'
-    ];
+    const { checkMusicIn } = appdata.get('config');
 
-    return folderData;
+    return [...checkMusicIn];
 });
 
 ipcMain.handle('ipc-deleteFolders', (E, toDelete) => 
-{
-    const folderData = 
-    [
-        'C:\\Files\\Music',
-        'C:\\Files\\Music\\Mashups',
-        'C:\\Files\\Music\\MegaMix',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 1',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 2',
-        'C:\\Files\\Music\\DEATH NOTE Original Soundtrack\\Part 3'
-    ];
+{   
+    const config = appdata.get('config');
 
     toDelete.forEach((x) =>
     {
-        const index = folderData.indexOf(x);
+        const index = config.checkMusicIn.indexOf(x);
 
-        if (index !== -1)
-        {
-            folderData.splice(index, 1);
-
-            // update db
-        }
+        if (index !== -1) config.checkMusicIn.splice(index, 1);
         
         else
         {
@@ -49,7 +60,9 @@ ipcMain.handle('ipc-deleteFolders', (E, toDelete) =>
         }
     });
 
-    return folderData;
+    appdata.set('config', config);
+
+    return [...config.checkMusicIn];
 });
 
 ipcMain.handle('ipc-addFolders', () =>
@@ -78,36 +91,84 @@ ipcMain.handle('ipc-addFolders', () =>
         readdirSync(folder).filter(x => statSync(path.join(folder, x)).isDirectory()).forEach(y => dirs.push(path.join(folder, y)));
     }
 
-    return filtered;
+    function alphabeticalOrder(a, b) { return a.split('/').pop().split('\\').pop().localeCompare(b.split('/').pop().split('\\').pop()) }
+
+    const config = appdata.get('config');
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
+
+    const newFolders = filtered.filter(x => !config.checkMusicIn.includes(x));
+    let newSongs = [];
+    
+    newFolders.forEach((dir) =>
+    {
+        const songListInFolder = readdirSync(dir)
+        .filter(a => !statSync(path.join(dir, a)).isDirectory())
+        .filter(x => /\.(mp3|flac|ogg)$/i.test(x))
+        .map(b => path.join(dir, b));
+
+        newSongs = newSongs.concat(songListInFolder).sort(alphabeticalOrder);
+
+        songList[dir] = [...songListInFolder];
+    });
+
+    appdata.set('songList', songList);
+    
+    Promise.all(newSongs.map(x => metadata.parseFile(x, {skipPostHeaders: true}))).then(async (results) =>
+    {
+        for (let i = 0; i < results.length; i++)
+        {
+            const { album, albumartist, artists, bpm, disk, genre, title, track, year, picture } = results[i].common;
+
+            const
+                time = parseTime(results[i].format.duration),
+                hours = time.hours,
+                minutes = time.minutes,
+                seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
+            
+            let duration;
+
+            time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
+
+            const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration, rawDuration: results[i].format.duration };
+            
+            const albumartID = crypto.createHash('md5').update(`${album}_${albumartist}`).digest('hex');
+
+            if (existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`))) data.albumartID = albumartID;
+
+            if (!existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`)) && (picture[0] !== undefined))
+            {
+                data.albumartID = albumartID;
+
+                await sharp(picture[0].data).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));                
+            }
+
+            songMetadata[newSongs[i]] = data;
+        }
+
+        appdata.set('songMetadata', songMetadata);
+    });
+
+    const newList = config.checkMusicIn.concat(newFolders).sort(alphabeticalOrder);
+
+    config.checkMusicIn = newList;
+
+    appdata.set('config', config);
+
+    return [...config.checkMusicIn];
 });
 
 ipcMain.handle('ipc-wantFolder', (E, folder) =>
 {
-    const dummy = [
-        {
-            title: 'song name one',
-            album: 'lessgoo',
-            artist: 'damn bro',
-            duration: 289,
-            location: 'C:/lol/one/song.mp3'
-        },
-        {
-            album: 'song name one',
-            artist: 'lessgoo',
-            title: 'damn bro',
-            duration: 510,
-            location: 'C:/lol/two/song.mp3'
-        },
-        {
-            artist: 'song name one',
-            title: 'lessgoo',
-            album: 'damn bro',
-            duration: 100,
-            location: 'C:/oof/song.mp3'
-        }
-    ]
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
     
-    return dummy;
+    return songList[folder].map((file) =>
+    {
+        const { title, artists, album, rawDuration } = songMetadata[file];
+
+        return { artist: artists.join(', '), location: file, duration: rawDuration, title, album };
+    });
 });
 
 ipcMain.handle('ipc-wantAlbums', () =>
