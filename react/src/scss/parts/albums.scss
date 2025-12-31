@@ -59,12 +59,13 @@
             {
                 * { pointer-events: none; }
 
+                width: 10rem;
                 text-align: center;
                 padding: .5em;
                 
                 img
                 {
-                    height: 10rem;
+                    width: inherit;
                     aspect-ratio: 1;
                     transition: all 250ms ease;
                 }

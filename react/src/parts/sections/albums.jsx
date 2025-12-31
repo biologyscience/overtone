@@ -46,19 +46,15 @@ export default function albums()
 
     function Albums()
     {
-        const components = [];
-    
-        albumData?.forEach(({artist, album}, i) =>
+        return albumData?.sort((x, y) => x?.album?.localeCompare(y?.album)).map(({artist, album, albumart}, i) =>
         {
-            components.push(
+            return (
                 <div key={i} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
-                    <img src='https://unsplash.it/200' draggable={false}/>
+                    <img src={albumart} draggable={false}/>
                     <span className='albumName block overflowPrevent'>{album}</span>
                 </div>
             );
         });
-        
-        return components;
     }
 
     function Songs()
@@ -115,7 +111,7 @@ export default function albums()
             <COL className={`in ${showInside ? '' : 'displayNone'}`}>
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
-                    <img className='albumart' src='https://unsplash.it/200' draggable={false}/>
+                    <img className='albumart' src={album?.albumart} draggable={false}/>
                     <COL className={'content'}>
                         <span className='name'>{album?.album}</span>
                         <ROW className='info'>

@@ -37,30 +37,24 @@ export default function artists()
 
     function Artists()
     {
-        const components = [];
-    
-        artists?.forEach((artist, i) =>
+        return artists?.sort((x, y) => x?.localeCompare(y))?.map((artist, i) =>
         {
-            components.push(
+            return (
                 <div key={i} onClick={() => showArtist(artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
                     <img src='https://unsplash.it/200' draggable={false}/>
                     <span className='artistName block overflowPrevent'>{artist}</span>
                 </div>
             );
         });
-        
-        return components;
     }
 
     function Albums()
     {
-        const components = [];
-
-        artist?.albums?.sort((x, y) => x.year - y.year)?.forEach(({album, year}, i) =>
+        return artist?.albums?.sort((x, y) => y.year - x.year)?.map(({album, year, albumart}, i) =>
         {
-            components.push(
+            return (
                 <div key={i} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} className={`albumItem`}>
-                    <img src='https://unsplash.it/300' draggable={false}/>
+                    <img src={albumart} draggable={false}/>
                     <COL className={'info'}>
                         <span className='albumName block overflowPrevent'>{album}</span>
                         <span className='year'>{year}</span>
@@ -68,8 +62,6 @@ export default function artists()
                 </div>
             );
         });
-
-        return components;
     }
 
     useEffect(() =>
@@ -81,7 +73,7 @@ export default function artists()
             setInputMatchSpace([...artistsData].map(x => true));
         });
 
-        eventBus.addEventListener('ot-showArtist', ({detail: {artist}}) => showArtist(artist));
+        eventBus.addEventListener('ot-showArtist', ({detail}) => showArtist(detail));
     }, []);
 
     return (
