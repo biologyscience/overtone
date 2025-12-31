@@ -72,15 +72,23 @@ export default function displayRight()
 
     useEffect(() =>
     {
-        window.ipc.invoke('ipc-nowPlaying').then(x => setNowPlaying(x));
+        window.ipc.on('ipc-setNowPlaying', (song) =>
+        {
+            setNowPlaying(song);
+
+            if (song.autoPlay) setPlayState(true);
+        });
+
+        window.ipc.send('ipc-displayRightReady', true);
+
     }, []);
 
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
-            <AudioPlayer file={nowPlaying?.file} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume}/>
+            <AudioPlayer file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume}/>
             <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
                 <Hover3D style={{display: 'flex'}}>
-                    <img className='albumart' src={nowPlaying?.image} draggable={false}/>
+                    <img className='albumart' src={nowPlaying?.albumart} draggable={false}/>
                 </Hover3D>
             </ROW>
             <COL className='info'>

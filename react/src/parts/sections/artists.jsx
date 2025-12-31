@@ -23,9 +23,9 @@ export default function artists()
     
     function showArtist(artist)
     {
-        window.ipc.invoke('ipc-wantArtist', {artist}).then((data) =>
+        window.ipc.invoke('ipc-wantArtist', {artist}).then(({picture, albums}) =>
         {
-            const artistToSet = { name: artist, albums: structuredClone(data) };
+            const artistToSet = { name: artist, picture, albums };
 
             setArtist(artistToSet);
 
@@ -37,11 +37,11 @@ export default function artists()
 
     function Artists()
     {
-        return artists?.sort((x, y) => x?.localeCompare(y))?.map((artist, i) =>
+        return artists?.sort((x, y) => x?.artist?.localeCompare(y?.artist))?.map(({artist, picture}, i) =>
         {
             return (
-                <div key={i} onClick={() => showArtist(artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
-                    <img src='https://unsplash.it/200' draggable={false}/>
+                <div key={i} onClick={() => showArtist(artist)} className={`artistItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
+                    <ROW className={'artistPic'}><img src={picture} draggable={false}/></ROW>
                     <span className='artistName block overflowPrevent'>{artist}</span>
                 </div>
             );
@@ -94,7 +94,7 @@ export default function artists()
             <COL className={`in ${showInside ? '' : 'displayNone'}`}>
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
-                    <img className='artistPic' src='https://unsplash.it/200' draggable={false}/>
+                    <ROW className='artistPic'><img src={artist?.picture} draggable={false}/></ROW>
                     <COL className={'content'}>
                         <span className='name'>{artist?.name}</span>
                         <ROW className='info'>
