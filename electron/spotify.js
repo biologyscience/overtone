@@ -1,7 +1,9 @@
+const { appdata } = require('./util');
+
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-const clientID = '82aad0fea0cf45d4951acd27901e484c';
-const clientSecret = '2fde59abe10148b9a94a5679081ae02c';
+const { clientID, clientSecret } = appdata.get('config');
+
 const authToken = Buffer.from(`${clientID}:${clientSecret}`).toString('base64');
 
 let lastExpireTime = Date.now();
