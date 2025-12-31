@@ -13,7 +13,10 @@ import
     PauseRounded,
     PlayArrowRounded,
     SkipNextRounded,
-    CloseRounded
+    CloseRounded,
+    FavoriteBorderRounded,
+    InfoOutlineRounded,
+    MoreRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -86,10 +89,9 @@ export default function displayRight()
                 <span className='small overflowPrevent'>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
-                <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><CloseRounded/></button>
-                <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><CloseRounded/></button>
-                <button><CloseRounded/></button>
-                <button><CloseRounded/></button>
+                <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
+                <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><InfoOutlineRounded/></button>
+                <button><MoreRounded/></button>
             </ROW>
             <ROW className='timeline'>
                 <CurrentTime/>
