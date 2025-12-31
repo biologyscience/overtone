@@ -3,39 +3,64 @@ const metadata = require('music-metadata');
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const crypto = require('crypto')
+const crypto = require('crypto');
 
 const { appdata, parseTime } = require('./util');
 
+const { getArtistPicture } = require('./spotify');
+
 let WINDOW = null;
 
-if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
-if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
-
-['albums', 'artists', 'config', 'metadata', 'queues', 'songList', 'itunesCache'].forEach((x) =>
+function init()
 {
-    const filepath = path.join(__dirname, `./appdata/${x}.json`);
-
-    let data = {};
-
-    if (existsSync(filepath)) return;
-
-    if (x === 'config')
+    if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
+    if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
+    
+    ['albums', 'artists', 'config', 'metadata', 'queues', 'songList', 'itunesCache', 'songMetadata'].forEach((x) =>
     {
-        data =
+        const filepath = path.join(__dirname, `./appdata/${x}.json`);
+    
+        let data = {};
+    
+        if (existsSync(filepath)) return;
+    
+        if (x === 'config')
         {
-            allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
-            font: 'Fira',
-            volume: 1,
-            discordAppID: '1312407617540456458',
-            discordRPCconnect: false,
-            checkMusicIn: [],
-            lastQueueState: {}
-        };
-    }
+            data =
+            {
+                allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
+                font: 'Fira',
+                volume: 1,
+                discordAppID: '1312407617540456458',
+                discordRPCconnect: false,
+                checkMusicIn: [],
+                lastQueueState: {}
+            };
+        }
+    
+        writeFileSync(filepath, JSON.stringify(data, null, 4));
+    });
+}
 
-    writeFileSync(filepath, JSON.stringify(data, null, 4));
-});
+function setNowPlaying(filepath, autoPlay)
+{
+    const songMetadata = appdata.get('songMetadata');
+ 
+    const { title, artists, album, rawDuration, albumartID } = songMetadata[filepath];
+
+    const data =
+    {
+        title,
+        artist: artists.join(', '),
+        album,
+        duration: rawDuration,
+        albumart: albumartID ? path.join(__dirname, `./appdata/webp/${albumartID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
+        filepath,
+        autoPlay
+    };
+
+    WINDOW.webContents.send('ipc-setNowPlaying', data);
+};
 
 ipcMain.handle('ipc-wantFolders', () => 
 {
@@ -133,7 +158,8 @@ ipcMain.handle('ipc-addFolders', () =>
             const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration, rawDuration: results[i].format.duration };
             
             const albumartID = crypto.createHash('md5').update(`${album}_${albumartist}`).digest('hex');
-
+            const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
+            
             if (existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`))) data.albumartID = albumartID;
 
             if (!existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`)) && (picture[0] !== undefined))
@@ -141,6 +167,13 @@ ipcMain.handle('ipc-addFolders', () =>
                 data.albumartID = albumartID;
 
                 await sharp(picture[0].data).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));                
+            }
+
+            if (!existsSync(path.join(__dirname, `./appdata/webp/${artistID}.webp`)))
+            {
+                const { data } = await getArtistPicture(artists[0]);
+
+                if (data !== null) await sharp(data).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${artistID}.webp`));
             }
 
             songMetadata[newSongs[i]] = data;
@@ -231,7 +264,14 @@ ipcMain.handle('ipc-wantArtists', () =>
 
     for (const filepath in songMetadata) artists.push(songMetadata[filepath].artists[0]);
 
-    const unique = [...new Set(artists)];
+    const unique = [...new Set(artists)].map((artist) =>
+    {
+        const picturePath = path.join(__dirname, `./appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
+
+        const picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+        return { artist, picture };
+    });
 
     return unique;
 });
@@ -263,28 +303,20 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
         });
     }
 
-    return [...toSend];
+    const picturePath = path.join(__dirname, `./appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
+
+    const picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+    return { picture, albums: toSend };
 });
 
-ipcMain.handle('ipc-nowPlaying', async () =>
+ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 {
-    const file = 'C:/Files/Music/All Me.flac';
+    if (!isReady) return;
 
-    const { format, common } = await metadata.parseFile(file);
+    const filepath = 'C:\\Files\\Music\\gigolo.mp3';
 
-    const image = `data:${common.picture[0].format};base64,${common.picture[0].data.toString('base64')}`;
-
-    const dummy =
-    {
-        title: common.title,
-        artist: common.artists.join('; '),
-        album: common.album,
-        duration: format.duration,
-        image,
-        file
-    }
-
-    return dummy;
+    setNowPlaying(filepath, false);
 });
 
 app.on('ready', () =>
@@ -304,6 +336,8 @@ app.on('ready', () =>
             preload: `${__dirname}/preload.js`,
         }
     });
+
+    init();
 
     if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
     else WINDOW.loadURL('http://localhost:8520');
