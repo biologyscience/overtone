@@ -1,8 +1,8 @@
-import {  useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { COL, ROW, CustomModal } from '../../util/components';
 import SortableList from '../../util/sortable';
 
-import { parseTime } from '../../util/functions';
+import eventBus from '../../util/events';
 
 import
 {
@@ -25,50 +25,42 @@ export default function queues()
         [songsData, setSongsData] = useState(),
         [showModal, setShowModal] = useState(false),
         [currentQueueList, setCurrentQueueList] = useState(),
-        [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(0),
+        [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(-1),
         [queuesList, setQueuesList] = useState(),
-        [currentQueueName, setCurrentQueueName] = useState('Queues');
+        [currentQueueName, setCurrentQueueName] = useState('Queues'),
+        [queueDuration, setQueueDuration] = useState('--:--');
 
     useEffect(() =>
-    {        
-        window.ipc.invoke('ipc-wantFolder').then((songData) =>
-        {
-            setSongsData(songData);
-        });
-
-        window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber}) =>
+    {
+        window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
         {
             setSongsData(songs);
             setCurrentQueueName(queueName);
             setCurrentQueueSongNumber(trackNumber);
+            setQueueDuration(duration)
         });
+
+        eventBus.addEventListener('ot-next', () => setCurrentQueueSongNumber(x => x + 1))
+        eventBus.addEventListener('ot-previous', () => setCurrentQueueSongNumber(x => x - 1));
 
     }, []);
 
     useEffect(() =>
     {
-        function click({target})
+        function switchToTrack(index)
         {
-            const { filePath } = target.parentElement.dataset;
+            window.ipc.send('ipc-audioPlayer-switchToTrack', index);
 
-            if (target.tagName === 'BUTTON')
-            {
-                // options
-            }
-
-            else
-            {
-                // play filePath
-            }
+            setCurrentQueueSongNumber(index);
         }
 
         setCurrentQueueList(
             songsData?.map(({title, artists, album, duration}, i) =>
             {
                 return (
-                    <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onClick={click}>
+                    <div key={i} id={crypto.randomUUID()} className='listItem'>
                         <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                        <COL className='songData'>
+                        <COL className='songData' onClick={() => switchToTrack(i)}>
                             <span className='title overflowPrevent'>{title}</span>
                             <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                             <ROW>
@@ -86,7 +78,7 @@ export default function queues()
             songsData?.map(({title, location}, i) =>
             {
                 return (
-                    <div key={i} id={crypto.randomUUID()} className='listItem' onClick={click} data-file-path={location}>
+                    <div key={i} id={crypto.randomUUID()} className='listItem' data-file-path={location}>
                         <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                         <span className='name'>{title}</span>
                         <button><EditRounded/></button>
@@ -96,7 +88,20 @@ export default function queues()
             })
         );
 
-    }, [songsData, currentQueueSongNumber]);
+    }, [songsData]);
+
+    useEffect(() =>
+    {
+        const items = [...sectionRef.current.querySelectorAll('.currentQueueList .listItem')];
+
+        items.forEach((item, i) =>
+        {
+            item.classList.remove('current');
+
+            if (currentQueueSongNumber === i) item.classList.add('current');
+        });
+
+    }, [currentQueueSongNumber]);
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
@@ -125,7 +130,7 @@ export default function queues()
                     </ROW>
                     <ROW className={'queueDuration'}>
                         <ScheduleRounded/>
-                        <span>00:00</span>
+                        <span>{queueDuration}</span>
                     </ROW>
                 </ROW>
             </COL>

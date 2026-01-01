@@ -90,7 +90,7 @@ export default function albums()
         window.ipc.invoke('ipc-wantAlbums').then((albumData) =>
         {
             setAlbumData(albumData);
-            setInputSearchSpace([...albumData].map(x => x.album));
+            setInputSearchSpace([...albumData].sort((x, y) => x?.album?.localeCompare(y?.album)).map(x => x.album));
             setInputMatchSpace([...albumData].map(x => true));
         });
 

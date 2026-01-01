@@ -3,6 +3,7 @@ import { COL, ROW, Slider, Hover3D } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 
 import { parseTime } from '../util/functions';
+import eventBus from '../util/events';
 
 import
 {
@@ -56,17 +57,28 @@ export default function displayRight()
         return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
     }
 
+    function playNext()
+    {
+        window.ipc.invoke('ipc-audioPlayer-next').then((result) =>
+        {
+            if (result) eventBus.dispatchEvent(new Event('ot-next'));
+    
+            else setPlayState(false);
+        });
+    }
+
+    function playPrevious()
+    {
+        window.ipc.send('ipc-audioPlayer-previous');
+
+        eventBus.dispatchEvent(new Event('ot-previous'));
+    }
+
     useEffect(() =>
     {
         setProgress(100 * currentTime / nowPlaying?.duration);
 
-        if (currentTime.toFixed(2) === nowPlaying?.duration?.toFixed(2))
-        {
-            // next
-
-            // else
-            setPlayState(false);
-        }
+        if (currentTime.toFixed(2) === nowPlaying?.duration?.toFixed(2)) playNext();
 
     }, [currentTime, nowPlaying]);
 
@@ -110,11 +122,11 @@ export default function displayRight()
                 <button onClick={() => setShowVolumeSlider(x => !x)} className={showVolumeSlider ? 'current' : ''}>
                     { Math.round(volume) > 0 ? volume > 50 ? <VolumeUpRounded/> : <VolumeDownRounded/> : <VolumeMuteRounded/> }
                 </button>
-                <button><SkipPreviousRounded/></button>
+                <button onClick={playPrevious}><SkipPreviousRounded/></button>
                 <button onClick={() => setPlayState(x => !x)}>
                     { playState ? <PauseRounded/> : <PlayArrowRounded/> }
                 </button>
-                <button><SkipNextRounded/></button>
+                <button onClick={playNext}><SkipNextRounded/></button>
                 <button><CloseRounded/></button>
                 {
                     showVolumeSlider ? (
