@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel})
+function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel, indicateEnd})
 {
     const player = useRef();
     const preGainRef = useRef();
@@ -104,13 +104,13 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
         window.addEventListener('ot-eq1', () => eqChange(1));
 
         audioPlayer.addEventListener('play', init);
-        audioPlayer.addEventListener('ended', () => setCurrentTime(audioPlayer.duration));
+        audioPlayer.addEventListener('ended', () => indicateEnd(true));
         audioPlayer.addEventListener('timeupdate', updateTime);
         
         return () =>
         {
             audioPlayer.removeEventListener('play', init);
-            audioPlayer.removeEventListener('ended', () => setCurrentTime(audioPlayer.duration));
+            audioPlayer.removeEventListener('ended', () => indicateEnd(true));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
     }, []);

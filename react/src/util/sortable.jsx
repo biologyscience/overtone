@@ -1,4 +1,4 @@
-import { useState, cloneElement } from 'react';
+import { useState, cloneElement, useEffect } from 'react';
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useSortable, arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -31,7 +31,7 @@ function SortableItem({id, children})
     );
 }
 
-export default function SortableList({children})
+export default function SortableList({children, ...rest})
 {
     if (children === undefined) return;
 
@@ -53,9 +53,11 @@ export default function SortableList({children})
             return arrayMove(oldItems, oldIndex, newIndex);
         });
     }
+
+    useEffect(() => { setItems(children) }, [children]);
     
     return (
-        <DndContext sensors={sensors} modifiers={[restrictToParentElement, restrictToVerticalAxis]} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} modifiers={[restrictToParentElement, restrictToVerticalAxis]} collisionDetection={closestCenter} onDragEnd={handleDragEnd} {...rest}>
             <SortableContext items={items.map(x => x.props.id)} strategy={verticalListSortingStrategy}>
                 {items.map((item, i) => <SortableItem key={i} id={item.props.id}>{item}</SortableItem>)}
             </SortableContext>

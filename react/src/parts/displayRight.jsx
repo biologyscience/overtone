@@ -27,6 +27,7 @@ export default function displayRight()
     const [volume, setVolume] = useState(100);
     const [playState, setPlayState] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
+    const [endState, setEndState] = useState(false);
 
     const [nowPlaying, setNowPlaying] = useState();
     const [dragging, setDragging] = useState(false);
@@ -78,8 +79,6 @@ export default function displayRight()
     {
         setProgress(100 * currentTime / nowPlaying?.duration);
 
-        if (currentTime.toFixed(2) === nowPlaying?.duration?.toFixed(2)) playNext();
-
     }, [currentTime, nowPlaying]);
 
     useEffect(() =>
@@ -95,9 +94,20 @@ export default function displayRight()
 
     }, []);
 
+    useEffect(() =>
+    {
+        if (endState)
+        {
+            playNext();
+
+            setEndState(false);
+        }
+
+    }, [endState]);
+
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
-            <AudioPlayer file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume}/>
+            <AudioPlayer file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
             <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
                 <Hover3D style={{display: 'flex'}}>
                     <img className='albumart' src={nowPlaying?.albumart} draggable={false}/>
