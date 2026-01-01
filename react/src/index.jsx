@@ -20,14 +20,16 @@ import './scss/parts/albums.scss';
 import './scss/parts/artists.scss';
 
 ReactDOM.createRoot(document.body).render(
-    <React.StrictMode>
+    // <React.StrictMode>
+    <>
         <Titlebar/>
         <ROW id='main'>
             <DisplayLeft/>
             <DisplayRight/>
         </ROW>
         <Navbar/>
-    </React.StrictMode>
+    {/* </React.StrictMode> */}
+    </>
 );
 
 document.addEventListener('DOMContentLoaded', () => window.ipc.send('ipc-maximize'));

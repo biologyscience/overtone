@@ -6,8 +6,10 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 
 const { appdata, parseTime } = require('./util');
-
 const { getArtistPicture } = require('./spotify');
+const Player = require('./player');
+
+const audioPlayer = new Player();
 
 let WINDOW = null;
 
@@ -41,26 +43,6 @@ function init()
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
 }
-
-function setNowPlaying(filepath, autoPlay)
-{
-    const songMetadata = appdata.get('songMetadata');
- 
-    const { title, artists, album, rawDuration, albumartID } = songMetadata[filepath];
-
-    const data =
-    {
-        title,
-        artist: artists.join(', '),
-        album,
-        duration: rawDuration,
-        albumart: albumartID ? path.join(__dirname, `./appdata/webp/${albumartID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
-        filepath,
-        autoPlay
-    };
-
-    WINDOW.webContents.send('ipc-setNowPlaying', data);
-};
 
 ipcMain.handle('ipc-wantFolders', () => 
 {
@@ -316,7 +298,7 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 
     const filepath = 'C:\\Files\\Music\\gigolo.mp3';
 
-    setNowPlaying(filepath, false);
+    audioPlayer.setNowPlaying(filepath, false);
 });
 
 ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
@@ -332,22 +314,22 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
         {
             if (songMetadata[filepath].artists[0] !== artist) continue;
 
-            const { title, artists, album, duration, year, track } = songMetadata[filepath];
+            const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
 
             if (songsByYear[year] === undefined) songsByYear[year] = [];
 
-            songsByYear[year].push({title, artists, album, duration, track, filepath});
+            songsByYear[year].push({title, artists, album, duration, rawDuration, track, filepath});
         }
 
         else
         {
             if ((songMetadata[filepath].album !== ALBUM) || (songMetadata[filepath].artists[0] !== artist)) continue;
 
-            const { title, artists, album, duration, year, track } = songMetadata[filepath];
+            const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
 
             if (songsByYear[year] === undefined) songsByYear[year] = [];
 
-            songsByYear[year].push({title, artists, album, duration, track, filepath});
+            songsByYear[year].push({title, artists, album, duration, rawDuration, track, filepath});
         }
     }
 
@@ -358,7 +340,46 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
         songsByYear[year].sort((x, y) => x.track?.no - y.track?.no);
     }
 
-    WINDOW.webContents.send('ipc-setCurrentQueue', {queueName: ALBUM || artist, songs: years.sort((x, y) => y - x).map(x => songsByYear[x]).flat(), trackNumber});
+    const songList = years.sort((x, y) => y - x).map(x => songsByYear[x]).flat();
+    const queueName = ALBUM || artist;
+
+    let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
+    
+    const
+        time = parseTime(totalTime),
+        hours = time.hours,
+        minutes = time.minutes,
+        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
+    
+    let duration;
+
+    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
+
+    WINDOW.webContents.send('ipc-setCurrentQueue', {queueName, songs: songList, trackNumber, duration});
+
+    const files = [...songList].map(x => x.filepath);
+
+    audioPlayer.setQueue(files, trackNumber, queueName).saveQueue();
+});
+
+ipcMain.handle('ipc-audioPlayer-next', () =>
+{
+    const oldIndex = audioPlayer.currentQueueItem;
+    const newIndex = audioPlayer.next().currentQueueItem;
+
+    if (oldIndex === newIndex) return false;
+
+    return true;
+});
+
+ipcMain.on('ipc-audioPlayer-previous', () =>
+{
+    audioPlayer.previous();
+});
+
+ipcMain.on('ipc-audioPlayer-switchToTrack', (E, index) =>
+{
+    audioPlayer.switchTo(index);
 });
 
 app.on('ready', () =>
@@ -380,6 +401,8 @@ app.on('ready', () =>
     });
 
     init();
+
+    audioPlayer.window = WINDOW;
 
     if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
     else WINDOW.loadURL('http://localhost:8520');

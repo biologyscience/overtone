@@ -86,8 +86,6 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
                 node.connect(filter);
                 node = filter;
             });
-
-            node.connect(ctx.destination);
         }
 
         function eqChange(index)

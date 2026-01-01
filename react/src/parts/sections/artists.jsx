@@ -77,7 +77,7 @@ export default function artists()
         window.ipc.invoke('ipc-wantArtists').then((artistsData) =>
         {
             setArtists(artistsData);
-            setInputSearchSpace(artistsData);
+            setInputSearchSpace([...artistsData].sort((x, y) => x?.artist?.localeCompare(y?.artist)).map(x => x.artist));
             setInputMatchSpace([...artistsData].map(x => true));
         });
 
