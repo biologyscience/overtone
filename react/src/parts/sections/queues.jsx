@@ -26,13 +26,21 @@ export default function queues()
         [showModal, setShowModal] = useState(false),
         [currentQueueList, setCurrentQueueList] = useState(),
         [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(0),
-        [queuesList, setQueuesList] = useState();
+        [queuesList, setQueuesList] = useState(),
+        [currentQueueName, setCurrentQueueName] = useState('Queues');
 
     useEffect(() =>
     {        
         window.ipc.invoke('ipc-wantFolder').then((songData) =>
         {
             setSongsData(songData);
+        });
+
+        window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber}) =>
+        {
+            setSongsData(songs);
+            setCurrentQueueName(queueName);
+            setCurrentQueueSongNumber(trackNumber);
         });
 
     }, []);
@@ -55,21 +63,17 @@ export default function queues()
         }
 
         setCurrentQueueList(
-            songsData?.map(({title, artist, album, duration, location}, i) =>
+            songsData?.map(({title, artists, album, duration}, i) =>
             {
-                const
-                    { minutes, seconds } = parseTime(duration),
-                    durationText = `${minutes}:${seconds}`;
-
                 return (
-                    <div key={i} id={crypto.randomUUID()} className='listItem' onClick={click} data-file-path={location}>
+                    <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onClick={click}>
                         <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                         <COL className='songData'>
                             <span className='title overflowPrevent'>{title}</span>
-                            <span className='artist overflowPrevent'>{artist}</span>
+                            <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                             <ROW>
                                 <span className='album overflowPrevent'>{album}</span>
-                                <span className='duration'>{durationText}</span>
+                                <span className='duration'>{duration}</span>
                             </ROW>
                         </COL>
                         <button><MoreHorizRounded/></button>
@@ -92,7 +96,7 @@ export default function queues()
             })
         );
 
-    }, [songsData]);
+    }, [songsData, currentQueueSongNumber]);
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
@@ -110,7 +114,7 @@ export default function queues()
             </CustomModal>
             <COL className={'head'}>
                 <ROW className={'queueSelector'} onClick={() => setShowModal(true)}>
-                    <span className='name'>Queues</span>
+                    <span className='name'>{currentQueueName}</span>
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>

@@ -8,7 +8,8 @@ import
     ChevronLeftRounded,
     NumbersRounded,
     SearchRounded,
-    CalendarMonthRounded
+    CalendarMonthRounded,
+    PlayArrowRounded
     
 } from '@mui/icons-material';
 
@@ -20,6 +21,13 @@ export default function artists()
         [artist, setArtist] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState();
+
+    function play(name)
+    {
+        window.ipc.send('ipc-addQueue', {artist: name, trackNumber: 0});
+
+        eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
+    }
     
     function showArtist(artist)
     {
@@ -94,7 +102,10 @@ export default function artists()
             <COL className={`in ${showInside ? '' : 'displayNone'}`}>
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
-                    <ROW className='artistPic'><img src={artist?.picture} draggable={false}/></ROW>
+                    <ROW className={'artistPic'} onClick={() => play(artist?.name)}>
+                        <img src={artist?.picture} draggable={false}/>
+                        <PlayArrowRounded className='icon'/>
+                    </ROW>
                     <COL className={'content'}>
                         <span className='name'>{artist?.name}</span>
                         <ROW className='info'>

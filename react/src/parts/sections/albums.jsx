@@ -12,7 +12,8 @@ import
     ScheduleRounded,
     SearchRounded,
     PersonRounded,
-    CalendarMonthRounded
+    CalendarMonthRounded,
+    PlayArrowRounded
     
 } from '@mui/icons-material';
 
@@ -24,6 +25,13 @@ export default function albums()
         [album, setAlbum] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState();
+
+    function play(trackNumber)
+    {
+        window.ipc.send('ipc-addQueue', {album: album.album, artist: album.songs[0].artists[0], trackNumber});
+
+        eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
+    }
     
     function showAlbum(album, artist)
     {
@@ -59,26 +67,22 @@ export default function albums()
 
     function Songs()
     {
-        const components = [];
-
-        album?.songs?.sort((x, y) => x.track - y.track)?.forEach(({track, title, artists, plays, duration}, i) =>
+        return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration}, i) =>
         {
             const { minutes, seconds } = parseTime(duration);
 
-            components.push(
-                <li key={i} className='tableItem'>
+            return (
+                <li key={i} className='tableItem' onClick={() => play(i)}>
                     <span>{track}</span>
                     <COL className={'placeLeft'}>
                         <span className='title'>{title}</span>
-                        <span className='artists'>{artists.join('; ')}</span>
+                        <span className='artists'>{artists.join(', ')}</span>
                     </COL>
                     <span>{plays}</span>
                     <span>{`${minutes}:${seconds}`}</span>
                 </li>
             );
         });
-
-        return components;
     }
 
     useEffect(() =>
@@ -111,7 +115,10 @@ export default function albums()
             <COL className={`in ${showInside ? '' : 'displayNone'}`}>
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
-                    <img className='albumart' src={album?.albumart} draggable={false}/>
+                    <ROW className={'albumart'} onClick={() => play(0)}>
+                        <img src={album?.albumart} draggable={false}/>
+                        <PlayArrowRounded className='icon'/>
+                    </ROW>
                     <COL className={'content'}>
                         <span className='name'>{album?.album}</span>
                         <ROW className='info'>
