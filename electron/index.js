@@ -319,6 +319,48 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
     setNowPlaying(filepath, false);
 });
 
+ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
+{
+    const songMetadata = appdata.get('songMetadata');
+
+    const songsByYear = {};
+    const years = [];
+
+    for (const filepath in songMetadata)
+    {
+        if (ALBUM === undefined)
+        {
+            if (songMetadata[filepath].artists[0] !== artist) continue;
+
+            const { title, artists, album, duration, year, track } = songMetadata[filepath];
+
+            if (songsByYear[year] === undefined) songsByYear[year] = [];
+
+            songsByYear[year].push({title, artists, album, duration, track, filepath});
+        }
+
+        else
+        {
+            if ((songMetadata[filepath].album !== ALBUM) || (songMetadata[filepath].artists[0] !== artist)) continue;
+
+            const { title, artists, album, duration, year, track } = songMetadata[filepath];
+
+            if (songsByYear[year] === undefined) songsByYear[year] = [];
+
+            songsByYear[year].push({title, artists, album, duration, track, filepath});
+        }
+    }
+
+    for (const year in songsByYear)
+    {
+        years.push(year);
+
+        songsByYear[year].sort((x, y) => x.track?.no - y.track?.no);
+    }
+
+    WINDOW.webContents.send('ipc-setCurrentQueue', {queueName: ALBUM || artist, songs: years.sort((x, y) => y - x).map(x => songsByYear[x]).flat(), trackNumber});
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow

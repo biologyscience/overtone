@@ -61,7 +61,7 @@
 
                 text-align: center;
                 padding: .5em;
-                width: 10rem;
+                width: 8rem;
 
                 .artistPic
                 {
@@ -119,8 +119,11 @@
 
             .artistPic
             {
+                position: relative;
                 align-self: center;
-                align-items: center;
+
+                &, * { transition: all 250ms ease; }
+
                 justify-content: center;
                 height: 200px;
                 width: 200px;
@@ -132,6 +135,29 @@
                     height: 100%;
                     width: 100%;
                     object-fit: cover;
+                }
+
+                svg
+                {
+                    position: absolute;
+                    height: 100%;
+                    width: auto;
+                    align-self: center;
+                    fill: colors.$accent;
+                    scale: 0;
+                    background-color: colors.$dark50;
+                    border: .25em solid white;
+                    border-radius: 50%;
+                    box-sizing: border-box;
+                }
+
+                &:hover
+                {
+                    cursor: pointer;
+
+                    img { opacity: .7; }
+
+                    svg { scale: .5; }
                 }
             }
 

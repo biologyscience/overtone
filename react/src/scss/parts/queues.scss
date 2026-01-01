@@ -129,7 +129,7 @@
             display: grid;
             grid-template-columns: auto 1fr auto;
             gap: 2em;
-            margin: .5em 0;
+            margin: .25em 0;
             padding: .2em 2em;
             box-sizing: border-box;
             border-radius: 5px;
@@ -155,7 +155,7 @@
                 cursor: grab;
             }
 
-            &:first-of-type { border-color: var(--accent); }
+            &.current { border-color: var(--accent); }
 
             .drag { cursor: grab; }
             
