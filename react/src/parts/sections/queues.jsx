@@ -24,7 +24,6 @@ export default function queues()
     const
         [songsData, setSongsData] = useState(),
         [showModal, setShowModal] = useState(false),
-        [currentQueueList, setCurrentQueueList] = useState(),
         [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(-1),
         [queuesList, setQueuesList] = useState(),
         [currentQueueName, setCurrentQueueName] = useState('Queues'),
@@ -44,36 +43,16 @@ export default function queues()
         eventBus.addEventListener('ot-previous', () => setCurrentQueueSongNumber(x => x - 1));
 
     }, []);
+    
+    function switchToTrack(index)
+    {
+        window.ipc.send('ipc-audioPlayer-switchToTrack', index);
+
+        setCurrentQueueSongNumber(index);
+    }
 
     useEffect(() =>
     {
-        function switchToTrack(index)
-        {
-            window.ipc.send('ipc-audioPlayer-switchToTrack', index);
-
-            setCurrentQueueSongNumber(index);
-        }
-
-        setCurrentQueueList(
-            songsData?.map(({title, artists, album, duration}, i) =>
-            {
-                return (
-                    <div key={i} id={crypto.randomUUID()} className='listItem'>
-                        <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                        <COL className='songData' onClick={() => switchToTrack(i)}>
-                            <span className='title overflowPrevent'>{title}</span>
-                            <span className='artist overflowPrevent'>{artists.join(', ')}</span>
-                            <ROW>
-                                <span className='album overflowPrevent'>{album}</span>
-                                <span className='duration'>{duration}</span>
-                            </ROW>
-                        </COL>
-                        <button><MoreHorizRounded/></button>
-                    </div>
-                )
-            })
-        );
-
         setQueuesList(
             songsData?.map(({title, location}, i) =>
             {
@@ -126,7 +105,7 @@ export default function queues()
                     <ROW className={'songNumbers'}>
                         <strong>{currentQueueSongNumber + 1}</strong>
                         <span>/</span>
-                        <span>{currentQueueList?.length}</span>
+                        <span>{songsData?.length}</span>
                     </ROW>
                     <ROW className={'queueDuration'}>
                         <ScheduleRounded/>
@@ -135,7 +114,27 @@ export default function queues()
                 </ROW>
             </COL>
             <COL className='currentQueueList'>
-                <SortableList>{currentQueueList}</SortableList>
+                <SortableList>
+                    {
+                        songsData?.map(({title, artists, album, duration}, i) =>
+                        {
+                            return (
+                                <div key={i} id={crypto.randomUUID()} className='listItem'>
+                                    <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
+                                    <COL className='songData' onClick={() => switchToTrack(i)}>
+                                        <span className='title overflowPrevent'>{title}</span>
+                                        <span className='artist overflowPrevent'>{artists.join(', ')}</span>
+                                        <ROW>
+                                            <span className='album overflowPrevent'>{album}</span>
+                                            <span className='duration'>{duration}</span>
+                                        </ROW>
+                                    </COL>
+                                    <button><MoreHorizRounded/></button>
+                                </div>
+                            )
+                        })
+                    }
+                </SortableList>
             </COL>
         </COL>
     )

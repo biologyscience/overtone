@@ -18,7 +18,7 @@ function init()
     if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
     if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
     
-    ['albums', 'artists', 'config', 'metadata', 'queues', 'songList', 'itunesCache', 'songMetadata'].forEach((x) =>
+    ['config', 'queues', 'songList', 'songMetadata'].forEach((x) =>
     {
         const filepath = path.join(__dirname, `./appdata/${x}.json`);
     
@@ -39,6 +39,8 @@ function init()
                 lastQueueState: {}
             };
         }
+
+        if (x === 'queues') data = [];
     
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
@@ -359,7 +361,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
 
     const files = [...songList].map(x => x.filepath);
 
-    audioPlayer.setQueue(files, trackNumber, queueName).saveQueue();
+    audioPlayer.setQueue(files, trackNumber, queueName).saveQueue({currentTrack: trackNumber});
 });
 
 ipcMain.handle('ipc-audioPlayer-next', () =>

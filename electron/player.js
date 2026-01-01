@@ -42,10 +42,10 @@ class Player
         return this;
     }
 
-    saveQueue()
+    saveQueue({position, currentTrack})
     {
         const queues = appdata.get('queues');
-        queues[this.queueName] = this.queue;
+        queues.push({name: this.queueName, songs: this.queue, queuePosition: position || queues.length, currentSong: currentTrack || 0});
         appdata.set('queues', queues);
 
         return this;
