@@ -29,7 +29,7 @@ export default function queues()
         [currentQueueName, setCurrentQueueName] = useState('Queues'),
         [queueDuration, setQueueDuration] = useState('--:--'),
         [playingQueueName, setPlayingQueueName] = useState(),
-        [playingTrackNumber, setPlayingTrackNumber] = useState(-1)
+        [playingTrackNumber, setPlayingTrackNumber] = useState(-1);
     
     function switchToTrack(name, index)
     {
@@ -80,7 +80,20 @@ export default function queues()
 
         setCurrentQueueSongNumber(playingTrackNumber);
 
-    }, [playingTrackNumber, currentQueueName, playingQueueName])
+    }, [playingTrackNumber, currentQueueName, playingQueueName]);
+
+    useEffect(() =>
+    {
+        function handle({detail: [oldOrder, newOrder]})
+        {
+            window.ipc.send('ipc-reorderQueue', {queueName: currentQueueName, oldOrder, newOrder});
+        }
+
+        eventBus.addEventListener('ot-songsInQueueReorder', handle);
+
+        return () => { eventBus.removeEventListener('ot-songsInQueueReorder', handle); }
+
+    }, [currentQueueName]);
 
     useEffect(() =>
     {
@@ -95,6 +108,7 @@ export default function queues()
 
         eventBus.addEventListener('ot-next', () => setPlayingTrackNumber(x => x + 1))
         eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
+        eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
@@ -111,7 +125,7 @@ export default function queues()
                         <button onClick={() => setShowModal(false)}><CloseRounded/></button>
                     </ROW>
                     <COL className={'queuesList'}>
-                        <SortableList>{queuesList}</SortableList>
+                        <SortableList setOrder={'ot-queuesReorder'}>{queuesList}</SortableList>
                     </COL>
                 </COL>
             </CustomModal>
@@ -133,7 +147,7 @@ export default function queues()
                 </ROW>
             </COL>
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
-                <SortableList>
+                <SortableList setOrder={'ot-songsInQueueReorder'}>
                     {
                         songsData?.map(({title, artists, album, duration}, i) =>
                         {
