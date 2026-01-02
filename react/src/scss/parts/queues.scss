@@ -67,7 +67,7 @@
                     cursor: grab;
                 }
     
-                &:first-of-type { border-color: var(--accent); }
+                &.current { border-color: var(--accent); }
     
                 .drag { cursor: grab; }
             }
@@ -126,6 +126,7 @@
         {
             position: relative;
             font-size: 1rem;
+            font-style: italic;
             display: grid;
             grid-template-columns: auto 1fr auto;
             gap: 2em;
@@ -155,7 +156,7 @@
                 cursor: grab;
             }
 
-            &.current { border-color: var(--accent); }
+            &.current { border-color: colors.$dark80; }
 
             .drag { cursor: grab; }
             
@@ -182,6 +183,13 @@
                     width: auto;
                 }
             }
+        }
+
+        &.playing .listItem
+        {
+            font-style: normal;
+            
+            &.current { border-color: var(--accent); }
         }
     }
 }

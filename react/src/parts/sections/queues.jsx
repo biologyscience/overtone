@@ -27,47 +27,39 @@ export default function queues()
         [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(-1),
         [queuesList, setQueuesList] = useState(),
         [currentQueueName, setCurrentQueueName] = useState('Queues'),
-        [queueDuration, setQueueDuration] = useState('--:--');
-
-    useEffect(() =>
-    {
-        window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
-        {
-            setSongsData(songs);
-            setCurrentQueueName(queueName);
-            setCurrentQueueSongNumber(trackNumber);
-            setQueueDuration(duration)
-        });
-
-        eventBus.addEventListener('ot-next', () => setCurrentQueueSongNumber(x => x + 1))
-        eventBus.addEventListener('ot-previous', () => setCurrentQueueSongNumber(x => x - 1));
-
-    }, []);
+        [queueDuration, setQueueDuration] = useState('--:--'),
+        [playingQueueName, setPlayingQueueName] = useState(),
+        [playingTrackNumber, setPlayingTrackNumber] = useState(-1)
     
-    function switchToTrack(index)
+    function switchToTrack(name, index)
     {
-        window.ipc.send('ipc-audioPlayer-switchToTrack', index);
+        window.ipc.send('ipc-audioPlayer-switchToTrack', {queueName: name, index});
 
-        setCurrentQueueSongNumber(index);
+        setPlayingTrackNumber(index);
     }
 
     useEffect(() =>
     {
-        setQueuesList(
-            songsData?.map(({title, location}, i) =>
-            {
-                return (
-                    <div key={i} id={crypto.randomUUID()} className='listItem' data-file-path={location}>
-                        <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                        <span className='name'>{title}</span>
-                        <button><EditRounded/></button>
-                        <button><DeleteRounded/></button>
-                    </div>
-                )
-            })
-        );
+        if (!showModal) return;
 
-    }, [songsData]);
+        window.ipc.invoke('ipc-wantQueues').then((queueNames) =>
+        {
+            setQueuesList(
+                queueNames.map((name, i) =>
+                {
+                    return (
+                        <div key={i} id={crypto.randomUUID()} className={`listItem ${playingQueueName === name ? 'current' : ''}`}>
+                            <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
+                            <span className='name' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
+                            <button><EditRounded/></button>
+                            <button><DeleteRounded/></button>
+                        </div>
+                    )
+                })
+            );
+        });
+
+    }, [showModal, playingQueueName]);
 
     useEffect(() =>
     {
@@ -81,6 +73,33 @@ export default function queues()
         });
 
     }, [currentQueueSongNumber]);
+
+    useEffect(() =>
+    {
+        if (playingQueueName !== currentQueueName) return;
+
+        setCurrentQueueSongNumber(playingTrackNumber);
+
+    }, [playingTrackNumber, currentQueueName, playingQueueName])
+
+    useEffect(() =>
+    {
+        window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
+        {
+            setSongsData(songs);
+            setCurrentQueueName(queueName);
+            setCurrentQueueSongNumber(trackNumber);
+            setQueueDuration(duration);
+            setShowModal(false);
+        });
+
+        eventBus.addEventListener('ot-next', () => setPlayingTrackNumber(x => x + 1))
+        eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
+
+        window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
+        window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
+
+    }, []);
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
@@ -103,7 +122,7 @@ export default function queues()
                 </ROW>
                 <ROW className={'currentQueueInfo'}>
                     <ROW className={'songNumbers'}>
-                        <strong>{currentQueueSongNumber + 1}</strong>
+                        <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
                         <span>/</span>
                         <span>{songsData?.length}</span>
                     </ROW>
@@ -113,7 +132,7 @@ export default function queues()
                     </ROW>
                 </ROW>
             </COL>
-            <COL className='currentQueueList'>
+            <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
                 <SortableList>
                     {
                         songsData?.map(({title, artists, album, duration}, i) =>
@@ -121,7 +140,7 @@ export default function queues()
                             return (
                                 <div key={i} id={crypto.randomUUID()} className='listItem'>
                                     <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                                    <COL className='songData' onClick={() => switchToTrack(i)}>
+                                    <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
                                         <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                                         <ROW>

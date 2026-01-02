@@ -303,6 +303,51 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
     audioPlayer.setNowPlaying(filepath, false);
 });
 
+ipcMain.handle('ipc-wantQueues', () =>
+{
+    const queues = appdata.get('queues');
+
+    if (queues[0] === undefined) return [];
+
+    return [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)];
+});
+
+function wantQueue(queue)
+{
+    const queues = appdata.get('queues');
+    const songMetadata = appdata.get('songMetadata');
+
+    const { songs, currentSong } = queues.find(x => x.name === queue);
+
+    const songList = songs.map((x) =>
+    {
+        const { title, artists, album, duration, rawDuration } = songMetadata[x];
+
+        return { title, artists, album, duration, rawDuration };
+    });
+    
+    let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
+    
+    const
+        time = parseTime(totalTime),
+        hours = time.hours,
+        minutes = time.minutes,
+        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
+    
+    let duration;
+
+    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
+
+    return {queueName: queue, songs: songList, trackNumber: currentSong, duration};
+}
+
+ipcMain.on('ipc-wantQueue', (E, queue) =>
+{
+    const data = wantQueue(queue);
+
+    WINDOW.webContents.send('ipc-setCurrentQueue', data);
+});
+
 ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
 {
     const songMetadata = appdata.get('songMetadata');
@@ -366,22 +411,41 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
 
 ipcMain.handle('ipc-audioPlayer-next', () =>
 {
-    const oldIndex = audioPlayer.currentQueueItem;
-    const newIndex = audioPlayer.next().currentQueueItem;
+    const { queueName } = audioPlayer;
+    const { ended, queueName: newQueueName, currentQueueItem } = audioPlayer.next();
+    
+    if (queueName !== newQueueName)
+    {
+        const data = wantQueue(newQueueName);
 
-    if (oldIndex === newIndex) return false;
+        data.trackNumber = currentQueueItem;
+    
+        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+    }
+
+    if (ended) return false;
 
     return true;
 });
 
 ipcMain.on('ipc-audioPlayer-previous', () =>
 {
-    audioPlayer.previous();
+    const { queueName } = audioPlayer;
+    const { queueName: newQueueName, currentQueueItem } = audioPlayer.previous();
+
+    if (queueName !== newQueueName)
+    {
+        const data = wantQueue(newQueueName);
+
+        data.trackNumber = currentQueueItem;
+    
+        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+    }
 });
 
-ipcMain.on('ipc-audioPlayer-switchToTrack', (E, index) =>
+ipcMain.on('ipc-audioPlayer-switchToTrack', (E, {queueName, index}) =>
 {
-    audioPlayer.switchTo(index);
+    audioPlayer.switchTo(queueName, index);
 });
 
 app.on('ready', () =>
