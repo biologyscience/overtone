@@ -9,10 +9,13 @@ class Player
         this.queue = [];
         this.queueName = '';
         this.currentQueueItem = 0;
+        this.ended = true;
     }
 
     setNowPlaying(filepath, autoPlay, songMetadata)
     {
+        this.ended = false;
+
         if (filepath === undefined) return this;
 
         if (songMetadata === undefined) songMetadata = appdata.get('songMetadata');
@@ -31,21 +34,41 @@ class Player
         };
 
         this.window.webContents.send('ipc-setNowPlaying', data);
-    }
-
-    switchTo(index)
-    {
-        this.currentQueueItem = index;
-        
-        this.setNowPlaying(this.queue[this.currentQueueItem], true);
+        this.window.webContents.send('ipc-playingQueueName', this.queueName);
+        this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
 
         return this;
     }
 
-    saveQueue({position, currentTrack})
+    switchTo(name, index)
     {
         const queues = appdata.get('queues');
-        queues.push({name: this.queueName, songs: this.queue, queuePosition: position || queues.length, currentSong: currentTrack || 0});
+
+        this.queue = queues.find(x => x.name === name).songs;
+        this.queueName = name;
+        this.currentQueueItem = index;
+
+        this.setNowPlaying(this.queue[this.currentQueueItem], true).saveQueue({currentTrack: index});
+
+        return this;
+    }
+
+    saveQueue({queues, position, currentTrack})
+    {
+        if (queues === undefined) queues = appdata.get('queues');
+
+        const oldQueue = queues.find(x => x.name === this.queueName);
+
+        if (oldQueue === undefined) queues.push({name: this.queueName, songs: this.queue, queuePosition: position || queues.length, currentSong: currentTrack || 0});
+
+        else
+        {
+            const index = queues.indexOf(oldQueue);
+
+            queues[index].songs = this.queue;
+            queues[index].currentSong = currentTrack || 0;
+        }
+
         appdata.set('queues', queues);
 
         return this;
@@ -53,20 +76,51 @@ class Player
 
     next()
     {
-        if (this.currentQueueItem + 1 === this.queue.length) return this;
+        const queues = appdata.get('queues');
 
-        this.currentQueueItem++;
+        const { queuePosition } = queues.find(x => x.name === this.queueName);
 
-        this.setNowPlaying(this.queue[this.currentQueueItem], true);
+        if (this.currentQueueItem + 1 === this.queue.length)
+        {
+            if (queuePosition + 1 === queues.length)
+            {
+                this.ended = true;
+
+                return this;
+            }
+
+            const nextQueue = queues.find(x => x.queuePosition === queuePosition + 1);
+
+            this.currentQueueItem = 0;
+            this.queue = nextQueue.songs;
+            this.queueName = nextQueue.name;
+        }
+
+        else { this.currentQueueItem++; }
+
+        this.saveQueue({queues, currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
 
         return this;
     }
 
     previous()
     {
-        if (this.currentQueueItem !== 0) this.currentQueueItem--;        
+        const queues = appdata.get('queues');
 
-        this.setNowPlaying(this.queue[this.currentQueueItem], true);
+        const { queuePosition } = queues.find(x => x.name === this.queueName);
+
+        if ((this.currentQueueItem === 0) && (queuePosition !== 0))
+        {
+            const previousQueue = queues.find(x => x.queuePosition === queuePosition - 1);
+
+            this.currentQueueItem = previousQueue.songs.length - 1;
+            this.queue = previousQueue.songs;
+            this.queueName = previousQueue.name;
+        }
+        
+        else { this.currentQueueItem--; }
+
+        this.saveQueue({queues, currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
 
         return this;
     }
@@ -100,6 +154,8 @@ class Player
 
     removeFromQueue(file)
     {
+        return;
+
         const index = this.queue.indexOf(file);
 
         if (index === -1) return this;
