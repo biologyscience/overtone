@@ -54,8 +54,7 @@ export default function folders()
                 let totalDuration = 0;
              
                 songData?.forEach(({duration}) => totalDuration += duration);
-                const { hours, minutes, seconds } = parseTime(totalDuration);
-                setFoldarDuration(`${hours}:${minutes}:${seconds}`);
+                setFoldarDuration(parseTime(totalDuration).text);
 
                 setInputSearchSpace(songData.map(x => x.title));
                 setInputMatchSpace(songData.map(x => true));
@@ -144,10 +143,6 @@ export default function folders()
         {
             totalDuration += duration;
     
-            const
-                { minutes, seconds } = parseTime(duration),
-                durationText = `${minutes}:${seconds}`;
-    
             return (
                 <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location}>
                     <COL className='songData'>
@@ -155,7 +150,7 @@ export default function folders()
                         <span className='artist overflowPrevent'>{artist}</span>
                         <ROW>
                             <span className='album overflowPrevent'>{album}</span>
-                            <span className='duration'>{durationText}</span>
+                            <span className='duration'>{parseTime(duration).text}</span>
                         </ROW>
                     </COL>
                     <button><MoreHorizRounded/></button>

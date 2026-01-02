@@ -41,9 +41,7 @@ export default function albums()
 
             let totalDuration = 0;
             data.songs.forEach(({duration}) => totalDuration += duration);
-            const { hours, minutes, seconds } = parseTime(totalDuration);
-
-            albumToSet.duration = `${hours}:${minutes}:${seconds}`;
+            albumToSet.duration = parseTime(totalDuration).text;
             setAlbum(albumToSet);
 
             eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 2}));
@@ -69,8 +67,6 @@ export default function albums()
     {
         return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration}, i) =>
         {
-            const { minutes, seconds } = parseTime(duration);
-
             return (
                 <li key={i} className='tableItem' onClick={() => play(i)}>
                     <span>{track}</span>
@@ -79,7 +75,7 @@ export default function albums()
                         <span className='artists'>{artists.join(', ')}</span>
                     </COL>
                     <span>{plays}</span>
-                    <span>{`${minutes}:${seconds}`}</span>
+                    <span>{parseTime(duration).text}</span>
                 </li>
             );
         });

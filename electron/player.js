@@ -136,18 +136,45 @@ class Player
         return this;
     }
 
-    reorderQueue(oldOrder, newOrder)
+    reorderQueue(name, oldOrder, newOrder)
     {
-        this.saveQueue();
+        if (name === undefined) return;
+
+        const queues = appdata.get('queues');
+
+        const oldQueue = queues.find(x => x.name === name);
+
+        const index = queues.indexOf(oldQueue);
+
+        const mapped = {};
+        oldOrder.forEach((x, i) => mapped[x] = oldQueue.songs[i]);
+        const reOrdered = newOrder.map(x => mapped[x]);
+
+        queues[index].songs = reOrdered;
+        queues[index].currentSong = reOrdered.indexOf(oldQueue.songs[oldQueue.currentSong]);
+
+        if (name === this.queueName)
+        {
+            this.currentQueueItem = reOrdered.indexOf(this.queue[this.currentQueueItem]);
+            this.queue = reOrdered;
+        }
+
+        appdata.set('queues', queues);
 
         return this;
     }
 
-    addToQueue(file)
+    addToQueue(name, file)
     {
-        this.queue.push(file);
+        const queues = appdata.get('queues');
 
-        this.saveQueue();
+        const index = queues.indexOf(queues.find(x => x.name === name));
+
+        queues[index].songs.push(file);
+
+        if (name === this.queueName) this.queue.push(file);
+
+        appdata.set('queues', queues);
 
         return this;
     }

@@ -5,6 +5,8 @@ import { useSortable, arrayMove, SortableContext, sortableKeyboardCoordinates, v
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
 import { CSS as dndCSS } from '@dnd-kit/utilities';
 
+import eventBus from './events';
+
 function SortableItem({id, children})
 {
     const { children: _, className, ...rest } = children.props;
@@ -31,7 +33,7 @@ function SortableItem({id, children})
     );
 }
 
-export default function SortableList({children, ...rest})
+export default function SortableList({setOrder, children, ...rest})
 {
     if (children === undefined) return;
 
@@ -50,7 +52,11 @@ export default function SortableList({children, ...rest})
             const oldIndex = ids.indexOf(active.id);
             const newIndex = ids.indexOf(over.id);
 
-            return arrayMove(oldItems, oldIndex, newIndex);
+            const newOrder = arrayMove(oldItems, oldIndex, newIndex);
+
+            eventBus.dispatchEvent(new CustomEvent(setOrder, {detail: [ids, newOrder.map(x => x.props.id)]}))
+
+            return newOrder;
         });
     }
 

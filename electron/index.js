@@ -129,17 +129,7 @@ ipcMain.handle('ipc-addFolders', () =>
         {
             const { album, albumartist, artists, bpm, disk, genre, title, track, year, picture } = results[i].common;
 
-            const
-                time = parseTime(results[i].format.duration),
-                hours = time.hours,
-                minutes = time.minutes,
-                seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
-            
-            let duration;
-
-            time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
-
-            const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration, rawDuration: results[i].format.duration };
+            const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration };
             
             const albumartID = crypto.createHash('md5').update(`${album}_${albumartist}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
@@ -327,18 +317,8 @@ function wantQueue(queue)
     });
     
     let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
-    
-    const
-        time = parseTime(totalTime),
-        hours = time.hours,
-        minutes = time.minutes,
-        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
-    
-    let duration;
 
-    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
-
-    return {queueName: queue, songs: songList, trackNumber: currentSong, duration};
+    return {queueName: queue, songs: songList, trackNumber: currentSong, duration: parseTime(totalTime).text};
 }
 
 ipcMain.on('ipc-wantQueue', (E, queue) =>
@@ -392,17 +372,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
 
     let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
     
-    const
-        time = parseTime(totalTime),
-        hours = time.hours,
-        minutes = time.minutes,
-        seconds = time.seconds.toString().length > 1 ? time.seconds : `0${time.seconds}`;
-    
-    let duration;
-
-    time.hours > 0 ? duration = `${hours}:${minutes}:${seconds}` : duration = `${minutes}:${seconds}`;
-
-    WINDOW.webContents.send('ipc-setCurrentQueue', {queueName, songs: songList, trackNumber, duration});
+    WINDOW.webContents.send('ipc-setCurrentQueue', {queueName, songs: songList, trackNumber, duration: parseTime(totalTime).text});
 
     const files = [...songList].map(x => x.filepath);
 
@@ -446,6 +416,28 @@ ipcMain.on('ipc-audioPlayer-previous', () =>
 ipcMain.on('ipc-audioPlayer-switchToTrack', (E, {queueName, index}) =>
 {
     audioPlayer.switchTo(queueName, index);
+});
+
+ipcMain.on('ipc-reorderQueue', (E, {queueName, oldOrder, newOrder}) =>
+{
+    audioPlayer.reorderQueue(queueName, oldOrder, newOrder);
+
+    WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queueName));
+});
+
+ipcMain.on('ipc-reorderQueues', (E, {oldOrder, newOrder}) =>
+{
+    const queues = appdata.get('queues');
+
+    const queueNames = queues.sort((x, y) => x.queuePosition - y.queuePosition).map(x => x.name);
+
+    const mapped = {};
+    oldOrder.forEach((x, i) => mapped[x] = queueNames[i]);
+    const reOrdered = newOrder.map(x => mapped[x]);
+
+    queues.forEach((x, i) => queues[i].queuePosition = reOrdered.indexOf(x.name));
+
+    appdata.set('queues', queues);
 });
 
 app.on('ready', () =>
