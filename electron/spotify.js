@@ -2,7 +2,7 @@ const { appdata } = require('./util');
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-const { clientID, clientSecret } = appdata.get('config');
+const { clientID, clientSecret } = appdata.get('config').spotify;
 
 const authToken = Buffer.from(`${clientID}:${clientSecret}`).toString('base64');
 
@@ -75,4 +75,19 @@ async function getArtistPicture(artist)
     return { url: imageURL, data };
 }
 
-module.exports = { getArtistPicture };
+async function getAlbumArtURL(album, artist)
+{
+    const url = `https://api.spotify.com/v1/search?q=${album} artist:${artist}&type=album&limit=1`;
+
+    await refreshToken();
+    
+    const response = await cooldownFetch(url);
+    
+    const { albums } = await response.json();
+
+    const imageURL = albums.items?.[0]?.images?.[0]?.url;
+
+    return imageURL
+}
+
+module.exports = { getArtistPicture, getAlbumArtURL };

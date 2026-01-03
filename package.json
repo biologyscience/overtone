@@ -32,6 +32,7 @@
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "express": "^5.2.1",
     "globals": "^16.5.0",
     "music-metadata": "^7.14.0",
     "react": "^19.2.0",

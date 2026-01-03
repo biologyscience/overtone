@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { COL, ROW, Slider, Hover3D } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 
@@ -31,6 +31,8 @@ export default function displayRight()
 
     const [nowPlaying, setNowPlaying] = useState();
     const [dragging, setDragging] = useState(false);
+
+    const player = useRef();
 
     function clickDisplayRight({clientX, clientY})
     {
@@ -105,9 +107,17 @@ export default function displayRight()
 
     }, [endState]);
 
+    useEffect(() =>
+    {
+        if (playState) window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime}));
+
+        else window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime, stop: true}));
+
+    }, [playState]);
+
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
-            <AudioPlayer file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
+            <AudioPlayer playerRef={player} file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
             <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
                 <Hover3D style={{display: 'flex'}}>
                     <img className='albumart' src={nowPlaying?.albumart} draggable={false}/>
