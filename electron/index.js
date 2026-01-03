@@ -25,13 +25,13 @@ function init()
     
         let data = {};
     
-        if (existsSync(filepath)) return;
+        if (existsSync(filepath)) return;       
     
         if (x === 'config')
         {
             data =
             {
-                allowedMusicFileFormats: ['mp3', 'flac', 'ogg'],
+                allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
                 font: 'Fira',
                 volume: 1,
                 discordAppID: '1312407617540456458',
@@ -47,7 +47,7 @@ function init()
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
 
-    rpc.on();
+    if (appdata.get('config').discordRPCconnect) rpc.on();
 }
 
 ipcMain.handle('ipc-wantFolders', () => 
@@ -60,12 +60,23 @@ ipcMain.handle('ipc-wantFolders', () =>
 ipcMain.handle('ipc-deleteFolders', (E, toDelete) => 
 {   
     const config = appdata.get('config');
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
 
     toDelete.forEach((x) =>
     {
         const index = config.checkMusicIn.indexOf(x);
 
-        if (index !== -1) config.checkMusicIn.splice(index, 1);
+        if (index !== -1)
+        {
+            config.checkMusicIn.splice(index, 1);
+
+            const songsInFolder = songList[x];
+
+            songsInFolder.forEach(y => delete songMetadata[y]);
+
+            delete songList[x];
+        }
         
         else
         {
@@ -74,12 +85,18 @@ ipcMain.handle('ipc-deleteFolders', (E, toDelete) =>
     });
 
     appdata.set('config', config);
+    appdata.set('songList', songList);
+    appdata.set('songMetadata', songMetadata);
 
     return [...config.checkMusicIn];
 });
 
 ipcMain.handle('ipc-addFolders', () =>
 {
+    const config = appdata.get('config');
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
+
     const dirs = dialog.showOpenDialogSync(WINDOW, { properties: ['openDirectory', 'multiSelections'] });
 
     if (dirs === undefined) return [];
@@ -94,7 +111,7 @@ ipcMain.handle('ipc-addFolders', () =>
 
         for (const file of files)
         {
-            if (/\.(mp3|flac|ogg)$/i.test(file))
+            if (new RegExp(`/\.(${config.allowedMusicFileFormats.join('|')})$/i`).test(file))
             {
                 filtered.push(folder);
                 break;
@@ -106,10 +123,6 @@ ipcMain.handle('ipc-addFolders', () =>
 
     function alphabeticalOrder(a, b) { return a.split('/').pop().split('\\').pop().localeCompare(b.split('/').pop().split('\\').pop()) }
 
-    const config = appdata.get('config');
-    const songList = appdata.get('songList');
-    const songMetadata = appdata.get('songMetadata');
-
     const newFolders = filtered.filter(x => !config.checkMusicIn.includes(x));
     let newSongs = [];
     
@@ -117,7 +130,7 @@ ipcMain.handle('ipc-addFolders', () =>
     {
         const songListInFolder = readdirSync(dir)
         .filter(a => !statSync(path.join(dir, a)).isDirectory())
-        .filter(x => /\.(mp3|flac|ogg)$/i.test(x))
+        .filter(x => new RegExp(`/\.(${config.allowedMusicFileFormats.join('|')})$/i`).test(x))
         .map(b => path.join(dir, b));
 
         newSongs = newSongs.concat(songListInFolder).sort(alphabeticalOrder);
@@ -146,9 +159,9 @@ ipcMain.handle('ipc-addFolders', () =>
 
         for (let i = 0; i < results.length; i++)
         {
-            const { album, albumartist, artists, bpm, disk, genre, title, track, year, picture } = results[i].common;
+            const { album, albumartist, artists, bpm, genre, title, track, year, picture } = results[i].common;
 
-            const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration };
+            const data = { album, albumartist, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration };
             
             const albumartID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
@@ -224,11 +237,11 @@ ipcMain.handle('ipc-wantAlbums', () =>
     {
         let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
 
-        const { album, albumartist, albumartID } = songMetadata[filepath];
+        const { album, artists, albumartID } = songMetadata[filepath];
 
         if (albumartID !== undefined) albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
 
-        albums.push(JSON.stringify({album, artist: albumartist, albumart}));
+        albums.push(JSON.stringify({album, artist: artists[0], albumart}));
     }
 
     const unique = [...new Set(albums)].map(JSON.parse);
@@ -244,7 +257,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 
     for (const filepath in songMetadata)
     {
-        if ((songMetadata[filepath].album !== album) || (songMetadata[filepath].albumartist !== artist)) continue;
+        if ((songMetadata[filepath].album !== album) || (songMetadata[filepath].artists[0] !== artist)) continue;
 
         const { title, rawDuration, track, artists, year, albumartID } = songMetadata[filepath];
 
@@ -320,15 +333,6 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
     return { picture, albums: toSend };
 });
 
-ipcMain.on('ipc-displayRightReady', (E, isReady) =>
-{
-    if (!isReady) return;
-
-    const filepath = 'C:\\Files\\Music\\A Little More.mp3';
-
-    audioPlayer.setNowPlaying(filepath, false);
-});
-
 ipcMain.handle('ipc-wantQueues', () =>
 {
     const queues = appdata.get('queues');
@@ -362,6 +366,23 @@ ipcMain.on('ipc-wantQueue', (E, queue) =>
     const data = wantQueue(queue);
 
     WINDOW.webContents.send('ipc-setCurrentQueue', data);
+});
+
+ipcMain.on('ipc-displayRightReady', (E, isReady) =>
+{
+    if (!isReady) return;
+
+    const { lastQueueState } = appdata.get('config');
+    const queues = appdata.get('queues');
+
+    if (lastQueueState.queue?.length > 0)
+    {
+        const queue = queues.find(x => x.name === lastQueueState.queue);
+
+        audioPlayer.setNowPlaying(queue.songs[lastQueueState.track], false);
+    
+        WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(lastQueueState.queue));
+    }
 });
 
 ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
@@ -517,3 +538,15 @@ app.on('ready', () =>
     //     return net.fetch(pathname.slice(1));
     // });
 });
+
+function beforeQuit()
+{
+    const config = appdata.get('config');
+
+    config.lastQueueState.queue = audioPlayer.queueName;
+    config.lastQueueState.track = audioPlayer.currentQueueItem;
+
+    appdata.set('config', config);
+};
+
+app.on('before-quit', beforeQuit);
