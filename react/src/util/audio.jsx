@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel, indicateEnd})
+function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel, indicateEnd})
 {
-    const player = useRef();
     const preGainRef = useRef();
     const filtersRef = useRef();
 
@@ -10,14 +9,14 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
     {
         if (!force) return;
         
-        player.current.currentTime = (progressPercent || 0) * (player.current.duration || 0) / 100;
+        playerRef.current.currentTime = (progressPercent || 0) * (playerRef.current.duration || 0) / 100;
 
     }, [progressPercent, force]);
 
     useEffect(() =>
     {
-        player.current.pause();
-        player.current.src = file;
+        playerRef.current.pause();
+        playerRef.current.src = file;
 
         setCurrentTime(0);
 
@@ -27,17 +26,17 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
     {
         if (file === undefined) return;
 
-        if (playing) player.current.play();
-        else player.current.pause();
+        if (playing) playerRef.current.play();
+        else playerRef.current.pause();
 
     }, [file, playing]);
 
 
-    useEffect(() => { player.current.volume = audioLevel / 100; }, [audioLevel]);
+    useEffect(() => { playerRef.current.volume = audioLevel / 100; }, [audioLevel]);
 
     useEffect(() =>
     {
-        const audioPlayer = player.current;
+        const audioPlayer = playerRef.current;
 
         if (audioPlayer === null) return;
 
@@ -115,7 +114,7 @@ function AudioPlayer({file, setCurrentTime, progress: [progressPercent, force], 
         }
     }, []);
 
-    return <audio ref={player}/>
+    return <audio ref={playerRef}/>
 }
 
 export { AudioPlayer }

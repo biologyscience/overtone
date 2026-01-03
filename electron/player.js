@@ -1,5 +1,6 @@
 const path = require('path');
 const { appdata } = require('./util');
+const rpc = require('./rpc');
 
 class Player
 {
@@ -20,7 +21,7 @@ class Player
 
         if (songMetadata === undefined) songMetadata = appdata.get('songMetadata');
     
-        const { title, artists, album, rawDuration, albumartID } = songMetadata[filepath];
+        const { title, artists, album, rawDuration, albumartID, albumartURL } = songMetadata[filepath];
 
         const data =
         {
@@ -36,6 +37,8 @@ class Player
         this.window.webContents.send('ipc-setNowPlaying', data);
         this.window.webContents.send('ipc-playingQueueName', this.queueName);
         this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
+
+        rpc.set({title, album, artists, albumartURL});
 
         return this;
     }

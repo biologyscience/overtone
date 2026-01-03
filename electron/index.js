@@ -6,8 +6,9 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 
 const { appdata, parseTime } = require('./util');
-const { getArtistPicture } = require('./spotify');
+const { getArtistPicture, getAlbumArtURL } = require('./spotify');
 const Player = require('./player');
+const rpc = require('./rpc');
 
 const audioPlayer = new Player();
 
@@ -36,7 +37,8 @@ function init()
                 discordAppID: '1312407617540456458',
                 discordRPCconnect: false,
                 checkMusicIn: [],
-                lastQueueState: {}
+                lastQueueState: {},
+                localhostPORT: 7410
             };
         }
 
@@ -44,6 +46,8 @@ function init()
     
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
+
+    rpc.on();
 }
 
 ipcMain.handle('ipc-wantFolders', () => 
@@ -125,35 +129,67 @@ ipcMain.handle('ipc-addFolders', () =>
     
     Promise.all(newSongs.map(x => metadata.parseFile(x, {skipPostHeaders: true}))).then(async (results) =>
     {
+        console.log('start updating ...');
+
+        const pendingPromises = [];
+        
+        async function spotifyAlbumArt(filepath, songData)
+        {
+            const url = await getAlbumArtURL(songData.album, songData.artists[0]);
+
+            songData.albumartURL = url === undefined ? null : url;
+
+            songMetadata[filepath] = songData;
+
+            return true;
+        }
+
         for (let i = 0; i < results.length; i++)
         {
             const { album, albumartist, artists, bpm, disk, genre, title, track, year, picture } = results[i].common;
 
             const data = { album, albumartist, artists, bpm, disk, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration };
             
-            const albumartID = crypto.createHash('md5').update(`${album}_${albumartist}`).digest('hex');
+            const albumartID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
             
-            if (existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`))) data.albumartID = albumartID;
+            data.albumartID = albumartID;
 
             if (!existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`)) && (picture[0] !== undefined))
             {
-                data.albumartID = albumartID;
-
-                await sharp(picture[0].data).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));                
+                sharp(picture[0].data)
+                .resize({height: 1000})
+                .webp({quality: 70})
+                .toFile(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));
             }
 
             if (!existsSync(path.join(__dirname, `./appdata/webp/${artistID}.webp`)))
             {
-                const { data } = await getArtistPicture(artists[0]);
-
-                if (data !== null) await sharp(data).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${artistID}.webp`));
+                getArtistPicture(artists[0]).then(({data}) =>
+                {
+                    if (data !== null)
+                    {
+                        sharp(data)
+                        .webp({quality: 70})
+                        .toFile(path.join(__dirname, `./appdata/webp/${artistID}.webp`));
+                    }
+                });
             }
 
             songMetadata[newSongs[i]] = data;
-        }
 
+            if (songMetadata[newSongs[i]]?.albumartURL === undefined) pendingPromises.push(spotifyAlbumArt(newSongs[i], data));
+        }
+        
         appdata.set('songMetadata', songMetadata);
+        
+        console.log('finished sync tasks');
+        console.log('waiting for pending promises ... (should take a while)');
+
+        await Promise.all(pendingPromises);
+        appdata.set('songMetadata', songMetadata);
+
+        console.log('pending promises complete');
     });
 
     const newList = config.checkMusicIn.concat(newFolders).sort(alphabeticalOrder);
@@ -288,7 +324,7 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 {
     if (!isReady) return;
 
-    const filepath = 'C:\\Files\\Music\\gigolo.mp3';
+    const filepath = 'C:\\Files\\Music\\A Little More.mp3';
 
     audioPlayer.setNowPlaying(filepath, false);
 });
@@ -440,6 +476,11 @@ ipcMain.on('ipc-reorderQueues', (E, {oldOrder, newOrder}) =>
     appdata.set('queues', queues);
 });
 
+ipcMain.on('ipc-setRPCtime', (E, data) =>
+{
+    rpc.setTime(data.time, data.stop);
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
@@ -469,10 +510,10 @@ app.on('ready', () =>
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
     ipcMain.on('ipc-close', () => WINDOW.close());
 
-    protocol.handle('music', (request) =>
-    {
-        const { pathname } = new URL(request.url);
+    // protocol.handle('music', (request) =>
+    // {
+    //     const { pathname } = new URL(request.url);
 
-        return net.fetch(pathname.slice(1));
-    });
+    //     return net.fetch(pathname.slice(1));
+    // });
 });
