@@ -1,0 +1,288 @@
+@use '../util';
+@use '../colors.scss';
+
+.section#genres
+{
+    .out
+    {
+        max-height: inherit;
+        font-size: .75rem;
+
+        .head
+        {
+            position: relative;
+            padding: .75em 1vw;
+            gap: 2em;
+            
+            svg
+            {
+                height: 1em;
+                width: auto;
+            }
+
+            .searchBar
+            {
+                align-items: center;
+                gap: .25em;
+                flex-grow: 1;
+
+                input
+                {
+                    background: none;
+                    margin: 0;
+                    width: 100%;
+                    transition: border-bottom-color .5s ease;
+
+                    @include util.inputBorderReset(bottom, 2px);
+                }
+            }
+
+            .count
+            {
+                font-size: 1.5em;
+                align-items: center;
+                gap: .25em;
+            }
+
+            @include util.divider(after, BottomLeft);
+        }
+
+        .body
+        {
+            flex-wrap: wrap;
+            padding: 2rem 0;
+            gap: 1rem;
+            justify-content: space-evenly;
+            overflow-y: auto;
+    
+            .genreItem
+            {
+                * { pointer-events: none; }
+
+                width: 10rem;
+                text-align: center;
+                padding: .5em;
+                
+                img
+                {
+                    width: inherit;
+                    aspect-ratio: 1;
+                    transition: all 250ms ease;
+                }
+
+                &:hover
+                {
+                    cursor: pointer;
+
+                    img
+                    {
+                        border-radius: .25em;
+                        box-shadow: 0px 2.5em 20px 0px colors.$dark20;
+                    }
+                }
+    
+                .genreName { padding: .5em 0; }
+            }
+        }
+    }
+
+    .in
+    {
+        max-height: inherit;
+
+        .head
+        {
+            position: relative;
+            gap: 2em;
+            padding: 2.5em;
+            padding-left: 1.5em;
+
+            @include util.divider(after, BottomLeft);
+
+            .goBack
+            {
+                aspect-ratio: 1;
+                height: 2em;
+                align-self: center;
+            }
+
+            .genrePicture
+            {
+                position: relative;
+                align-self: center;
+
+                &, * { transition: all 250ms ease; }
+                
+                img
+                {
+                    height: 200px;
+                    width: 200px;
+                }
+
+                svg
+                {
+                    position: absolute;
+                    height: 100%;
+                    width: auto;
+                    align-self: center;
+                    fill: colors.$accent;
+                    scale: 0;
+                    background-color: colors.$dark50;
+                    border: .25em solid white;
+                    border-radius: 50%;
+                    box-sizing: border-box;
+                }
+
+                &:hover
+                {
+                    cursor: pointer;
+                    border-radius: 1em;
+
+                    img { opacity: .7; }
+
+                    svg { scale: .5; }
+                }
+            }
+
+            .content
+            {
+                flex-grow: 1;
+                align-self: flex-end;
+                gap: 1.5em;
+
+                .name { font-size: 4em; }
+                
+                .info
+                {
+                    font-size: 1.75em;
+
+                    & > *
+                    {
+                        display: flex;
+                        align-items: center;
+                        margin-right: .5em;
+
+                        img
+                        {
+                            height: 1em;
+                            width: 1em;
+                        }
+
+                        * { margin-right: .25em; }
+                    }
+
+                    .linkToArtist
+                    {
+                        position: relative;
+                        line-height: 1.75;
+
+                        &::after
+                        {
+                            content: '';
+                            position: absolute;
+                            height: .1em;
+                            background-color: colors.$accent;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            transform: scaleX(0);
+                            transform-origin: right;
+                            transition: transform 250ms ease;
+                        }
+
+                        &:hover
+                        {
+                            cursor: pointer;
+
+                            &::after
+                            {
+                                transform-origin: left;
+                                transform: scaleX(1);
+                            }
+                        }
+                    }
+                }
+
+                .searchBar
+                {
+                    width: auto;
+                    grid-template-columns: auto 1fr;
+                    gap: .5em;
+
+                    input
+                    {
+                        width: auto;
+                        background: none;
+                        padding: .25em;
+                        margin: 0;
+                        transition: border-bottom-color .5s ease;
+
+                        @include util.inputBorderReset(bottom, 2px);
+                    }
+                }
+            }
+        }
+
+        .body
+        {
+            padding: 0 2em;
+            flex-grow: 1;
+            overflow: hidden;
+
+            .tableItem
+            {
+                font-size: 1.25em;
+                display: grid;
+                grid-template-columns: 5ch 1fr 10ch 5ch;
+                gap: 2em;
+                place-items: center;
+
+                .placeLeft { place-self: center start; }
+            }
+
+            .tableHead
+            {
+                position: relative;
+                padding: 1em 0;
+                @include util.divider(after, BottomLeft);
+            }
+            
+            .songList
+            {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                flex-grow: 1;
+                overflow-y: auto;
+                
+                li
+                {
+                    padding: .5em 0;
+                    margin: .5em 0;
+                    border: .2em solid transparent;
+                    border-radius: .5em;
+                    transition: border-color 300ms ease;
+
+                    *
+                    {
+                        pointer-events: none;
+                        font-size: 1.15em;
+                    }
+
+                    .artists
+                    {
+                        font-size: .9em;
+                        margin-top: .5em;
+                        color: colors.$dark90;
+                    }
+
+                    &:hover
+                    {
+                        cursor: pointer;
+                        border-color: colors.$accent;
+                    }
+                }
+            }
+        }
+    }
+}

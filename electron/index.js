@@ -333,6 +333,54 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
     return { picture, albums: toSend };
 });
 
+ipcMain.handle('ipc-wantGenres', () =>
+{
+    const songMetadata = appdata.get('songMetadata');
+
+    const genres = [];
+
+    for (const filepath in songMetadata) genres.push(songMetadata[filepath].genre);
+
+    return [...new Set(genres.flat())].filter(x => x?.length > 0).map((genre) =>
+    {
+        const picturePath = path.join(__dirname, `./appdata/webp/${crypto.createHash('md5').update(genre).digest('hex')}.webp`)
+
+        const picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+        return { genre, picture };
+    });
+});
+
+ipcMain.handle('ipc-wantGenre', (E, {genre}) =>
+{
+    const songMetadata = appdata.get('songMetadata');
+
+    const genreData = { songs: [] };
+
+    for (const filepath in songMetadata)
+    {
+        if (songMetadata[filepath].genre?.includes(genre))
+        {
+            const { title, rawDuration, track, artists } = songMetadata[filepath];
+    
+            genreData.songs.push({
+                title,
+                artists,
+                duration: rawDuration,
+                location: filepath,
+                track: track?.no || 0,
+                plays: Math.floor(Math.random() * 10)
+            });
+        }
+    }
+    
+    const picturePath = path.join(__dirname, `./appdata/webp/${crypto.createHash('md5').update(genre).digest('hex')}.webp`)
+
+    genreData.picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+    return genreData;
+});
+
 ipcMain.handle('ipc-wantQueues', () =>
 {
     const queues = appdata.get('queues');
@@ -379,22 +427,33 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
     {
         const queue = queues.find(x => x.name === lastQueueState.queue);
 
-        audioPlayer.setNowPlaying(queue.songs[lastQueueState.track], false);
+        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
     
-        WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(lastQueueState.queue));
+        WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
     }
 });
 
-ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
+ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, genre, trackNumber}) =>
 {
     const songMetadata = appdata.get('songMetadata');
 
     const songsByYear = {};
     const years = [];
+    const songsByGenre = [];
 
     for (const filepath in songMetadata)
     {
-        if (ALBUM === undefined)
+        if (genre !== undefined) // songs by genre
+        {
+            if (songMetadata[filepath].genre?.includes(genre))
+            {
+                const { title, artists, album, duration, rawDuration, track } = songMetadata[filepath];
+
+                songsByGenre.push({title, artists, album, duration, rawDuration, track, filepath});
+            }
+        }
+
+        else if (ALBUM === undefined) // songs by artist
         {
             if (songMetadata[filepath].artists[0] !== artist) continue;
 
@@ -405,7 +464,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
             songsByYear[year].push({title, artists, album, duration, rawDuration, track, filepath});
         }
 
-        else
+        else // songs by album and artist
         {
             if ((songMetadata[filepath].album !== ALBUM) || (songMetadata[filepath].artists[0] !== artist)) continue;
 
@@ -424,8 +483,8 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
         songsByYear[year].sort((x, y) => x.track?.no - y.track?.no);
     }
 
-    const songList = years.sort((x, y) => y - x).map(x => songsByYear[x]).flat();
-    const queueName = ALBUM || artist;
+    const songList = years.length > 0 ? years.sort((x, y) => y - x).map(x => songsByYear[x]).flat() : songsByGenre.sort((x, y) => x.title.localeCompare(y.title));
+    const queueName = genre || ALBUM || artist;
 
     let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
     
@@ -433,7 +492,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, trackNumber}) =>
 
     const files = [...songList].map(x => x.filepath);
 
-    audioPlayer.setQueue(files, trackNumber, queueName).saveQueue({currentTrack: trackNumber});
+    audioPlayer.setQueue(files, trackNumber, queueName).saveQueue({currentTrack: trackNumber}).setNowPlaying(files[trackNumber], true);
 });
 
 ipcMain.handle('ipc-audioPlayer-next', () =>
@@ -538,15 +597,3 @@ app.on('ready', () =>
     //     return net.fetch(pathname.slice(1));
     // });
 });
-
-function beforeQuit()
-{
-    const config = appdata.get('config');
-
-    config.lastQueueState.queue = audioPlayer.queueName;
-    config.lastQueueState.track = audioPlayer.currentQueueItem;
-
-    appdata.set('config', config);
-};
-
-app.on('before-quit', beforeQuit);

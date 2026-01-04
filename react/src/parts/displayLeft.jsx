@@ -7,7 +7,7 @@ import Queue from './sections/queues';
 import Folders from './sections/folders';
 import Albums from './sections/albums';
 import Artists from './sections/artists';
-// import Genres from './sections/genres';
+import Genres from './sections/genres';
 // import EQ from './sections/eq';
 // import Settings from './sections/settings';
 
@@ -45,7 +45,7 @@ export default function displayRight()
             <Folders/>
             <Albums/>
             <Artists/>
-            <COL className='section' style={{background: 'black'}}></COL>
+            <Genres/>
             <COL className='section' style={{background: 'pink'}}></COL>
             <COL className='section' style={{background: 'purple'}}></COL>
             {/* <Queue/>

@@ -38,6 +38,13 @@ class Player
         this.window.webContents.send('ipc-playingQueueName', this.queueName);
         this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
 
+        const config = appdata.get('config');
+
+        config.lastQueueState.queue = this.queueName;
+        config.lastQueueState.track = this.currentQueueItem;
+
+        appdata.set('config', config);
+
         rpc.set({title, album, artists, albumartURL});
 
         return this;
@@ -133,8 +140,6 @@ class Player
         this.queue = [...files];
         this.currentQueueItem = current;
         this.queueName = name;
-
-        this.setNowPlaying(this.queue[this.currentQueueItem], true);
 
         return this;
     }
