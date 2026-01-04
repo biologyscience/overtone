@@ -33,6 +33,7 @@ export default function displayRight()
     const [dragging, setDragging] = useState(false);
 
     const player = useRef();
+    const timer = useRef({});
 
     function clickDisplayRight({clientX, clientY})
     {
@@ -77,6 +78,30 @@ export default function displayRight()
         eventBus.dispatchEvent(new Event('ot-previous'));
     }
 
+    function timerStart()
+    {
+        if (timer.current.played) return;
+
+        timer.current.lastTime = Date.now();
+        timer.current.timeout = setTimeout(() => { window.ipc.send('ipc-songPlayed', timer.current.filepath); timer.current.played = true; }, (((timer.current.duration * 1000) / 2) - timer.current.timeSpent));
+    }
+
+    function timerStop()
+    {
+        if (timer.current.played) return;
+
+        clearTimeout(timer.current.timeout);
+        timer.current.timeSpent = Date.now() - timer.current.lastTime;
+    }
+
+    function timerReset()
+    {
+        clearTimeout(timer.current.timeout);
+        timer.current.lastTime = Date.now();
+        timer.current.timeSpent = 0;
+        timer.current.played = false;
+    }
+
     useEffect(() =>
     {
         setProgress(100 * currentTime / nowPlaying?.duration);
@@ -87,12 +112,23 @@ export default function displayRight()
     {
         window.ipc.on('ipc-setNowPlaying', (song) =>
         {
+            timerReset();
+            timer.current.filepath = song.filepath;
+            timer.current.duration = song.duration;
+
             setNowPlaying(song);
 
-            if (song.autoPlay) setPlayState(true);
+            if (song.autoPlay)
+            {
+                timerStart();
+
+                setPlayState(true);
+            }
         });
 
         window.ipc.send('ipc-displayRightReady', true);
+
+        timerReset();
 
     }, []);
 
@@ -109,9 +145,19 @@ export default function displayRight()
 
     useEffect(() =>
     {
-        if (playState) window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime}));
+        if (playState)
+        {
+            window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime}));
 
-        else window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime, stop: true}));
+            timerStart();
+        }
+
+        else
+        {
+            window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime, stop: true}));
+
+            timerStop();
+        }
 
     }, [playState]);
 

@@ -161,7 +161,7 @@ ipcMain.handle('ipc-addFolders', () =>
         {
             const { album, albumartist, artists, bpm, genre, title, track, year, picture } = results[i].common;
 
-            const data = { album, albumartist, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration };
+            const data = { album, albumartist, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
             
             const albumartID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
@@ -259,7 +259,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
     {
         if ((songMetadata[filepath].album !== album) || (songMetadata[filepath].artists[0] !== artist)) continue;
 
-        const { title, rawDuration, track, artists, year, albumartID } = songMetadata[filepath];
+        const { title, rawDuration, track, artists, year, albumartID, playCount } = songMetadata[filepath];
 
         if (albumData.year === undefined && year !== undefined) albumData.year = year;
         if (albumData.albumart === undefined && albumartID !== undefined) albumData.albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
@@ -270,7 +270,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
             duration: rawDuration,
             location: filepath,
             track: track?.no || 0,
-            plays: Math.floor(Math.random() * 10)
+            plays: playCount || 0
         });
     }
 
@@ -361,7 +361,7 @@ ipcMain.handle('ipc-wantGenre', (E, {genre}) =>
     {
         if (songMetadata[filepath].genre?.includes(genre))
         {
-            const { title, rawDuration, track, artists } = songMetadata[filepath];
+            const { title, rawDuration, track, artists, playCount } = songMetadata[filepath];
     
             genreData.songs.push({
                 title,
@@ -369,7 +369,7 @@ ipcMain.handle('ipc-wantGenre', (E, {genre}) =>
                 duration: rawDuration,
                 location: filepath,
                 track: track?.no || 0,
-                plays: Math.floor(Math.random() * 10)
+                plays: playCount || 0
             });
         }
     }
@@ -559,6 +559,19 @@ ipcMain.on('ipc-reorderQueues', (E, {oldOrder, newOrder}) =>
 ipcMain.on('ipc-setRPCtime', (E, data) =>
 {
     rpc.setTime(data.time, data.stop);
+});
+
+ipcMain.on('ipc-songPlayed', (E, filepath) =>
+{
+    const songMetadata = appdata.get('songMetadata');
+
+    const { playCount } = songMetadata[filepath];
+
+    if (playCount === undefined) songMetadata[filepath].playCount = 0;
+    
+    songMetadata[filepath].playCount++;
+
+    appdata.set('songMetadata', songMetadata);
 });
 
 app.on('ready', () =>
