@@ -110,11 +110,15 @@ export default function displayRight()
 
     useEffect(() =>
     {
+        timerReset();
+
         window.ipc.on('ipc-setNowPlaying', (song) =>
         {
+            const { title, artist, album, albumart, filepath, duration } = song;
+
             timerReset();
-            timer.current.filepath = song.filepath;
-            timer.current.duration = song.duration;
+            timer.current.filepath = filepath;
+            timer.current.duration = duration;
 
             setNowPlaying(song);
 
@@ -124,11 +128,16 @@ export default function displayRight()
 
                 setPlayState(true);
             }
+
+            navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
         });
 
         window.ipc.send('ipc-displayRightReady', true);
 
-        timerReset();
+        navigator.mediaSession.setActionHandler('play', () => setPlayState(true));
+        navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
+        navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
+        navigator.mediaSession.setActionHandler('nexttrack', playNext);
 
     }, []);
 

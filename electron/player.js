@@ -1,3 +1,4 @@
+const { readFileSync } = require('fs');
 const path = require('path');
 const { appdata } = require('./util');
 const rpc = require('./rpc');
@@ -23,13 +24,22 @@ class Player
     
         const { title, artists, album, rawDuration, albumartID, albumartURL } = songMetadata[filepath];
 
+        let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+        if (albumartID)
+        {
+            const buffer = readFileSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));
+
+            albumart = `data:image/webp;base64,${buffer.toString('base64')}`;
+        }
+
         const data =
         {
             title,
             artist: artists.join(', '),
             album,
             duration: rawDuration,
-            albumart: albumartID ? path.join(__dirname, `./appdata/webp/${albumartID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
+            albumart,
             filepath,
             autoPlay
         };
