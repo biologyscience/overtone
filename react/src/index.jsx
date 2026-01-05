@@ -19,6 +19,7 @@ import './scss/parts/folders.scss';
 import './scss/parts/albums.scss';
 import './scss/parts/artists.scss';
 import './scss/parts/genres.scss';
+import './scss/parts/eq.scss';
 
 ReactDOM.createRoot(document.body).render(
     // <React.StrictMode>

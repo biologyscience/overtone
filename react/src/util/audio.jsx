@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import eventBus from './events';
 
 function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel, indicateEnd})
 {
@@ -59,6 +60,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             const ctx = new AudioContext();
 
             const source = ctx.createMediaElementSource(audioPlayer);
+            const analyser = ctx.createAnalyser();
 
             preGainRef.current = ctx.createGain();
 
@@ -77,10 +79,12 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             });
 
             filtersRef.current = filters;
+            
+            eventBus.dispatchEvent(new CustomEvent('ot-AnalyzerNode', {detail: analyser}));
 
             let node = source;
 
-            [preGainRef.current, ...filters, ctx.destination].forEach((filter) =>
+            [preGainRef.current, ...filters, analyser, ctx.destination].forEach((filter) =>
             {
                 node.connect(filter);
                 node = filter;
