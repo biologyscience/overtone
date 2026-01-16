@@ -1,4 +1,6 @@
 const { readFileSync } = require('fs');
+const sharp = require('sharp');
+const { Vibrant } = require('node-vibrant/node');
 const path = require('path');
 const { appdata } = require('./util');
 const rpc = require('./rpc');
@@ -24,27 +26,38 @@ class Player
     
         const { title, artists, album, rawDuration, albumartID, albumartURL } = songMetadata[filepath];
 
-        let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
-
-        if (albumartID)
-        {
-            const buffer = readFileSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));
-
-            albumart = `data:image/webp;base64,${buffer.toString('base64')}`;
-        }
-
         const data =
         {
             title,
             artist: artists.join(', '),
             album,
             duration: rawDuration,
-            albumart,
+            albumart: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
             filepath,
             autoPlay
         };
 
-        this.window.webContents.send('ipc-setNowPlaying', data);
+        if (albumartID)
+        {
+            const picturePath = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+            
+            data.albumart = `data:image/webp;base64,${readFileSync(picturePath).toString('base64')}`;
+
+            sharp(picturePath).png().toBuffer().then((buffer) =>
+            {
+                Vibrant.from(buffer).getPalette().then((colors) =>
+                {
+                    for (const key in colors) colors[key] = colors[key]._rgb;
+
+                    data.colors = colors;                    
+
+                    this.window.webContents.send('ipc-setNowPlaying', data);  
+                });
+            });
+        }
+
+        else this.window.webContents.send('ipc-setNowPlaying', data);        
+
         this.window.webContents.send('ipc-playingQueueName', this.queueName);
         this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
 

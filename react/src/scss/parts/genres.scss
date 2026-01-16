@@ -125,7 +125,7 @@
                     height: 100%;
                     width: auto;
                     align-self: center;
-                    fill: colors.$accent;
+                    fill: var(--accent);
                     scale: 0;
                     background-color: colors.$dark50;
                     border: .25em solid white;
@@ -181,7 +181,7 @@
                             content: '';
                             position: absolute;
                             height: .1em;
-                            background-color: colors.$accent;
+                            background-color: var(--accent);
                             bottom: 0;
                             left: 0;
                             right: 0;
@@ -279,7 +279,7 @@
                     &:hover
                     {
                         cursor: pointer;
-                        border-color: colors.$accent;
+                        border-color: var(--accent);
                     }
                 }
             }
