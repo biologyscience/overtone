@@ -49,13 +49,18 @@ class RPC
         };
     }
 
-    on()
+    async on()
     {
         // this.localhost = app.listen(localhostPORT, () => console.log(`localhost:${localhostPORT}`));
-        rpc.login({clientId: discordAppID});
 
-        this.live = true;
+        try
+        {
+            await rpc.login({clientId: discordAppID});
 
+            this.live = true;
+        }
+        catch (E) { this.live = false; }
+        
         return this;
     }
 

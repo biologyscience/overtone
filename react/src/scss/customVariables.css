@@ -37,6 +37,7 @@
     --accentLightBlue1: rgb(64, 196, 255);
     --accentLightBlue2: rgb(24, 255, 255);
 
+    --background: var(--dark25);
     --accent: var(--accentGreen1);
     --textColor: white;
     --currentFont: 'Fira';

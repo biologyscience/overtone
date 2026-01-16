@@ -18,10 +18,15 @@
     &::-webkit-scrollbar
     {
         background: none;
-        width: 10px;
+        width: .75em;
     }
 
-    &::-webkit-scrollbar-thumb { background-color: var(--dark70); }
+    &::-webkit-scrollbar-thumb
+    {
+        background-color: var(--accent);
+
+        &:hover { cursor: pointer; }
+    }
 }
 
 #titlebar
@@ -71,7 +76,7 @@ body
     padding: 0;
     height: 100vh;
     width: 100vw;
-    background-color: colors.$dark25;
+    background-color: var(--background);
     transition: background-color ease 400ms;
 
     &::before
@@ -80,7 +85,7 @@ body
         content: '';
         height: 100%;
         width: 2px;
-        background-color: var(--accent);
+        background-color: var(--dark40);
         left: 60vw;
         z-index: -1;
     }

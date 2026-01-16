@@ -129,8 +129,11 @@ export default function displayRight()
             }
 
             navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
-            document.body.style.backgroundColor = `rgb(${colors.DarkMuted.join(',')})`;
-            document.querySelector(':root').style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
+
+            const root = document.querySelector(':root');
+
+            root.style.setProperty('--background', `rgb(${colors.DarkMuted.join(',')})`);
+            root.style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
             // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
         });
 

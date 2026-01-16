@@ -6,7 +6,6 @@ import
     FolderRounded,
     AlbumRounded,
     PersonRounded,
-    SellRounded,
     GraphicEqRounded,
     SettingsRounded
 } from '@mui/icons-material';
@@ -16,7 +15,7 @@ import eventBus from '../util/events';
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(1);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 
@@ -67,9 +66,8 @@ export default function Navbar()
                 <li data-index={1} onClick={handleClick}><FolderRounded/></li>
                 <li data-index={2} onClick={handleClick}><AlbumRounded/></li>
                 <li data-index={3} onClick={handleClick}><PersonRounded/></li>
-                <li data-index={4} onClick={handleClick}><SellRounded/></li>
-                <li data-index={5} onClick={handleClick}><GraphicEqRounded/></li>
-                <li data-index={6} onClick={handleClick}><SettingsRounded/></li>
+                <li data-index={4} onClick={handleClick}><GraphicEqRounded/></li>
+                <li data-index={5} onClick={handleClick}><SettingsRounded/></li>
             </ul>
         </nav>
     );
