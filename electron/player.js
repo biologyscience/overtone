@@ -1,6 +1,4 @@
 const { readFileSync } = require('fs');
-const sharp = require('sharp');
-const { Vibrant } = require('node-vibrant/node');
 const path = require('path');
 const { appdata } = require('./util');
 const rpc = require('./rpc');
@@ -24,7 +22,7 @@ class Player
 
         if (songMetadata === undefined) songMetadata = appdata.get('songMetadata');
     
-        const { title, artists, album, rawDuration, albumartID, albumartURL } = songMetadata[filepath];
+        const { title, artists, album, rawDuration, albumID } = songMetadata[filepath];
 
         const data =
         {
@@ -37,27 +35,18 @@ class Player
             autoPlay
         };
 
-        if (albumartID)
+        const albumData = appdata.get('albums')?.[albumID];
+
+        if (albumData?.hasArt)
         {
-            const picturePath = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+            const picturePath = path.join(__dirname, `./appdata/webp/${albumID}.webp`);
             
             data.albumart = `data:image/webp;base64,${readFileSync(picturePath).toString('base64')}`;
 
-            sharp(picturePath).png().toBuffer().then((buffer) =>
-            {
-                Vibrant.from(buffer).getPalette().then((colors) =>
-                {
-                    for (const key in colors) colors[key] = colors[key]._rgb;
-
-                    data.colors = colors;                    
-
-                    this.window.webContents.send('ipc-setNowPlaying', data);  
-                });
-            });
+            data.colors = albumData.colors;
         }
 
-        else this.window.webContents.send('ipc-setNowPlaying', data);        
-
+        this.window.webContents.send('ipc-setNowPlaying', data);
         this.window.webContents.send('ipc-playingQueueName', this.queueName);
         this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
 
@@ -68,7 +57,7 @@ class Player
 
         appdata.set('config', config);
 
-        rpc.set({title, album, artists, albumartURL});
+        rpc.set({title, album, artists, albumartURL: albumData?.albumartURL});
 
         return this;
     }

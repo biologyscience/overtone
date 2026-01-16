@@ -55,9 +55,9 @@
 
         &:hover { background-color: colors.$dark20; }
 
-        &.minimize:hover svg { fill: var(--accent)Orange1; }
-        &.maximize:hover svg { fill: var(--accent)Green2; }
-        &.close:hover svg { fill: var(--accent)Red3; }
+        &.minimize:hover svg { fill: colors.$accentOrange1; }
+        &.maximize:hover svg { fill: colors.$accentGreen2; }
+        &.close:hover svg { fill: colors.$accentRed3; }
     }
 }
 
