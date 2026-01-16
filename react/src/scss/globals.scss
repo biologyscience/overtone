@@ -9,7 +9,7 @@
 *
 {
     user-select: none;
-    color: white;
+    color: var(--textColor);
     font-family: var(--currentFont);
     // outline: .5px solid red;
 
@@ -55,9 +55,9 @@
 
         &:hover { background-color: colors.$dark20; }
 
-        &.minimize:hover svg { fill: colors.$accentOrange1; }
-        &.maximize:hover svg { fill: colors.$accentGreen2; }
-        &.close:hover svg { fill: colors.$accentRed3; }
+        &.minimize:hover svg { fill: var(--accent)Orange1; }
+        &.maximize:hover svg { fill: var(--accent)Green2; }
+        &.close:hover svg { fill: var(--accent)Red3; }
     }
 }
 
@@ -72,6 +72,7 @@ body
     height: 100vh;
     width: 100vw;
     background-color: colors.$dark25;
+    transition: background-color ease 400ms;
 
     &::before
     {
@@ -79,7 +80,7 @@ body
         content: '';
         height: 100%;
         width: 2px;
-        background-color: colors.$accent;
+        background-color: var(--accent);
         left: 60vw;
         z-index: -1;
     }
@@ -98,16 +99,16 @@ button
 input
 {
     user-select: auto !important;
-    caret-color: colors.$accent;
+    caret-color: var(--accent);
     border: none;
 
     &:focus
     {
         outline: none;
-        border-bottom-color: colors.$accent !important;
+        border-bottom-color: var(--accent) !important;
     }
 
-    &[data-no-match="true"]:focus { border-bottom-color: colors.$accentRed1 !important; }
+    &[data-no-match="true"]:focus { border-bottom-color: var(--accent)Red1 !important; }
 }
 
 .hover3D
@@ -205,7 +206,7 @@ input
 
         .slider
         {
-            &::before { background-color: colors.$accent; }
+            &::before { background-color: var(--accent); }
             &::after { opacity: 1; }
         }
     }

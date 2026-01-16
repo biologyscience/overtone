@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { COL, ROW, Slider, Hover3D } from '../util/components';
 import { AudioPlayer } from '../util/audio';
-
 import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
 
@@ -114,7 +113,7 @@ export default function displayRight()
 
         window.ipc.on('ipc-setNowPlaying', (song) =>
         {
-            const { title, artist, album, albumart, filepath, duration } = song;
+            const { title, artist, album, albumart, filepath, duration, colors } = song;
 
             timerReset();
             timer.current.filepath = filepath;
@@ -130,6 +129,9 @@ export default function displayRight()
             }
 
             navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
+            document.body.style.backgroundColor = `rgb(${colors.DarkMuted.join(',')})`;
+            document.querySelector(':root').style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
+            // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
         });
 
         window.ipc.send('ipc-displayRightReady', true);

@@ -120,7 +120,7 @@
             backdrop-filter: blur(10px);
             align-items: center;
             padding: 0 1em;
-            border: .2em solid colors.$accent;
+            border: .2em solid var(--accent);
             border-radius: .5em;
             box-sizing: border-box;
             

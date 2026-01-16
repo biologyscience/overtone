@@ -38,6 +38,7 @@
     --accentLightBlue2: rgb(24, 255, 255);
 
     --accent: var(--accentGreen1);
+    --textColor: white;
     --currentFont: 'Fira';
 
     --displayLeftWidth: 60vw;

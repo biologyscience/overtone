@@ -22,7 +22,7 @@
         left: var(--left);
         height: .25em;
         width: calc(var(--navbarHeight) / 1.1);;
-        background-color: colors.$accent;
+        background-color: var(--accent);
         transition: left ease 250ms;
     }
 

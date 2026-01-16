@@ -51,19 +51,19 @@
                     margin-left: auto;
                     display: none;
     
-                    svg { fill: colors.$accentRed1; }
+                    svg { fill: var(--accent)Red1; }
                 }
     
                 &.delete
                 {
-                    border-color: colors.$accentRed1;
+                    border-color: var(--accent)Red1;
     
                     .deleteButton { display: flex; }
                 }
     
                 &:hover
                 {
-                    border-color: colors.$accent;
+                    border-color: var(--accent);
                     cursor: pointer;
                 }
             }
@@ -97,7 +97,7 @@
     
                 &:hover, &.selected
                 {
-                    border-color: colors.$accent;
+                    border-color: var(--accent);
                     cursor: pointer;
                 }
             }
@@ -198,7 +198,7 @@
                 &:hover
                 {
                     cursor: pointer;
-                    border-color: colors.$accent;
+                    border-color: var(--accent);
                 }
 
                 .songData
