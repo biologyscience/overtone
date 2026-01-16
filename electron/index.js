@@ -4,6 +4,7 @@ const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require(
 const path = require('path');
 const sharp = require('sharp');
 const crypto = require('crypto');
+const { Vibrant } = require('node-vibrant/node');
 
 const { appdata, parseTime } = require('./util');
 const { getArtistPicture, getAlbumArtURL } = require('./spotify');
@@ -19,7 +20,7 @@ function init()
     if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
     if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
     
-    ['config', 'queues', 'songList', 'songMetadata'].forEach((x) =>
+    ['config', 'queues', 'songList', 'albums', 'songMetadata'].forEach((x) =>
     {
         const filepath = path.join(__dirname, `./appdata/${x}.json`);
     
@@ -95,6 +96,7 @@ ipcMain.handle('ipc-addFolders', () =>
 {
     const config = appdata.get('config');
     const songList = appdata.get('songList');
+    const albums = appdata.get('albums');
     const songMetadata = appdata.get('songMetadata');
 
     const dirs = dialog.showOpenDialogSync(WINDOW, { properties: ['openDirectory', 'multiSelections'] });
@@ -111,7 +113,7 @@ ipcMain.handle('ipc-addFolders', () =>
 
         for (const file of files)
         {
-            if (new RegExp(`/\.(${config.allowedMusicFileFormats.join('|')})$/i`).test(file))
+            if (new RegExp(`\\.(${config.allowedMusicFileFormats.join('|')})$`, 'i').test(file))
             {
                 filtered.push(folder);
                 break;
@@ -130,7 +132,7 @@ ipcMain.handle('ipc-addFolders', () =>
     {
         const songListInFolder = readdirSync(dir)
         .filter(a => !statSync(path.join(dir, a)).isDirectory())
-        .filter(x => new RegExp(`/\.(${config.allowedMusicFileFormats.join('|')})$/i`).test(x))
+        .filter(x => new RegExp(`\\.(${config.allowedMusicFileFormats.join('|')})$`, 'i').test(x))
         .map(b => path.join(dir, b));
 
         newSongs = newSongs.concat(songListInFolder).sort(alphabeticalOrder);
@@ -145,35 +147,68 @@ ipcMain.handle('ipc-addFolders', () =>
         console.log('start updating ...');
 
         const pendingPromises = [];
-        
-        async function spotifyAlbumArt(filepath, songData)
+
+        async function saveAlbumPicture(ID, BUFFER)
         {
-            const url = await getAlbumArtURL(songData.album, songData.artists[0]);
+            albums[ID].hasArt = true;
+    
+            const colors = await Vibrant.from(BUFFER).getPalette();
 
-            songData.albumartURL = url === undefined ? null : url;
+            for (const key in colors) colors[key] = colors[key]._rgb;
+    
+            albums[ID].colors = colors;
+            
+            if (albums[ID].albumartURL === undefined)
+            {
+                albums[ID].albumartURL = null;
 
-            songMetadata[filepath] = songData;
+                pendingPromises.push(new Promise(async (resolve) =>
+                {
+                    const url = await getAlbumArtURL(albums[ID].album, albums[ID].artists[0]);
+
+                    if (url !== undefined) albums[ID].albumartURL = url;
+
+                    return resolve(true)
+                }));
+            }
+
+            if (existsSync(path.join(__dirname, `./appdata/webp/${ID}.webp`))) return true;
+    
+            pendingPromises.push(
+                sharp(BUFFER)
+                .resize({height: 1000})
+                .webp({quality: 70})
+                .toFile(path.join(__dirname, `./appdata/webp/${ID}.webp`))
+            );
 
             return true;
         }
 
         for (let i = 0; i < results.length; i++)
         {
-            const { album, albumartist, artists, bpm, genre, title, track, year, picture } = results[i].common;
+            const { album, artists, bpm, genre, title, track, year, picture } = results[i].common;
 
-            const data = { album, albumartist, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
-            
-            const albumartID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
+            const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
-            
-            data.albumartID = albumartID;
 
-            if (!existsSync(path.join(__dirname, `./appdata/webp/${albumartID}.webp`)) && (picture[0] !== undefined))
+            if (albums[albumID] === undefined)
             {
-                sharp(picture[0].data)
-                .resize({height: 1000})
-                .webp({quality: 70})
-                .toFile(path.join(__dirname, `./appdata/webp/${albumartID}.webp`));
+                albums[albumID] =
+                {
+                    album,
+                    artists,
+                    year,
+                    songs: [newSongs[i]]
+                };
+
+                if (picture[0] !== undefined) await saveAlbumPicture(albumID, picture[0].data);
+            }
+
+            else
+            {
+                if (!albums[albumID].songs.includes(newSongs[i])) albums[albumID].songs.push(newSongs[i]);
+
+                if (albums[albumID]?.hasArt !== true && (picture[0] !== undefined)) await saveAlbumPicture(albumID, picture[0].data);
             }
 
             if (!existsSync(path.join(__dirname, `./appdata/webp/${artistID}.webp`)))
@@ -182,25 +217,31 @@ ipcMain.handle('ipc-addFolders', () =>
                 {
                     if (data !== null)
                     {
-                        sharp(data)
-                        .webp({quality: 70})
-                        .toFile(path.join(__dirname, `./appdata/webp/${artistID}.webp`));
+                        pendingPromises.push(
+                            sharp(data)
+                            .webp({quality: 70})
+                            .toFile(path.join(__dirname, `./appdata/webp/${artistID}.webp`))
+                        );
                     }
                 });
             }
 
-            songMetadata[newSongs[i]] = data;
+            const data = { albumID, album, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
 
-            if (songMetadata[newSongs[i]]?.albumartURL === undefined) pendingPromises.push(spotifyAlbumArt(newSongs[i], data));
+            songMetadata[newSongs[i]] = data;
         }
         
         appdata.set('songMetadata', songMetadata);
         
         console.log('finished sync tasks');
         console.log('waiting for pending promises ... (should take a while)');
+        
+        appdata.set('albums', albums);
 
         await Promise.all(pendingPromises);
+
         appdata.set('songMetadata', songMetadata);
+        appdata.set('albums', albums);
 
         console.log('pending promises complete');
     });
@@ -229,52 +270,60 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
 
 ipcMain.handle('ipc-wantAlbums', () =>
 {
-    const songMetadata = appdata.get('songMetadata');
+    const albums = appdata.get('albums');
 
-    const albums = [];
+    const albumData = [];
 
-    for (const filepath in songMetadata)
+    for (const ID in albums)
     {
         let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
 
-        const { album, artists, albumartID } = songMetadata[filepath];
+        if (albums[ID].hasArt) albumart = path.join(__dirname, `./appdata/webp/${ID}.webp`);
 
-        if (albumartID !== undefined) albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
-
-        albums.push(JSON.stringify({album, artist: artists[0], albumart}));
+        albumData.push({album: albums[ID].album, artist: albums[ID].artists[0], albumart})
     }
 
-    const unique = [...new Set(albums)].map(JSON.parse);
-    
-    return [...unique];
+    return albumData;
 });
 
 ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 {
     const songMetadata = appdata.get('songMetadata');
 
-    const albumData = { album, artist, songs: [] };
+    const albumData = { album, songs: [] };
 
-    for (const filepath in songMetadata)
+    const albums = appdata.get('albums');
+
+    for (const ID in albums)
     {
-        if ((songMetadata[filepath].album !== album) || (songMetadata[filepath].artists[0] !== artist)) continue;
+        if (albums[ID].album === album && albums[ID].artists.includes(artist))
+        {
+            albumData.artist = albums[ID].artists[0];
+            albumData.year = albums[ID].year;
+            albumData.albumart = albums[ID].hasArt ? path.join(__dirname, `./appdata/webp/${ID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
 
-        const { title, rawDuration, track, artists, year, albumartID, playCount } = songMetadata[filepath];
+            albumData.songs = albums[ID].songs.map((filepath) =>
+            {
+                const { title, rawDuration, track, artists, playCount } = songMetadata[filepath];
 
-        if (albumData.year === undefined && year !== undefined) albumData.year = year;
-        if (albumData.albumart === undefined && albumartID !== undefined) albumData.albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+                const data =
+                {
+                    title,
+                    artists,
+                    duration: rawDuration,
+                    location: filepath,
+                    track: track?.no || 0,
+                    plays: playCount || 0
+                }
+                
+                return data;
+            });
 
-        albumData.songs.push({
-            title,
-            artists,
-            duration: rawDuration,
-            location: filepath,
-            track: track?.no || 0,
-            plays: playCount || 0
-        });
+            albumData.songs.sort((x, y) => x.track - y.track);
+
+            break;
+        }
     }
-
-    if (albumData.albumart === undefined) albumData.albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
 
     return albumData;
 });
@@ -307,12 +356,12 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
 
     for (const filepath in songMetadata)
     {
-        if (songMetadata[filepath].artists[0] !== artist) continue;
+        if (!songMetadata[filepath].artists.includes(artist)) continue;
 
-        const { album, year, albumartID } = songMetadata[filepath];
+        const { album, year, albumID } = songMetadata[filepath];
 
         if (albums?.[album]?.year === undefined && year !== undefined) albums[album] === undefined ? albums[album] = { year } : albums[album].year = year;
-        if (albums?.[album]?.albumart === undefined && albumartID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `./appdata/webp/${albumartID}.webp`) } : albums[album].albumart = path.join(__dirname, `./appdata/webp/${albumartID}.webp`);
+        if (albums?.[album]?.albumart === undefined && albumID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `./appdata/webp/${albumID}.webp`) } : albums[album].albumart = path.join(__dirname, `./appdata/webp/${albumID}.webp`);
     }
 
     const toSend = [];
@@ -455,7 +504,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, genre, trackNumber}) =>
 
         else if (ALBUM === undefined) // songs by artist
         {
-            if (songMetadata[filepath].artists[0] !== artist) continue;
+            if (!songMetadata[filepath].artists.includes(artist)) continue;
 
             const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
 
@@ -466,7 +515,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, genre, trackNumber}) =>
 
         else // songs by album and artist
         {
-            if ((songMetadata[filepath].album !== ALBUM) || (songMetadata[filepath].artists[0] !== artist)) continue;
+            if ((songMetadata[filepath].album !== ALBUM) || !songMetadata[filepath].artists.includes(artist)) continue;
 
             const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
 
