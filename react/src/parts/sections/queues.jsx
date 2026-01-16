@@ -13,7 +13,8 @@ import
     ScheduleRounded,
     QueueMusicRounded,
     CloseRounded,
-    EditRounded
+    EditRounded,
+    CheckRounded
     
 } from '@mui/icons-material';
 
@@ -26,6 +27,9 @@ export default function queues()
         [showModal, setShowModal] = useState(false),
         [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(-1),
         [queuesList, setQueuesList] = useState(),
+        [renamingQueue, setRenamingQueue] = useState(false),
+        [renamePosition, setRenamePosition] = useState(0),
+        [rename, setRename] = useState([]),
         [currentQueueName, setCurrentQueueName] = useState('Queues'),
         [queueDuration, setQueueDuration] = useState('--:--'),
         [playingQueueName, setPlayingQueueName] = useState(),
@@ -42,22 +46,9 @@ export default function queues()
     {
         if (!showModal) return;
 
-        window.ipc.invoke('ipc-wantQueues').then((queueNames) =>
-        {
-            setQueuesList(
-                queueNames.map((name, i) =>
-                {
-                    return (
-                        <div key={i} id={crypto.randomUUID()} className={`listItem ${playingQueueName === name ? 'current' : ''}`}>
-                            <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                            <span className='name' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
-                            <button><EditRounded/></button>
-                            <button><DeleteRounded/></button>
-                        </div>
-                    )
-                })
-            );
-        });
+        setRenamingQueue(false);
+
+        window.ipc.send('ipc-wantQueues');
 
     }, [showModal, playingQueueName]);
 
@@ -97,6 +88,27 @@ export default function queues()
 
     useEffect(() =>
     {
+        if (renamingQueue === false)
+        {
+            const [oldName, newName] = rename;
+
+            window.ipc.send('ipc-renameQueue', {oldName, newName});
+        }
+
+        else
+        {
+            setRename([renamingQueue, renamingQueue]);
+
+            const queuesHolder = document.querySelector('.section#queues .queuesHolder');
+            const item = queuesHolder.querySelector(`.queuesList .listItem[data-name="${renamingQueue}"]`);
+
+            setRenamePosition((3 + item.getBoundingClientRect().top - queuesHolder.getBoundingClientRect().top) + 'px');
+        }
+
+    }, [renamingQueue]);
+
+    useEffect(() =>
+    {
         window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
         {
             setSongsData(songs);
@@ -104,6 +116,23 @@ export default function queues()
             setCurrentQueueSongNumber(trackNumber);
             setQueueDuration(duration);
             setShowModal(false);
+        });
+
+        window.ipc.on('ipc-setQueuesList', (queueNames) =>
+        {
+            setQueuesList(
+                queueNames.map((name, i) =>
+                {
+                    return (
+                        <div key={i} id={crypto.randomUUID()} className={`listItem ${playingQueueName === name ? 'current' : ''}`} data-name={name}>
+                            <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
+                            <span className='name' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
+                            <button onClick={() => setRenamingQueue(name)}><EditRounded/></button>
+                            <button onClick={() => window.ipc.send('ipc-deleteQueue', {name})}><DeleteRounded/></button>
+                        </div>
+                    )
+                })
+            );
         });
 
         eventBus.addEventListener('ot-next', () => setPlayingTrackNumber(x => x + 1))
@@ -127,6 +156,12 @@ export default function queues()
                     <COL className={'queuesList'}>
                         <SortableList setOrder={'ot-queuesReorder'}>{queuesList}</SortableList>
                     </COL>
+                    <div className={`renamer ${renamingQueue === false ? 'displayNone' : 'grid'}`} style={{'--top': renamePosition}}>
+                        <button><DragHandleRounded/></button>
+                        <input value={rename[1]} onChange={({target}) => setRename(x => x = [x[0], target.value])}/>
+                        <button onClick={() => setRenamingQueue(false)}><CheckRounded/></button>
+                        <button><DeleteRounded/></button>
+                    </div>
                 </COL>
             </CustomModal>
             <COL className={'head'}>

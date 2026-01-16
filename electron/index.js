@@ -430,13 +430,53 @@ ipcMain.handle('ipc-wantGenre', (E, {genre}) =>
     return genreData;
 });
 
-ipcMain.handle('ipc-wantQueues', () =>
+ipcMain.on('ipc-wantQueues', () =>
 {
     const queues = appdata.get('queues');
 
     if (queues[0] === undefined) return [];
 
-    return [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)];
+    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
+});
+
+ipcMain.on('ipc-deleteQueue', (E, {name}) =>
+{
+    const queues = appdata.get('queues');
+
+    const index = queues.indexOf(queues.find(x => x.name === name));
+
+    const position = queues[index].queuePosition;
+
+    for (let i = 0; i < queues.length; i++)
+    {
+        if (queues[i].queuePosition <= position) continue;
+        
+        queues[i].queuePosition--;
+    }
+
+    queues.splice(index, 1);
+
+    appdata.set('queues', queues);
+
+    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
+});
+
+ipcMain.on('ipc-renameQueue', (E, {oldName, newName}) =>
+{
+    const queues = appdata.get('queues');
+
+    for (let i = 0; i < queues.length; i++)
+    {
+        if (queues[i].name === oldName)
+        {
+            queues[i].name = newName;
+            break;
+        }
+    }
+
+    appdata.set('queues', queues);
+
+    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
 });
 
 function wantQueue(queue)

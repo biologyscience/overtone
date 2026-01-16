@@ -72,6 +72,31 @@
                 .drag { cursor: grab; }
             }
         }
+        
+        .renamer
+        {
+            --top: 0;
+
+            position: absolute;
+            font-size: 1.15rem;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1em;
+            align-items: center;
+            top: var(--top);
+            left: 1.175em;
+            background-color: var(--background);
+
+            input
+            {
+                width: 100%;
+                font-size: 1.15rem;
+                background: white;
+                padding: .25em;
+                color: var(--background);
+                border-radius: 2.5px;
+                margin-right: .5em;
+            }
+        }
     }
 
     .head
