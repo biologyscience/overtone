@@ -216,3 +216,60 @@ input
         }
     }
 }
+
+.contextMenu
+{
+    height: 60vh;
+    width: 25vw;
+    background-color: var(--background);
+    border-radius: .5em;
+
+    .head
+    {
+        position: relative;
+        font-size: 1.5rem;
+        padding: .5em 1em;
+        justify-content: space-between;
+
+        &::after
+        {
+            position: absolute;
+            content: '';
+            height: 2.5px;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            background-color: colors.$dark50;
+        }
+    }
+
+    .options
+    {
+        gap: .5em;
+
+        .divider
+        {
+            height: 2.5px;
+            width: auto;
+            margin: .5em 1vw;
+            background-color: colors.$dark50;
+        }
+    
+        .contextItem
+        {
+            font-size: 1rem;
+            align-items: center;
+            padding: .25em;
+            margin: 0 2vw;
+            gap: 1em;
+            border-radius: .25em;
+            transition: background-color 250ms ease;
+
+            &:hover
+            {
+                cursor: pointer;
+                background-color: hsla(255, 255, 255, .15);
+            }
+        }
+    }
+}
