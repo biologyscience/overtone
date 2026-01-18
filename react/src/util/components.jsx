@@ -4,6 +4,8 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
+import { CloseRounded } from '@mui/icons-material';
+
 function ROW({ className, children, ...rest })
 {
     return (
@@ -184,4 +186,38 @@ function CustomModal({visibility: [open, setOpen], parentRef, children})
     );
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal };
+function ContextMenu({visibility, title, options, parentRef})
+{
+    const clickables = [];
+
+    options.forEach((section, i) =>
+    {
+        section.components.forEach((comp, index) =>
+        {
+            clickables.push(
+                <ROW key={`${i}${index}`} className={'contextItem'} onClick={section.functions[index]}>
+                    {comp}
+                </ROW>
+            )
+        });
+
+        clickables.push(<div key={i} className='divider'/>)
+    });
+
+    return (
+        <CustomModal visibility={visibility} parentRef={parentRef}>
+            <COL className={'contextMenu'}>
+                <ROW className={'head'}>
+                    <span className='title overflowPrevent' title={title}>{title}</span>
+                    <button onClick={() => visibility[1](false)}><CloseRounded/></button>
+                </ROW>
+                <div className='divider'/>
+                <COL className={'options'}>
+                    {clickables}
+                </COL>
+            </COL>
+        </CustomModal>
+    )
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu };
