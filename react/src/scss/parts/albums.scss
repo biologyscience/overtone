@@ -225,7 +225,6 @@
 
         .body
         {
-            padding: 0 2em;
             flex-grow: 1;
             overflow: hidden;
 
@@ -233,9 +232,10 @@
             {
                 font-size: 1.25em;
                 display: grid;
-                grid-template-columns: 5ch 1fr 10ch 5ch;
-                gap: 2em;
+                grid-template-columns: 2.5vw 1fr 5vw 4vw .5vw;
+                gap: 1vw;
                 place-items: center;
+                border: .2em solid transparent;
 
                 .placeLeft { place-self: center start; }
             }
@@ -244,6 +244,7 @@
             {
                 position: relative;
                 padding: 1em 0;
+                margin: 0 2em;
                 @include util.divider(after, BottomLeft);
             }
             
@@ -251,7 +252,7 @@
             {
                 list-style: none;
                 margin: 0;
-                padding: 0;
+                padding: 0 2em;
                 flex-grow: 1;
                 overflow-y: auto;
                 
@@ -259,15 +260,10 @@
                 {
                     padding: .5em 0;
                     margin: .5em 0;
-                    border: .2em solid transparent;
                     border-radius: .5em;
                     transition: border-color 300ms ease;
 
-                    *
-                    {
-                        pointer-events: none;
-                        font-size: 1.15em;
-                    }
+                    * { font-size: 1.15em; }
 
                     .artists
                     {
@@ -276,10 +272,21 @@
                         color: colors.$dark90;
                     }
 
+                    button
+                    {
+                        opacity: 0;
+                        transition: opacity 200ms ease;
+                        margin-right: 1.5vw;
+
+                        * { pointer-events: none; }
+                    }
+
                     &:hover
                     {
                         cursor: pointer;
                         border-color: var(--accent);
+
+                        button { opacity: 1; }
                     }
                 }
             }

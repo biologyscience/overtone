@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, CustomModal } from '../../util/components';
+import { COL, ROW, CustomModal, ContextMenu } from '../../util/components';
 import SortableList from '../../util/sortable';
 
 import eventBus from '../../util/events';
@@ -14,8 +14,11 @@ import
     QueueMusicRounded,
     CloseRounded,
     EditRounded,
-    CheckRounded
-    
+    CheckRounded,
+    InfoOutlineRounded,
+    PlaylistAddRounded,
+    PlaylistRemoveRounded,
+    PauseCircleOutlineRounded
 } from '@mui/icons-material';
 
 export default function queues()
@@ -33,13 +36,21 @@ export default function queues()
         [currentQueueName, setCurrentQueueName] = useState('Queues'),
         [queueDuration, setQueueDuration] = useState('--:--'),
         [playingQueueName, setPlayingQueueName] = useState(),
-        [playingTrackNumber, setPlayingTrackNumber] = useState(-1);
+        [playingTrackNumber, setPlayingTrackNumber] = useState(-1),
+        [showContextMenu, setShowContextMenu] = useState(false),
+        [contextData, setContextData] = useState({});
     
     function switchToTrack(name, index)
     {
         window.ipc.send('ipc-audioPlayer-switchToTrack', {queueName: name, index});
 
         setPlayingTrackNumber(index);
+    }
+
+    function openContext(data)
+    {
+        setContextData({title: data.title});
+        setShowContextMenu(true);
     }
 
     useEffect(() =>
@@ -187,7 +198,7 @@ export default function queues()
                         songsData?.map(({title, artists, album, duration}, i) =>
                         {
                             return (
-                                <div key={i} id={crypto.randomUUID()} className='listItem'>
+                                <div key={i} id={crypto.randomUUID()} className='listItem' onContextMenu={() => openContext({title})}>
                                     <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                     <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
@@ -197,13 +208,30 @@ export default function queues()
                                             <span className='duration'>{duration}</span>
                                         </ROW>
                                     </COL>
-                                    <button><MoreHorizRounded/></button>
+                                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
                                 </div>
                             )
                         })
                     }
                 </SortableList>
             </COL>
+            <ContextMenu
+                visibility={[showContextMenu, setShowContextMenu]}
+                title={contextData?.title}
+                options={[
+                    {
+                        functions: [() => {}, () => {}, () => {}],
+                        icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
+                        texts: ['Add to a queue', 'Remove from current queue', 'Stop after this song']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                        texts: ['Song info', 'Delete permanently']
+                    }                    
+                ]}
+                parentRef={sectionRef}
+            />
         </COL>
     )
 }

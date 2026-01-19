@@ -246,10 +246,12 @@ input
     .options
     {
         gap: .5em;
+        margin: 1em 0;
+        overflow-y: auto;
 
         .divider
         {
-            height: 2.5px;
+            min-height: 2.5px;
             width: auto;
             margin: .5em 1vw;
             background-color: colors.$dark50;
@@ -259,8 +261,8 @@ input
         {
             font-size: 1rem;
             align-items: center;
-            padding: .25em;
-            margin: 0 2vw;
+            padding: .25em .5em;
+            margin: 0 1vw;
             gap: 1em;
             border-radius: .25em;
             transition: background-color 250ms ease;

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { COL, ROW, GRID, SearchBox } from '../../util/components';
+import { useEffect, useState, useRef } from 'react';
+import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
 
 import { parseTime } from '../../util/functions';
 
@@ -14,12 +14,19 @@ import
     NumbersRounded,
     ScheduleRounded,
     SearchRounded,
-    MoreHorizRounded
+    MoreHorizRounded,
+    InfoOutlineRounded,
+    PlaylistAddRounded,
+    StartRounded,
+    DriveFileMoveRounded,
+    EditRounded
     
 } from '@mui/icons-material';
 
 export default function folders()
 {
+    const sectionRef = useRef();
+
     const
         [showInside, setShowInside] = useState(false),
         [folderPaths, setFolderPaths] = useState([]),
@@ -29,7 +36,9 @@ export default function folders()
         [songsData, setSongsData] = useState(),
         [folderDuration, setFoldarDuration] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
-        [inputMatchSpace, setInputMatchSpace] = useState();
+        [inputMatchSpace, setInputMatchSpace] = useState(),
+        [showContextMenu, setShowContextMenu] = useState(false),
+        [contextData, setContextData] = useState({});
     
     function handleFolderClick({target})
     {
@@ -120,21 +129,21 @@ export default function folders()
         )
     }
 
+    function openContext(data)
+    {
+        setContextData({title: data.title});
+        setShowContextMenu(true);
+    }
+
     function Songs()
     {
         function click({target})
         {
             const { filePath } = target.parentElement.dataset;
 
-            if (target.tagName === 'BUTTON')
-            {
-                // options
-            }
+            if (target.tagName === 'BUTTON') return;
 
-            else
-            {
-                // play filePath
-            }
+            // play filePath
         }
 
         let totalDuration = 0;
@@ -144,7 +153,7 @@ export default function folders()
             totalDuration += duration;
     
             return (
-                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location}>
+                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location} onContextMenu={() => openContext({title})}>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
@@ -153,7 +162,7 @@ export default function folders()
                             <span className='duration'>{parseTime(duration).text}</span>
                         </ROW>
                     </COL>
-                    <button><MoreHorizRounded/></button>
+                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
                 </li>
             );
         });
@@ -169,7 +178,7 @@ export default function folders()
     }, []);
 
     return (
-        <COL className='section' id='folders'>
+        <COL ref={sectionRef} className='section relative' id='folders'>
             <COL className={`out ${showInside ? 'displayNone' : ''}`}>
                 <ul className='folders'>
                     <FolderList/>
@@ -210,6 +219,28 @@ export default function folders()
                 </GRID>
                 <ul className='songList'><Songs/></ul>
             </COL>
+            <ContextMenu
+                visibility={[showContextMenu, setShowContextMenu]}
+                title={contextData?.title}
+                options={[
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<PlaylistAddRounded/>, <StartRounded/>],
+                        texts: ['Add to a queue', 'Play after current song']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<EditRounded/>, <DriveFileMoveRounded/>],
+                        texts: ['Edit tags', 'Move to a folder']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                        texts: ['Song info', 'Delete permanently']
+                    }
+                ]}
+                parentRef={sectionRef}
+            />
         </COL>
     )
 }
