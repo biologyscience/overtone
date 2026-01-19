@@ -663,6 +663,56 @@ ipcMain.on('ipc-songPlayed', (E, filepath) =>
     appdata.set('songMetadata', songMetadata);
 });
 
+ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
+{
+    let afterQueueName = null;
+
+    const queues = appdata.get('queues');
+
+    const queueIndex = queues.indexOf(queues.find(x => x.name === name));
+
+    queues[queueIndex].songs.splice(position, 1);
+
+    if (queues[queueIndex].songs.length === 0)
+    {
+        const { queuePosition } = queues[queueIndex];
+
+        queues.splice(queueIndex, 1);
+
+        for (let i = 0; i < queues.length; i++)
+        {
+            if (queues[i].queuePosition === queuePosition + 1) afterQueueName = queues[i].name;
+
+            if (queues[i].queuePosition > queuePosition) queues[i].queuePosition--;
+        }
+    }
+
+    if (afterQueueName !== null) audioPlayer.switchTo(afterQueueName, 0);
+
+    else
+    {
+        const currentQueue = queues.find(x => x.name === name);
+
+        if (audioPlayer.queueName === name)
+        {
+            audioPlayer.queue = currentQueue.songs;
+
+            if (audioPlayer.currentQueueItem === position) audioPlayer.setNowPlaying(audioPlayer.queue[audioPlayer.currentQueueItem]);
+            
+            if (audioPlayer.currentQueueItem > position)
+            {
+                queues[queues.indexOf(currentQueue)].currentSong--;
+                audioPlayer.currentQueueItem--;
+            }
+        }
+
+        else if (audioPlayer.currentQueueItem > position) queues[queues.indexOf(currentQueue)].currentSong--;
+    }
+    
+    appdata.set('queues', queues);
+    WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(afterQueueName || name));
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow

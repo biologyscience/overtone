@@ -49,7 +49,7 @@ export default function queues()
 
     function openContext(data)
     {
-        setContextData({title: data.title});
+        setContextData({title: data.title, position: data.i});
         setShowContextMenu(true);
     }
 
@@ -139,6 +139,7 @@ export default function queues()
             setCurrentQueueSongNumber(trackNumber);
             setQueueDuration(duration);
             setShowModal(false);
+            setShowContextMenu(false);
         });
 
         window.ipc.on('ipc-setQueuesList', (queueNames) =>
@@ -210,7 +211,7 @@ export default function queues()
                         songsData?.map(({title, artists, album, duration}, i) =>
                         {
                             return (
-                                <div key={i} id={crypto.randomUUID()} className='listItem' onContextMenu={() => openContext({title})}>
+                                <div key={i} id={crypto.randomUUID()} className='listItem' onContextMenu={() => openContext({title, i})}>
                                     <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                     <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
@@ -220,7 +221,7 @@ export default function queues()
                                             <span className='duration'>{duration}</span>
                                         </ROW>
                                     </COL>
-                                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
+                                    <button onClick={() => openContext({title, i})}><MoreHorizRounded/></button>
                                 </div>
                             )
                         })
@@ -232,15 +233,19 @@ export default function queues()
                 title={contextData?.title}
                 options={[
                     {
-                        functions: [() => {}, () => {}, () => {}],
+                        functions: [
+                            () => {},
+                            () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, position: contextData.position}),
+                            () => {}
+                        ],
                         icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
-                        texts: ['Add to a queue', 'Remove from current queue', 'Stop after this song']
+                        texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
                     },
                     {
                         functions: [() => {}, () => {}],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
-                    }                    
+                    }
                 ]}
                 parentRef={sectionRef}
             />
