@@ -192,14 +192,15 @@ function ContextMenu({visibility, title, options, parentRef})
 
     options.forEach((section, i) =>
     {
-        section.components.forEach((comp, index) =>
+        for (let index = 0; index < section.functions.length; index++)
         {
             clickables.push(
                 <ROW key={`${i}${index}`} className={'contextItem'} onClick={section.functions[index]}>
-                    {comp}
+                    {section.icons[index]}
+                    <span>{section.texts[index]}</span>
                 </ROW>
-            )
-        });
+            );
+        }
 
         clickables.push(<div key={i} className='divider'/>)
     });
@@ -211,7 +212,6 @@ function ContextMenu({visibility, title, options, parentRef})
                     <span className='title overflowPrevent' title={title}>{title}</span>
                     <button onClick={() => visibility[1](false)}><CloseRounded/></button>
                 </ROW>
-                <div className='divider'/>
                 <COL className={'options'}>
                     {clickables}
                 </COL>

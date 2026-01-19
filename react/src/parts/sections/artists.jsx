@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { COL, ROW, SearchBox } from '../../util/components';
+import { useEffect, useState, useRef } from 'react';
+import { COL, ROW, SearchBox, ContextMenu } from '../../util/components';
 
 import eventBus from '../../util/events';
 
@@ -9,24 +9,37 @@ import
     NumbersRounded,
     SearchRounded,
     CalendarMonthRounded,
-    PlayArrowRounded
+    PlayArrowRounded,
+    DeleteRounded,
+    PlaylistAddRounded,
+    StartRounded
     
 } from '@mui/icons-material';
 
 export default function artists()
 {
+    const sectionRef = useRef();
+
     const
         [showInside, setShowInside] = useState(false),
         [artists, setArtists] = useState(),
         [artist, setArtist] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
-        [inputMatchSpace, setInputMatchSpace] = useState();
+        [inputMatchSpace, setInputMatchSpace] = useState(),
+        [showContextMenu, setShowContextMenu] = useState(false),
+        [contextData, setContextData] = useState({});
 
     function play(name)
     {
         window.ipc.send('ipc-addQueue', {artist: name, trackNumber: 0});
 
         eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
+    }
+
+    function openContext(data)
+    {
+        setContextData({album: data.album});
+        setShowContextMenu(true);
     }
     
     function showArtist(artist)
@@ -61,7 +74,7 @@ export default function artists()
         return artist?.albums?.sort((x, y) => y.year - x.year)?.map(({album, year, albumart}, i) =>
         {
             return (
-                <div key={i} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} className={`albumItem`}>
+                <div key={i} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} onContextMenu={() => openContext({album})} className={`albumItem`}>
                     <img src={albumart} draggable={false}/>
                     <COL className={'info'}>
                         <span className='albumName block overflowPrevent'>{album}</span>
@@ -85,7 +98,7 @@ export default function artists()
     }, []);
 
     return (
-        <COL className='section' id='artists'>
+        <COL ref={sectionRef} className='section relative' id='artists'>
             <COL className={`out ${showInside ? 'displayNone' : ''}`}>
                 <ROW className='head'>
                     <ROW className={'searchBar'}>
@@ -126,6 +139,23 @@ export default function artists()
                 </ROW>
                 <ROW className={'albumList'}><Albums/></ROW>
             </COL>
+            <ContextMenu
+                visibility={[showContextMenu, setShowContextMenu]}
+                title={contextData?.album}
+                options={[
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<PlaylistAddRounded/>, <StartRounded/>],
+                        texts: ['Add album to a queue', 'Play after current song']
+                    },
+                    {
+                        functions: [ () => {}],
+                        icons: [<DeleteRounded/>],
+                        texts: ['Delete permanently']
+                    }
+                ]}
+                parentRef={sectionRef}
+            />
         </COL>
     )
 }

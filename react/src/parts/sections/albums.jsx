@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { COL, ROW, GRID, SearchBox } from '../../util/components';
+import { useEffect, useState, useRef } from 'react';
+import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
 
 import { parseTime } from '../../util/functions';
 
@@ -13,18 +13,27 @@ import
     SearchRounded,
     PersonRounded,
     CalendarMonthRounded,
-    PlayArrowRounded
+    PlayArrowRounded,
+    DeleteRounded,
+    InfoOutlineRounded,
+    PlaylistAddRounded,
+    StartRounded,
+    MoreHorizRounded
     
 } from '@mui/icons-material';
 
 export default function albums()
 {
+    const sectionRef = useRef();
+
     const
         [showInside, setShowInside] = useState(false),
         [albumData, setAlbumData] = useState(),
         [album, setAlbum] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
-        [inputMatchSpace, setInputMatchSpace] = useState();
+        [inputMatchSpace, setInputMatchSpace] = useState(),
+        [showContextMenu, setShowContextMenu] = useState(false),
+        [contextData, setContextData] = useState({});
 
     function play(trackNumber)
     {
@@ -63,12 +72,18 @@ export default function albums()
         });
     }
 
+    function openContext(data)
+    {
+        setContextData({title: data.title});
+        setShowContextMenu(true);
+    }
+
     function Songs()
     {
         return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration}, i) =>
         {
             return (
-                <li key={i} className='tableItem' onClick={() => play(i)}>
+                <li key={i} className='tableItem' onClick={({target}) => target.tagName === 'BUTTON' ? null : play(i)} onContextMenu={() => openContext({title})}>
                     <span>{track}</span>
                     <COL className={'placeLeft'}>
                         <span className='title'>{title}</span>
@@ -76,6 +91,7 @@ export default function albums()
                     </COL>
                     <span>{plays}</span>
                     <span>{parseTime(duration).text}</span>
+                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
                 </li>
             );
         });
@@ -94,7 +110,7 @@ export default function albums()
     }, []);
 
     return (
-        <COL className='section' id='albums'>
+        <COL ref={sectionRef} className='section relative' id='albums'>
             <COL className={`out ${showInside ? 'displayNone' : ''}`}>
                 <ROW className='head'>
                     <ROW className={'searchBar'}>
@@ -153,6 +169,23 @@ export default function albums()
                     </ul>
                 </COL>
             </COL>
+            <ContextMenu
+                visibility={[showContextMenu, setShowContextMenu]}
+                title={contextData?.title}
+                options={[
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<PlaylistAddRounded/>, <StartRounded/>],
+                        texts: ['Add to a queue', 'Play after current song']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                        texts: ['Song info', 'Delete permanently']
+                    }
+                ]}
+                parentRef={sectionRef}
+            />
         </COL>
     )
 }
