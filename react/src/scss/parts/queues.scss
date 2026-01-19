@@ -17,11 +17,12 @@
         background-color: var(--background);
         border-radius: 5px;
 
-        & > .head
+        .head
         {
             font-size: 1.5em;
             margin: 0;
             padding: .5em .75em;
+            gap: 1em;
 
             & > *:last-child { margin-left: auto; }
             
