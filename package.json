@@ -38,6 +38,7 @@
     "node-vibrant": "^4.0.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.6.0",
     "sass": "^1.97.1",
     "sharp": "^0.34.5",
     "vite": "^7.2.4"

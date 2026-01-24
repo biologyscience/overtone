@@ -3,21 +3,13 @@
 
 .section#folders
 {
-    overflow-y: auto;
-
-    @mixin rootIMG
-    {
-        $size: 1em;
-        height: $size;
-        width: $size;
-    }
-
     .out
     {
+        overflow: hidden;
+
         .folders
         {
-            position: relative;
-
+            overflow-y: auto;
             font-size: 1rem;
             list-style: none;
             margin: 0;
@@ -67,12 +59,11 @@
                     cursor: pointer;
                 }
             }
-
-            @include util.divider(after, BottomLeft);
         }
 
         .folderOptions
         {
+            position: relative;
             font-size: 1rem;
             list-style: none;
             margin: 0;
@@ -112,6 +103,8 @@
                     cursor: auto;
                 }
             }
+
+            @include util.divider(before, TopLeft);
         }
     }
 

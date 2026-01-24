@@ -3,6 +3,8 @@ import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
 
 import { parseTime } from '../../util/functions';
 
+import toast, { Toaster } from 'react-hot-toast';
+
 import
 {
     FolderRounded,
@@ -26,6 +28,7 @@ import
 export default function folders()
 {
     const sectionRef = useRef();
+    const toastRef = useRef('');
 
     const
         [showInside, setShowInside] = useState(false),
@@ -175,6 +178,36 @@ export default function folders()
             setFolderPaths(folderData);
             setSelectedFolders([...folderData].map(x => false));
         });
+
+        window.ipc.on('ipc-newFoldersFiles', ({folders, files}) =>
+        {
+            let text = null;
+
+            let folderType;
+            let filesType;
+
+            if (folders > 0) folderType = 'Added';
+            if (folders < 0) folderType = 'Removed';
+            if (files > 0) filesType = 'Added';
+            if (files < 0) filesType = 'Removed';
+
+            folders = Math.abs(folders);
+            files = Math.abs(files);
+
+            const folderPlural = folders > 1 ? 'folders' : 'folder';
+            const filesPlural = files > 1 ? 'songs' : 'song';
+
+            if (folderType)
+            {
+                if (folderType === filesType) text = `${folderType} ${folders} ${folderPlural} and ${files} ${filesPlural}`;
+
+                else text = `${folderType} ${folders} ${folderPlural} and ${filesType} ${files} ${filesPlural}`;
+            }
+
+            else if (filesType) text = `${filesType} ${files} ${filesPlural}`;
+
+            text === null ? toast('No changes found', {id: toastRef.current}) : toast.success(text, {id: toastRef.current});
+        });
     }, []);
 
     return (
@@ -192,7 +225,7 @@ export default function folders()
                         <RemoveCircleOutlineRounded/>
                         <DeleteText/>
                     </li>
-                    <li className='folderOption'>
+                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});  window.ipc.send('ipc-updateFiles'); }}>
                         <SyncRounded/>
                         <span>Sync files</span>
                     </li>
@@ -240,6 +273,14 @@ export default function folders()
                     }
                 ]}
                 parentRef={sectionRef}
+            />
+            <Toaster
+                toasterId='folders'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
             />
         </COL>
     )
