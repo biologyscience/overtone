@@ -535,7 +535,7 @@ ipcMain.on('ipc-wantQueues', () =>
 
     if (queues[0] === undefined) return [];
 
-    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
 });
 
 ipcMain.on('ipc-deleteQueue', (E, {name}) =>
@@ -557,7 +557,7 @@ ipcMain.on('ipc-deleteQueue', (E, {name}) =>
 
     appdata.set('queues', queues);
 
-    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
 });
 
 ipcMain.on('ipc-renameQueue', (E, {oldName, newName}) =>
@@ -575,7 +575,7 @@ ipcMain.on('ipc-renameQueue', (E, {oldName, newName}) =>
 
     appdata.set('queues', queues);
 
-    WINDOW.webContents.send('ipc-setQueuesList', [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)]);
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
 });
 
 function wantQueue(queue)

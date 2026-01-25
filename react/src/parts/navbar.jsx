@@ -15,7 +15,7 @@ import eventBus from '../util/events';
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(1);
+    const [index, setIndex] = useState(0);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 

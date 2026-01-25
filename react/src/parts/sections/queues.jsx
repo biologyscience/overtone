@@ -61,19 +61,7 @@ export default function queues()
 
         window.ipc.send('ipc-wantQueues');
 
-        setTimeout(() =>
-        {
-            const items = sectionRef.current.querySelectorAll('.queuesList .listItem');
-
-            items.forEach((item, i) =>
-            {
-                item.classList.remove('current');
-
-                if (playingQueueName === item.dataset.name) item.classList.add('current');
-            });
-        });
-
-    }, [showModal, playingQueueName]);
+    }, [showModal]);
 
     useEffect(() =>
     {
@@ -142,13 +130,13 @@ export default function queues()
             setShowContextMenu(false);
         });
 
-        window.ipc.on('ipc-setQueuesList', (queueNames) =>
+        window.ipc.on('ipc-setQueuesList', ({queues, current}) =>
         {
             setQueuesList(
-                queueNames.map((name, i) =>
+                queues.map((name, i) =>
                 {
                     return (
-                        <div key={i} id={crypto.randomUUID()} className={'listItem'} data-name={name}>
+                        <div key={i} id={crypto.randomUUID()} className={`listItem ${name === current ? 'current' : ''}`} data-name={name}>
                             <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                             <span className='name' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
                             <button onClick={() => setRenamingQueue(name)}><EditRounded/></button>
