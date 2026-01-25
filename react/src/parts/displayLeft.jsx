@@ -23,18 +23,14 @@ export default function displayRight()
             const visibleWidth = element.getBoundingClientRect().width;
 
             displayRef.current.scrollTo({left: index * visibleWidth, behavior: 'smooth'});
+
+            if (index === 0) eventBus.dispatchEvent(new Event('ot-focusSongInQueue'));
         }
 
         function preventXScroll(E) { if (E.shiftKey || E.deltaX !== 0) return E.preventDefault(); }
 
         element.addEventListener('wheel', preventXScroll, {passive: false});
         eventBus.addEventListener('ot-navChange', scroll);
-
-        return () =>
-        {
-            element.removeEventListener('wheel', preventXScroll, {passive: false});
-            eventBus.removeEventListener('ot-navChange', scroll);
-        }
     }, []);
 
     return (

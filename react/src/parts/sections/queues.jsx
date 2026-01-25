@@ -65,19 +65,6 @@ export default function queues()
 
     useEffect(() =>
     {
-        const items = [...sectionRef.current.querySelectorAll('.currentQueueList .listItem')];
-
-        items.forEach((item, i) =>
-        {
-            item.classList.remove('current');
-
-            if (currentQueueSongNumber === i) item.classList.add('current');
-        });
-
-    }, [currentQueueSongNumber]);
-
-    useEffect(() =>
-    {
         if (playingQueueName !== currentQueueName) return;
 
         setCurrentQueueSongNumber(playingTrackNumber);
@@ -120,6 +107,19 @@ export default function queues()
 
     useEffect(() =>
     {
+        function focusSongInQueue()
+        {
+            requestAnimationFrame(() =>
+            {
+                requestAnimationFrame(() =>
+                {
+                    const element = sectionRef.current.querySelector('.currentQueueList .listItem.current');
+
+                    if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
+                });
+            });
+        }
+
         window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
         {
             setSongsData(songs);
@@ -128,6 +128,8 @@ export default function queues()
             setQueueDuration(duration);
             setShowModal(false);
             setShowContextMenu(false);
+
+            focusSongInQueue();
         });
 
         window.ipc.on('ipc-setQueuesList', ({queues, current}) =>
@@ -150,10 +152,10 @@ export default function queues()
         eventBus.addEventListener('ot-next', () => setPlayingTrackNumber(x => x + 1))
         eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
+        eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
-
     }, []);
 
     return (
@@ -199,7 +201,7 @@ export default function queues()
                         songsData?.map(({title, artists, album, duration}, i) =>
                         {
                             return (
-                                <div key={i} id={crypto.randomUUID()} className='listItem' onContextMenu={() => openContext({title, i})}>
+                                <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i})}>
                                     <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                     <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
