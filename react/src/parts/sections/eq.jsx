@@ -36,8 +36,10 @@ export default function eq()
 
         ctx.clearRect(0, 0, visualizerRef.current.width, visualizerRef.current.height);
 
-        ctx.fillStyle = '#65ffa0';
-        ctx.strokeStyle = '#65ffa0';
+        const color = document.querySelector(':root').style.getPropertyValue('--accent');
+
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
         ctx.lineWidth = 1;
         ctx.beginPath();
 
