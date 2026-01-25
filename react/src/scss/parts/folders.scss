@@ -126,6 +126,12 @@
             }
 
             .name { font-size: 1.5em; }
+
+            .path
+            {
+                font-size: .6em;
+                color: colors.$dark60;
+            }
         }
 
         .info

@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
+import toast, { Toaster } from 'react-hot-toast';
 
+import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
 import { parseTime } from '../../util/functions';
 
-import toast, { Toaster } from 'react-hot-toast';
+import eventBus from '../../util/events';
 
 import
 {
@@ -36,6 +37,7 @@ export default function folders()
         [selectedFolders, setSelectedFolders] = useState(),
         [deleteSelected, setDeleteSelected] = useState(false),
         [folderName, setFolderName] = useState(),
+        [currentFolderPath, setCurrentFolderPath] = useState(),
         [songsData, setSongsData] = useState(),
         [folderDuration, setFoldarDuration] = useState(),
         [inputSearchSpace, setInputSearchSpace] = useState(),
@@ -59,6 +61,7 @@ export default function folders()
         {
             const folder = folderPaths[index];
 
+            setCurrentFolderPath(folder);
             setFolderName(folder.split('/').pop().split('\\').pop());
 
             window.ipc.invoke('ipc-wantFolder', folder).then((songData) =>
@@ -142,21 +145,22 @@ export default function folders()
     {
         function click({target})
         {
-            const { filePath } = target.parentElement.dataset;
+            const { index } = target.parentElement.dataset;
 
             if (target.tagName === 'BUTTON') return;
 
-            // play filePath
+            window.ipc.send('ipc-addQueue', {folder: currentFolderPath, trackNumber: index});
+            eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
         }
 
         let totalDuration = 0;
 
-        return songsData?.map(({title, artist, album, duration, location}, i) =>
+        return songsData?.map(({title, artist, album, duration}, i) =>
         {
             totalDuration += duration;
     
             return (
-                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-file-path={location} onContextMenu={() => openContext({title})}>
+                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-index={i} onContextMenu={() => openContext({title})}>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
@@ -247,7 +251,10 @@ export default function folders()
             <COL className={`in ${showInside ? '' : 'displayNone'}`}>
                 <ROW className='head'>
                     <button onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
-                    <span className='name'>{folderName}</span>
+                    <COL>
+                        <span className='name'>{folderName}</span>
+                        <span className='path'>{currentFolderPath}</span>
+                    </COL>
                 </ROW>
                 <GRID className='info'>
                     <ROW>
