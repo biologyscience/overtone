@@ -92,22 +92,27 @@ ipcMain.handle('ipc-deleteFolders', (E, toDelete) =>
     return [...config.checkMusicIn];
 });
 
-ipcMain.handle('ipc-addFolders', () =>
+function updateLibrary(dirs)
 {
     const config = appdata.get('config');
     const songList = appdata.get('songList');
     const albums = appdata.get('albums');
     const songMetadata = appdata.get('songMetadata');
 
-    const dirs = dialog.showOpenDialogSync(WINDOW, { properties: ['openDirectory', 'multiSelections'] });
-
-    if (dirs === undefined) return [];
+    if (dirs === undefined) dirs = [...config.checkMusicIn];
 
     const filtered = [];
+    const foldersToRemove = [];
 
     while (dirs.length > 0)
     {
         const folder = dirs.shift();
+
+        if (!existsSync(folder))
+        {
+            foldersToRemove.push(folder);
+            continue;
+        }
 
         const files = readdirSync(folder).filter(x => !statSync(path.join(folder, x)).isDirectory());
 
@@ -120,27 +125,77 @@ ipcMain.handle('ipc-addFolders', () =>
             }
         }
 
-        readdirSync(folder).filter(x => statSync(path.join(folder, x)).isDirectory()).forEach(y => dirs.push(path.join(folder, y)));
+        if (config.checkMusicIn.includes(folder) && !filtered.includes(folder))
+        {
+            foldersToRemove.push(folder);
+            continue;
+        }
+
+        readdirSync(folder).filter(x => statSync(path.join(folder, x)).isDirectory()).forEach((y) =>
+        {
+            const newDir = path.join(folder, y);
+
+            if (!filtered.includes(newDir)) dirs.push(newDir);
+        });
     }
+
+    const foldersToAdd = filtered.filter(x => !config.checkMusicIn.includes(x));
 
     function alphabeticalOrder(a, b) { return a.split('/').pop().split('\\').pop().localeCompare(b.split('/').pop().split('\\').pop()) }
 
-    const newFolders = filtered.filter(x => !config.checkMusicIn.includes(x));
-    let newSongs = [];
-    
-    newFolders.forEach((dir) =>
+    const songsToAdd = [];
+    const songsToRemove = new Set();
+
+    filtered.forEach((dir) =>
     {
         const songListInFolder = readdirSync(dir)
         .filter(a => !statSync(path.join(dir, a)).isDirectory())
         .filter(x => new RegExp(`\\.(${config.allowedMusicFileFormats.join('|')})$`, 'i').test(x))
         .map(b => path.join(dir, b));
 
-        newSongs = newSongs.concat(songListInFolder).sort(alphabeticalOrder);
+        songsToAdd.push(songListInFolder.filter(x => !songList?.[dir]?.includes(x)));
+        if (songList?.[dir]?.length > 0) songList[dir].filter(x => !songListInFolder.includes(x)).forEach(x => songsToRemove.add(x));
 
         songList[dir] = [...songListInFolder];
     });
 
+    const removedSongs = [];
+
+    function removeFile(filepath)
+    {
+        removedSongs.push(filepath);
+
+        const { albumID } = songMetadata[filepath];
+    
+        const { songs } = albums[albumID];
+    
+        if (songs.length > 1) albums[albumID].songs = songs.filter(x => x !== filepath);
+    
+        else delete albums[albumID];
+    
+        delete songMetadata[filepath];
+    }
+
+    foldersToRemove.forEach((folder) =>
+    {
+        const files = songList[folder];
+
+        files.forEach((filepath) =>
+        {
+            removeFile(filepath);
+            songsToRemove.delete(filepath);
+        });
+
+        delete songList[folder];
+    });
+
+    [...songsToRemove].forEach(removeFile);
+
+    appdata.set('albums', albums);
     appdata.set('songList', songList);
+    appdata.set('songMetadata', songMetadata);
+
+    const newSongs = songsToAdd.flat();
     
     Promise.all(newSongs.map(x => metadata.parseFile(x, {skipPostHeaders: true}))).then(async (results) =>
     {
@@ -246,13 +301,57 @@ ipcMain.handle('ipc-addFolders', () =>
         console.log('pending promises complete');
     });
 
-    const newList = config.checkMusicIn.concat(newFolders).sort(alphabeticalOrder);
+    const newList = config.checkMusicIn.concat(foldersToAdd).sort(alphabeticalOrder);
 
     config.checkMusicIn = newList;
 
     appdata.set('config', config);
 
-    return [...config.checkMusicIn];
+    return {
+        folders:
+        {
+            sorted: newList,
+            added: foldersToAdd,
+            removed: foldersToRemove
+        },
+
+        songs:
+        {
+            added: songsToAdd.flat(),
+            removed: removedSongs
+        }
+    };
+}
+
+ipcMain.on('ipc-addFolders', () =>
+{
+    const dirs = dialog.showOpenDialogSync(WINDOW, { properties: ['openDirectory', 'multiSelections'] });
+
+    if (dirs === undefined) return WINDOW.webContents.send('ipc-newFoldersFiles', {});
+
+    const data = updateLibrary(dirs);
+
+    WINDOW.webContents.send('ipc-newFoldersFiles',
+    {
+        folders: { list: data.folders.sorted, count: data.folders.added.length },
+        songCount: data.songs.added.length
+    });
+});
+
+ipcMain.on('ipc-updateFiles', () =>
+{
+    const data = updateLibrary();
+
+    const dataToSend = 
+    {
+        folders: { list: data.folders.sorted, count: data.folders.added.length },
+        songCount: data.songs.added.length
+    };
+
+    if (data.songs.removed > data.songs.added) dataToSend.songCount = -1 * data.songs.removed;
+    if (data.folders.removed > data.folders.added) dataToSend.folders.count = -1 * data.folders.removed;
+
+    WINDOW.webContents.send('ipc-newFoldersFiles', dataToSend);
 });
 
 ipcMain.handle('ipc-wantFolder', (E, folder) =>
