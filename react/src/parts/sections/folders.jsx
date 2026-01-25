@@ -179,34 +179,47 @@ export default function folders()
             setSelectedFolders([...folderData].map(x => false));
         });
 
-        window.ipc.on('ipc-newFoldersFiles', ({folders, files}) =>
+        window.ipc.on('ipc-newFoldersFiles', ({folders, songCount}) =>
         {
-            let text = null;
+            let
+                text = 'Library is up to date',
+                folderType = null,
+                filesType = null;
 
-            let folderType;
-            let filesType;
+            if (folders?.count > 0) folderType = 'Added';
+            if (folders?.count < 0) folderType = 'Removed';
+            if (songCount > 0) filesType = 'Added';
+            if (songCount < 0) filesType = 'Removed';
 
-            if (folders > 0) folderType = 'Added';
-            if (folders < 0) folderType = 'Removed';
-            if (files > 0) filesType = 'Added';
-            if (files < 0) filesType = 'Removed';
-
-            folders = Math.abs(folders);
-            files = Math.abs(files);
-
-            const folderPlural = folders > 1 ? 'folders' : 'folder';
-            const filesPlural = files > 1 ? 'songs' : 'song';
+            songCount = Math.abs(songCount);
+            
+            const
+                folderCount = Math.abs(folders?.count),
+                folderPlural = folderCount > 1 ? 'folders' : 'folder',
+                songPlural = songCount > 1 ? 'songs' : 'song';
 
             if (folderType)
             {
-                if (folderType === filesType) text = `${folderType} ${folders} ${folderPlural} and ${files} ${filesPlural}`;
+                if (folderType === filesType) text = `${folderType} ${folderCount} ${folderPlural} and ${songCount} ${songPlural}`;
 
-                else text = `${folderType} ${folders} ${folderPlural} and ${filesType} ${files} ${filesPlural}`;
+                else text = `${folderType} ${folderCount} ${folderPlural} and ${filesType} ${songCount} ${songPlural}`;
             }
 
-            else if (filesType) text = `${filesType} ${files} ${filesPlural}`;
+            else if (filesType) text = `${filesType} ${songCount} ${songPlural}`;
 
-            text === null ? toast('No changes found', {id: toastRef.current}) : toast.success(text, {id: toastRef.current});
+            toast.success(text, {id: toastRef.current});
+
+            setFolderPaths((old) =>
+            {
+                if (folders?.list === undefined)
+                {
+                    toast.dismiss(toastRef.current);
+
+                    return old;
+                }
+
+                else return folders.list;
+            });
         });
     }, []);
 
@@ -217,7 +230,7 @@ export default function folders()
                     <FolderList/>
                 </ul>
                 <ul className='folderOptions'>
-                    <li className='folderOption' onClick={() => window.ipc.invoke('ipc-addFolders').then(x => setFolderPaths(x))}>
+                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});  window.ipc.send('ipc-addFolders'); }}>
                         <CreateNewFolderRounded/>
                         <span>Add folders</span>
                     </li>
