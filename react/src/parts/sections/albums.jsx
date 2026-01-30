@@ -44,14 +44,22 @@ export default function albums()
     
     function showAlbum(album, artist)
     {
-        window.ipc.invoke('ipc-wantAlbum', {album, artist}).then((data) =>
+        window.ipc.invoke('ipc-wantAlbum', {album, artist}).then((albumToSet) =>
         {
-            const albumToSet = structuredClone(data);
-
             let totalDuration = 0;
-            data.songs.forEach(({duration}) => totalDuration += duration);
+            albumToSet.songs.forEach(({duration}) => totalDuration += duration);
+
             albumToSet.duration = parseTime(totalDuration).text;
             setAlbum(albumToSet);
+
+            if (albumToSet?.colors?.DarkMuted !== undefined)
+            {
+                const inside = sectionRef.current.querySelector('.in');
+
+                inside.style.setProperty('--background', `rgb(${albumToSet.colors.DarkMuted.join(',')})`);
+                inside.style.setProperty('--accent', `rgb(${albumToSet.colors.LightVibrant.join(',')})`);
+                inside.style.setProperty('--accent2', `rgba(${albumToSet.colors.LightVibrant.join(',')}, .25)`);
+            }
 
             eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 2}));
     

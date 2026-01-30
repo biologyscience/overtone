@@ -33,7 +33,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
     }, [file, playing]);
 
 
-    useEffect(() => { playerRef.current.volume = audioLevel / 100; }, [audioLevel]);
+    useEffect(() => { playerRef.current.volume = (audioLevel || 100) / 100; }, [audioLevel]);
 
     useEffect(() =>
     {

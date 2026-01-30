@@ -34,7 +34,7 @@ function init()
             {
                 allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
                 font: 'Fira',
-                volume: 1,
+                volume: 100,
                 discordAppID: '1312407617540456458',
                 discordRPCconnect: false,
                 checkMusicIn: [],
@@ -209,7 +209,7 @@ function updateLibrary(dirs)
     
             const colors = await Vibrant.from(BUFFER).getPalette();
 
-            for (const key in colors) colors[key] = colors[key]._rgb;
+            for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
     
             albums[ID].colors = colors;
             
@@ -397,6 +397,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
     {
         if (albums[ID].album === album && albums[ID].artists.includes(artist))
         {
+            albumData.colors = albums[ID].colors;
             albumData.artist = albums[ID].artists[0];
             albumData.year = albums[ID].year;
             albumData.albumart = albums[ID].hasArt ? path.join(__dirname, `./appdata/webp/${ID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
@@ -604,11 +605,20 @@ ipcMain.on('ipc-wantQueue', (E, queue) =>
     WINDOW.webContents.send('ipc-setCurrentQueue', data);
 });
 
+ipcMain.on('ipc-saveVolume', (E, volume) =>
+{
+    const config = appdata.get('config');
+
+    config.volume = volume;
+
+    appdata.set('config', config);
+});
+ 
 ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 {
     if (!isReady) return;
 
-    const { lastQueueState } = appdata.get('config');
+    const { lastQueueState, volume } = appdata.get('config');
     const queues = appdata.get('queues');
 
     if (lastQueueState.queue?.length > 0)
@@ -618,6 +628,7 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
         audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
     
         WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
+        WINDOW.webContents.send('ipc-restoreVolume', volume);
     }
 });
 
@@ -679,7 +690,7 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, folder, trackNumber}) =>
         songs = years.sort((x, y) => y - x).map(x => songsByYear[x]).flat();
     }
 
-    const queueName = folder.split('/').pop().split('\\').pop() || ALBUM || artist;
+    const queueName = folder?.split('/')?.pop()?.split('\\')?.pop() || ALBUM || artist;
 
     let totalTime = 0; songs.forEach(({rawDuration}) => totalTime += rawDuration);
     

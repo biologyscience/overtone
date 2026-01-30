@@ -23,7 +23,7 @@ export default function displayRight()
 {
     const [progress, setProgress] = useState(0);
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-    const [volume, setVolume] = useState(100);
+    const [volume, setVolume] = useState();
     const [playState, setPlayState] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [endState, setEndState] = useState(false);
@@ -107,46 +107,7 @@ export default function displayRight()
 
     }, [currentTime, nowPlaying]);
 
-    useEffect(() =>
-    {
-        timerReset();
-
-        window.ipc.on('ipc-setNowPlaying', (song) =>
-        {
-            const { title, artist, album, albumart, filepath, duration, colors } = song;
-
-            timerReset();
-            timer.current.filepath = filepath;
-            timer.current.duration = duration;
-
-            setNowPlaying(song);
-
-            if (song.autoPlay)
-            {
-                timerStart();
-
-                setPlayState(true);
-            }
-
-            navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
-
-            const root = document.querySelector(':root');
-
-            root.style.setProperty('--background', `rgb(${colors.DarkMuted.join(',')})`);
-            root.style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
-            // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
-        });
-
-        window.ipc.send('ipc-displayRightReady', true);
-
-        navigator.mediaSession.setActionHandler('play', () => setPlayState(true));
-        navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
-        navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
-        navigator.mediaSession.setActionHandler('nexttrack', playNext);
-
-    }, []);
-
-    useEffect(() =>
+        useEffect(() =>
     {
         if (endState)
         {
@@ -174,6 +135,56 @@ export default function displayRight()
         }
 
     }, [playState]);
+
+    useEffect(() =>
+    {
+        if (showVolumeSlider || !volume) return;
+
+        window.ipc.send('ipc-saveVolume', Math.round(volume));
+
+    }, [showVolumeSlider]);
+
+    useEffect(() =>
+    {
+        timerReset();
+
+        window.ipc.on('ipc-setNowPlaying', (song) =>
+        {
+            const { title, artist, album, albumart, filepath, duration, colors } = song;
+
+            timerReset();
+            timer.current.filepath = filepath;
+            timer.current.duration = duration;
+
+            setNowPlaying(song);
+
+            if (song.autoPlay)
+            {
+                timerStart();
+
+                setPlayState(true);
+            }
+
+            navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
+
+            const root = document.querySelector(':root');
+
+            root.style.setProperty('--background', `rgb(${colors.DarkMuted.join(',')})`);
+            root.style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
+            root.style.setProperty('--accent2', `rgba(${colors.LightVibrant.join(',')}, .25)`);
+            // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
+        });
+
+        window.ipc.on('ipc-restoreVolume', setVolume);
+
+        window.ipc.send('ipc-displayRightReady', true);
+
+        navigator.mediaSession.setActionHandler('play', () => setPlayState(true));
+        navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
+        navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
+        navigator.mediaSession.setActionHandler('nexttrack', playNext);
+
+    }, []);
 
     return (
         <COL id='displayRight' onClick={clickDisplayRight}>
