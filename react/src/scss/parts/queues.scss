@@ -94,6 +94,7 @@
                 background: white;
                 padding: .25em;
                 color: var(--background);
+                caret-color: var(--background);
                 border-radius: 2.5px;
                 margin-right: .5em;
             }
@@ -109,7 +110,7 @@
         {
             font-size: 1rem;
             padding: .5em 2ch;
-            border: .1em solid colors.$dark50;
+            border: .1em solid var(--accent2);
             border-radius: 5px;
             align-items: center;
     

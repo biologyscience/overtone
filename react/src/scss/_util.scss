@@ -2,33 +2,35 @@
 {
     &::#{$pseudo}
     {
+        $height: 2.5px;
+
         content: '';
         position: absolute;
-        height: 2px;
+        height: $height;
         width: 100%;
-        background-color: var(--dark40);
+        background-color: var(--accent2);
 
         @if $position == 'TopLeft'
         {
-            top: 0;
+            top: -$height;
             left: 0;
         }
 
         @if $position == 'TopRight'
         {
-            top: 0;
+            top: -$height;
             right: 0;
         }
 
         @if $position == 'BottomLeft'
         {
-            bottom: 0;
+            bottom: -$height;
             left: 0;
         }
 
         @if $position == 'BottomRight'
         {
-            bottom: 0;
+            bottom: -$height;
             right: 0;
         }
     }

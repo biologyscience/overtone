@@ -42,6 +42,12 @@
                 font-size: 1.5em;
                 align-items: center;
                 gap: .25em;
+
+                span
+                {
+                    width: 3.5ch;
+                    text-align: right;
+                }
             }
 
             @include util.divider(after, BottomLeft);
@@ -145,8 +151,8 @@
                     align-self: center;
                     fill: var(--accent);
                     scale: 0;
-                    background-color: colors.$dark50;
-                    border: .25em solid white;
+                    background-color: color-mix(in srgb, var(--background) 75%, transparent);
+                    border: .25em solid var(--accent);
                     border-radius: 50%;
                     box-sizing: border-box;
                 }
@@ -156,7 +162,6 @@
                     cursor: pointer;
 
                     img { opacity: .7; }
-
                     svg { scale: .5; }
                 }
             }
@@ -250,7 +255,7 @@
                 &:hover
                 {
                     cursor: pointer;
-                    background-color: colors.$dark20;
+                    background-color: var(--accent2);
                 }
             }
         }

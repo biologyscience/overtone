@@ -30,6 +30,7 @@ export default function queues()
         [showModal, setShowModal] = useState(false),
         [currentQueueSongNumber, setCurrentQueueSongNumber] = useState(-1),
         [queuesList, setQueuesList] = useState(),
+        [showRenamer, setShowRenamer] = useState(false),
         [renamingQueue, setRenamingQueue] = useState(false),
         [renamePosition, setRenamePosition] = useState(0),
         [rename, setRename] = useState([]),
@@ -52,6 +53,16 @@ export default function queues()
         setContextData({title: data.title, position: data.i});
         setShowContextMenu(true);
     }
+    
+    function focusSongInQueue()
+    {
+        setTimeout(() =>
+        {
+            const element = sectionRef.current.querySelector('.currentQueueList .listItem.current');
+    
+            if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
+        }, 10);
+    }
 
     useEffect(() =>
     {
@@ -65,6 +76,8 @@ export default function queues()
 
     useEffect(() =>
     {
+        focusSongInQueue();
+
         if (playingQueueName !== currentQueueName) return;
 
         setCurrentQueueSongNumber(playingTrackNumber);
@@ -86,6 +99,13 @@ export default function queues()
 
     useEffect(() =>
     {
+        setTimeout(() =>
+        {
+            setShowRenamer(renamingQueue);
+            setTimeout(() => sectionRef.current.querySelector('.renamer input').focus(), 5);
+            
+        }, 10);
+
         if (renamingQueue === false)
         {
             const [oldName, newName] = rename;
@@ -107,19 +127,6 @@ export default function queues()
 
     useEffect(() =>
     {
-        function focusSongInQueue()
-        {
-            requestAnimationFrame(() =>
-            {
-                requestAnimationFrame(() =>
-                {
-                    const element = sectionRef.current.querySelector('.currentQueueList .listItem.current');
-
-                    if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
-                });
-            });
-        }
-
         window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
         {
             setSongsData(songs);
@@ -170,7 +177,7 @@ export default function queues()
                     <COL className={'queuesList'}>
                         <SortableList setOrder={'ot-queuesReorder'}>{queuesList}</SortableList>
                     </COL>
-                    <div className={`renamer ${renamingQueue === false ? 'displayNone' : 'grid'}`} style={{'--top': renamePosition}}>
+                    <div className={`renamer ${showRenamer === false ? 'displayNone' : 'grid'}`} style={{'--top': renamePosition}}>
                         <button><DragHandleRounded/></button>
                         <input value={rename[1]} onChange={({target}) => setRename(x => x = [x[0], target.value])}/>
                         <button onClick={() => setRenamingQueue(false)}><CheckRounded/></button>

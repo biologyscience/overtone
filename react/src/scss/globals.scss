@@ -76,6 +76,7 @@ body
     padding: 0;
     height: 100vh;
     width: 100vw;
+    // background-color: colors.$dark25;
     background-color: var(--background);
     transition: background-color ease 400ms;
 
@@ -85,7 +86,7 @@ body
         content: '';
         height: 100%;
         width: 2px;
-        background-color: var(--dark40);
+        background-color: var(--accent2);
         left: 60vw;
         z-index: -1;
     }
@@ -113,7 +114,13 @@ input
         border-bottom-color: var(--accent) !important;
     }
 
-    &[data-no-match="true"]:focus { border-bottom-color: var(--accent)Red1 !important; }
+    &::placeholder
+    {
+        color: white;
+        opacity: .75;
+    }
+
+    &[data-no-match="true"]:focus { border-bottom-color: var(--accentRed1) !important; }
 }
 
 .hover3D
@@ -165,7 +172,6 @@ input
     
         &::after
         {
-            
             content: '';
             position: absolute;
             height: $dotSize;
@@ -239,7 +245,7 @@ input
             width: 100%;
             bottom: 0;
             left: 0;
-            background-color: colors.$dark50;
+            background-color: var(--accent2);
         }
     }
 
@@ -254,7 +260,7 @@ input
             min-height: 2.5px;
             width: auto;
             margin: .5em 1vw;
-            background-color: colors.$dark50;
+            background-color: var(--accent2);
         }
     
         .contextItem
