@@ -74,7 +74,7 @@ export default function albums()
             return (
                 <div key={i} style={{'--shadow': `rgba(${accent.join(',')}, .5)`}} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
                     <img src={albumart} draggable={false}/>
-                    <span className='albumName block overflowPrevent'>{album}</span>
+                    <span title={album} className='albumName block overflowPrevent'>{album}</span>
                 </div>
             );
         });

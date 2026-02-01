@@ -12,6 +12,8 @@ class Player
         this.queueName = '';
         this.currentQueueItem = 0;
         this.ended = true;
+        this.shuffle = false;
+        this.repeat = false;
     }
 
     setNowPlaying(filepath, autoPlay, songMetadata)
@@ -95,13 +97,13 @@ class Player
 
         return this;
     }
-
-    next()
+    
+    actuallyNext()
     {
         const queues = appdata.get('queues');
 
         const { queuePosition } = queues.find(x => x.name === this.queueName);
-
+    
         if (this.currentQueueItem + 1 === this.queue.length)
         {
             if (queuePosition + 1 === queues.length)
@@ -110,15 +112,43 @@ class Player
 
                 return this;
             }
-
+    
             const nextQueue = queues.find(x => x.queuePosition === queuePosition + 1);
-
+    
             this.currentQueueItem = 0;
             this.queue = nextQueue.songs;
             this.queueName = nextQueue.name;
         }
-
+    
         else { this.currentQueueItem++; }
+
+        return this;
+    }
+
+    next({ot_auto})
+    {
+        const queues = appdata.get('queues');
+
+        if (ot_auto)
+        {
+            if (this.repeat)
+            {
+                // do nothing
+            }
+
+            else if (this.shuffle)
+            {
+                let random;
+
+                do { random = Math.floor(Math.random() * this.queue.length) } while (random === this.currentQueueItem);
+
+                this.currentQueueItem = random;
+            }
+
+            else if (this.actuallyNext().ended) return this;
+        }
+
+        else if (this.actuallyNext().ended) return this;
 
         this.saveQueue({queues, currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
 

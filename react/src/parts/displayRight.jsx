@@ -13,10 +13,14 @@ import
     PauseRounded,
     PlayArrowRounded,
     SkipNextRounded,
-    CloseRounded,
     FavoriteBorderRounded,
     InfoOutlineRounded,
-    MoreRounded
+    PendingOutlined,
+    PhotoSizeSelectSmallRounded,
+    ShuffleRounded,
+    ShuffleOnRounded,
+    RepeatRounded,
+    RepeatOnRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -27,6 +31,8 @@ export default function displayRight()
     const [playState, setPlayState] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [endState, setEndState] = useState(false);
+    const [shuffle, setShuffle] = useState(false);
+    const [repeat, setRepeat] = useState(false);
 
     const [nowPlaying, setNowPlaying] = useState();
     const [dragging, setDragging] = useState(false);
@@ -60,9 +66,9 @@ export default function displayRight()
         return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
     }
 
-    function playNext()
+    function playNext({ot_auto})
     {
-        window.ipc.invoke('ipc-audioPlayer-next').then((result) =>
+        window.ipc.invoke('ipc-audioPlayer-next', {ot_auto}).then((result) =>
         {
             if (result) eventBus.dispatchEvent(new Event('ot-next'));
     
@@ -101,17 +107,34 @@ export default function displayRight()
         timer.current.played = false;
     }
 
+    function shuffleRepeat({target})
+    {
+        const type = target.dataset.function;
+
+        if (type === 'shuffle')
+        {
+            window.ipc.send('ipc-audioPlayer-shuffleRepeat', {shuffle: !shuffle});
+            setShuffle(x => !x);
+        }
+
+        if (type === 'repeat')
+        {
+            window.ipc.send('ipc-audioPlayer-shuffleRepeat', {repeat: !repeat});
+            setRepeat(x => !x);
+        }
+    }
+
     useEffect(() =>
     {
         setProgress(100 * currentTime / nowPlaying?.duration);
 
     }, [currentTime, nowPlaying]);
 
-        useEffect(() =>
+    useEffect(() =>
     {
         if (endState)
         {
-            playNext();
+            playNext({ot_auto: true});
 
             setEndState(false);
         }
@@ -162,7 +185,8 @@ export default function displayRight()
             {
                 timerStart();
 
-                setPlayState(true);
+                setPlayState(false);
+                setTimeout(() => setPlayState(true), 10);
             }
 
             navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
@@ -175,6 +199,11 @@ export default function displayRight()
             // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
         });
 
+        window.ipc.on('ipc-restoreShuffleRepeat', (data) =>
+        {
+            setShuffle(data.shuffle);
+            setRepeat(data.repeat);
+        });
         window.ipc.on('ipc-restoreVolume', setVolume);
 
         window.ipc.send('ipc-displayRightReady', true);
@@ -183,7 +212,6 @@ export default function displayRight()
         navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
         navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
         navigator.mediaSession.setActionHandler('nexttrack', playNext);
-
     }, []);
 
     return (
@@ -202,7 +230,10 @@ export default function displayRight()
             <ROW className='miscButtons'>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><InfoOutlineRounded/></button>
-                <button><MoreRounded/></button>
+                <button><PendingOutlined/></button>
+                <div style={{marginLeft: 'auto'}}/>
+                <button data-function={'shuffle'} onClick={shuffleRepeat}>{shuffle ? <ShuffleOnRounded/> : <ShuffleRounded/>}</button>
+                <button data-function={'repeat'} onClick={shuffleRepeat}>{repeat ? <RepeatOnRounded/> : <RepeatRounded/>}</button>
             </ROW>
             <ROW className='timeline'>
                 <CurrentTime/>
@@ -218,7 +249,7 @@ export default function displayRight()
                     { playState ? <PauseRounded/> : <PlayArrowRounded/> }
                 </button>
                 <button onClick={playNext}><SkipNextRounded/></button>
-                <button><CloseRounded/></button>
+                <button><PhotoSizeSelectSmallRounded/></button>
                 {
                     showVolumeSlider ? (
                         <ROW className='volumeSlider'>
