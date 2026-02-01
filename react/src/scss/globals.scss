@@ -18,13 +18,13 @@
     &::-webkit-scrollbar
     {
         background: none;
-        width: .75em;
+        width: .4vw;
     }
 
     &::-webkit-scrollbar-thumb
     {
+        border-radius: 10px;
         background-color: var(--accent);
-
         &:hover { cursor: pointer; }
     }
 }

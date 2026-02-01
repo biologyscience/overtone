@@ -69,10 +69,10 @@ export default function albums()
 
     function Albums()
     {
-        return albumData?.sort((x, y) => x?.album?.localeCompare(y?.album)).map(({artist, album, albumart}, i) =>
+        return albumData?.sort((x, y) => x?.album?.localeCompare(y?.album)).map(({artist, album, albumart, accent}, i) =>
         {
             return (
-                <div key={i} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
+                <div key={i} style={{'--shadow': `rgba(${accent.join(',')}, .5)`}} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
                     <img src={albumart} draggable={false}/>
                     <span className='albumName block overflowPrevent'>{album}</span>
                 </div>

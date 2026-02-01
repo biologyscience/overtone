@@ -76,18 +76,38 @@
                     transition: all 250ms ease;
                 }
 
+                .albumName
+                {
+                    position: relative;
+                    padding: .5em 0;
+                    
+                    &::before
+                    {
+                        position: absolute;
+                        content: '';
+                        left: 0;
+                        width: 100%;
+                        opacity: 0;
+                        box-shadow: 0 -50px 25px 40px var(--shadow);
+                        transition: all 250ms ease;
+                    }
+                }
+
                 &:hover
                 {
                     cursor: pointer;
 
-                    img
+                    img { border-radius: .5em; }
+                    
+                    .albumName
                     {
-                        border-radius: .25em;
-                        box-shadow: 0px 2.5em 20px 0px colors.$dark20;
+                        &::before
+                        {
+                            opacity: 1;
+                        }
                     }
                 }
     
-                .albumName { padding: .5em 0; }
             }
         }
     }

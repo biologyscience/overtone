@@ -62,7 +62,7 @@
                 {
                     border-color: white;
                     scale: 1.015;
-                    background-color: colors.$dark40;
+                    background-color: colors.$dark10;
                     // box-shadow: 0 0 20px -10px white;
                     z-index: 1;
                     cursor: grab;
@@ -110,8 +110,8 @@
         {
             font-size: 1rem;
             padding: .5em 2ch;
-            border: .1em solid var(--accent2);
-            border-radius: 5px;
+            border: .175em solid var(--accent2);
+            border-radius: .5em;
             align-items: center;
     
             .name
