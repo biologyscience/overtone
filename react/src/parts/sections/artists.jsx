@@ -74,10 +74,10 @@ export default function artists()
         return artist?.albums?.sort((x, y) => y.year - x.year)?.map(({album, year, albumart}, i) =>
         {
             return (
-                <div key={i} title={album} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} onContextMenu={() => openContext({album})} className={`albumItem`}>
+                <div key={i} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} onContextMenu={() => openContext({album})} className={`albumItem`}>
                     <img src={albumart} draggable={false}/>
                     <COL className={'info'}>
-                        <span className='albumName block overflowPrevent'>{album}</span>
+                        <span title={album} className='albumName block overflowPrevent'>{album}</span>
                         <span className='year'>{year}</span>
                     </COL>
                 </div>

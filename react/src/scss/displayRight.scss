@@ -44,6 +44,8 @@
         {
             transition: scale 200ms ease;
 
+            * { pointer-events: none; }
+
             svg
             {
                 fill: colors.$dark80;

@@ -35,6 +35,8 @@ function init()
                 allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
                 font: 'Fira',
                 volume: 100,
+                shuffle: false,
+                repeat: false,
                 discordAppID: '1312407617540456458',
                 discordRPCconnect: false,
                 checkMusicIn: [],
@@ -618,17 +620,20 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 {
     if (!isReady) return;
 
-    const { lastQueueState, volume } = appdata.get('config');
+    const { lastQueueState, volume, shuffle, repeat } = appdata.get('config');
     const queues = appdata.get('queues');
 
     if (lastQueueState.queue?.length > 0)
     {
         const queue = queues.find(x => x.name === lastQueueState.queue);
 
+        audioPlayer.shuffle = shuffle;
+        audioPlayer.repeat = repeat;
         audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
     
         WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
         WINDOW.webContents.send('ipc-restoreVolume', volume);
+        WINDOW.webContents.send('ipc-restoreShuffleRepeat', {shuffle, repeat});
     }
 });
 
@@ -701,10 +706,10 @@ ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, folder, trackNumber}) =>
     audioPlayer.setQueue(files, trackNumber, queueName).saveQueue({currentTrack: trackNumber}).setNowPlaying(files[trackNumber], true);
 });
 
-ipcMain.handle('ipc-audioPlayer-next', () =>
+ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>
 {
     const { queueName } = audioPlayer;
-    const { ended, queueName: newQueueName, currentQueueItem } = audioPlayer.next();
+    const { ended, queueName: newQueueName, currentQueueItem } = audioPlayer.next({ot_auto});
     
     if (queueName !== newQueueName)
     {
@@ -738,6 +743,19 @@ ipcMain.on('ipc-audioPlayer-previous', () =>
 ipcMain.on('ipc-audioPlayer-switchToTrack', (E, {queueName, index}) =>
 {
     audioPlayer.switchTo(queueName, index);
+});
+
+ipcMain.on('ipc-audioPlayer-shuffleRepeat', (E, {shuffle, repeat}) =>
+{
+    const config = appdata.get('config');
+
+    if (shuffle !== undefined) audioPlayer.shuffle = shuffle;
+    if (repeat !== undefined) audioPlayer.repeat = repeat;
+
+    config.shuffle = audioPlayer.shuffle;
+    config.repeat = audioPlayer.repeat;
+
+    appdata.set('config', config);
 });
 
 ipcMain.on('ipc-reorderQueue', (E, {queueName, oldOrder, newOrder}) =>
