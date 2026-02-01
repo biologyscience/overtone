@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, Slider, Hover3D } from '../util/components';
+import { COL, ROW, Slider, Hover3D, ContextMenu } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
@@ -20,7 +20,13 @@ import
     ShuffleRounded,
     ShuffleOnRounded,
     RepeatRounded,
-    RepeatOnRounded
+    RepeatOnRounded,
+    LyricsRounded,
+    DeleteRounded,
+    PlaylistAddRounded,
+    StartRounded,
+    DriveFileMoveRounded,
+    EditRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -33,12 +39,14 @@ export default function displayRight()
     const [endState, setEndState] = useState(false);
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState(false);
+    const [showContextMenu, setShowContextMenu] = useState(false);
 
     const [nowPlaying, setNowPlaying] = useState();
     const [dragging, setDragging] = useState(false);
 
     const player = useRef();
     const timer = useRef({});
+    const sectionRef = useRef();
 
     function clickDisplayRight({clientX, clientY})
     {
@@ -215,7 +223,7 @@ export default function displayRight()
     }, []);
 
     return (
-        <COL id='displayRight' onClick={clickDisplayRight}>
+        <COL ref={sectionRef} id='displayRight' className={'relative'} onClick={clickDisplayRight}>
             <AudioPlayer playerRef={player} file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
             <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
                 <Hover3D style={{display: 'flex'}}>
@@ -230,7 +238,7 @@ export default function displayRight()
             <ROW className='miscButtons'>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><InfoOutlineRounded/></button>
-                <button><PendingOutlined/></button>
+                <button onClick={() => setShowContextMenu(true)}><PendingOutlined/></button>
                 <div style={{marginLeft: 'auto'}}/>
                 <button data-function={'shuffle'} onClick={shuffleRepeat}>{shuffle ? <ShuffleOnRounded/> : <ShuffleRounded/>}</button>
                 <button data-function={'repeat'} onClick={shuffleRepeat}>{repeat ? <RepeatOnRounded/> : <RepeatRounded/>}</button>
@@ -259,6 +267,28 @@ export default function displayRight()
                     ) : null
                 }
             </ROW>
+            <ContextMenu
+                visibility={[showContextMenu, setShowContextMenu]}
+                title={nowPlaying?.title}
+                options={[
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<LyricsRounded/>, <PlaylistAddRounded/>],
+                        texts: ['Show Lyrics', 'Add to a queue']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<EditRounded/>, <DriveFileMoveRounded/>],
+                        texts: ['Edit tags', 'Move to a folder']
+                    },
+                    {
+                        functions: [() => {}, () => {}],
+                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                        texts: ['Song info', 'Delete permanently']
+                    }
+                ]}
+                parentRef={sectionRef}
+            />
         </COL>
     )
 }
