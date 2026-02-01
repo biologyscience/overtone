@@ -379,7 +379,7 @@ ipcMain.handle('ipc-wantAlbums', () =>
 
         if (albums[ID].hasArt) albumart = path.join(__dirname, `./appdata/webp/${ID}.webp`);
 
-        albumData.push({album: albums[ID].album, artist: albums[ID].artists[0], albumart})
+        albumData.push({album: albums[ID].album, artist: albums[ID].artists[0], albumart, accent: albums[ID].colors.Vibrant});
     }
 
     return albumData;
