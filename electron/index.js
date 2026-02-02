@@ -360,6 +360,22 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
 {
     const songList = appdata.get('songList');
     const songMetadata = appdata.get('songMetadata');
+
+    if (folder === 'favorites')
+    {
+        const data = [];
+
+        for (const file in songMetadata)
+        {
+            const { title, artists, album, rawDuration, isFavorite } = songMetadata[file];
+
+            if (!isFavorite) continue;
+
+            data.push({ artist: artists.join(', '), location: file, duration: rawDuration, title, album });
+        }
+
+        return data;
+    }
     
     return songList[folder].map((file) =>
     {
@@ -637,71 +653,53 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
     }
 });
 
-ipcMain.on('ipc-addQueue', (E, {album: ALBUM, artist, folder, trackNumber}) =>
+ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queueName}) =>
 {
     const songMetadata = appdata.get('songMetadata');
 
-    let songs;
+    const songs = [];
 
-    if (folder !== undefined)
+    if (songLocations !== undefined)
     {
-        const songList = appdata.get('songList');
-
-        songs = songList[folder].map((filepath) =>
+        songLocations.forEach((filepath) =>
         {
             const { title, artists, album, duration, rawDuration, track } = songMetadata[filepath];
 
-            return { title, artists, album, duration, rawDuration, track, filepath };
+            songs.push({ title, artists, album, duration, rawDuration, track, filepath });
         });
     }
 
-    else
+    else // songs by artist
     {
-        const songsByYear = {};
-        const years = [];
-
-        for (const filepath in songMetadata)
+        const albumsData = appdata.get('albums');
+        
+        albums.forEach((album) =>
         {
-            if (ALBUM !== undefined) // songs by album and artist
+            for (const ID in albumsData)
             {
-                if ((songMetadata[filepath].album !== ALBUM) || !songMetadata[filepath].artists.includes(artist)) continue;
+                if (albumsData[ID].album === album && albumsData[ID].artists.includes(artist))
+                {
+                    const data = albumsData[ID].songs.map((filepath) =>
+                    {
+                        const { title, artists, album, duration, rawDuration, track } = songMetadata[filepath];
 
-                const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
+                        return { title, artists, album, duration, rawDuration, track, filepath };
+                    });
 
-                if (songsByYear[year] === undefined) songsByYear[year] = [];
+                    data.sort((x, y) => x.track?.no - y.track?.no);
+                    data.forEach(x => songs.push(x));
 
-                songsByYear[year].push({title, artists, album, duration, rawDuration, track, filepath});
+                    break;
+                }
             }
-
-            else // songs by artist
-            {
-                if (!songMetadata[filepath].artists.includes(artist)) continue;
-
-                const { title, artists, album, duration, rawDuration, year, track } = songMetadata[filepath];
-
-                if (songsByYear[year] === undefined) songsByYear[year] = [];
-
-                songsByYear[year].push({title, artists, album, duration, rawDuration, track, filepath});
-            }
-        }
-
-        for (const year in songsByYear)
-        {
-            years.push(year);
-
-            songsByYear[year].sort((x, y) => x.track?.no - y.track?.no);
-        }
-
-        songs = years.sort((x, y) => y - x).map(x => songsByYear[x]).flat();
+        });
     }
-
-    const queueName = folder?.split('/')?.pop()?.split('\\')?.pop() || ALBUM || artist;
 
     let totalTime = 0; songs.forEach(({rawDuration}) => totalTime += rawDuration);
     
     WINDOW.webContents.send('ipc-setCurrentQueue', {queueName, songs, trackNumber, duration: parseTime(totalTime).text});
 
-    const files = [...songs].map(x => x.filepath);
+    const files = songs.map(x => x.filepath);
 
     audioPlayer.setQueue(files, trackNumber, queueName).saveQueue({currentTrack: trackNumber}).setNowPlaying(files[trackNumber], true);
 });
