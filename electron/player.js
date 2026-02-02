@@ -24,7 +24,7 @@ class Player
 
         if (songMetadata === undefined) songMetadata = appdata.get('songMetadata');
     
-        const { title, artists, album, rawDuration, albumID } = songMetadata[filepath];
+        const { title, artists, album, rawDuration, albumID, isFavorite } = songMetadata[filepath];
 
         const data =
         {
@@ -34,7 +34,8 @@ class Player
             duration: rawDuration,
             albumart: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
             filepath,
-            autoPlay
+            autoPlay,
+            isFavorite
         };
 
         const albumData = appdata.get('albums')?.[albumID];
