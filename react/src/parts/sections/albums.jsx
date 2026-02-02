@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
-
-import { parseTime } from '../../util/functions';
-
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal } from '../../util/components';
+import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
 
 import
@@ -33,7 +31,9 @@ export default function albums()
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState(),
         [showContextMenu, setShowContextMenu] = useState(false),
-        [contextData, setContextData] = useState({});
+        [contextData, setContextData] = useState({}),
+        [songInfo, setSongInfo] = useState({}),
+        [songInfoModal, setShowSongInfoModal] = useState(false);
 
     function play(trackNumber)
     {
@@ -82,16 +82,16 @@ export default function albums()
 
     function openContext(data)
     {
-        setContextData({title: data.title});
+        setContextData({title: data.title, filepath: data.location});
         setShowContextMenu(true);
     }
 
     function Songs()
     {
-        return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration}, i) =>
+        return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration, location}, i) =>
         {
             return (
-                <li key={i} className='tableItem' onClick={({target}) => target.tagName === 'BUTTON' ? null : play(i)} onContextMenu={() => openContext({title})}>
+                <li key={i} className='tableItem' onClick={({target}) => target.tagName === 'BUTTON' ? null : play(i)} onContextMenu={() => openContext({title, location})}>
                     <span>{track}</span>
                     <COL className={'placeLeft'}>
                         <span className='title'>{title}</span>
@@ -99,7 +99,7 @@ export default function albums()
                     </COL>
                     <span>{plays}</span>
                     <span>{parseTime(duration).text}</span>
-                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
+                    <button onClick={() => openContext({title, location})}><MoreHorizRounded/></button>
                 </li>
             );
         });
@@ -177,6 +177,11 @@ export default function albums()
                     </ul>
                 </COL>
             </COL>
+            <SongInfoModal
+                visibility={[songInfoModal, setShowSongInfoModal]}
+                parentRef={sectionRef}
+                songInfo={songInfo}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -187,7 +192,10 @@ export default function albums()
                         texts: ['Add to a queue', 'Play after current song']
                     },
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                            () => {}
+                        ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
                     }

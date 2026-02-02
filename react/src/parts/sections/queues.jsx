@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, CustomModal, ContextMenu } from '../../util/components';
+import { COL, ROW, CustomModal, ContextMenu, SongInfoModal } from '../../util/components';
 import SortableList from '../../util/sortable';
-
 import eventBus from '../../util/events';
+import { songInfoSetter } from '../../util/functions';
 
 import
 {
@@ -39,7 +39,9 @@ export default function queues()
         [playingQueueName, setPlayingQueueName] = useState(),
         [playingTrackNumber, setPlayingTrackNumber] = useState(-1),
         [showContextMenu, setShowContextMenu] = useState(false),
-        [contextData, setContextData] = useState({});
+        [contextData, setContextData] = useState({}),
+        [songInfo, setSongInfo] = useState({}),
+        [songInfoModal, setShowSongInfoModal] = useState(false);
     
     function switchToTrack(name, index)
     {
@@ -50,7 +52,7 @@ export default function queues()
 
     function openContext(data)
     {
-        setContextData({title: data.title, position: data.i});
+        setContextData({title: data.title, position: data.i, filepath: data.filepath});
         setShowContextMenu(true);
     }
     
@@ -134,6 +136,7 @@ export default function queues()
             setCurrentQueueSongNumber(trackNumber);
             setQueueDuration(duration);
             setShowModal(false);
+            setShowSongInfoModal(false);
             setShowContextMenu(false);
 
             focusSongInQueue();
@@ -205,10 +208,10 @@ export default function queues()
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
                 <SortableList setOrder={'ot-songsInQueueReorder'}>
                     {
-                        songsData?.map(({title, artists, album, duration}, i) =>
+                        songsData?.map(({title, artists, album, duration, filepath}, i) =>
                         {
                             return (
-                                <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i})}>
+                                <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i, filepath})}>
                                     <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                     <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
@@ -218,13 +221,18 @@ export default function queues()
                                             <span className='duration'>{duration}</span>
                                         </ROW>
                                     </COL>
-                                    <button onClick={() => openContext({title, i})}><MoreHorizRounded/></button>
+                                    <button onClick={() => openContext({title, i, filepath})}><MoreHorizRounded/></button>
                                 </div>
                             )
                         })
                     }
                 </SortableList>
             </COL>
+            <SongInfoModal
+                visibility={[songInfoModal, setShowSongInfoModal]}
+                parentRef={sectionRef}
+                songInfo={songInfo}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -239,7 +247,10 @@ export default function queues()
                         texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
                     },
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                            () => {}
+                        ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
                     }
