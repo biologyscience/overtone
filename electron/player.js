@@ -29,7 +29,7 @@ class Player
         const data =
         {
             title,
-            artist: artists.join(', '),
+            artists,
             album,
             duration: rawDuration,
             albumart: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',

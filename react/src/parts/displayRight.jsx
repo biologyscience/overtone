@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal } from '../util/components';
 import { AudioPlayer } from '../util/audio';
-import { parseTime } from '../util/functions';
+import { parseTime, songInfoSetter } from '../util/functions';
 import eventBus from '../util/events';
 
 import
@@ -234,8 +234,8 @@ export default function displayRight()
             </ROW>
             <COL className='info'>
                 <span className='overflowPrevent'>{nowPlaying?.title}</span>
-                <span className='small overflowPrevent'>{nowPlaying?.artist}</span>
-                <span className='small overflowPrevent'>{nowPlaying?.album}</span>
+                <span className='small overflowPrevent' onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showArtist', {detail: nowPlaying?.artists?.[0]}))}>{nowPlaying?.artists?.join(', ')}</span>
+                <span className='small overflowPrevent' onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album: nowPlaying?.album, artist: nowPlaying?.artists?.[0]}}))}>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
@@ -289,7 +289,10 @@ export default function displayRight()
                         texts: ['Edit tags', 'Move to a folder']
                     },
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => songInfoSetter(nowPlaying?.filepath, setShowContextMenu, setSongInfo, setShowModal),
+                            () => {}
+                        ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
                     }

@@ -873,6 +873,11 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     return data;
 });
 
+ipcMain.on('ipc-showFile', (E, filepath) =>
+{
+    shell.showItemInFolder(filepath);
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow

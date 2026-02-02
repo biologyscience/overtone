@@ -7,6 +7,7 @@ import Fade from '@mui/material/Fade';
 import { CloseRounded, InfoOutlineRounded } from '@mui/icons-material';
 
 import { parseTime } from './functions';
+import eventBus from './events';
 
 function ROW({ className, children, ...rest })
 {
@@ -255,11 +256,11 @@ function SongInfoModal({visibility, parentRef, songInfo})
                         <COL className={'wrapper'}>
                             <COL className={'data'}>
                                 <span className='type'>Filename</span>
-                                <span className='value'>{songInfo?.extras?.filepath?.split('/')?.pop()?.split('\\')?.pop()}</span>
+                                <span className='value overflowPrevent' onClick={() => window.ipc.send('ipc-showFile', songInfo?.extras?.filepath)}>{songInfo?.extras?.filepath?.split('/')?.pop()?.split('\\')?.pop()}</span>
                             </COL>
                             <COL className={'data'}>
                                 <span className='type'>Location</span>
-                                <span className='value'>{folderpath}</span>
+                                <span className='value clickable overflowPrevent' onClick={() => window.ipc.send('ipc-showFile', songInfo?.extras?.filepath)}>{folderpath}</span>
                             </COL>
                             <COL className={'data'}>
                                 <span className='type'>File Size</span>
@@ -275,11 +276,11 @@ function SongInfoModal({visibility, parentRef, songInfo})
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Album</span>
-                            <span className='value clickable'>{songInfo?.tags?.album || 'Unkown'}</span>
+                            <span className='value clickable' onClick={() => { visibility[1](false); eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album: songInfo?.tags?.album, artist: songInfo?.tags?.artists[0]}})); }}>{songInfo?.tags?.album || 'Unkown'}</span>
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Artists</span>
-                            <span className='value clickable'>{songInfo?.tags?.artists?.join(', ') || 'Unkown'}</span>
+                            <span className='value clickable' onClick={() => { visibility[1](false); eventBus.dispatchEvent(new CustomEvent('ot-showArtist', {detail: songInfo?.tags?.artists[0]})); }}>{songInfo?.tags?.artists?.join(', ') || 'Unkown'}</span>
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Album Artist</span>
