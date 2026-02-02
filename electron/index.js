@@ -853,7 +853,7 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     const { format, common } = await metadata.parseFile(filepath);
 
     const picture = common.picture[0];
-    const songMetadata = appdata.get('songMetadata');
+    const { playCount, isFavorite } = appdata.get('songMetadata')[filepath];
 
     format.size = statSync(filepath).size;
     common.picture = `data:${picture.format};base64,${picture.data.toString('base64')}`;
@@ -866,7 +866,8 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
         extras:
         {
             filepath,
-            playCount: songMetadata[filepath].playCount
+            playCount,
+            isFavorite
         }
     };
 
@@ -936,6 +937,15 @@ ipcMain.on('ipc-saveAsM3U', (E, queueName) =>
 
     catch (E) { WINDOW.webContents.send('ipc-queuesToast', {type: 'error', text: 'Error saving the file'}); }
 
+});
+
+ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
+{
+    const songMetadata = appdata.get('songMetadata');
+
+    songMetadata[filepath].isFavorite = isFavorite;
+
+    appdata.set('songMetadata', songMetadata);
 });
 
 app.on('ready', () =>

@@ -14,6 +14,7 @@ import
     PlayArrowRounded,
     SkipNextRounded,
     FavoriteBorderRounded,
+    FavoriteRounded,
     InfoOutlineRounded,
     PendingOutlined,
     PhotoSizeSelectSmallRounded,
@@ -25,8 +26,7 @@ import
     DeleteRounded,
     PlaylistAddRounded,
     DriveFileMoveRounded,
-    EditRounded,
-    CloseRounded
+    EditRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -40,10 +40,11 @@ export default function displayRight()
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState(false);
     const [songInfo, setSongInfo] = useState({});
+    const [isFavorite, setIsFavorite] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
 
-    const [nowPlaying, setNowPlaying] = useState();
+    const [nowPlaying, setNowPlaying] = useState({});
     const [dragging, setDragging] = useState(false);
 
     const player = useRef();
@@ -190,6 +191,7 @@ export default function displayRight()
             timer.current.duration = duration;
 
             setNowPlaying(song);
+            setIsFavorite(song.isFavorite || false);
 
             if (song.autoPlay)
             {
@@ -238,7 +240,7 @@ export default function displayRight()
                 <span className='small overflowPrevent' onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album: nowPlaying?.album, artist: nowPlaying?.artists?.[0]}}))}>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
-                <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
+                <button onClick={() => { setIsFavorite(x => !x); window.ipc.send('ipc-favoriteSong', ({filepath: nowPlaying?.filepath, isFavorite: !isFavorite})); }}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>
                 <button onClick={() => window.ipc.invoke('ipc-wantInfo', nowPlaying?.filepath).then((data) => { setSongInfo(data); setShowModal(true); })}><InfoOutlineRounded/></button>
                 <button onClick={() => setShowContextMenu(true)}><PendingOutlined/></button>
                 <div style={{marginLeft: 'auto'}}/>
