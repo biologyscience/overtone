@@ -6,7 +6,7 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 const { Vibrant } = require('node-vibrant/node');
 
-const { appdata, parseTime } = require('./util');
+const { appdata, parseTime, M3U } = require('./util');
 const { getArtistPicture, getAlbumArtURL } = require('./spotify');
 const Player = require('./player');
 const rpc = require('./rpc');
@@ -914,6 +914,28 @@ ipcMain.on('ipc-newWindow', (E, url) =>
 
     imgWindow.removeMenu();
     imgWindow.loadURL(url).then(() => imgWindow.webContents.setZoomLevel(zoom));
+});
+
+ipcMain.on('ipc-saveAsM3U', (E, queueName) =>
+{
+    const queues = appdata.get('queues');
+
+    const { songs } = queues.find(x => x.name === queueName);
+
+    const playlist = new M3U({name: queueName, songs: songs.map(x => x.split('/').pop().split('\\').pop())});
+
+    const location = dialog.showSaveDialogSync(WINDOW, {title: 'Save Playlist as M3U File', defaultPath: queueName, filters: [{extensions: ['m3u'], name: 'M3U File'}]});
+
+    if (location === undefined) return;
+    
+    try
+    {
+        playlist.saveToFile(location);
+        WINDOW.webContents.send('ipc-queuesToast', {type: 'success', text: 'File saved successfully'});
+    }
+
+    catch (E) { WINDOW.webContents.send('ipc-queuesToast', {type: 'error', text: 'Error saving the file'}); }
+
 });
 
 app.on('ready', () =>

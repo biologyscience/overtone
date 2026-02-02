@@ -103,7 +103,8 @@
 
     & > .head
     {
-        margin: .5em 0;
+        position: relative;
+        padding-block: .5em;
         gap: 1em;
 
         .queueSelector
@@ -131,7 +132,6 @@
             align-items: center;
             justify-content: center;
             gap: 10vw;
-            padding-bottom: 1em;
     
             & > *
             {
@@ -140,8 +140,28 @@
                 align-items: center;
             }
 
-            @include util.divider(after, BottomLeft);
+            button
+            {
+                margin-inline: auto;
+                transition: scale 200ms ease;
+
+                * { pointer-events: none; }
+
+                svg
+                {
+                    fill: colors.$dark80;
+                    transition: fill 200ms ease;
+                }
+
+                &:hover
+                {
+                    scale: 1.05;
+                    svg { fill: white; }
+                }
+            }
         }
+
+        @include util.divider(after, BottomLeft);
     }
 
     .currentQueueList

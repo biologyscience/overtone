@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
 import { COL, ROW, CustomModal, ContextMenu, SongInfoModal } from '../../util/components';
 import SortableList from '../../util/sortable';
 import eventBus from '../../util/events';
@@ -18,7 +20,9 @@ import
     InfoOutlineRounded,
     PlaylistAddRounded,
     PlaylistRemoveRounded,
-    PauseCircleOutlineRounded
+    PauseCircleOutlineRounded,
+    SelectAllRounded,
+    SaveAsRounded
 } from '@mui/icons-material';
 
 export default function queues()
@@ -166,6 +170,7 @@ export default function queues()
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
+        window.ipc.on('ipc-queuesToast', ({type, text}) => toast[type](text, {toasterId: 'queues'}));
     }, []);
 
     return (
@@ -194,6 +199,7 @@ export default function queues()
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>
+                    <button><SelectAllRounded/></button>
                     <ROW className={'songNumbers'}>
                         <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
                         <span>/</span>
@@ -203,6 +209,7 @@ export default function queues()
                         <ScheduleRounded/>
                         <span>{queueDuration}</span>
                     </ROW>
+                    <button onClick={() => window.ipc.send('ipc-saveAsM3U', currentQueueName)}><SaveAsRounded/></button>
                 </ROW>
             </COL>
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
@@ -256,6 +263,14 @@ export default function queues()
                     }
                 ]}
                 parentRef={sectionRef}
+            />
+            <Toaster
+                toasterId='queues'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
             />
         </COL>
     )
