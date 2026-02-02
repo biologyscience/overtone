@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, GRID, SearchBox, ContextMenu } from '../../util/components';
-import { parseTime } from '../../util/functions';
-
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal } from '../../util/components';
+import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
 
 import
@@ -43,7 +42,9 @@ export default function folders()
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState(),
         [showContextMenu, setShowContextMenu] = useState(false),
-        [contextData, setContextData] = useState({});
+        [contextData, setContextData] = useState({}),
+        [songInfo, setSongInfo] = useState({}),
+        [songInfoModal, setShowSongInfoModal] = useState(false);
     
     function handleFolderClick({target})
     {
@@ -137,7 +138,7 @@ export default function folders()
 
     function openContext(data)
     {
-        setContextData({title: data.title});
+        setContextData({title: data.title, filepath: data.location});
         setShowContextMenu(true);
     }
 
@@ -155,12 +156,12 @@ export default function folders()
 
         let totalDuration = 0;
 
-        return songsData?.map(({title, artist, album, duration}, i) =>
+        return songsData?.map(({title, artist, album, duration, location}, i) =>
         {
             totalDuration += duration;
     
             return (
-                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-index={i} onContextMenu={() => openContext({title})}>
+                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-index={i} onContextMenu={() => openContext({title, location})}>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
@@ -169,7 +170,7 @@ export default function folders()
                             <span className='duration'>{parseTime(duration).text}</span>
                         </ROW>
                     </COL>
-                    <button onClick={() => openContext({title})}><MoreHorizRounded/></button>
+                    <button onClick={() => openContext({title, location})}><MoreHorizRounded/></button>
                 </li>
             );
         });
@@ -272,6 +273,11 @@ export default function folders()
                 </GRID>
                 <ul className='songList'><Songs/></ul>
             </COL>
+            <SongInfoModal
+                visibility={[songInfoModal, setShowSongInfoModal]}
+                parentRef={sectionRef}
+                songInfo={songInfo}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -287,7 +293,10 @@ export default function folders()
                         texts: ['Edit tags', 'Move to a folder']
                     },
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                            () => {}
+                        ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
                     }
