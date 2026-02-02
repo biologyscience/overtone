@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, Menu, clipboard, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage } = require('electron');
 const metadata = require('music-metadata');
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
 const path = require('path');
@@ -875,7 +875,7 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     {
         const colors = await Vibrant.from(picture.data).getPalette();
         for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
-        
+
         data.extras.colors = colors;
     }
 
@@ -984,11 +984,4 @@ app.on('ready', () =>
     ipcMain.on('ipc-minimize', () => WINDOW.minimize());
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
     ipcMain.on('ipc-close', () => WINDOW.close());
-
-    // protocol.handle('music', (request) =>
-    // {
-    //     const { pathname } = new URL(request.url);
-
-    //     return net.fetch(pathname.slice(1));
-    // });
 });

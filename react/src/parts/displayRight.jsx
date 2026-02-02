@@ -224,6 +224,8 @@ export default function displayRight()
         navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
         navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
         navigator.mediaSession.setActionHandler('nexttrack', playNext);
+
+        eventBus.addEventListener('ot-toggleFavorite', ({detail: filepath}) => filepath === timer.current.filepath ? setIsFavorite(x => !x) : null);
     }, []);
 
     return (
