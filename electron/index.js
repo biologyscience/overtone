@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, protocol, net, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, Menu, clipboard, nativeImage } = require('electron');
 const metadata = require('music-metadata');
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
 const path = require('path');
@@ -876,6 +876,44 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
 ipcMain.on('ipc-showFile', (E, filepath) =>
 {
     shell.showItemInFolder(filepath);
+});
+
+ipcMain.on('ipc-newWindow', (E, url) =>
+{
+    const imgWindow = new BrowserWindow({ width: 720, height: 720 });
+
+    imgWindow.webContents.on('context-menu', (E, {mediaType, srcURL}) =>
+    {
+        const menuTemplate = [];
+
+        if (mediaType === 'image')
+        {
+            menuTemplate.push({
+                label: 'Save image as...',
+                click: () => imgWindow.webContents.downloadURL(srcURL)
+            });
+
+            menuTemplate.push({
+                label: 'Copy image',
+                click: () => clipboard.writeImage(nativeImage.createFromDataURL(srcURL))
+            });
+        }
+
+        Menu.buildFromTemplate(menuTemplate).popup();
+    });
+
+    let zoom = 0;
+
+    imgWindow.webContents.on('zoom-changed', (E, direction) =>
+    {
+        if (direction === 'in') zoom++;
+        if (direction === 'out') zoom--;
+
+        imgWindow.webContents.setZoomLevel(zoom);
+    });
+
+    imgWindow.removeMenu();
+    imgWindow.loadURL(url).then(() => imgWindow.webContents.setZoomLevel(zoom));
 });
 
 app.on('ready', () =>
