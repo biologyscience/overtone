@@ -57,6 +57,7 @@ class Player
 
         config.lastQueueState.queue = this.queueName;
         config.lastQueueState.track = this.currentQueueItem;
+        config.lastQueueState.duration = 0;
 
         appdata.set('config', config);
 
