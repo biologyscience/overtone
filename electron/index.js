@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, protocol, net } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, protocol, net, shell } = require('electron');
 const metadata = require('music-metadata');
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
 const path = require('path');
@@ -243,7 +243,7 @@ function updateLibrary(dirs)
 
         for (let i = 0; i < results.length; i++)
         {
-            const { album, artists, bpm, genre, title, track, year, picture } = results[i].common;
+            const { album, artists, genre, title, track, year, picture } = results[i].common;
 
             const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
@@ -846,6 +846,31 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
     
     appdata.set('queues', queues);
     WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(afterQueueName || name));
+});
+
+ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
+{    
+    const { format, common } = await metadata.parseFile(filepath);
+
+    const picture = common.picture[0];
+    const songMetadata = appdata.get('songMetadata');
+
+    format.size = statSync(filepath).size;
+    common.picture = `data:${picture.format};base64,${picture.data.toString('base64')}`;
+
+    const data =
+    {
+        file: format,
+        tags: common,
+
+        extras:
+        {
+            filepath,
+            playCount: songMetadata[filepath].playCount
+        }
+    };
+
+    return data;
 });
 
 app.on('ready', () =>

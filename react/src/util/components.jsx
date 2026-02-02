@@ -4,7 +4,9 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { CloseRounded } from '@mui/icons-material';
+import { CloseRounded, InfoOutlineRounded } from '@mui/icons-material';
+
+import { parseTime } from './functions';
 
 function ROW({ className, children, ...rest })
 {
@@ -220,4 +222,128 @@ function ContextMenu({visibility, title, options, parentRef})
     )
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu };
+function SongInfoModal({visibility, parentRef, songInfo})
+{
+    const { minutes, seconds } = parseTime(songInfo?.file?.duration);
+
+    const filepath = songInfo?.extras?.filepath;
+
+    let folderpath;
+
+    if (filepath)
+    {
+        const x = filepath.split('\\');
+        if (x.length !== 1) x.pop();
+    
+        const y = x.join('\\').split('/');
+        if (y.length !== 1) y.pop();
+
+        folderpath = y.join('/');
+    }
+
+    return (
+        <CustomModal visibility={visibility} parentRef={parentRef}>
+            <COL className={'songInfo'}>
+                <ROW className={'head relative'}>
+                    <InfoOutlineRounded/>
+                    <span>Song Info</span>
+                    <button onClick={() => visibility[1](false)}><CloseRounded/></button>
+                </ROW>
+                <COL className={'body'}>
+                    <ROW className={'file'}>
+                        <img src={songInfo?.tags?.picture} draggable={false}/>
+                        <COL className={'wrapper'}>
+                            <COL className={'data'}>
+                                <span className='type'>Filename</span>
+                                <span className='value'>{songInfo?.extras?.filepath?.split('/')?.pop()?.split('\\')?.pop()}</span>
+                            </COL>
+                            <COL className={'data'}>
+                                <span className='type'>Location</span>
+                                <span className='value'>{folderpath}</span>
+                            </COL>
+                            <COL className={'data'}>
+                                <span className='type'>File Size</span>
+                                <span className='value'>{(songInfo?.file?.size / (1024 ** 2)).toFixed(2)} MB</span>
+                            </COL>
+                        </COL>
+                    </ROW>
+                    <COL className={'tags'}>
+                        <div className='divider'/>
+                        <COL className={'data'}>
+                            <span className='type'>Title</span>
+                            <span className='value'>{songInfo?.tags?.title || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Album</span>
+                            <span className='value clickable'>{songInfo?.tags?.album || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Artists</span>
+                            <span className='value clickable'>{songInfo?.tags?.artists?.join(', ') || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Album Artist</span>
+                            <span className='value'>{songInfo?.tags?.albumartist || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Genre</span>
+                            <span className='value'>{songInfo?.tags?.genre?.join(', ') || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Tempo</span>
+                            <span className='value'>{songInfo?.tags?.bpm ? `${songInfo.tags.bpm} bpm` : 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Track Number</span>
+                            <span className='value'>{songInfo?.tags?.track?.no || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Disc Number</span>
+                            <span className='value'>{songInfo?.tags?.disk?.no || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Year</span>
+                            <span className='value'>{songInfo?.tags?.year || 'Unkown'}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Label</span>
+                            <span className='value'>{songInfo?.tags?.label?.join(', ') || 'Unkown'}</span>
+                        </COL>
+                        <div className='divider'/>
+                        <COL className={'data'}>
+                            <span className='type'>Duration</span>
+                            <span className='value'>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Bitrate</span>
+                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 100, notation: 'compact'}).format(songInfo?.file?.bitrate).toLowerCase()}bps</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Sample Rate</span>
+                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 100, notation: 'compact'}).format(songInfo?.file?.sampleRate).toLowerCase()}Hz</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Channels</span>
+                            <span className='value'>{songInfo?.file?.numberOfChannels}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Format</span>
+                            <span className='value'>{songInfo?.file?.container} {songInfo?.file?.losless ? '| Losless' : null}</span>
+                        </COL>
+                        <COL className={'data'}>
+                            <span className='type'>Encoding</span>
+                            <span className='value'>{songInfo?.file?.codec} | {songInfo?.file?.codecProfile}</span>
+                        </COL>
+                        <div className='divider'/>
+                        <COL className={'data'}>
+                            <span className='type'>Play Count</span>
+                            <span className='value'>{songInfo?.extras?.playCount}</span>
+                        </COL>
+                    </COL>
+                </COL>
+            </COL>
+        </CustomModal>
+    );
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal };
