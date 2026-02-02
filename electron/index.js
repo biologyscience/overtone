@@ -871,6 +871,14 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
         }
     };
 
+    if (picture?.data)
+    {
+        const colors = await Vibrant.from(picture.data).getPalette();
+        for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
+        
+        data.extras.colors = colors;
+    }
+
     return data;
 });
 

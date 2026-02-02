@@ -242,9 +242,16 @@ function SongInfoModal({visibility, parentRef, songInfo})
         folderpath = y.join('/');
     }
 
+    const colors =
+    {
+        '--background': `rgb(${songInfo?.extras?.colors?.DarkMuted?.join(',')})`,
+        '--accent': `rgb(${songInfo?.extras?.colors?.LightVibrant?.join(',')})`,
+        '--accent2': `rgba(${songInfo?.extras?.colors?.LightVibrant?.join(',')}, .25)`
+    };
+
     return (
         <CustomModal visibility={visibility} parentRef={parentRef}>
-            <COL className={'songInfo'}>
+            <COL className={'songInfo'} style={colors}>
                 <ROW className={'head relative'}>
                     <InfoOutlineRounded/>
                     <span>Song Info</span>
