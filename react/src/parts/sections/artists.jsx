@@ -31,8 +31,7 @@ export default function artists()
 
     function play(name)
     {
-        window.ipc.send('ipc-addQueue', {artist: name, trackNumber: 0});
-
+        window.ipc.send('ipc-addQueue', { artist: name, albums: artist.albums.map(x => x.album), trackNumber: 0, queueName: name });
         eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
     }
 

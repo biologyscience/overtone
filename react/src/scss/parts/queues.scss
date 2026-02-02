@@ -209,12 +209,11 @@
             
             .songData
             {
+                overflow: hidden;
                 padding: .5em 0;
 
                 .title { font-size: 1.2em; }
-
                 .artist, .album, .duration { font-size: .7em; }
-
                 .album { margin-right: auto; }
             }
 

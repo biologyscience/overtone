@@ -21,7 +21,8 @@ import
     PlaylistAddRounded,
     StartRounded,
     DriveFileMoveRounded,
-    EditRounded
+    EditRounded,
+    FavoriteRounded
     
 } from '@mui/icons-material';
 
@@ -48,24 +49,17 @@ export default function folders()
     
     function handleFolderClick({target})
     {
-        const { index } = target.dataset;
+        const { index, type } = target.dataset;
 
-        if (deleteSelected)
+        if (type !== undefined)
         {
-            const temp = [...selectedFolders];
-            temp[index] = !temp[index];
+            if (type === 'favorites')
+            {
+                setCurrentFolderPath(undefined);
+                setFolderName('Favorites');
+            }
             
-            setSelectedFolders(temp);
-        }
-
-        else
-        {
-            const folder = folderPaths[index];
-
-            setCurrentFolderPath(folder);
-            setFolderName(folder.split('/').pop().split('\\').pop());
-
-            window.ipc.invoke('ipc-wantFolder', folder).then((songData) =>
+            window.ipc.invoke('ipc-wantFolder', type).then((songData) =>
             {
                 let totalDuration = 0;
              
@@ -77,6 +71,38 @@ export default function folders()
                 setSongsData(songData);
                 setShowInside(true);
             });
+        }
+
+        else if (index !== undefined)
+        {
+            if (deleteSelected)
+            {
+                const temp = [...selectedFolders];
+                temp[index] = !temp[index];
+                
+                setSelectedFolders(temp);
+            }
+    
+            else
+            {
+                const folder = folderPaths[index];
+    
+                setCurrentFolderPath(folder);
+                setFolderName(folder.split('/').pop().split('\\').pop());
+    
+                window.ipc.invoke('ipc-wantFolder', folder).then((songData) =>
+                {
+                    let totalDuration = 0;
+                 
+                    songData?.forEach(({duration}) => totalDuration += duration);
+                    setFoldarDuration(parseTime(totalDuration).text);
+    
+                    setInputSearchSpace(songData.map(x => x.title));
+                    setInputMatchSpace(songData.map(x => true));
+                    setSongsData(songData);
+                    setShowInside(true);
+                });
+            }
         }
     }
 
@@ -150,7 +176,7 @@ export default function folders()
 
             if (target.tagName === 'BUTTON') return;
 
-            window.ipc.send('ipc-addQueue', {folder: currentFolderPath, trackNumber: index});
+            window.ipc.send('ipc-addQueue', { trackNumber: index, songLocations: songsData.map(x => x.location), queueName: folderName });
             eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
         }
 
@@ -233,6 +259,16 @@ export default function folders()
             <COL className={`out ${showInside ? 'displayNone' : ''}`}>
                 <ul className='folders'>
                     <FolderList/>
+                </ul>
+                <ul className='extras'>
+                    <li data-type={'favorites'} onClick={handleFolderClick}>
+                        <FavoriteRounded/>
+                        <span className='name'>Favorites</span>
+                    </li>
+                    <li onClick={handleFolderClick}>
+                        <DeleteRounded/>
+                        <span className='name'>Placeholder</span>
+                    </li>
                 </ul>
                 <ul className='folderOptions'>
                     <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});  window.ipc.send('ipc-addFolders'); }}>

@@ -37,8 +37,7 @@ export default function albums()
 
     function play(trackNumber)
     {
-        window.ipc.send('ipc-addQueue', {album: album.album, artist: album.songs[0].artists[0], trackNumber});
-
+        window.ipc.send('ipc-addQueue', { trackNumber, songLocations: album.songs.map(x => x.location), queueName: album.album });
         eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
     }
     
