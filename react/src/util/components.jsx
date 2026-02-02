@@ -4,7 +4,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { CloseRounded, InfoOutlineRounded } from '@mui/icons-material';
+import { CloseRounded, InfoOutlineRounded, FavoriteBorderRounded, FavoriteRounded } from '@mui/icons-material';
 
 import { parseTime } from './functions';
 import eventBus from './events';
@@ -225,6 +225,8 @@ function ContextMenu({visibility, title, options, parentRef})
 
 function SongInfoModal({visibility, parentRef, songInfo})
 {
+    const [isFavorite, setIsFavorite] = useState(false);
+
     const { minutes, seconds } = parseTime(songInfo?.file?.duration);
 
     const filepath = songInfo?.extras?.filepath;
@@ -249,6 +251,17 @@ function SongInfoModal({visibility, parentRef, songInfo})
         '--accent2': `rgba(${songInfo?.extras?.colors?.LightVibrant?.join(',')}, .25)`
     };
 
+    function toggleFavorite()
+    {
+        setIsFavorite(x => !x);
+
+        eventBus.dispatchEvent(new CustomEvent('ot-toggleFavorite', {detail: songInfo?.extras?.filepath}));
+
+        window.ipc.send('ipc-favoriteSong', ({filepath: songInfo?.extras?.filepath, isFavorite: !isFavorite}));
+    }
+
+    useEffect(() => setIsFavorite(songInfo?.extras?.isFavorite), [songInfo]);
+
     return (
         <CustomModal visibility={visibility} parentRef={parentRef}>
             <COL className={'songInfo'} style={colors}>
@@ -259,7 +272,10 @@ function SongInfoModal({visibility, parentRef, songInfo})
                 </ROW>
                 <COL className={'body'}>
                     <ROW className={'file'}>
-                        <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
+                        <ROW className='imgWrapper'>
+                            <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
+                            <button onClick={toggleFavorite}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>
+                        </ROW>
                         <COL className={'wrapper'}>
                             <COL className={'data'}>
                                 <span className='type'>Filename</span>
