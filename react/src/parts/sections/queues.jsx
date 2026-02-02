@@ -154,7 +154,7 @@ export default function queues()
                     return (
                         <div key={i} id={crypto.randomUUID()} className={`listItem ${name === current ? 'current' : ''}`} data-name={name}>
                             <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                            <span className='name' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
+                            <span className='name overflowPrevent' onClick={() => window.ipc.send('ipc-wantQueue', name)}>{name}</span>
                             <button onClick={() => setRenamingQueue(name)}><EditRounded/></button>
                             <button onClick={() => window.ipc.send('ipc-deleteQueue', {name})}><DeleteRounded/></button>
                         </div>
@@ -195,7 +195,7 @@ export default function queues()
             </CustomModal>
             <COL className={'head'}>
                 <ROW className={'queueSelector'} onClick={() => setShowModal(true)}>
-                    <span className='name'>{currentQueueName}</span>
+                    <span className='name overflowPrevent'>{currentQueueName}</span>
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>

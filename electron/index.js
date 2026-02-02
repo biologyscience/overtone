@@ -53,6 +53,17 @@ function init()
     if (appdata.get('config').discordRPCconnect) rpc.on();
 }
 
+function exitApp({currentTime})
+{
+    const config = appdata.get('config');
+
+    config.lastQueueState.duration = currentTime;
+
+    appdata.set('config', config);
+
+    WINDOW.close();
+}
+
 ipcMain.handle('ipc-wantFolders', () => 
 {
     const { checkMusicIn } = appdata.get('config');
@@ -643,13 +654,14 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
     {
         const queue = queues.find(x => x.name === lastQueueState.queue);
 
-        audioPlayer.shuffle = shuffle;
-        audioPlayer.repeat = repeat;
-        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
-    
         WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
         WINDOW.webContents.send('ipc-restoreVolume', volume);
         WINDOW.webContents.send('ipc-restoreShuffleRepeat', {shuffle, repeat});
+        WINDOW.webContents.send('ipc-restoreCurrentTime', lastQueueState.duration);
+
+        audioPlayer.shuffle = shuffle;
+        audioPlayer.repeat = repeat;
+        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
     }
 });
 
@@ -981,5 +993,5 @@ app.on('ready', () =>
 
     ipcMain.on('ipc-minimize', () => WINDOW.minimize());
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
-    ipcMain.on('ipc-close', () => WINDOW.close());
+    ipcMain.on('ipc-close', (E, data) => exitApp(data));
 });

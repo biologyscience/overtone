@@ -67,6 +67,8 @@ export default function displayRight()
     {
         const { minutes, seconds } = parseTime(currentTime);
 
+        eventBus.dispatchEvent(new CustomEvent('ot-currentTime', {detail: currentTime}));
+
         return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
     }
  
@@ -217,6 +219,7 @@ export default function displayRight()
             setRepeat(data.repeat);
         });
         window.ipc.on('ipc-restoreVolume', setVolume);
+        window.ipc.on('ipc-restoreCurrentTime', (time) => setTimeout(() => { setCurrentTime(time); player.current.currentTime = time; }, 10));
 
         window.ipc.send('ipc-displayRightReady', true);
 
