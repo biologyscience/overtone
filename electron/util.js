@@ -1,4 +1,4 @@
-const { readFileSync, writeFileSync } = require('fs');
+const { readFileSync, writeFileSync, existsSync } = require('fs');
 const path = require('path');
 
 const appdata =
@@ -27,4 +27,58 @@ function parseTime(sec)
 	return data;
 };
 
-module.exports = { appdata, parseTime };
+class M3U
+{
+	constructor({name, songs})
+	{
+		this.name = name;
+		this.songs = new Set(songs);
+	}
+
+	parse(string)
+	{
+		let text = string;
+
+		if (existsSync(string)) text = readFileSync(string, { encoding: 'utf8' });
+
+		const lines = text.split('\n');
+
+		this.name = lines.find(x => x.startsWith('#PLAYLIST:'))?.split(':')?.pop();
+		this.songs = new Set(lines.filter(x => !x.startsWith('#')).map(y => y.split('/').pop().split('\\').pop()));
+
+		return this;
+	}
+
+	addSong(filename)
+	{
+		if (filename) this.songs.add(filename);
+
+		return this;
+	}
+
+	removeSong(filename)
+	{
+		if (filename) this.songs.delete(filename);
+
+		else
+		{
+			const songs = [...this.songs];
+			songs.pop();
+
+			this.songs = new Set(songs);
+		}
+
+		return this;
+	}
+
+	toString() { return ['#EXTM3U', `#PLAYLIST:${this.name}`, ...this.songs].join('\n'); }
+
+	saveToFile(filepath)
+	{
+		if (!filepath) return;
+
+		writeFileSync(filepath, this.toString(), { encoding: 'utf8' });
+	}
+}
+
+module.exports = { appdata, parseTime, M3U };
