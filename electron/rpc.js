@@ -1,35 +1,10 @@
-const express = require('express');
-const path = require('path');
 const { Client } = require('discord-rpc');
 const { appdata } = require('./util');
-const sharp = require('sharp');
 
-const { discordAppID, localhostPORT } = appdata.get('config');
+const { discordAppID } = appdata.get('config');
 
-const app = express();
 const rpc = new Client({transport: 'ipc'});
 
-app.get('/webp/:file', (request, response) =>
-{
-    const file = request.params.file.split('.');
-    let format = file.pop();
-    const filename = file.join('.');
-
-    if (format === undefined) return response.sendStatus(404);
-
-    if (format === 'jpg') format = 'jpeg';
-
-    const filePath = path.join(__dirname, `./appdata/webp/${filename}.webp`);
-
-    response.set('Content-Type', `image/${format}`);
-    response.set('Cache-Control', 'no-store');
-
-    if (format === 'webp') sharp(filePath).resize(800, 800).webp().pipe(response);
-    if (format === 'png') sharp(filePath).resize(800, 800).png().pipe(response);
-    if (format === 'jpeg') sharp(filePath).resize(800, 800).jpeg().pipe(response);    
-});
-
-app.use('/webp', express.static(path.join(__dirname, './appdata/webp')));
 rpc.on('ready', () => console.log('RPC ready'));
 
 class RPC
@@ -51,8 +26,6 @@ class RPC
 
     async on()
     {
-        // this.localhost = app.listen(localhostPORT, () => console.log(`localhost:${localhostPORT}`));
-
         try
         {
             await rpc.login({clientId: discordAppID});

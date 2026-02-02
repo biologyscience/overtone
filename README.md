@@ -22,6 +22,4 @@ Report them in the [Issues](https://github.com/biologyscience/overtone/issues) s
 ## 😎 Have cool suggestions or feedbacks ?
 Use the [Discussion](https://github.com/biologyscience/overtone/discussions) tab to add it to the list.
 
-<br>
-
 > ##### This project is authored and maintained by [biologyscience](https://github.com/biologyscience).
