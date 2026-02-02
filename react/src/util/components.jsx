@@ -252,7 +252,7 @@ function SongInfoModal({visibility, parentRef, songInfo})
                 </ROW>
                 <COL className={'body'}>
                     <ROW className={'file'}>
-                        <img src={songInfo?.tags?.picture} draggable={false}/>
+                        <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
                         <COL className={'wrapper'}>
                             <COL className={'data'}>
                                 <span className='type'>Filename</span>
@@ -317,11 +317,11 @@ function SongInfoModal({visibility, parentRef, songInfo})
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Bitrate</span>
-                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 100, notation: 'compact'}).format(songInfo?.file?.bitrate).toLowerCase()}bps</span>
+                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 3, notation: 'compact'}).format(songInfo?.file?.bitrate).toLowerCase()}bps</span>
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Sample Rate</span>
-                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 100, notation: 'compact'}).format(songInfo?.file?.sampleRate).toLowerCase()}Hz</span>
+                            <span className='value'>{Intl.NumberFormat('en-us', {maximumFractionDigits: 3, notation: 'compact'}).format(songInfo?.file?.sampleRate).toLowerCase()}Hz</span>
                         </COL>
                         <COL className={'data'}>
                             <span className='type'>Channels</span>
