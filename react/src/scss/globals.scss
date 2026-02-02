@@ -287,7 +287,7 @@ input
 {
     font-size: 1rem;
     height: 65vh;
-    aspect-ratio: .7/1;
+    aspect-ratio: .75/1;
     background-color: var(--background);
     border-radius: 5px;
 
@@ -318,34 +318,44 @@ input
         {
             font-size: .9rem;
 
-            .type { color: colors.$dark90; }
+            .type
+            {
+                max-width: fit-content;
+                color: colors.$dark90;
+            }
 
             .value
             {
                 font-size: 1.1em;
-                width: fit-content;
+                max-width: fit-content;
 
                 &.clickable
                 {
                     position: relative;
-
-                    &::before
+        
+                    &::after
                     {
-                        position: absolute;
                         content: '';
+                        position: absolute;
+                        height: .1em;
                         background-color: var(--accent);
-                        width: 100%;
-                        height: 2px;
-                        bottom: -2px;
-                        border-radius: 5px;
-                        opacity: 0;
-                        transition: all 150ms ease;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        transform: scaleX(0);
+                        transform-origin: right;
+                        transition: transform 250ms ease;
                     }
-
+        
                     &:hover
                     {
                         cursor: pointer;
-                        &::before { opacity: 1; }
+        
+                        &::after
+                        {
+                            transform-origin: left;
+                            transform: scaleX(1);
+                        }
                     }
                 }
             }
@@ -368,14 +378,20 @@ input
             {
                 width: 45%;
                 aspect-ratio: 1;
+
+                &:hover { cursor: alias; }
             }
 
             .wrapper
             {
+                overflow: hidden;
+
                 .data
                 {
                     height: 100%;
                     justify-content: center;
+
+                    .value { width: auto; }
                 }
             }
         }
