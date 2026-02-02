@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, Slider, Hover3D, ContextMenu } from '../util/components';
+import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
@@ -24,9 +24,9 @@ import
     LyricsRounded,
     DeleteRounded,
     PlaylistAddRounded,
-    StartRounded,
     DriveFileMoveRounded,
-    EditRounded
+    EditRounded,
+    CloseRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -39,6 +39,8 @@ export default function displayRight()
     const [endState, setEndState] = useState(false);
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState(false);
+    const [songInfo, setSongInfo] = useState({});
+    const [showModal, setShowModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
 
     const [nowPlaying, setNowPlaying] = useState();
@@ -237,7 +239,7 @@ export default function displayRight()
             </COL>
             <ROW className='miscButtons'>
                 <button onClick={() => window.dispatchEvent(new Event('ot-eq0'))}><FavoriteBorderRounded/></button>
-                <button onClick={() => window.dispatchEvent(new Event('ot-eq1'))}><InfoOutlineRounded/></button>
+                <button onClick={() => window.ipc.invoke('ipc-wantInfo', nowPlaying?.filepath).then((data) => { setSongInfo(data); setShowModal(true); })}><InfoOutlineRounded/></button>
                 <button onClick={() => setShowContextMenu(true)}><PendingOutlined/></button>
                 <div style={{marginLeft: 'auto'}}/>
                 <button data-function={'shuffle'} onClick={shuffleRepeat}>{shuffle ? <ShuffleOnRounded/> : <ShuffleRounded/>}</button>
@@ -267,6 +269,11 @@ export default function displayRight()
                     ) : null
                 }
             </ROW>
+            <SongInfoModal
+                visibility={[showModal, setShowModal]}
+                parentRef={sectionRef}
+                songInfo={songInfo}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={nowPlaying?.title}
