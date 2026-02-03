@@ -90,6 +90,32 @@ export default function artists()
         });
     }
 
+    function triggerReload()
+    {
+        if (!showInside) return;
+        
+        window.ipc.invoke('ipc-wantArtist', {artist: artist.name}).then(({picture, albums}) =>
+        {
+            if (albums.length > 0)
+            {
+                const artistToSet = { name: artist, picture, albums };
+    
+                setArtist(artistToSet);
+            }
+
+            else
+            {
+                window.ipc.invoke('ipc-wantArtists').then((artistsData) =>
+                {
+                    setArtists(artistsData);
+                    setInputSearchSpace([...artistsData].sort((x, y) => x?.artist?.localeCompare(y?.artist)).map(x => x.artist));
+                    setInputMatchSpace([...artistsData].map(x => true));
+                    setShowInside(false);
+                });
+            }
+        });
+    }
+
     useEffect(() =>
     {
         window.ipc.invoke('ipc-wantArtists').then((artistsData) =>
@@ -100,6 +126,7 @@ export default function artists()
         });
 
         eventBus.addEventListener('ot-showArtist', ({detail}) => showArtist(detail));
+        eventBus.addEventListener('ot-filesDeleted', triggerReload);
     }, []);
 
     return (

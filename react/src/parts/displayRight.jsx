@@ -234,9 +234,7 @@ export default function displayRight()
 
     function miscButton()
     {
-        console.log('hello');
-
-        window.ipc.invoke('ipc-deleteFiles', {files: ['C:\\Files\\Music\\South Side.mp3']}).then(console.log);
+        
     }
 
     return (

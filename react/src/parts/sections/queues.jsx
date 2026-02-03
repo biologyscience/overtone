@@ -193,6 +193,7 @@ export default function queues()
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
         eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles(null));
+        eventBus.addEventListener('ot-filesDeleted', () => window.ipc.send('ipc-wantQueue', currentQueueName));
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
