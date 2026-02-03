@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal, DeleteModal } from '../util/components';
 import { AudioPlayer } from '../util/audio';
-import { parseTime, songInfoSetter } from '../util/functions';
+import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
 
 import
@@ -40,9 +40,8 @@ export default function displayRight()
     const [endState, setEndState] = useState(false);
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState(false);
-    const [songInfo, setSongInfo] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [songInfoModal, setShowSongInfoModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -252,8 +251,8 @@ export default function displayRight()
                 <span className='small overflowPrevent' onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album: nowPlaying?.album, artist: nowPlaying?.artists?.[0]}}))}>{nowPlaying?.album}</span>
             </COL>
             <ROW className='miscButtons'>
-                <button onClick={() => { setIsFavorite(x => !x); window.ipc.send('ipc-favoriteSong', ({filepath: nowPlaying?.filepath, isFavorite: !isFavorite})); }}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>
-                <button onClick={() => window.ipc.invoke('ipc-wantInfo', nowPlaying?.filepath).then((data) => { setSongInfo(data); setShowModal(true); })}><InfoOutlineRounded/></button>
+                <button onClick={() => { window.ipc.send('ipc-favoriteSong', ({filepath: nowPlaying?.filepath, isFavorite: !isFavorite})); setIsFavorite(x => !x); }}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>
+                <button onClick={() => setShowSongInfoModal(true)}><InfoOutlineRounded/></button>
                 <button onClick={() => setShowContextMenu(true)}><PendingOutlined/></button>
                 <div style={{marginLeft: 'auto'}}/>
                 <button data-function={'shuffle'} onClick={shuffleRepeat}>{shuffle ? <ShuffleOnRounded/> : <ShuffleRounded/>}</button>
@@ -284,9 +283,9 @@ export default function displayRight()
                 }
             </ROW>
             <SongInfoModal
-                visibility={[showModal, setShowModal]}
+                visibility={[songInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
-                songInfo={songInfo}
+                file={nowPlaying?.filepath}
             />
             <DeleteModal
                 visibility={[showDeleteModal, setShowDeleteModal]}
@@ -313,8 +312,8 @@ export default function displayRight()
                     },
                     {
                         functions: [
-                            () => songInfoSetter(nowPlaying?.filepath, setSongInfo, setShowModal),
-                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            () => setShowSongInfoModal(true),
+                            () => setShowDeleteModal(true)
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
