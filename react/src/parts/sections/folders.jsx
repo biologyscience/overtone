@@ -226,6 +226,36 @@ export default function folders()
         });
     }
 
+    function triggerReload()
+    {
+        if (!showInside) return;
+        
+        window.ipc.invoke('ipc-wantFolder', currentFolderPath).then((songData) =>
+        {
+            if (songData.length > 0)
+            {
+                let totalDuration = 0;
+             
+                songData?.forEach(({duration}) => totalDuration += duration);
+                setFoldarDuration(parseTime(totalDuration).text);
+    
+                setInputSearchSpace(songData.map(x => x.title));
+                setInputMatchSpace(songData.map(x => true));
+                setSongsData(songData);
+            }
+
+            else
+            {
+                window.ipc.invoke('ipc-wantFolders').then((folderData) =>
+                {
+                    setFolderPaths(folderData);
+                    setSelectedFolders([...folderData].map(x => false));
+                    setShowInside(false);
+                });
+            }
+        });
+    }
+
     useEffect(() =>
     {
         window.ipc.invoke('ipc-wantFolders').then((folderData) =>
@@ -278,6 +308,7 @@ export default function folders()
         });
 
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles(null));
+        eventBus.addEventListener('ot-filesDeleted', triggerReload);
     }, []);
 
     return (

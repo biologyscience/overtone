@@ -107,6 +107,34 @@ export default function albums()
         });
     }
 
+    function triggerReload()
+    {
+        if (!showInside) return;
+
+        window.ipc.invoke('ipc-wantAlbum', {album: album?.album, artist: album?.artist}).then((albumToSet) =>
+        {
+            if (albumToSet.songs.length > 0)
+            {
+                let totalDuration = 0;
+                albumToSet.songs.forEach(({duration}) => totalDuration += duration);
+    
+                albumToSet.duration = parseTime(totalDuration).text;
+                setAlbum(albumToSet);
+            }
+
+            else
+            {
+                window.ipc.invoke('ipc-wantAlbums').then((albumData) =>
+                {
+                    setAlbumData(albumData);
+                    setInputSearchSpace([...albumData].sort((x, y) => x?.album?.localeCompare(y?.album)).map(x => x.album));
+                    setInputMatchSpace([...albumData].map(x => true));
+                    setShowInside(false);
+                });
+            }
+        });
+    }
+
     useEffect(() =>
     {
         window.ipc.invoke('ipc-wantAlbums').then((albumData) =>
@@ -117,6 +145,7 @@ export default function albums()
         });
 
         eventBus.addEventListener('ot-showAlbum', ({detail: {album, artist}}) => showAlbum(album, artist));
+        eventBus.addEventListener('ot-filesDeleted', triggerReload);
     }, []);
 
     return (

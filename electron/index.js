@@ -973,9 +973,13 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
     const queues = appdata.get('queues');
     const songList = appdata.get('songList');
     const songMetadata = appdata.get('songMetadata');
+
+    let playingQueueAffected = false;
     
     files.forEach((file) =>
     {
+        if (audioPlayer.queue.includes(file)) playingQueueAffected = true;
+
         for (const albumID in albums)
         {
             if (albums[albumID].songs.includes(file))
@@ -1023,6 +1027,20 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
     
         unlinkSync(file);
     });
+
+    if (playingQueueAffected)
+    {
+        const queue = queues.find(x => x.name === audioPlayer.queueName);
+
+        if (files.includes(audioPlayer.queue[audioPlayer.currentQueueItem]))
+        {
+            audioPlayer
+            .setQueue(queue.songs, queue.currentSong, queue.name)
+            .setNowPlaying(queue.songs[queue.currentSong], true, songMetadata);
+        }
+
+        else audioPlayer.setQueue(queue.songs, queue.currentSong, queue.name);
+    }
 
     appdata.set('albums', albums);
     appdata.set('config', config);
