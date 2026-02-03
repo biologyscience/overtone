@@ -77,6 +77,24 @@ export default function queues()
         }, 10);
     }
 
+    function selectItems(selectable, filepath)
+    {
+        if (selectable === true)
+        {
+            setSelectedFiles((oldArray) =>
+            {
+                const set = new Set(oldArray);
+
+                if (set.has(filepath)) set.delete(filepath);
+                else set.add(filepath);
+
+                return [...set];
+            });
+        }
+
+        else selectedFiles === null ? setSelectedFiles([]) : setSelectedFiles(null);
+    }
+
     useEffect(() =>
     {
         if (!showModal) return;
@@ -179,24 +197,6 @@ export default function queues()
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
         window.ipc.on('ipc-queuesToast', ({type, text}) => toast[type](text, {toasterId: 'queues'}));
     }, []);
-
-    function selectItems(selectable, filepath)
-    {
-        if (selectable === true)
-        {
-            setSelectedFiles((oldArray) =>
-            {
-                const set = new Set(oldArray);
-
-                if (set.has(filepath)) set.delete(filepath);
-                else set.add(filepath);
-
-                return [...set];
-            });
-        }
-
-        else selectedFiles === null ? setSelectedFiles([]) : setSelectedFiles(null);
-    }
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>

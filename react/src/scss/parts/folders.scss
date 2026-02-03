@@ -176,7 +176,7 @@
         .info
         {
             position: relative;
-            grid-template-columns: auto auto 1fr;
+            grid-template-columns: auto auto 1fr auto;
             gap: 1em;
             padding: .5em 1em;
 
@@ -210,6 +210,23 @@
                     @include util.inputBorderReset(bottom, 2px);
                 }
             }
+
+            button
+            {
+                transition: scale 200ms ease;
+
+                svg
+                {
+                    fill: colors.$dark80;
+                    transition: fill 200ms ease;
+                }
+
+                &.focus, &:hover
+                {
+                    scale: 1.05;
+                    svg { fill: white; }
+                }
+            }
         }
 
         .songList
@@ -222,12 +239,9 @@
 
             li
             {
-                display: grid;
-                grid-template-columns: 90% auto;
-                gap: 1.5em;
                 border: .1em solid transparent;
                 border-radius: .5em;
-                padding: 0 1.5em;
+                padding: 0 2em;
                 transition: border-color 300ms ease;
 
                 &, * { pointer-events: none; }
@@ -241,12 +255,11 @@
 
                 .songData
                 {
+                    flex-grow: 1;
                     padding: .5em 0;
 
                     .title { font-size: 1.2em; }
-
                     .artist, .album, .duration { font-size: .7em; }
-
                     .album { margin-right: auto; }
                 }
 
@@ -255,12 +268,26 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    margin-left: 4em;
 
                     svg
                     {
                         height: 1em;
                         width: auto;
                     }
+
+                    &.select
+                    {
+                        overflow: hidden;
+                        width: 0;
+                        margin: 0;
+                    }
+                }
+
+                &.selectable button.select
+                {
+                    width: fit-content;
+                    margin-right: 3em;
                 }
             }
         }
