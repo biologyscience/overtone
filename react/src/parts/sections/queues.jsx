@@ -23,7 +23,9 @@ import
     PauseCircleOutlineRounded,
     SelectAllRounded,
     DeselectRounded,
-    SaveAsRounded
+    SaveAsRounded,
+    CheckBoxRounded,
+    CheckBoxOutlineBlankRounded
 } from '@mui/icons-material';
 
 export default function queues()
@@ -48,7 +50,7 @@ export default function queues()
         [songInfo, setSongInfo] = useState({}),
         [songInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false),
-        [selectedFiles, setSelectedFiles] = useState([]);
+        [selectedFiles, setSelectedFiles] = useState(null);
     
     function switchToTrack(name, index)
     {
@@ -59,7 +61,9 @@ export default function queues()
 
     function openContext(data)
     {
-        setContextData({title: data.title, position: data.i, filepath: data.filepath});
+        if (selectedFiles?.length > 0) setContextData({title: selectedFiles?.length > 1 ? `${selectedFiles?.length} selected files` : '1 selected file'});
+        else setContextData({title: data.title, position: data.i, filepath: data.filepath});
+        
         setShowContextMenu(true);
     }
     
@@ -176,6 +180,24 @@ export default function queues()
         window.ipc.on('ipc-queuesToast', ({type, text}) => toast[type](text, {toasterId: 'queues'}));
     }, []);
 
+    function selectItems(selectable, filepath)
+    {
+        if (selectable === true)
+        {
+            setSelectedFiles((oldArray) =>
+            {
+                const set = new Set(oldArray);
+
+                if (set.has(filepath)) set.delete(filepath);
+                else set.add(filepath);
+
+                return [...set];
+            });
+        }
+
+        else selectedFiles === null ? setSelectedFiles([]) : setSelectedFiles(null);
+    }
+
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
             <CustomModal visibility={[showModal, setShowModal]} parentRef={sectionRef}>
@@ -202,7 +224,7 @@ export default function queues()
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>
-                    <button><SelectAllRounded/></button>
+                    <button onClick={selectItems} className={selectedFiles?.length === undefined ? null : 'focus'}>{selectedFiles?.length === undefined ? <SelectAllRounded/> : <DeselectRounded/>}</button>
                     <ROW className={'songNumbers'}>
                         <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
                         <span>/</span>
@@ -216,14 +238,20 @@ export default function queues()
                 </ROW>
             </COL>
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
-                <SortableList setOrder={'ot-songsInQueueReorder'}>
+                <SortableList setOrder={'ot-songsInQueueReorder'} disable={selectedFiles?.length !== undefined}>
                     {
                         songsData?.map(({title, artists, album, duration, filepath}, i) =>
                         {
                             return (
                                 <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i, filepath})}>
-                                    <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
-                                    <COL className='songData' onClick={() => switchToTrack(currentQueueName, i)}>
+                                    {
+                                        selectedFiles?.length !== undefined ? (
+                                            <button onClick={() => selectItems(true, filepath)}>{ selectedFiles?.includes(filepath) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/> }</button>
+                                        ) : (
+                                            <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
+                                        )
+                                    }
+                                    <COL className='songData' onClick={() => selectedFiles?.length !== undefined ? null : switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
                                         <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                                         <ROW>
@@ -251,25 +279,43 @@ export default function queues()
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
-                options={[
-                    {
-                        functions: [
-                            () => {},
-                            () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, position: contextData.position}),
-                            () => {}
-                        ],
-                        icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
-                        texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
-                    },
-                    {
-                        functions: [
-                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
-                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
-                        ],
-                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
-                        texts: ['Song info', 'Delete permanently']
-                    }
-                ]}
+                options={
+                    selectedFiles?.length > 0 ? [
+                        {
+                            functions: [
+                                () => {},
+                                () => window.ipc.send('', {name: currentQueueName, position: contextData.position}),
+                            ],
+                            icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>],
+                            texts: ['Add to a queue', 'Remove from queue']
+                        },
+                        {
+                            functions: [
+                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            ],
+                            icons: [<DeleteRounded/>],
+                            texts: ['Delete permanently']
+                        }
+                    ] : [
+                        {
+                            functions: [
+                                () => {},
+                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, position: contextData.position}),
+                                () => {}
+                            ],
+                            icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
+                            texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
+                        },
+                        {
+                            functions: [
+                                () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            ],
+                            icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                            texts: ['Song info', 'Delete permanently']
+                        }
+                    ]
+                }
                 parentRef={sectionRef}
             />
             <Toaster

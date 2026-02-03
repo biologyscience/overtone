@@ -33,7 +33,7 @@ function SortableItem({id, children})
     );
 }
 
-export default function SortableList({setOrder, children, ...rest})
+export default function SortableList({disable, setOrder, children, ...rest})
 {
     if (children === undefined) return;
 
@@ -62,11 +62,15 @@ export default function SortableList({setOrder, children, ...rest})
 
     useEffect(() => { setItems(children) }, [children]);
     
-    return (
-        <DndContext sensors={sensors} modifiers={[restrictToParentElement, restrictToVerticalAxis]} collisionDetection={closestCenter} onDragEnd={handleDragEnd} {...rest}>
-            <SortableContext items={items.map(x => x.props.id)} strategy={verticalListSortingStrategy}>
-                {items.map((item, i) => <SortableItem key={i} id={item.props.id}>{item}</SortableItem>)}
-            </SortableContext>
-        </DndContext>
-    )
+    return (<>
+        {
+            disable ? children : (
+                <DndContext sensors={sensors} modifiers={[restrictToParentElement, restrictToVerticalAxis]} collisionDetection={closestCenter} onDragEnd={handleDragEnd} {...rest}>
+                    <SortableContext items={items.map(x => x.props.id)} strategy={verticalListSortingStrategy}>
+                        {items.map((item, i) => <SortableItem key={i} id={item.props.id}>{item}</SortableItem>)}
+                    </SortableContext>
+                </DndContext>
+            )
+        }
+    </>)
 }
