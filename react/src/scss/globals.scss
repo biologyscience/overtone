@@ -442,5 +442,53 @@ input
             }
         }
     }
+}
 
+.deleteModal
+{
+    font-size: 1rem;
+    gap: 1em;
+    padding: 1em 2em;
+    width: 25vw;
+    background-color: var(--background);
+    border-radius: .5em;
+
+    .title { font-size: 1.5em; }
+
+    .files
+    {
+        gap: .25em;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 30vh;
+        opacity: .8;
+    }
+
+    .buttons
+    {
+        margin-top: .5em;
+        gap: 2em;
+        margin-left: auto;
+
+        button
+        {
+            font-size: 1rem;
+            padding: .4em 1.25em;
+            border: .15em solid colors.$dark40;
+            border-radius: .25em;
+            transition: all 150ms ease;
+
+            &:hover
+            {
+                border-color: transparent;
+                background-color: colors.$dark40;
+            }
+        }
+
+        .yes
+        {
+            border-color: colors.$accentRed1;
+            &:hover { background-color: colors.$accentRed1; }
+        }
+    }
 }

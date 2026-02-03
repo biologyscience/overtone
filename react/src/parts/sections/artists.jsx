@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { COL, ROW, SearchBox, ContextMenu } from '../../util/components';
+import { COL, ROW, SearchBox, ContextMenu, DeleteModal } from '../../util/components';
 
 import eventBus from '../../util/events';
 
@@ -27,7 +27,8 @@ export default function artists()
         [inputSearchSpace, setInputSearchSpace] = useState(),
         [inputMatchSpace, setInputMatchSpace] = useState(),
         [showContextMenu, setShowContextMenu] = useState(false),
-        [contextData, setContextData] = useState({});
+        [contextData, setContextData] = useState({}),
+        [showDeleteModal, setShowDeleteModal] = useState(false);
 
     function play(name)
     {
@@ -37,8 +38,11 @@ export default function artists()
 
     function openContext(data)
     {
-        setContextData({album: data.album});
-        setShowContextMenu(true);
+        window.ipc.invoke('ipc-wantAlbum', ({album: data.album, artist: artist.name})).then(({songs}) =>
+        {
+            setContextData({album: data.album, songs});
+            setShowContextMenu(true);
+        });
     }
     
     function showArtist(artist)
@@ -138,6 +142,11 @@ export default function artists()
                 </ROW>
                 <ROW className={'albumList'}><Albums/></ROW>
             </COL>
+            <DeleteModal
+                visibility={[showDeleteModal, setShowDeleteModal]}
+                parentRef={sectionRef}
+                files={contextData?.songs?.map(x => x.location)}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.album}
@@ -148,7 +157,7 @@ export default function artists()
                         texts: ['Add album to a queue', 'Play after current song']
                     },
                     {
-                        functions: [ () => {}],
+                        functions: [() => { setShowContextMenu(false); setShowDeleteModal(true); }],
                         icons: [<DeleteRounded/>],
                         texts: ['Delete permanently']
                     }

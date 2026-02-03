@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal } from '../../util/components';
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
 import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
 
@@ -33,7 +33,8 @@ export default function albums()
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [songInfo, setSongInfo] = useState({}),
-        [songInfoModal, setShowSongInfoModal] = useState(false);
+        [songInfoModal, setShowSongInfoModal] = useState(false),
+        [showDeleteModal, setShowDeleteModal] = useState(false);
 
     function play(trackNumber)
     {
@@ -181,6 +182,11 @@ export default function albums()
                 parentRef={sectionRef}
                 songInfo={songInfo}
             />
+            <DeleteModal
+                visibility={[showDeleteModal, setShowDeleteModal]}
+                parentRef={sectionRef}
+                files={[contextData?.filepath]}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -193,7 +199,7 @@ export default function albums()
                     {
                         functions: [
                             () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
-                            () => {}
+                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
