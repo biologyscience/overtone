@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect } from 'react';
 import { RemoveRounded, CropSquareRounded, CloseRounded } from '@mui/icons-material';
 
 import eventBus from '../util/events';
