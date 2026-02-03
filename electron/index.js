@@ -808,7 +808,7 @@ ipcMain.on('ipc-songPlayed', (E, filepath) =>
     appdata.set('songMetadata', songMetadata);
 });
 
-ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
+ipcMain.on('ipc-removeFromQueue', (E, {name, files}) =>
 {
     let afterQueueName = null;
 
@@ -816,7 +816,11 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
 
     const queueIndex = queues.indexOf(queues.find(x => x.name === name));
 
-    queues[queueIndex].songs.splice(position, 1);
+    const currentOldSong = queues[queueIndex].songs[queues[queueIndex].currentSong];
+
+    const set = new Set(queues[queueIndex].songs);
+    files.forEach(x => set.delete(x));
+    queues[queueIndex].songs = [...set];
 
     if (queues[queueIndex].songs.length === 0)
     {
@@ -827,7 +831,6 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
         for (let i = 0; i < queues.length; i++)
         {
             if (queues[i].queuePosition === queuePosition + 1) afterQueueName = queues[i].name;
-
             if (queues[i].queuePosition > queuePosition) queues[i].queuePosition--;
         }
     }
@@ -836,22 +839,40 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, position}) =>
 
     else
     {
-        const currentQueue = queues.find(x => x.name === name);
+        const currentQueue = queues[queueIndex];
 
         if (audioPlayer.queueName === name)
         {
+            const newPosition = currentQueue.songs.indexOf(audioPlayer.queue[audioPlayer.currentQueueItem]);
+
             audioPlayer.queue = currentQueue.songs;
 
-            if (audioPlayer.currentQueueItem === position) audioPlayer.setNowPlaying(audioPlayer.queue[audioPlayer.currentQueueItem]);
-            
-            if (audioPlayer.currentQueueItem > position)
+            if (newPosition === -1)
             {
-                queues[queues.indexOf(currentQueue)].currentSong--;
-                audioPlayer.currentQueueItem--;
+                if (audioPlayer.currentQueueItem >= audioPlayer.queue.length)
+                {
+                    audioPlayer.currentQueueItem = audioPlayer.queue.length - 1;
+                    currentQueue.currentSong = audioPlayer.queue.length - 1;
+                }
+
+                audioPlayer.setNowPlaying(audioPlayer.queue[audioPlayer.currentQueueItem]);
+            }
+
+            else
+            {
+                audioPlayer.currentQueueItem = newPosition;
+                currentQueue.currentSong = newPosition;
             }
         }
 
-        else if (audioPlayer.currentQueueItem > position) queues[queues.indexOf(currentQueue)].currentSong--;
+        else
+        {
+            const oldPosition = currentQueue.currentSong;
+            const newPosition = currentQueue.songs.indexOf(currentOldSong);
+            
+            if (newPosition !== -1) currentQueue.currentSong = newPosition;
+            else if (oldPosition >= currentQueue.songs.length) currentQueue.currentSong = currentQueue.songs.length - 1;
+        }
     }
     
     appdata.set('queues', queues);
