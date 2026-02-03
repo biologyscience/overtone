@@ -62,8 +62,8 @@
                 {
                     border-color: white;
                     scale: 1.015;
-                    background-color: colors.$dark10;
-                    // box-shadow: 0 0 20px -10px white;
+                    background-color: var(--accent2);
+                    box-shadow: 0 0 20px -10px black;
                     z-index: 1;
                     cursor: grab;
                 }
@@ -153,7 +153,7 @@
                     transition: fill 200ms ease;
                 }
 
-                &:hover
+                &.focus, &:hover
                 {
                     scale: 1.05;
                     svg { fill: white; }
@@ -197,8 +197,8 @@
             {
                 border-color: white;
                 scale: 1.015;
-                background-color: colors.$dark30;
-                // box-shadow: 0 0 20px -10px white;
+                background-color: var(--accent2);
+                box-shadow: 0 0 20px -10px black;
                 z-index: 1;
                 cursor: grab;
             }
