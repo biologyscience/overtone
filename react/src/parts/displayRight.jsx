@@ -313,7 +313,7 @@ export default function displayRight()
                     },
                     {
                         functions: [
-                            () => songInfoSetter(nowPlaying?.filepath, setShowContextMenu, setSongInfo, setShowModal),
+                            () => songInfoSetter(nowPlaying?.filepath, setSongInfo, setShowModal),
                             () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],

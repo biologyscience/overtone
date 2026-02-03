@@ -230,7 +230,7 @@ export default function albums()
                     },
                     {
                         functions: [
-                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                            () => songInfoSetter(contextData?.filepath, setSongInfo, setShowSongInfoModal),
                             () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],

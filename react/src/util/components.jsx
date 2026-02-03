@@ -199,7 +199,7 @@ function ContextMenu({visibility, title, options, parentRef})
         for (let index = 0; index < section.functions.length; index++)
         {
             clickables.push(
-                <ROW key={`${i}${index}`} className={'contextItem'} onClick={section.functions[index]}>
+                <ROW key={`${i}${index}`} className={'contextItem'} onClick={() => { section.functions[index]; visibility[1](false); }}>
                     {section.icons[index]}
                     <span>{section.texts[index]}</span>
                 </ROW>
