@@ -26,7 +26,8 @@ import
     DeleteRounded,
     PlaylistAddRounded,
     DriveFileMoveRounded,
-    EditRounded
+    EditRounded,
+    PauseCircleOutlineRounded
 } from '@mui/icons-material';
 
 export default function displayRight()
@@ -297,9 +298,13 @@ export default function displayRight()
                 title={nowPlaying?.title}
                 options={[
                     {
-                        functions: [() => {}, () => {}],
-                        icons: [<LyricsRounded/>, <PlaylistAddRounded/>],
-                        texts: ['Show Lyrics', 'Add to a queue']
+                        functions: [
+                            () => {},
+                            () => {},
+                            () => window.ipc.send('ipc-stopAfter', nowPlaying?.filepath)
+                        ],
+                        icons: [<LyricsRounded/>, <PlaylistAddRounded/>, <PauseCircleOutlineRounded/>],
+                        texts: ['Show Lyrics', 'Add to a queue', 'Stop after this song']
                     },
                     {
                         functions: [() => {}, () => {}],

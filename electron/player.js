@@ -14,11 +14,14 @@ class Player
         this.ended = true;
         this.shuffle = false;
         this.repeat = false;
+        this.stopAfter = null;
+        this.stopped = false;
     }
 
     setNowPlaying(filepath, autoPlay, songMetadata)
     {
         this.ended = false;
+        this.stopped = false;
 
         if (filepath === undefined) return this;
 
@@ -133,6 +136,14 @@ class Player
 
         if (ot_auto)
         {
+            if (this.stopAfter === this.queue[this.currentQueueItem])
+            {
+                this.stopAfter = null;
+                this.stopped = true;
+                
+                return this;
+            }
+
             if (this.repeat)
             {
                 // do nothing
