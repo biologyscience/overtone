@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, CustomModal, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
+import { COL, ROW, CustomModal, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal } from '../../util/components';
 import SortableList from '../../util/sortable';
 import eventBus from '../../util/events';
 import { songInfoSetter } from '../../util/functions';
@@ -41,16 +41,18 @@ export default function queues()
         [renamingQueue, setRenamingQueue] = useState(false),
         [renamePosition, setRenamePosition] = useState(0),
         [rename, setRename] = useState([]),
-        [currentQueueName, setCurrentQueueName] = useState('Queues'),
+        [currentQueueName, setCurrentQueueName] = useState(),
         [queueDuration, setQueueDuration] = useState('--:--'),
         [playingQueueName, setPlayingQueueName] = useState(),
         [playingTrackNumber, setPlayingTrackNumber] = useState(-1),
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [songInfo, setSongInfo] = useState({}),
-        [songInfoModal, setShowSongInfoModal] = useState(false),
+        [showAddToQueueModal, setShowAddToQueueModal] = useState(false),
+        [showSongInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false),
-        [selectedFiles, setSelectedFiles] = useState(null);
+        [selectedFiles, setSelectedFiles] = useState([]),
+        [multiSelect, setMultiSelect] = useState(false);
     
     function switchToTrack(name, index)
     {
@@ -59,10 +61,28 @@ export default function queues()
         setPlayingTrackNumber(index);
     }
 
+    function selectItems(filepath)
+    {
+        setSelectedFiles((oldArray) =>
+        {
+            const set = new Set(oldArray);
+    
+            if (set.has(filepath)) set.delete(filepath);
+            else set.add(filepath);
+
+            return [...set];
+        });
+    }
+
     function openContext(data)
     {
-        if (selectedFiles?.length > 0) setContextData({title: selectedFiles?.length > 1 ? `${selectedFiles?.length} selected files` : '1 selected file'});
-        else setContextData({title: data.title, position: data.i, filepath: data.filepath});
+        if (multiSelect) setContextData({title: selectedFiles?.length > 1 ? `${selectedFiles?.length} selected files` : '1 selected file'});
+
+        else
+        {
+            selectItems(data.filepath);
+            setContextData({title: data.title, position: data.i, filepath: data.filepath});
+        }
         
         setShowContextMenu(true);
     }
@@ -75,24 +95,6 @@ export default function queues()
     
             if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
         }, 10);
-    }
-
-    function selectItems(selectable, filepath)
-    {
-        if (selectable === true)
-        {
-            setSelectedFiles((oldArray) =>
-            {
-                const set = new Set(oldArray);
-
-                if (set.has(filepath)) set.delete(filepath);
-                else set.add(filepath);
-
-                return [...set];
-            });
-        }
-
-        else selectedFiles === null ? setSelectedFiles([]) : setSelectedFiles(null);
     }
 
     useEffect(() =>
@@ -117,15 +119,25 @@ export default function queues()
 
     useEffect(() =>
     {
-        function handle({detail: [oldOrder, newOrder]})
+        function reloadQueue() { window.ipc.send('ipc-wantQueue', currentQueueName); };
+        function handle({detail: [oldOrder, newOrder]}) { window.ipc.send('ipc-reorderQueue', {queueName: currentQueueName, oldOrder, newOrder}); }
+        function handle2({detail})
         {
-            window.ipc.send('ipc-reorderQueue', {queueName: currentQueueName, oldOrder, newOrder});
+            if (detail !== 0) return;
+
+            reloadQueue();
         }
 
         eventBus.addEventListener('ot-songsInQueueReorder', handle);
+        eventBus.addEventListener('ot-filesDeleted', reloadQueue);
+        eventBus.addEventListener('ot-navChange', handle2);
 
-        return () => { eventBus.removeEventListener('ot-songsInQueueReorder', handle); }
-
+        return () =>
+        {
+            eventBus.removeEventListener('ot-songsInQueueReorder', handle);
+            eventBus.removeEventListener('ot-filesDeleted', reloadQueue);
+            eventBus.removeEventListener('ot-navChange', handle2);
+        }
     }, [currentQueueName]);
 
     useEffect(() =>
@@ -156,6 +168,8 @@ export default function queues()
 
     }, [renamingQueue]);
 
+    useEffect(() => setSelectedFiles([]), [multiSelect]);
+
     useEffect(() =>
     {
         window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
@@ -167,7 +181,8 @@ export default function queues()
             setShowModal(false);
             setShowSongInfoModal(false);
             setShowContextMenu(false);
-            setSelectedFiles(null);
+            setSelectedFiles([]);
+            setMultiSelect(false);
 
             focusSongInQueue();
         });
@@ -193,8 +208,7 @@ export default function queues()
         eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
         eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
-        eventBus.addEventListener('ot-navChange', () => setSelectedFiles(null));
-        eventBus.addEventListener('ot-filesDeleted', () => window.ipc.send('ipc-wantQueue', currentQueueName));
+        eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
@@ -227,7 +241,7 @@ export default function queues()
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>
-                    <button onClick={selectItems} className={selectedFiles?.length === undefined ? null : 'focus'}>{selectedFiles?.length === undefined ? <SelectAllRounded/> : <DeselectRounded/>}</button>
+                    <button onClick={() => setMultiSelect(x => !x)} className={multiSelect ? 'focus' : null}>{multiSelect ? <DeselectRounded/> : <SelectAllRounded/>}</button>
                     <ROW className={'songNumbers'}>
                         <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
                         <span>/</span>
@@ -241,20 +255,20 @@ export default function queues()
                 </ROW>
             </COL>
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
-                <SortableList setOrder={'ot-songsInQueueReorder'} disable={selectedFiles?.length !== undefined}>
+                <SortableList setOrder={'ot-songsInQueueReorder'} disable={multiSelect}>
                     {
                         songsData?.map(({title, artists, album, duration, filepath}, i) =>
                         {
                             return (
                                 <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i, filepath})}>
                                     {
-                                        selectedFiles?.length !== undefined ? (
-                                            <button onClick={() => selectItems(true, filepath)}>{ selectedFiles?.includes(filepath) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/> }</button>
+                                        multiSelect ? (
+                                            <button onClick={() => selectItems(filepath)}>{ selectedFiles?.includes(filepath) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/> }</button>
                                         ) : (
                                             <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                         )
                                     }
-                                    <COL className='songData' onClick={() => selectedFiles?.length !== undefined ? null : switchToTrack(currentQueueName, i)}>
+                                    <COL className='songData' onClick={() => multiSelect ? null : switchToTrack(currentQueueName, i)}>
                                         <span className='title overflowPrevent'>{title}</span>
                                         <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                                         <ROW>
@@ -269,25 +283,31 @@ export default function queues()
                     }
                 </SortableList>
             </COL>
+            <AddToQueueModal
+                visibility={[showAddToQueueModal, setShowAddToQueueModal]}
+                parentRef={sectionRef}
+                files={selectedFiles}
+                toasterId={'queues'}
+            />
             <SongInfoModal
-                visibility={[songInfoModal, setShowSongInfoModal]}
+                visibility={[showSongInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
                 songInfo={songInfo}
             />
             <DeleteModal
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
-                files={selectedFiles?.length > 0 ? selectedFiles : [contextData?.filepath]}
+                files={selectedFiles}
                 toasterId={'queues'}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
                 options={
-                    selectedFiles?.length > 0 ? [
+                    multiSelect ? [
                         {
                             functions: [
-                                () => {},
+                                () => setShowAddToQueueModal(true),
                                 () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: selectedFiles}),
                             ],
                             icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>],
@@ -295,7 +315,7 @@ export default function queues()
                         },
                         {
                             functions: [
-                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                                () => setShowDeleteModal(true)
                             ],
                             icons: [<DeleteRounded/>],
                             texts: ['Delete permanently']
@@ -303,17 +323,17 @@ export default function queues()
                     ] : [
                         {
                             functions: [
-                                () => {},
-                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: [contextData?.filepath]}),
-                                () => window.ipc.send('ipc-stopAfter', contextData?.filepath)
+                                () => setShowAddToQueueModal(true),
+                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: selectedFiles}),
+                                () => window.ipc.send('ipc-stopAfter', selectedFiles[0])
                             ],
                             icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
                             texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
                         },
                         {
                             functions: [
-                                () => songInfoSetter(contextData?.filepath, setSongInfo, setShowSongInfoModal),
-                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                                () => songInfoSetter(selectedFiles[0], setSongInfo, setShowSongInfoModal),
+                                () => setShowDeleteModal(true)
                             ],
                             icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                             texts: ['Song info', 'Delete permanently']

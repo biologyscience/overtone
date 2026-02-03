@@ -5,7 +5,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { CloseRounded, InfoOutlineRounded, FavoriteBorderRounded, FavoriteRounded } from '@mui/icons-material';
+import { CloseRounded, InfoOutlineRounded, FavoriteBorderRounded, FavoriteRounded, QueueMusicRounded } from '@mui/icons-material';
 
 import { parseTime } from './functions';
 import eventBus from './events';
@@ -198,8 +198,14 @@ function ContextMenu({visibility, title, options, parentRef})
     {
         for (let index = 0; index < section.functions.length; index++)
         {
+            function clickOption()
+            {
+                visibility[1](false);
+                setTimeout(() => section.functions[index](), 10);
+            }
+
             clickables.push(
-                <ROW key={`${i}${index}`} className={'contextItem'} onClick={() => { section.functions[index]; visibility[1](false); }}>
+                <ROW key={`${i}${index}`} className={'contextItem'} onClick={clickOption}>
                     {section.icons[index]}
                     <span>{section.texts[index]}</span>
                 </ROW>
@@ -374,14 +380,15 @@ function SongInfoModal({visibility, parentRef, songInfo})
 function DeleteModal({visibility, parentRef, files, toasterId})
 {
     const [hide, setHide] = useState(false);
+    const actualFiles = useRef(files);
 
     function performDelete()
     {
         setHide(true);
 
-        const pendingToast = toast.loading(`Deleting selected ${files?.length > 1 ? 'files' : 'file'} ...`, {toasterId});
+        const pendingToast = toast.loading(`Deleting selected ${actualFiles.current?.length > 1 ? 'files' : 'file'} ...`, {toasterId});
 
-        window.ipc.invoke('ipc-deleteFiles', {files}).then((success) =>
+        window.ipc.invoke('ipc-deleteFiles', {files: actualFiles.current}).then((success) =>
         {
             if (success)
             {
@@ -389,12 +396,14 @@ function DeleteModal({visibility, parentRef, files, toasterId})
                 eventBus.dispatchEvent(new Event('ot-filesDeleted'));
             }
 
-            else toast.error(`Error deleting ${files?.length > 1 ? 'files' : 'file'}`, {id: pendingToast});
+            else toast.error(`Error deleting ${actualFiles.current?.length > 1 ? 'files' : 'file'}`, {id: pendingToast});
 
             visibility[1](false);
             setTimeout(() => setHide(false), 250);
         });
     }
+
+    useEffect(() => { actualFiles.current = files }, [files]);
 
     return (
         <CustomModal visibility={visibility} parentRef={parentRef}>
@@ -411,4 +420,48 @@ function DeleteModal({visibility, parentRef, files, toasterId})
     )   
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal };
+function AddToQueueModal({visibility, parentRef, files, toasterId})
+{
+    const [queuesList, setQueuesList] = useState([]);
+    const actualFiles = useRef();
+
+    function add(name)
+    {
+        window.ipc.invoke('ipc-addToQueue', {name, files: actualFiles.current}).then((success) =>
+        {
+            if (success)
+            {
+                toast.success(`${actualFiles.current?.length} ${actualFiles.current?.length > 1 ? 'songs' : 'song'} added to ${name}`, {toasterId});
+
+                if (toasterId === 'queues') window.ipc.send('ipc-wantQueue', name);
+            }
+
+            else toast.error(`Error adding ${actualFiles.current?.length > 1 ? 'songs' : 'song'} to ${name}`, {toasterId});
+
+            visibility[1](false);
+        });
+    }
+
+    useEffect(() =>
+    {
+        window.ipc.on('ipc-setQueuesList', ({queues}) => setQueuesList(queues.map((name, i) => <span key={i} className='overflowPrevent' onClick={() => add(name)}>{name}</span>)));
+        window.ipc.send('ipc-wantQueues');
+    }, []);
+
+    useEffect(() => { actualFiles.current = files }, [files]);
+
+    return (
+        <CustomModal visibility={visibility} parentRef={parentRef}>
+            <COL className={`addToQueueModal`}>
+                <ROW className={'head relative'}>
+                    <QueueMusicRounded/>
+                    <span>Select a queue</span>
+                    <button onClick={() => visibility[1](false)}><CloseRounded/></button>
+                </ROW>
+                <COL className={'queuesList'}>{queuesList}</COL>
+            </COL>
+        </CustomModal>
+    )   
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal };
