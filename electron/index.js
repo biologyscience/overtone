@@ -730,7 +730,7 @@ ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>
         WINDOW.webContents.send('ipc-setCurrentQueue', data);
     }
 
-    if (ended) return false;
+    if (ended || audioPlayer.stopped) return false;
 
     return true;
 });
@@ -1070,6 +1070,11 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
     appdata.set('songMetadata', songMetadata);
     
     return true;
+});
+
+ipcMain.on('ipc-stopAfter', (E, filepath) =>
+{
+    audioPlayer.stopAfter = filepath;
 });
 
 app.on('ready', () =>

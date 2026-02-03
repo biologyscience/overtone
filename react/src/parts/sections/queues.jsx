@@ -305,7 +305,7 @@ export default function queues()
                             functions: [
                                 () => {},
                                 () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: [contextData?.filepath]}),
-                                () => {}
+                                () => window.ipc.send('ipc-stopAfter', contextData?.filepath)
                             ],
                             icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
                             texts: ['Add to a queue', 'Remove from queue', 'Stop after this song']
