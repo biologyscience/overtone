@@ -167,6 +167,7 @@ export default function queues()
             setShowModal(false);
             setShowSongInfoModal(false);
             setShowContextMenu(false);
+            setSelectedFiles(null);
 
             focusSongInQueue();
         });
@@ -287,7 +288,7 @@ export default function queues()
                         {
                             functions: [
                                 () => {},
-                                () => window.ipc.send('', {name: currentQueueName, position: contextData.position}),
+                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: selectedFiles}),
                             ],
                             icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>],
                             texts: ['Add to a queue', 'Remove from queue']
@@ -303,7 +304,7 @@ export default function queues()
                         {
                             functions: [
                                 () => {},
-                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, position: contextData.position}),
+                                () => window.ipc.send('ipc-removeFromQueue', {name: currentQueueName, files: [contextData?.filepath]}),
                                 () => {}
                             ],
                             icons: [<PlaylistAddRounded/>, <PlaylistRemoveRounded/>, <PauseCircleOutlineRounded/>],
