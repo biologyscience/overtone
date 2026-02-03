@@ -18,11 +18,10 @@ function parseTime(sec)
 	return data;
 };
 
-function songInfoSetter(filepath, setShowContextMenu, setSongInfo, setShowModal)
+function songInfoSetter(filepath, setSongInfo, setShowModal)
 {
 	window.ipc.invoke('ipc-wantInfo', filepath).then((data) =>
 	{
-		setShowContextMenu(false);
 		setSongInfo(data);
 		setShowModal(true);
 	});
