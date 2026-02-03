@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage } = require('electron');
 const metadata = require('music-metadata');
-const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync } = require('fs');
+const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const crypto = require('crypto');
@@ -964,6 +964,73 @@ ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
     songMetadata[filepath].isFavorite = isFavorite;
 
     appdata.set('songMetadata', songMetadata);
+});
+
+ipcMain.handle('ipc-deleteFiles', (E, {files}) =>
+{
+    const albums = appdata.get('albums');
+    const config = appdata.get('config');
+    const queues = appdata.get('queues');
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
+    
+    files.forEach((file) =>
+    {
+        for (const albumID in albums)
+        {
+            if (albums[albumID].songs.includes(file))
+            {
+                albums[albumID].songs.splice(albums[albumID].songs.indexOf(file), 1);
+
+                if (albums[albumID].songs.length === 0)
+                {
+                    if (albums[albumID].hasArt) unlinkSync(path.join(__dirname, `./appdata/webp/${albumID}.webp`));
+
+                    delete albums[albumID];
+                }
+                
+                break;
+            }
+        }
+
+        for (let i = 0; i < queues.length; i++)
+        {
+            if (queues[i].songs.includes(file))
+            {
+                queues[i].songs.splice(queues[i].songs.indexOf(file), 1);
+    
+                if (queues[i].currentSong >= queues[i].songs.length) queues[i].currentSong = queues[i].songs.length - 1;
+            }
+        }
+
+        for (const folder in songList)
+        {
+            if (file.startsWith(folder))
+            {
+                songList[folder].splice(songList[folder].indexOf(file), 1);
+
+                if (songList[folder].length === 0)
+                {
+                    config.checkMusicIn.splice(config.checkMusicIn.indexOf(folder), 1);
+                    delete songList[folder];
+                }
+
+                break;
+            }
+        }
+
+        delete songMetadata[file];
+    
+        unlinkSync(file);
+    });
+
+    appdata.set('albums', albums);
+    appdata.set('config', config);
+    appdata.set('queues', queues);
+    appdata.set('songList', songList);
+    appdata.set('songMetadata', songMetadata);
+    
+    return true;
 });
 
 app.on('ready', () =>
