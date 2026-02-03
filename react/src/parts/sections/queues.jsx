@@ -192,6 +192,7 @@ export default function queues()
         eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
         eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
+        eventBus.addEventListener('ot-navChange', () => setSelectedFiles(null));
 
         window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
         window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
@@ -275,6 +276,7 @@ export default function queues()
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
                 files={selectedFiles?.length > 0 ? selectedFiles : [contextData?.filepath]}
+                toasterId={'queues'}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}

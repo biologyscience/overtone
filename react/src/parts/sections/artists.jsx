@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
 import { COL, ROW, SearchBox, ContextMenu, DeleteModal } from '../../util/components';
 
 import eventBus from '../../util/events';
@@ -47,7 +49,7 @@ export default function artists()
     
     function showArtist(artist)
     {
-        window.ipc.invoke('ipc-wantArtist', {artist}).then(({picture, albums}) =>
+        window.ipc.invoke('ipc-wantArtist', {artist: artist}).then(({picture, albums}) =>
         {
             const artistToSet = { name: artist, picture, albums };
 
@@ -146,6 +148,7 @@ export default function artists()
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
                 files={contextData?.songs?.map(x => x.location)}
+                toasterId={'artists'}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
@@ -163,6 +166,14 @@ export default function artists()
                     }
                 ]}
                 parentRef={sectionRef}
+            />
+            <Toaster
+                toasterId='artists'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
             />
         </COL>
     )

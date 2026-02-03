@@ -452,6 +452,9 @@ input
     width: 25vw;
     background-color: var(--background);
     border-radius: .5em;
+    transition: opacity 150ms ease;
+
+    &.hide { opacity: 0; }
 
     .title { font-size: 1.5em; }
 
