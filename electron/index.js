@@ -966,7 +966,7 @@ ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
     appdata.set('songMetadata', songMetadata);
 });
 
-ipcMain.handle('ipc-deleteFiles', (E, {files}) =>
+ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
 {
     const albums = appdata.get('albums');
     const config = appdata.get('config');

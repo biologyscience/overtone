@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
@@ -370,18 +371,34 @@ function SongInfoModal({visibility, parentRef, songInfo})
     );
 }
 
-function DeleteModal({visibility, parentRef, files})
+function DeleteModal({visibility, parentRef, files, toasterId})
 {
+    const [hide, setHide] = useState(false);
+
     function performDelete()
     {
-        console.log('bejerbkjk')
+        setHide(true);
 
-        eventBus.dispatchEvent(new Event('ot-filesDeleted'));
+        const pendingToast = toast.loading(`Deleting selected ${files?.length > 1 ? 'files' : 'file'} ...`, {toasterId});
+
+        window.ipc.invoke('ipc-deleteFiles', {files}).then((success) =>
+        {
+            if (success)
+            {
+                toast.success('Deleted successfully', {id: pendingToast});
+                eventBus.dispatchEvent(new Event('ot-filesDeleted'));
+            }
+
+            else toast.error(`Error deleting ${files?.length > 1 ? 'files' : 'file'}`, {id: pendingToast});
+
+            visibility[1](false);
+            setTimeout(() => setHide(false), 250);
+        });
     }
 
     return (
         <CustomModal visibility={visibility} parentRef={parentRef}>
-            <COL className={'deleteModal'}>
+            <COL className={`deleteModal ${hide ? 'hide' : null}`}>
                 <span className='title'>Delete {files?.length > 1 ? 'files' : 'file'}</span>
                 <span className='text'>Are you sure you want to permanently delete the selected {files?.length > 1 ? 'files?' : 'file?'}</span>
                 <COL className={'files'}>{files?.map((x, i) => <span key={i} className='overflowPrevent'>{x}</span>)}</COL>

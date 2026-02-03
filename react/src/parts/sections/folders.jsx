@@ -276,6 +276,8 @@ export default function folders()
                 else return folders.list;
             });
         });
+
+        eventBus.addEventListener('ot-navChange', () => setSelectedFiles(null));
     }, []);
 
     return (
@@ -289,13 +291,13 @@ export default function folders()
                         <FavoriteRounded/>
                         <span className='name'>Favorites</span>
                     </li>
-                    <li onClick={handleFolderClick}>
+                    {/* <li onClick={handleFolderClick}>
                         <DeleteRounded/>
                         <span className='name'>Placeholder</span>
-                    </li>
+                    </li> */}
                 </ul>
                 <ul className='folderOptions'>
-                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});  window.ipc.send('ipc-addFolders'); }}>
+                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); }}>
                         <CreateNewFolderRounded/>
                         <span>Add folders</span>
                     </li>
@@ -303,7 +305,7 @@ export default function folders()
                         <RemoveCircleOutlineRounded/>
                         <DeleteText/>
                     </li>
-                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});  window.ipc.send('ipc-updateFiles'); }}>
+                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-updateFiles'); }}>
                         <SyncRounded/>
                         <span>Sync files</span>
                     </li>
@@ -343,6 +345,7 @@ export default function folders()
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
                 files={selectedFiles?.length > 0 ? selectedFiles : [contextData?.filepath]}
+                toasterId={'folders'}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}

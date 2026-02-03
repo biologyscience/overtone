@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
 import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
 import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
@@ -186,6 +188,7 @@ export default function albums()
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
                 files={[contextData?.filepath]}
+                toasterId={'albums'}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
@@ -206,6 +209,14 @@ export default function albums()
                     }
                 ]}
                 parentRef={sectionRef}
+            />
+            <Toaster
+                toasterId='albums'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
             />
         </COL>
     )
