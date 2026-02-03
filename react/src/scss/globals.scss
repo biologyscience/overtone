@@ -495,3 +495,67 @@ input
         }
     }
 }
+
+.addToQueueModal
+{
+    font-size: 1rem;
+    height: 50vh;
+    aspect-ratio: .9/1;
+    background-color: var(--background);
+    border-radius: 5px;
+    overflow-x: hidden;
+    
+    .head
+    {
+        font-size: 1.5em;
+        margin: 0;
+        padding: .5em .75em;
+        gap: 1em;
+    
+        & > *:last-child { margin-left: auto; }
+        
+        @include util.divider(after, BottomLeft);
+    }
+    
+    .queuesList
+    {
+        overflow-y: auto;
+        margin: 1em 0;
+        gap: .5em;
+        padding-inline: 1em;
+        
+        span
+        {
+            font-size: 1.25rem;
+            line-height: 1em;
+            background-color: transparent;
+            padding: .5em 1em;
+            border-radius: .25em;
+            transition: background-color 100ms ease;
+
+            &:hover
+            {
+                cursor: pointer;
+                background-color: var(--accent2);
+            }
+        }
+    
+        .listItem
+        {
+            position: relative;
+            font-size: 1.15rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1em;
+            margin: 0 .1em;
+            padding: .2em 1em;
+            align-items: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            transition: all ease 100ms;
+            
+            & > *:hover { cursor: pointer; }
+        }
+    }
+}

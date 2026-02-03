@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal } from '../../util/components';
 import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
 
@@ -34,6 +34,7 @@ export default function albums()
         [inputMatchSpace, setInputMatchSpace] = useState(),
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
+        [showAddToQueueModal, setShowAddToQueueModal] = useState(false),
         [songInfo, setSongInfo] = useState({}),
         [songInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -208,6 +209,12 @@ export default function albums()
                     </ul>
                 </COL>
             </COL>
+            <AddToQueueModal
+                visibility={[showAddToQueueModal, setShowAddToQueueModal]}
+                parentRef={sectionRef}
+                files={[contextData?.filepath]}
+                toasterId={'albums'}
+            />
             <SongInfoModal
                 visibility={[songInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
@@ -224,14 +231,17 @@ export default function albums()
                 title={contextData?.title}
                 options={[
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => setShowAddToQueueModal(true),
+                            () => {}
+                        ],
                         icons: [<PlaylistAddRounded/>, <StartRounded/>],
                         texts: ['Add to a queue', 'Play after current song']
                     },
                     {
                         functions: [
                             () => songInfoSetter(contextData?.filepath, setSongInfo, setShowSongInfoModal),
-                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            () => setShowDeleteModal(true)
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']

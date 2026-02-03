@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, SearchBox, ContextMenu, DeleteModal } from '../../util/components';
+import { COL, ROW, SearchBox, ContextMenu, DeleteModal, AddToQueueModal } from '../../util/components';
 
 import eventBus from '../../util/events';
 
@@ -30,6 +30,7 @@ export default function artists()
         [inputMatchSpace, setInputMatchSpace] = useState(),
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
+        [showAddToQueueModal, setShowAddToQueueModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false);
 
     function play(name)
@@ -171,6 +172,12 @@ export default function artists()
                 </ROW>
                 <ROW className={'albumList'}><Albums/></ROW>
             </COL>
+            <AddToQueueModal
+                visibility={[showAddToQueueModal, setShowAddToQueueModal]}
+                parentRef={sectionRef}
+                files={contextData?.songs?.map(x => x.location)}
+                toasterId={'artists'}
+            />
             <DeleteModal
                 visibility={[showDeleteModal, setShowDeleteModal]}
                 parentRef={sectionRef}
@@ -182,12 +189,15 @@ export default function artists()
                 title={contextData?.album}
                 options={[
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [
+                            () => setShowAddToQueueModal(true),
+                            () => {}
+                        ],
                         icons: [<PlaylistAddRounded/>, <StartRounded/>],
                         texts: ['Add album to a queue', 'Play after current song']
                     },
                     {
-                        functions: [() => { setShowContextMenu(false); setShowDeleteModal(true); }],
+                        functions: [() => setShowDeleteModal(true)],
                         icons: [<DeleteRounded/>],
                         texts: ['Delete permanently']
                     }
