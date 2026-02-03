@@ -22,8 +22,11 @@ import
     StartRounded,
     DriveFileMoveRounded,
     EditRounded,
-    FavoriteRounded
-    
+    FavoriteRounded,
+    CheckBoxRounded,
+    CheckBoxOutlineBlankRounded,
+    SelectAllRounded,
+    DeselectRounded
 } from '@mui/icons-material';
 
 export default function folders()
@@ -47,7 +50,7 @@ export default function folders()
         [songInfo, setSongInfo] = useState({}),
         [songInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false),
-        [selectedFiles, setSelectedFiles] = useState([]);
+        [selectedFiles, setSelectedFiles] = useState(null);
     
     function handleFolderClick({target})
     {
@@ -166,16 +169,34 @@ export default function folders()
 
     function openContext(data)
     {
-        setContextData({title: data.title, filepath: data.location});
+        if (selectedFiles?.length > 0) setContextData({title: selectedFiles?.length > 1 ? `${selectedFiles?.length} selected files` : '1 selected file'});
+        else setContextData({title: data.title, filepath: data.location});
+        
         setShowContextMenu(true);
+    }
+
+    function selectItems(selectable, filepath)
+    {
+        if (selectable === true)
+        {
+            setSelectedFiles((oldArray) =>
+            {
+                const set = new Set(oldArray);
+
+                if (set.has(filepath)) set.delete(filepath);
+                else set.add(filepath);
+
+                return [...set];
+            });
+        }
+
+        else selectedFiles === null ? setSelectedFiles([]) : setSelectedFiles(null);
     }
 
     function Songs()
     {
-        function click({target})
+        function click(index)
         {
-            const { index } = target.parentElement.dataset;
-
             if (target.tagName === 'BUTTON') return;
 
             window.ipc.send('ipc-addQueue', { trackNumber: index, songLocations: songsData.map(x => x.location), queueName: folderName });
@@ -189,7 +210,8 @@ export default function folders()
             totalDuration += duration;
     
             return (
-                <li key={i} onClick={click} className={`${inputMatchSpace?.[i] ? '' : 'displayNone'}`} data-index={i} onContextMenu={() => openContext({title, location})}>
+                <li key={i} onClick={() => selectedFiles?.length !== undefined ? null : click(i)} className={`flexROW ${selectedFiles?.length !== undefined ? 'selectable' : null} ${inputMatchSpace?.[i] ? null : 'displayNone'}`} onContextMenu={() => openContext({title, location})}>
+                    <button className='select' onClick={() => selectItems(true, location)}>{selectedFiles?.includes(location) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/>}</button>
                     <COL className='songData'>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
@@ -308,6 +330,7 @@ export default function folders()
                         <SearchRounded/>
                         <SearchBox searchSpace={inputSearchSpace} matchSpace={[inputMatchSpace, setInputMatchSpace]} placeholder='Search song titles'/>
                     </GRID>
+                    <button onClick={selectItems} className={selectedFiles?.length === undefined ? null : 'focus'}>{selectedFiles?.length === undefined ? <SelectAllRounded/> : <DeselectRounded/>}</button>
                 </GRID>
                 <ul className='songList'><Songs/></ul>
             </COL>
@@ -324,26 +347,46 @@ export default function folders()
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
-                options={[
-                    {
-                        functions: [() => {}, () => {}],
-                        icons: [<PlaylistAddRounded/>, <StartRounded/>],
-                        texts: ['Add to a queue', 'Play after current song']
-                    },
-                    {
-                        functions: [() => {}, () => {}],
-                        icons: [<EditRounded/>, <DriveFileMoveRounded/>],
-                        texts: ['Edit tags', 'Move to a folder']
-                    },
-                    {
-                        functions: [
-                            () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
-                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
-                        ],
-                        icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
-                        texts: ['Song info', 'Delete permanently']
-                    }
-                ]}
+                options={
+                    selectedFiles?.length > 0 ? [
+                        {
+                            functions: [() => {}],
+                            icons: [<PlaylistAddRounded/>],
+                            texts: ['Add to a queue']
+                        },
+                        {
+                            functions: [() => {}],
+                            icons: [<DriveFileMoveRounded/>],
+                            texts: ['Move to a folder']
+                        },
+                        {
+                            functions: [
+                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            ],
+                            icons: [<DeleteRounded/>],
+                            texts: ['Delete permanently']
+                        }
+                    ] : [
+                        {
+                            functions: [() => {}, () => {}],
+                            icons: [<PlaylistAddRounded/>, <StartRounded/>],
+                            texts: ['Add to a queue', 'Play after current song']
+                        },
+                        {
+                            functions: [() => {}, () => {}],
+                            icons: [<EditRounded/>, <DriveFileMoveRounded/>],
+                            texts: ['Edit tags', 'Move to a folder']
+                        },
+                        {
+                            functions: [
+                                () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
+                                () => { setShowContextMenu(false); setShowDeleteModal(true); }
+                            ],
+                            icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
+                            texts: ['Song info', 'Delete permanently']
+                        }
+                    ]
+                }
                 parentRef={sectionRef}
             />
             <Toaster
