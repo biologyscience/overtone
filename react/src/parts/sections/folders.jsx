@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal } from '../../util/components';
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
 import { parseTime, songInfoSetter } from '../../util/functions';
 import eventBus from '../../util/events';
 
@@ -45,7 +45,9 @@ export default function folders()
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [songInfo, setSongInfo] = useState({}),
-        [songInfoModal, setShowSongInfoModal] = useState(false);
+        [songInfoModal, setShowSongInfoModal] = useState(false),
+        [showDeleteModal, setShowDeleteModal] = useState(false),
+        [selectedFiles, setSelectedFiles] = useState([]);
     
     function handleFolderClick({target})
     {
@@ -314,6 +316,11 @@ export default function folders()
                 parentRef={sectionRef}
                 songInfo={songInfo}
             />
+            <DeleteModal
+                visibility={[showDeleteModal, setShowDeleteModal]}
+                parentRef={sectionRef}
+                files={selectedFiles?.length > 0 ? selectedFiles : [contextData?.filepath]}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -331,7 +338,7 @@ export default function folders()
                     {
                         functions: [
                             () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
-                            () => {}
+                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']

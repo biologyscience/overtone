@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, CustomModal, ContextMenu, SongInfoModal } from '../../util/components';
+import { COL, ROW, CustomModal, ContextMenu, SongInfoModal, DeleteModal } from '../../util/components';
 import SortableList from '../../util/sortable';
 import eventBus from '../../util/events';
 import { songInfoSetter } from '../../util/functions';
@@ -22,6 +22,7 @@ import
     PlaylistRemoveRounded,
     PauseCircleOutlineRounded,
     SelectAllRounded,
+    DeselectRounded,
     SaveAsRounded
 } from '@mui/icons-material';
 
@@ -45,7 +46,9 @@ export default function queues()
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [songInfo, setSongInfo] = useState({}),
-        [songInfoModal, setShowSongInfoModal] = useState(false);
+        [songInfoModal, setShowSongInfoModal] = useState(false),
+        [showDeleteModal, setShowDeleteModal] = useState(false),
+        [selectedFiles, setSelectedFiles] = useState([]);
     
     function switchToTrack(name, index)
     {
@@ -240,6 +243,11 @@ export default function queues()
                 parentRef={sectionRef}
                 songInfo={songInfo}
             />
+            <DeleteModal
+                visibility={[showDeleteModal, setShowDeleteModal]}
+                parentRef={sectionRef}
+                files={selectedFiles?.length > 0 ? selectedFiles : [contextData?.filepath]}
+            />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
                 title={contextData?.title}
@@ -256,7 +264,7 @@ export default function queues()
                     {
                         functions: [
                             () => songInfoSetter(contextData?.filepath, setShowContextMenu, setSongInfo, setShowSongInfoModal),
-                            () => {}
+                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']

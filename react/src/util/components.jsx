@@ -370,4 +370,28 @@ function SongInfoModal({visibility, parentRef, songInfo})
     );
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal };
+function DeleteModal({visibility, parentRef, files})
+{
+    function performDelete()
+    {
+        console.log('bejerbkjk')
+
+        eventBus.dispatchEvent(new Event('ot-filesDeleted'));
+    }
+
+    return (
+        <CustomModal visibility={visibility} parentRef={parentRef}>
+            <COL className={'deleteModal'}>
+                <span className='title'>Delete {files?.length > 1 ? 'files' : 'file'}</span>
+                <span className='text'>Are you sure you want to permanently delete the selected {files?.length > 1 ? 'files?' : 'file?'}</span>
+                <COL className={'files'}>{files?.map((x, i) => <span key={i} className='overflowPrevent'>{x}</span>)}</COL>
+                <ROW className={'buttons'}>
+                    <button className='yes' onClick={performDelete}>Yes</button>
+                    <button onClick={() => visibility[1](false)}>No</button>
+                </ROW>
+            </COL>
+        </CustomModal>
+    )   
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal };

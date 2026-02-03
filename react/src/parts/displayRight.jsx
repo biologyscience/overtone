@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal } from '../util/components';
+import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal, DeleteModal } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 import { parseTime, songInfoSetter } from '../util/functions';
 import eventBus from '../util/events';
@@ -42,6 +42,7 @@ export default function displayRight()
     const [songInfo, setSongInfo] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
 
     const [nowPlaying, setNowPlaying] = useState({});
@@ -231,6 +232,13 @@ export default function displayRight()
         eventBus.addEventListener('ot-toggleFavorite', ({detail: filepath}) => filepath === timer.current.filepath ? setIsFavorite(x => !x) : null);
     }, []);
 
+    function miscButton()
+    {
+        console.log('hello');
+
+        window.ipc.invoke('ipc-deleteFiles', {files: ['C:\\Files\\Music\\South Side.mp3']}).then(console.log);
+    }
+
     return (
         <COL ref={sectionRef} id='displayRight' className={'relative'} onClick={clickDisplayRight}>
             <AudioPlayer playerRef={player} file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
@@ -266,7 +274,7 @@ export default function displayRight()
                     { playState ? <PauseRounded/> : <PlayArrowRounded/> }
                 </button>
                 <button onClick={playNext}><SkipNextRounded/></button>
-                <button><PhotoSizeSelectSmallRounded/></button>
+                <button onClick={miscButton}><PhotoSizeSelectSmallRounded/></button>
                 {
                     showVolumeSlider ? (
                         <ROW className='volumeSlider'>
@@ -280,6 +288,11 @@ export default function displayRight()
                 visibility={[showModal, setShowModal]}
                 parentRef={sectionRef}
                 songInfo={songInfo}
+            />
+            <DeleteModal
+                visibility={[showDeleteModal, setShowDeleteModal]}
+                parentRef={sectionRef}
+                files={[nowPlaying?.filepath]}
             />
             <ContextMenu
                 visibility={[showContextMenu, setShowContextMenu]}
@@ -298,7 +311,7 @@ export default function displayRight()
                     {
                         functions: [
                             () => songInfoSetter(nowPlaying?.filepath, setShowContextMenu, setSongInfo, setShowModal),
-                            () => {}
+                            () => { setShowContextMenu(false); setShowDeleteModal(true); }
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
                         texts: ['Song info', 'Delete permanently']
