@@ -230,26 +230,13 @@ function ContextMenu({visibility, title, options, parentRef})
     )
 }
 
-function SongInfoModal({visibility, parentRef, songInfo})
+function SongInfoModal({visibility, parentRef, file})
 {
     const [isFavorite, setIsFavorite] = useState(false);
+    const [songInfo, setSongInfo] = useState({});
+    const [folderpath, setFolderpath] = useState();
 
     const { minutes, seconds } = parseTime(songInfo?.file?.duration);
-
-    const filepath = songInfo?.extras?.filepath;
-
-    let folderpath;
-
-    if (filepath)
-    {
-        const x = filepath.split('\\');
-        if (x.length !== 1) x.pop();
-    
-        const y = x.join('\\').split('/');
-        if (y.length !== 1) y.pop();
-
-        folderpath = y.join('/');
-    }
 
     const colors =
     {
@@ -268,6 +255,22 @@ function SongInfoModal({visibility, parentRef, songInfo})
     }
 
     useEffect(() => setIsFavorite(songInfo?.extras?.isFavorite), [songInfo]);
+
+    useEffect(() =>
+    {
+        if (!file) return;
+
+        const x = file.split('\\');
+        if (x.length !== 1) x.pop();
+    
+        const y = x.join('\\').split('/');
+        if (y.length !== 1) y.pop();
+
+        setFolderpath(y.join('/'));
+
+        window.ipc.invoke('ipc-wantInfo', file).then(setSongInfo);
+
+    }, [file]);
 
     return (
         <CustomModal visibility={visibility} parentRef={parentRef}>

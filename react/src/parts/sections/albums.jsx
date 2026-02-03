@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal } from '../../util/components';
-import { parseTime, songInfoSetter } from '../../util/functions';
+import { parseTime } from '../../util/functions';
 import eventBus from '../../util/events';
 
 import
@@ -35,7 +35,6 @@ export default function albums()
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [showAddToQueueModal, setShowAddToQueueModal] = useState(false),
-        [songInfo, setSongInfo] = useState({}),
         [songInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -218,7 +217,7 @@ export default function albums()
             <SongInfoModal
                 visibility={[songInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
-                songInfo={songInfo}
+                file={contextData?.filepath}
             />
             <DeleteModal
                 visibility={[showDeleteModal, setShowDeleteModal]}
@@ -240,7 +239,7 @@ export default function albums()
                     },
                     {
                         functions: [
-                            () => songInfoSetter(contextData?.filepath, setSongInfo, setShowSongInfoModal),
+                            () => setShowSongInfoModal(true),
                             () => setShowDeleteModal(true)
                         ],
                         icons: [<InfoOutlineRounded/>, <DeleteRounded/>],
