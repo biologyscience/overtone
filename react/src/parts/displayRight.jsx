@@ -244,9 +244,15 @@ export default function displayRight()
             setShuffle(data.shuffle);
             setRepeat(data.repeat);
         });
+
+        window.ipc.on('ipc-displayRightToast', ({type, text}) =>
+        {
+            if (type) toast[type](text, {toasterId: 'displayRight'});
+            else toast(text, {toasterId: 'displayRight'});            
+        });
+
         window.ipc.on('ipc-restoreVolume', setVolume);
         window.ipc.on('ipc-restoreCurrentTime', (time) => setTimeout(() => { setCurrentTime(time); player.current.currentTime = time; }, 10));
-        window.ipc.on('ipc-displayRightToast', ({type, text}) => toast[type](text, {toasterId: 'displayRight'}));
 
         window.ipc.send('ipc-displayRightReady', true);
 

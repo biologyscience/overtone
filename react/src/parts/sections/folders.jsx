@@ -229,46 +229,22 @@ export default function folders()
         });
     }
 
-    function triggerReload()
-    {
-        if (!showInside) return;
-        
-        window.ipc.invoke('ipc-wantFolder', currentFolderPath).then((songData) =>
-        {
-            if (songData.length > 0)
-            {
-                let totalDuration = 0;
-             
-                songData?.forEach(({duration}) => totalDuration += duration);
-                setFoldarDuration(parseTime(totalDuration).text);
-    
-                setInputSearchSpace(songData.map(x => x.title));
-                setInputMatchSpace(songData.map(x => true));
-                setSongsData(songData);
-            }
-
-            else
-            {
-                window.ipc.invoke('ipc-wantFolders').then((folderData) =>
-                {
-                    setFolderPaths(folderData);
-                    setSelectedFolders([...folderData].map(x => false));
-                    setShowInside(false);
-                });
-            }
-        });
-    }
-
     useEffect(() => setSelectedFiles([]), [multiSelect]);
 
-    useEffect(() =>
+    useEffect(() => 
     {
+        if (showInside) return;
+
         window.ipc.invoke('ipc-wantFolders').then((folderData) =>
         {
             setFolderPaths(folderData);
             setSelectedFolders([...folderData].map(x => false));
         });
 
+    }, [showInside]);
+
+    useEffect(() =>
+    {
         window.ipc.on('ipc-newFoldersFiles', ({folders, songCount}) =>
         {
             let
@@ -312,10 +288,15 @@ export default function folders()
             });
         });
 
-        window.ipc.on('ipc-foldersToast', ({type, text}) => toast[type](text, {toasterId: 'folders'}));
+        window.ipc.on('ipc-foldersToast', ({type, text}) =>
+        {
+            setMultiSelect(false);
+
+            if (type) toast[type](text, {toasterId: 'folders'});
+            else toast(text, {toasterId: 'folders'});            
+        });
 
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
-        eventBus.addEventListener('ot-filesDeleted', triggerReload);
     }, []);
 
     return (
@@ -411,7 +392,7 @@ export default function folders()
                             texts: ['Add to a queue', 'Play after current song']
                         },
                         {
-                            functions: [() => window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'})],
+                            functions: [() => { window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'}); setMultiSelect(false); }],
                             icons: [<DriveFileMoveRounded/>],
                             texts: ['Move to a folder']
                         },
