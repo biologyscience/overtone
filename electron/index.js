@@ -945,10 +945,7 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     return data;
 });
 
-ipcMain.on('ipc-showFile', (E, filepath) =>
-{
-    shell.showItemInFolder(filepath);
-});
+ipcMain.on('ipc-showFile', (E, filepath) => shell.showItemInFolder(filepath));
 
 ipcMain.on('ipc-newWindow', (E, url) =>
 {
@@ -1129,6 +1126,8 @@ ipcMain.handle('ipc-upcomingSongs', (E, {files}) =>
 
     return true;
 });
+
+ipcMain.on('ipc-openInBrowser', (E, url) => shell.openExternal(url));
 
 app.on('ready', () =>
 {

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal, DeleteModal } from '../util/components';
+import toast, { Toaster } from 'react-hot-toast';
+
+import { COL, ROW, Slider, Hover3D, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal, CustomModal } from '../util/components';
 import { AudioPlayer } from '../util/audio';
 import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
@@ -27,8 +29,11 @@ import
     PlaylistAddRounded,
     DriveFileMoveRounded,
     EditRounded,
-    PauseCircleOutlineRounded
+    PauseCircleOutlineRounded,
+    CloseRounded
 } from '@mui/icons-material';
+
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function displayRight()
 {
@@ -41,6 +46,9 @@ export default function displayRight()
     const [shuffle, setShuffle] = useState(false);
     const [repeat, setRepeat] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [showLyricsModal, setShowLyricsModal] = useState(false);
+    const [lyrics, setLyrics] = useState('');
+    const [showAddToQueueModal, setShowAddToQueueModal] = useState(false);
     const [songInfoModal, setShowSongInfoModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
@@ -183,6 +191,23 @@ export default function displayRight()
 
     useEffect(() =>
     {
+        if (showLyricsModal)
+        {
+            if (lyrics.length === 0)
+            {
+                fetch(`https://lyrics.lewdhutao.my.eu.org/v2/musixmatch/lyrics?title=${nowPlaying?.title}&artist=${nowPlaying?.artists?.[0]}`)
+                .then((x) =>
+                {
+                    if (x.status !== 200) return;
+
+                    x.json().then(json => setLyrics(json?.data?.lyrics || ''));
+                });
+            }
+        }
+    }, [showLyricsModal]);
+
+    useEffect(() =>
+    {
         timerReset();
 
         window.ipc.on('ipc-setNowPlaying', (song) =>
@@ -282,6 +307,36 @@ export default function displayRight()
                     ) : null
                 }
             </ROW>
+            <CustomModal visibility={[showLyricsModal, setShowLyricsModal]} parentRef={sectionRef}>
+                <COL className={'lyricsModal'}>
+                    <ROW className={'head relative'}>
+                        <LyricsRounded/>
+                        <ROW className={'title'}>
+                            <span className='dim'>Lyrics for</span>
+                            <span className='overflowPrevent'>{nowPlaying?.title}</span>
+                        </ROW>
+                        <button onClick={() => setShowLyricsModal(false)}><CloseRounded/></button>
+                    </ROW>
+                    <COL className={'lyrics'}>
+                        <COL className={'text'}>
+                            {
+                                lyrics.length > 0 ? (
+                                    lyrics?.split('\n')?.map((x, i) => <span key={i}>{x}</span>)
+                                ) : (
+                                    <div style={{alignSelf: 'center'}}><CircularProgress size={'10vh'}/></div>
+                                )
+                            }
+                        </COL>
+                        <button onClick={() => window.ipc.send('ipc-openInBrowser', 'https://lyrics.lewdhutao.my.eu.org')}>Lyrics from lyrics.lewdhutao.my.eu.org</button>
+                    </COL>
+                </COL>
+            </CustomModal>
+            <AddToQueueModal
+                visibility={[showAddToQueueModal, setShowAddToQueueModal]}
+                parentRef={sectionRef}
+                files={[nowPlaying?.filepath]}
+                toasterId={'displayRight'}
+            />
             <SongInfoModal
                 visibility={[songInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
@@ -298,8 +353,8 @@ export default function displayRight()
                 options={[
                     {
                         functions: [
-                            () => {},
-                            () => {},
+                            () => setShowLyricsModal(true),
+                            () => setShowAddToQueueModal(true),
                             () => window.ipc.send('ipc-stopAfter', nowPlaying?.filepath)
                         ],
                         icons: [<LyricsRounded/>, <PlaylistAddRounded/>, <PauseCircleOutlineRounded/>],
@@ -320,6 +375,14 @@ export default function displayRight()
                     }
                 ]}
                 parentRef={sectionRef}
+            />
+            <Toaster
+                toasterId='displayRight'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
             />
         </COL>
     )
