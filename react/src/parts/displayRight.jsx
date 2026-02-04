@@ -246,6 +246,7 @@ export default function displayRight()
         });
         window.ipc.on('ipc-restoreVolume', setVolume);
         window.ipc.on('ipc-restoreCurrentTime', (time) => setTimeout(() => { setCurrentTime(time); player.current.currentTime = time; }, 10));
+        window.ipc.on('ipc-displayRightToast', ({type, text}) => toast[type](text, {toasterId: 'displayRight'}));
 
         window.ipc.send('ipc-displayRightReady', true);
 
@@ -361,7 +362,7 @@ export default function displayRight()
                         texts: ['Show Lyrics', 'Add to a queue', 'Stop after this song']
                     },
                     {
-                        functions: [() => {}, () => {}],
+                        functions: [() => {}, () => window.ipc.send('ipc-moveToFolder', {files: [nowPlaying?.filepath], toastEvent: 'ipc-displayRightToast'})],
                         icons: [<EditRounded/>, <DriveFileMoveRounded/>],
                         texts: ['Edit tags', 'Move to a folder']
                     },

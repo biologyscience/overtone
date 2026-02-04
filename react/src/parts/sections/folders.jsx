@@ -312,6 +312,8 @@ export default function folders()
             });
         });
 
+        window.ipc.on('ipc-foldersToast', ({type, text}) => toast[type](text, {toasterId: 'folders'}));
+
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
         eventBus.addEventListener('ot-filesDeleted', triggerReload);
     }, []);
@@ -409,7 +411,7 @@ export default function folders()
                             texts: ['Add to a queue', 'Play after current song']
                         },
                         {
-                            functions: [() => {}],
+                            functions: [() => window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'})],
                             icons: [<DriveFileMoveRounded/>],
                             texts: ['Move to a folder']
                         },
@@ -434,7 +436,7 @@ export default function folders()
                             texts: ['Add to a queue', 'Play after current song']
                         },
                         {
-                            functions: [() => {}, () => {}],
+                            functions: [() => {}, () => window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'})],
                             icons: [<EditRounded/>, <DriveFileMoveRounded/>],
                             texts: ['Edit tags', 'Move to a folder']
                         },
