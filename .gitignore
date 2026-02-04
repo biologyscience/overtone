@@ -1,4 +1,5 @@
 electron/appdata
+electron/example.js
 node_modules
 react/dist
 package-lock.json

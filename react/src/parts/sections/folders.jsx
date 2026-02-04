@@ -168,8 +168,10 @@ export default function folders()
         )
     }
 
-    function selectItems(filepath)
+    function selectItems(filepath, force)
     {
+        if (force) return setSelectedFiles([filepath]);
+
         setSelectedFiles((oldArray) =>
         {
             const set = new Set(oldArray);
@@ -187,7 +189,7 @@ export default function folders()
 
         else
         {
-            selectItems(data.location);
+            selectItems(data.location, true);
             setContextData({title: data.title, filepath: data.location});
         }
         
@@ -256,6 +258,8 @@ export default function folders()
             }
         });
     }
+
+    useEffect(() => setSelectedFiles([]), [multiSelect]);
 
     useEffect(() =>
     {
@@ -391,9 +395,18 @@ export default function folders()
                 options={
                     multiSelect ? [
                         {
-                            functions: [() => setShowAddToQueueModal(true)],
-                            icons: [<PlaylistAddRounded/>],
-                            texts: ['Add to a queue']
+                            functions: [
+                                () => setShowAddToQueueModal(true),
+                                () => {
+                                    window.ipc.invoke('ipc-upcomingSongs', {files: selectedFiles}).then((success) =>
+                                    {
+                                        if (success) toast.success(`Selected ${selectedFiles?.length} ${selectedFiles?.length > 1 ? 'songs' : 'song'} will play next`, {toasterId: 'folders'});
+                                        else toast.error(`Error adding the selected ${selectedFiles?.length > 1 ? 'songs' : 'song'} to play next`, {toasterId: 'folders'});
+                                    });
+                                }
+                            ],
+                            icons: [<PlaylistAddRounded/>, <StartRounded/>],
+                            texts: ['Add to a queue', 'Play after current song']
                         },
                         {
                             functions: [() => {}],
@@ -401,9 +414,7 @@ export default function folders()
                             texts: ['Move to a folder']
                         },
                         {
-                            functions: [
-                                () => setShowDeleteModal(true)
-                            ],
+                            functions: [() => setShowDeleteModal(true)],
                             icons: [<DeleteRounded/>],
                             texts: ['Delete permanently']
                         }
@@ -411,8 +422,13 @@ export default function folders()
                         {
                             functions: [
                                 () => setShowAddToQueueModal(true),
-                                () => {},
-                                () => {}
+                                () => {
+                                    window.ipc.invoke('ipc-upcomingSongs', {files: selectedFiles}).then((success) =>
+                                    {
+                                        if (success) toast.success('Selected song will play next', {toasterId: 'folders'});
+                                        else toast.error('Error adding the selected song to play next', {toasterId: 'folders'});
+                                    });
+                                }
                             ],
                             icons: [<PlaylistAddRounded/>, <StartRounded/>],
                             texts: ['Add to a queue', 'Play after current song']

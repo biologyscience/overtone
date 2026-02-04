@@ -16,6 +16,7 @@ class Player
         this.repeat = false;
         this.stopAfter = null;
         this.stopped = false;
+        this.playUpcoming = false;
     }
 
     setNowPlaying(filepath, autoPlay, songMetadata)
@@ -71,14 +72,19 @@ class Player
 
     switchTo(name, index)
     {
-        const queues = appdata.get('queues');
+        if (name)
+        {
+            const queues = appdata.get('queues');
+    
+            this.queue = queues.find(x => x.name === name).songs;
+            this.queueName = name;
+            this.currentQueueItem = index;
+    
+            this.setNowPlaying(this.queue[this.currentQueueItem], true).saveQueue({currentTrack: index});
+        }
 
-        this.queue = queues.find(x => x.name === name).songs;
-        this.queueName = name;
-        this.currentQueueItem = index;
-
-        this.setNowPlaying(this.queue[this.currentQueueItem], true).saveQueue({currentTrack: index});
-
+        else this.stopped = true;
+        
         return this;
     }
 
@@ -136,6 +142,13 @@ class Player
 
         if (ot_auto)
         {
+            if (this.playUpcoming)
+            {
+                this.switchTo('Upcoming Songs', 0).playUpcoming = false;
+
+                return this;
+            }
+
             if (this.stopAfter === this.queue[this.currentQueueItem])
             {
                 this.stopAfter = null;
@@ -149,7 +162,7 @@ class Player
                 // do nothing
             }
 
-            else if (this.shuffle)
+            else if (this.shuffle && (this.queue.length > 1))
             {
                 let random;
 
@@ -262,4 +275,4 @@ class Player
     }
 }
 
-module.exports = Player;
+module.exports = new Player();

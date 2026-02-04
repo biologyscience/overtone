@@ -8,10 +8,10 @@ const { Vibrant } = require('node-vibrant/node');
 
 const { appdata, parseTime, M3U } = require('./util');
 const { getArtistPicture, getAlbumArtURL } = require('./spotify');
-const Player = require('./player');
+const audioPlayer = require('./player');
 const rpc = require('./rpc');
 
-const audioPlayer = new Player();
+// require('./example');
 
 let WINDOW = null;
 
@@ -1107,6 +1107,27 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
 ipcMain.on('ipc-stopAfter', (E, filepath) =>
 {
     audioPlayer.stopAfter = filepath;
+});
+
+ipcMain.handle('ipc-upcomingSongs', (E, {files}) =>
+{
+    audioPlayer.playUpcoming = true;
+
+    const queues = appdata.get('queues');
+
+    const oldQueue = queues.find(x => x.name === 'Upcoming Songs');
+
+    if (oldQueue === undefined) queues.push({name: 'Upcoming Songs', songs: files, queuePosition: queues.length, currentSong: 0});
+
+    else
+    {
+        oldQueue.songs = files;
+        oldQueue.currentSong = 0;
+    }
+
+    appdata.set('queues', queues);
+
+    return true;
 });
 
 app.on('ready', () =>

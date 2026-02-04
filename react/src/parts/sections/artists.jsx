@@ -191,7 +191,13 @@ export default function artists()
                     {
                         functions: [
                             () => setShowAddToQueueModal(true),
-                            () => {}
+                            () => {
+                                window.ipc.invoke('ipc-upcomingSongs', {files: contextData?.songs?.map(x => x.location)}).then((success) =>
+                                {
+                                    if (success) toast.success(`Selected ${contextData?.songs?.length} ${contextData?.songs?.length > 1 ? 'songs' : 'song'} will play next`, {toasterId: 'artists'});
+                                    else toast.error(`Error adding the selected ${contextData?.songs?.length > 1 ? 'songs' : 'song'} to play next`, {toasterId: 'artists'});
+                                });
+                            }
                         ],
                         icons: [<PlaylistAddRounded/>, <StartRounded/>],
                         texts: ['Add album to a queue', 'Play after current song']

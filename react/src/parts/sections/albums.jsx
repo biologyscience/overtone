@@ -232,7 +232,13 @@ export default function albums()
                     {
                         functions: [
                             () => setShowAddToQueueModal(true),
-                            () => {}
+                            () => {
+                                window.ipc.invoke('ipc-upcomingSongs', {files: [contextData?.filepath]}).then((success) =>
+                                {
+                                    if (success) toast.success('Selected song will play next', {toasterId: 'albums'});
+                                    else toast.error('Error adding the selected song to play next', {toasterId: 'albums'});
+                                });
+                            }
                         ],
                         icons: [<PlaylistAddRounded/>, <StartRounded/>],
                         texts: ['Add to a queue', 'Play after current song']
