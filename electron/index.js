@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage } = require('electron');
 const metadata = require('music-metadata');
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync } = require('fs');
+const { moveFileSync } = require('move-file');
 const path = require('path');
 const sharp = require('sharp');
 const crypto = require('crypto');
@@ -154,7 +155,7 @@ function updateLibrary(dirs)
 
     const foldersToAdd = filtered.filter(x => !config.checkMusicIn.includes(x));
 
-    function alphabeticalOrder(a, b) { return a.split('/').pop().split('\\').pop().localeCompare(b.split('/').pop().split('\\').pop()) }
+    function alphabeticalOrder(a, b) { return path.basename(a).localeCompare(path.basename(b)) }
 
     const songsToAdd = [];
     const songsToRemove = new Set();
@@ -388,7 +389,7 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
         return data;
     }
     
-    return songList[folder].map((file) =>
+    return songList[folder]?.map((file) =>
     {
         const { title, artists, album, rawDuration } = songMetadata[file];
 
@@ -991,7 +992,7 @@ ipcMain.on('ipc-saveAsM3U', (E, queueName) =>
 
     const { songs } = queues.find(x => x.name === queueName);
 
-    const playlist = new M3U({name: queueName, songs: songs.map(x => x.split('/').pop().split('\\').pop())});
+    const playlist = new M3U({name: queueName, songs: songs.map(x => path.basename(x))});
 
     const location = dialog.showSaveDialogSync(WINDOW, {title: 'Save Playlist as M3U File', defaultPath: queueName, filters: [{extensions: ['m3u'], name: 'M3U File'}]});
 
@@ -1004,7 +1005,6 @@ ipcMain.on('ipc-saveAsM3U', (E, queueName) =>
     }
 
     catch (E) { WINDOW.webContents.send('ipc-queuesToast', {type: 'error', text: 'Error saving the file'}); }
-
 });
 
 ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
@@ -1128,6 +1128,77 @@ ipcMain.handle('ipc-upcomingSongs', (E, {files}) =>
 });
 
 ipcMain.on('ipc-openInBrowser', (E, url) => shell.openExternal(url));
+
+ipcMain.on('ipc-moveToFolder', (E, {files, toastEvent}) =>
+{
+    WINDOW.webContents.send('ipc-folderReload');
+
+    return;
+    
+    const location = dialog.showOpenDialogSync(WINDOW, {title: 'Move songs to folder', defaultPath: files[0], properties: ['openDirectory']});
+
+    if (location === undefined) return;
+
+    if (path.dirname(files[0]) === location[0]) return WINDOW.webContents.send(toastEvent, { text: 'No files were moved (same folder selected)' });
+
+    const albums = appdata.get('albums');
+    const config = appdata.get('config');
+    const queues = appdata.get('queues');
+    const songList = appdata.get('songList');
+    const songMetadata = appdata.get('songMetadata');
+
+    if (!config.checkMusicIn.includes(location[0])) config.checkMusicIn.push(location[0]);
+
+    files.forEach((oldLocation) =>
+    {
+        const newLocation = path.join(location[0], path.basename(oldLocation));
+
+        const oldMetadata = songMetadata[oldLocation];
+
+        const album = albums[oldMetadata.albumID];
+        album.songs.splice(album.songs.indexOf(oldLocation), 1, newLocation);
+
+        for (let i = 0; i < queues.length; i++)
+        {
+            if (!queues[i].songs.includes(oldLocation)) continue;
+
+            queues[i].songs.splice(queues[i].songs.indexOf(oldLocation), 1, newLocation);
+        }
+
+        if (audioPlayer.queue.includes(oldLocation)) audioPlayer.queue.splice(audioPlayer.queue.indexOf(oldLocation), 1, newLocation);
+
+        if (songList[location[0]] === undefined) songList[location[0]] = [newLocation];
+        else songList[location[0]].push(newLocation);
+
+        const oldFolderpath = path.dirname(oldLocation);
+        const oldFolder = songList[oldFolderpath];
+
+        oldFolder.splice(oldFolder.indexOf(oldLocation), 1);
+
+        if (oldFolder.length === 0)
+        {
+            config.checkMusicIn.splice(config.checkMusicIn.indexOf(oldFolderpath), 1);
+            delete songList[oldFolderpath];
+        }
+
+        songMetadata[newLocation] = oldMetadata;
+        delete songMetadata[oldLocation];
+
+        moveFileSync(oldLocation, newLocation);
+    });
+
+    songList[location[0]].sort((x, y) => path.basename(x).localeCompare(path.basename(y)));
+
+    appdata.set('albums', albums);
+    appdata.set('config', config);
+    appdata.set('queues', queues);
+    appdata.set('songList', songList);
+    appdata.set('songMetadata', songMetadata);
+
+    WINDOW.webContents.send(toastEvent, {type: 'success', text: `${files.length} ${files.length > 1 ? 'songs were' : 'song was'} moved to ${location[0]}`});
+
+    if (toastEvent.includes('folder')) WINDOW.webContents.send('ipc-folderReload');
+});
 
 app.on('ready', () =>
 {

@@ -16,6 +16,7 @@
     "chokidar": "^5.0.0",
     "discord-rpc": "^4.0.1",
     "electron": "^39.2.7",
+    "move-file": "^4.1.0",
     "music-metadata": "^7.14.0",
     "node-vibrant": "^4.0.3",
     "sharp": "^0.34.5"
