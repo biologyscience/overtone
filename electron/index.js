@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage } = require('electron');
-const metadata = require('music-metadata');
+const metadata = require('music-metadata'); // cannot write and cannot read genre properly
+const taglib = require('node-taglib-sharp'); // cannot read artists properly
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync } = require('fs');
 const { moveFileSync } = require('move-file');
 const path = require('path');
@@ -295,7 +296,7 @@ function updateLibrary(dirs)
                 });
             }
 
-            const data = { albumID, album, artists, bpm, genre, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
+            const data = { albumID, album, artists, bpm, genre: genre.flatMap(x => x.split(/[,\.;:\/]+/).map(y => y.trim()).filter(Boolean)), title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
 
             songMetadata[newSongs[i]] = data;
         }
@@ -935,6 +936,8 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
         }
     };
 
+    data.tags.label = data.tags.label?.[0]
+
     if (picture?.data)
     {
         const colors = await Vibrant.from(picture.data).getPalette();
@@ -1131,10 +1134,6 @@ ipcMain.on('ipc-openInBrowser', (E, url) => shell.openExternal(url));
 
 ipcMain.on('ipc-moveToFolder', (E, {files, toastEvent}) =>
 {
-    WINDOW.webContents.send('ipc-folderReload');
-
-    return;
-    
     const location = dialog.showOpenDialogSync(WINDOW, {title: 'Move songs to folder', defaultPath: files[0], properties: ['openDirectory']});
 
     if (location === undefined) return;
@@ -1198,6 +1197,94 @@ ipcMain.on('ipc-moveToFolder', (E, {files, toastEvent}) =>
     WINDOW.webContents.send(toastEvent, {type: 'success', text: `${files.length} ${files.length > 1 ? 'songs were' : 'song was'} moved to ${location[0]}`});
 
     if (toastEvent.includes('folder')) WINDOW.webContents.send('ipc-folderReload');
+});
+
+ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
+{
+    const songMetadata = appdata.get('songMetadata');
+    const song = taglib.File.createFromPath(file);
+    
+    tags.artists = tags.artists.filter(x => x.length > 0);
+    tags.genre = tags.genre.filter(x => x.length > 0);
+
+    if (tags.title?.length > 0)
+    {
+        songMetadata[file].title = tags.title;
+        song.tag.title = tags.title;
+    }
+
+    if (tags.album?.length > 0)
+    {
+        songMetadata[file].album = tags.album;
+        song.tag.album = tags.album;
+    }
+
+    if (tags.artists[0] !== undefined)
+    {
+        songMetadata[file].artists = tags.artists;
+        song.tag.performers = tags.artists;
+    }
+
+    if (tags.albumartist?.length) song.tag.albumArtists = [tags.albumartist];
+    
+    if (tags.genre[0] !== undefined)
+    {
+        songMetadata[file].genre = tags.genre;
+        song.tag.genres = tags.genre;
+    }
+
+    if (tags.label?.length > 0) song.tag.publisher = tags.label;
+
+    if (tags.bpm?.length > 0)
+    {
+        const bpm = parseInt(tags.bpm);
+        if (!isNaN(bpm)) song.tag.beatsPerMinute = bpm;
+    }
+    
+    if (tags?.track?.no?.toString()?.length > 0)
+    {
+        const track = parseInt(tags.track.no);
+
+        if (!isNaN(track))
+        {
+            songMetadata[file].track.no = track;
+            song.tag.track = track;
+        }
+    }
+
+    if (tags.year?.length > 0)
+    {
+        const year = parseInt(tags.year);
+
+        if (!isNaN(year))
+        {
+            songMetadata[file].year = year;
+            song.tag.year = year;
+        }
+    }
+
+    if (tags.picture?.length > 0)
+    {
+        const split = tags.picture.match(/^data:(.+?)(;base64)?,(.*)$/);
+
+        if (split !== null)
+        {
+            const buf = Buffer.from(split[3], 'base64');
+
+            sharp(buf).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${songMetadata[file].albumID}.webp`));
+            
+            song.tag.pictures[0].mimeType = split[1];
+            song.tag.pictures[0].data = new Uint8Array(buf);
+        }        
+    }
+
+    appdata.set('songMetadata', songMetadata);
+    song.save();
+    song.dispose();
+
+    if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false, songMetadata);
+
+    WINDOW.webContents.send(toastEvent, {type: 'success', text: `Metatags for were changed successfully`});
 });
 
 app.on('ready', () =>

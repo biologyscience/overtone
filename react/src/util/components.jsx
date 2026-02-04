@@ -237,6 +237,8 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
     const [editedTags, setEditedTags] = useState({});
     const [folderpath, setFolderpath] = useState();
 
+    const chooseFile = useRef();
+
     const { minutes, seconds } = parseTime(songInfo?.file?.duration);
 
     const colors =
@@ -277,6 +279,30 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
         });
     }
 
+    function handleFileChange({target})
+    {
+        const file = target.files[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.addEventListener('load', () =>
+        {
+            setEditedTags((oldTags) =>
+            {
+                if (reader.result?.length > 0)
+                {
+                    oldTags.picture = reader.result;
+
+                    return structuredClone(oldTags);
+                }
+            });
+        });
+
+        reader.readAsDataURL(file);
+    }
+
     useEffect(() => setIsFavorite(songInfo?.extras?.isFavorite), [songInfo]);
 
     useEffect(() =>
@@ -304,8 +330,15 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
                 </ROW>
                 <COL className={'body'}>
                     <ROW className={'file'}>
-                        <ROW className='imgWrapper'>
-                            <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
+                        <ROW className={`imgWrapper ${edit ? 'changeable' : null}`}>
+                            <input ref={chooseFile} style={{display: 'none'}} type='file' accept='image/*' onChange={handleFileChange}/>
+                            {
+                                edit ? (
+                                    <img src={editedTags?.picture} onClick={() => chooseFile.current?.click()} draggable={false}/>
+                                ) : (
+                                    <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
+                                )
+                            }
                             <button onClick={toggleFavorite}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>
                         </ROW>
                         <COL className={'wrapper'}>
@@ -336,7 +369,7 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
                         <COL className={'data'}>
                             <ROW>
                                 <span className='type'>Artists</span>
-                                <button onClick={() => addRemoveTag('artists')}><PersonAddRounded/></button>
+                                { edit ? <button onClick={() => addRemoveTag('artists')}><PersonAddRounded/></button> : null }
                             </ROW>
                             {
                                 edit ? (
@@ -363,7 +396,7 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
                         <COL className={'data'}>
                             <ROW>
                                 <span className='type'>Genre</span>
-                                <button onClick={() => addRemoveTag('genre')}><AddchartRounded/></button>
+                                { edit ? <button onClick={() => addRemoveTag('genre')}><NewLabelRounded/></button> : null }
                             </ROW>
                             {
                                 edit ? (
@@ -391,36 +424,17 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
                             <span className='type'>Track Number</span>
                             { edit ? <input value={editedTags?.track?.no} onChange={({target}) => inputChangeHandle(target, 'track', 'no')}/> : <span className='value'>{songInfo?.tags?.track?.no || 'Unkown'}</span> }
                         </COL>
-                        <COL className={'data'}>
+                        {/* <COL className={'data'}>
                             <span className='type'>Disc Number</span>
                             { edit ? <input value={editedTags?.disk?.no} onChange={({target}) => inputChangeHandle(target, 'disk', 'no')}/> : <span className='value'>{songInfo?.tags?.disk?.no || 'Unkown'}</span> }
-                        </COL>
+                        </COL> */}
                         <COL className={'data'}>
                             <span className='type'>Year</span>
                             { edit ? <input value={editedTags?.year} onChange={({target}) => inputChangeHandle(target, 'year')}/> : <span className='value'>{songInfo?.tags?.year || 'Unkown'}</span> }
                         </COL>
                         <COL className={'data'}>
-                            <ROW>
-                                <span className='type'>Label</span>
-                                <button onClick={() => addRemoveTag('label')}><NewLabelRounded/></button>
-                            </ROW>
-                            {
-                                edit ? (
-                                    <ROW>
-                                        {
-                                            editedTags?.label?.map((x, i) =>
-                                            {
-                                                return (
-                                                    <ROW key={i} className={'relative'}>
-                                                        <input value={x} onChange={({target}) => inputChangeHandle(target, 'label', i)}/>
-                                                        <button className='remove' onClick={() => addRemoveTag('label', i)}><CloseRounded/></button>
-                                                    </ROW>
-                                                )
-                                            })
-                                        }
-                                    </ROW>
-                                ) : <span className='value'>{songInfo?.tags?.label?.join(', ') || 'Unkown'}</span>
-                            }
+                            <span className='type'>Label</span>
+                            { edit ? <input value={editedTags?.label} onChange={({target}) => inputChangeHandle(target, 'label')}/> : <span className='value'>{songInfo?.tags?.label || 'Unkown'}</span> }
                         </COL>
                         <div className='divider'/>
                         <COL className={'data'}>
