@@ -164,4 +164,65 @@
             }
         }
     }
+
+    .lyricsModal
+    {
+        font-size: 1rem;
+        height: 60vh;
+        aspect-ratio: .75/1;
+        background-color: var(--background);
+        border-radius: 5px;
+        overflow-x: hidden;
+        
+        .head
+        {
+            font-size: 1.5em;
+            margin: 0;
+            padding: .5em .75em;
+            gap: 1em;
+            align-items: center;
+        
+            & > *:last-child { margin-left: auto; }
+
+            .title
+            {
+                overflow: hidden;
+                gap: .25em;
+
+                .dim { opacity: .75; white-space: nowrap; }
+            }
+            
+            @include util.divider(after, BottomLeft);
+        }
+
+        .lyrics
+        {
+            gap: 1em;
+            padding: 1em 2em;
+            flex-grow: 1;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            .text
+            {
+                gap: .5em;
+                flex-grow: 1;
+                justify-content: center;
+
+                span { user-select: text; }
+
+                svg * { stroke: var(--accent); }
+            }
+
+            button
+            {
+                margin-top: .5em;
+                width: fit-content;
+                align-self: center;
+                padding: 1ch 1em;
+                border-radius: .5em;
+                background-color: var(--accent2);
+            }
+        }
+    }
 }
