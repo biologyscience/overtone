@@ -50,6 +50,7 @@ export default function displayRight()
     const [lyrics, setLyrics] = useState('');
     const [showAddToQueueModal, setShowAddToQueueModal] = useState(false);
     const [songInfoModal, setShowSongInfoModal] = useState(false);
+    const [showEditTagsModal, setShowEditTagsModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -345,6 +346,13 @@ export default function displayRight()
                 toasterId={'displayRight'}
             />
             <SongInfoModal
+                visibility={[showEditTagsModal, setShowEditTagsModal]}
+                parentRef={sectionRef}
+                file={nowPlaying?.filepath}
+                edit={true}
+                toastEvent={'ipc-displayRightToast'}
+            />
+            <SongInfoModal
                 visibility={[songInfoModal, setShowSongInfoModal]}
                 parentRef={sectionRef}
                 file={nowPlaying?.filepath}
@@ -368,7 +376,10 @@ export default function displayRight()
                         texts: ['Show Lyrics', 'Add to a queue', 'Stop after this song']
                     },
                     {
-                        functions: [() => {}, () => window.ipc.send('ipc-moveToFolder', {files: [nowPlaying?.filepath], toastEvent: 'ipc-displayRightToast'})],
+                        functions: [
+                            () => setShowEditTagsModal(true),
+                            () => window.ipc.send('ipc-moveToFolder', {files: [nowPlaying?.filepath], toastEvent: 'ipc-displayRightToast'})
+                        ],
                         icons: [<EditRounded/>, <DriveFileMoveRounded/>],
                         texts: ['Edit tags', 'Move to a folder']
                     },

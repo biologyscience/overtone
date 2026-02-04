@@ -48,6 +48,7 @@ export default function folders()
         [showContextMenu, setShowContextMenu] = useState(false),
         [contextData, setContextData] = useState({}),
         [showAddToQueueModal, setShowAddToQueueModal] = useState(false),
+        [showEditTagsModal, setShowEditTagsModal] = useState(false),
         [showSongInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false),
         [selectedFiles, setSelectedFiles] = useState([]),
@@ -360,6 +361,13 @@ export default function folders()
                 parentRef={sectionRef}
                 files={selectedFiles}
                 toasterId={'folders'}
+            />
+            <SongInfoModal
+                visibility={[showEditTagsModal, setShowEditTagsModal]}
+                parentRef={sectionRef}
+                file={selectedFiles[0]}
+                edit={true}
+                toastEvent={'ipc-foldersToast'}
             />
             <SongInfoModal
                 visibility={[showSongInfoModal, setShowSongInfoModal]}
