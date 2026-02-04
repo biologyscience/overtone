@@ -56,7 +56,7 @@ export default function queues()
     {
         window.ipc.send('ipc-audioPlayer-switchToTrack', {queueName: name, index});
 
-        setPlayingTrackNumber(index);
+        setPlayingTrackNumber(index + 1);
     }
 
     function selectItems(filepath)
@@ -92,7 +92,7 @@ export default function queues()
             const element = sectionRef.current.querySelector('.currentQueueList .listItem.current');
     
             if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
-        }, 10);
+        }, 50);
     }
 
     useEffect(() =>
@@ -111,7 +111,7 @@ export default function queues()
 
         if (playingQueueName !== currentQueueName) return;
 
-        setCurrentQueueSongNumber(playingTrackNumber);
+        setTimeout(() => setCurrentQueueSongNumber(playingTrackNumber), 10);
 
     }, [playingTrackNumber, currentQueueName, playingQueueName]);
 
@@ -241,7 +241,7 @@ export default function queues()
                 <ROW className={'currentQueueInfo'}>
                     <button onClick={() => setMultiSelect(x => !x)} className={multiSelect ? 'focus' : null}>{multiSelect ? <DeselectRounded/> : <SelectAllRounded/>}</button>
                     <ROW className={'songNumbers'}>
-                        <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
+                        <strong>{currentQueueSongNumber + 1}</strong>
                         <span>/</span>
                         <span>{songsData?.length}</span>
                     </ROW>
