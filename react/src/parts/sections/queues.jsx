@@ -103,6 +103,13 @@ export default function queues()
 
         window.ipc.send('ipc-wantQueues');
 
+        setTimeout(() =>
+        {
+            const element = sectionRef.current.querySelector('.queuesHolder .queuesList .listItem.current');
+    
+            if (element) element.scrollIntoView({behavior: 'smooth', block: 'center', container: 'nearest'});
+        }, 50);
+
     }, [showModal]);
 
     useEffect(() =>
@@ -127,14 +134,14 @@ export default function queues()
         }
 
         eventBus.addEventListener('ot-songsInQueueReorder', handle);
-        eventBus.addEventListener('ot-filesDeleted', reloadQueue);
-        eventBus.addEventListener('ot-navChange', handle2);
+        // eventBus.addEventListener('ot-filesDeleted', reloadQueue);
+        // eventBus.addEventListener('ot-navChange', handle2);
 
         return () =>
         {
             eventBus.removeEventListener('ot-songsInQueueReorder', handle);
-            eventBus.removeEventListener('ot-filesDeleted', reloadQueue);
-            eventBus.removeEventListener('ot-navChange', handle2);
+            // eventBus.removeEventListener('ot-filesDeleted', reloadQueue);
+            // eventBus.removeEventListener('ot-navChange', handle2);
         }
     }, [currentQueueName]);
 

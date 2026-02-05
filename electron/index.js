@@ -256,7 +256,7 @@ function updateLibrary(dirs)
 
         for (let i = 0; i < results.length; i++)
         {
-            const { album, artists, genre, title, track, year, picture } = results[i].common;
+            const { album, artists, genre, title, track, bpm, year, picture } = results[i].common;
 
             const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
@@ -300,7 +300,7 @@ function updateLibrary(dirs)
 
             songMetadata[newSongs[i]] = data;
         }
-        
+
         appdata.set('songMetadata', songMetadata);
         
         console.log('finished sync tasks');
@@ -635,7 +635,7 @@ ipcMain.on('ipc-wantQueue', (E, queue) =>
     if (queue)
     {
         const data = wantQueue(queue);
-    
+
         WINDOW.webContents.send('ipc-setCurrentQueue', data);
     }
 });
