@@ -201,8 +201,6 @@ export default function folders()
     {
         function click(index)
         {
-            if (target.tagName === 'BUTTON') return;
-
             window.ipc.send('ipc-addQueue', { trackNumber: index, songLocations: songsData.map(x => x.location), queueName: folderName });
             eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 0}));
         }
@@ -214,9 +212,9 @@ export default function folders()
             totalDuration += duration;
     
             return (
-                <li key={i} onClick={() => multiSelect ? null : click(i)} className={`flexROW ${multiSelect ? 'selectable' : null} ${inputMatchSpace?.[i] ? null : 'displayNone'}`} onContextMenu={() => openContext({title, location})}>
+                <li key={i} className={`flexROW ${multiSelect ? 'selectable' : null} ${inputMatchSpace?.[i] ? null : 'displayNone'}`} onContextMenu={() => openContext({title, location})}>
                     <button className='select' onClick={() => selectItems(location)}>{selectedFiles?.includes(location) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/>}</button>
-                    <COL className='songData'>
+                    <COL className='songData' onClick={() => multiSelect ? null : click(i)}>
                         <span className='title overflowPrevent'>{title}</span>
                         <span className='artist overflowPrevent'>{artist}</span>
                         <ROW>
