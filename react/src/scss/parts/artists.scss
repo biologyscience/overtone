@@ -3,6 +3,8 @@
 
 .section#artists
 {
+    @include util.inout();
+
     .out
     {
         max-height: inherit;
@@ -232,7 +234,7 @@
                 padding: 1em;
                 border-radius: .35em;
                 transition: background-color 250ms ease;
-                pointer-events: all !important;
+                pointer-events: auto;
                 
                 img
                 {

@@ -150,7 +150,7 @@ export default function albums()
 
     return (
         <COL ref={sectionRef} className='section relative' id='albums'>
-            <COL className={`out ${showInside ? 'displayNone' : ''}`}>
+            <COL className={`out ${showInside ? null : 'show'}`}>
                 <ROW className='head'>
                     <ROW className={'searchBar'}>
                         <SearchRounded/>
@@ -163,7 +163,7 @@ export default function albums()
                 </ROW>
                 <ROW className='body'><Albums/></ROW>
             </COL>
-            <COL className={`in ${showInside ? '' : 'displayNone'}`}>
+            <COL className={`in ${showInside ? 'show' : null}`}>
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
                     <ROW className={'albumart'} onClick={() => play(0)}>
