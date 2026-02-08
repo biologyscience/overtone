@@ -300,7 +300,7 @@ export default function folders()
 
     return (
         <COL ref={sectionRef} className='section relative' id='folders'>
-            <COL className={`out ${showInside ? 'displayNone' : ''}`}>
+            <COL className={`out ${showInside ? null : 'show'}`}>
                 <ul className='folders'>
                     <FolderList/>
                 </ul>
@@ -329,7 +329,7 @@ export default function folders()
                     </li>
                 </ul>
             </COL>
-            <COL className={`in ${showInside ? '' : 'displayNone'}`}>
+            <COL className={`in ${showInside ? 'show' : null}`}>
                 <ROW className='head'>
                     <button onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
                     <COL>

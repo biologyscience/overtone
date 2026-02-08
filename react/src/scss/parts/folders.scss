@@ -3,6 +3,8 @@
 
 .section#folders
 {
+    @include util.inout();
+
     .out
     {
         overflow: hidden;
@@ -34,7 +36,6 @@
                 border: 2px solid transparent;
                 border-radius: 5px;
                 transition: border-color 150ms ease;
-                pointer-events: all;
     
                 * { pointer-events: none; }
     
@@ -88,7 +89,6 @@
                 border: 2px solid transparent;
                 border-radius: 5px;
                 transition: border-color 150ms ease;
-                pointer-events: all;
     
                 * { pointer-events: none; }
     
@@ -111,7 +111,6 @@
 
             .folderOption
             {
-                pointer-events: all;
                 display: flex;
                 flex-direction: row;
                 gap: 1em;
@@ -245,7 +244,7 @@
                 transition: border-color 300ms ease;
 
                 &, * { pointer-events: none; }
-                & > * { pointer-events: all; }
+                & > * { pointer-events: auto; }
 
                 &:hover
                 {

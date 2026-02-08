@@ -3,6 +3,8 @@
 
 .section#albums
 {
+    @include util.inout();
+
     .out
     {
         max-height: inherit;

@@ -183,3 +183,39 @@
         }
     }
 }
+
+@mixin inout()
+{
+    overflow: hidden;
+
+    .out, .in
+    {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        z-index: 0;
+        transition:
+            transform 300ms ease-in-out,
+            opacity 300ms ease-in-out;
+
+        &.out { transform: translateY(-25px); }
+        &.in { transform: translateY(25px); }
+
+        &::before
+        {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        &.show
+        {
+            z-index: 2;
+            opacity: 1;
+            transform: translateY(0);
+
+            &::before { z-index: -1; }
+        }
+    }
+}
