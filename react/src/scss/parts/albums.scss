@@ -279,13 +279,12 @@
             
             .songList
             {
-                list-style: none;
                 margin: 0;
                 padding: 0 2em;
                 flex-grow: 1;
                 overflow-y: auto;
                 
-                li
+                .tableItem
                 {
                     padding: .5em 0;
                     margin: .5em 0;

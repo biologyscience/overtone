@@ -11,11 +11,12 @@ import
 } from '@mui/icons-material';
 
 import eventBus from '../util/events';
+import { ROW } from '../util/components';
 
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(5);
     const [width, setWidth] = useState(0);
     const navRef = useRef();
 
@@ -49,14 +50,14 @@ export default function Navbar()
 
     return (
         <nav id='nav' ref={navRef} style={{'--left': `${left}px`}}>
-            <ul>
-                <li data-index={0} className={index === 0 ? 'current' : ''} onClick={handleClick}><QueueMusicRounded/></li>
-                <li data-index={1} className={index === 1 ? 'current' : ''} onClick={handleClick}><FolderRounded/></li>
-                <li data-index={2} className={index === 2 ? 'current' : ''} onClick={handleClick}><AlbumRounded/></li>
-                <li data-index={3} className={index === 3 ? 'current' : ''} onClick={handleClick}><PersonRounded/></li>
-                <li data-index={4} className={index === 4 ? 'current' : ''} onClick={handleClick}><GraphicEqRounded/></li>
-                <li data-index={5} className={index === 5 ? 'current' : ''} onClick={handleClick}><SettingsRounded/></li>
-            </ul>
+            <ROW className={'sections'}>
+                <ROW data-index={0} className={`section ${index === 0 ? 'current' : ''}`} onClick={handleClick}><QueueMusicRounded/></ROW>
+                <ROW data-index={1} className={`section ${index === 1 ? 'current' : ''}`} onClick={handleClick}><FolderRounded/></ROW>
+                <ROW data-index={2} className={`section ${index === 2 ? 'current' : ''}`} onClick={handleClick}><AlbumRounded/></ROW>
+                <ROW data-index={3} className={`section ${index === 3 ? 'current' : ''}`} onClick={handleClick}><PersonRounded/></ROW>
+                <ROW data-index={4} className={`section ${index === 4 ? 'current' : ''}`} onClick={handleClick}><GraphicEqRounded/></ROW>
+                <ROW data-index={5} className={`section ${index === 5 ? 'current' : ''}`} onClick={handleClick}><SettingsRounded/></ROW>
+            </ROW>
         </nav>
     );
 }

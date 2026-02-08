@@ -93,7 +93,7 @@ export default function albums()
         return album?.songs?.sort((x, y) => x.track - y.track)?.map(({track, title, artists, plays, duration, location}, i) =>
         {
             return (
-                <li key={i} className='tableItem' onClick={({target}) => target.tagName === 'BUTTON' ? null : play(i)} onContextMenu={() => openContext({title, location})}>
+                <ROW key={i} className='tableItem' onClick={({target}) => target.tagName === 'BUTTON' ? null : play(i)} onContextMenu={() => openContext({title, location})}>
                     <span>{track}</span>
                     <COL className={'placeLeft'}>
                         <span className='title'>{title}</span>
@@ -102,7 +102,7 @@ export default function albums()
                     <span>{plays}</span>
                     <span>{parseTime(duration).text}</span>
                     <button onClick={() => openContext({title, location})}><MoreHorizRounded/></button>
-                </li>
+                </ROW>
             );
         });
     }
@@ -203,9 +203,9 @@ export default function albums()
                         <span>PLAYS</span>
                         <ScheduleRounded/>
                     </GRID>
-                    <ul className='songList'>
+                    <COL className='songList'>
                         <Songs/>
-                    </ul>
+                    </COL>
                 </COL>
             </COL>
             <AddToQueueModal
