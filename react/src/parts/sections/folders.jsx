@@ -140,14 +140,14 @@ export default function folders()
             const folderName = folderPath.split('/').pop().split('\\').pop();
 
             return (
-                <li className={`folder ${selectedFolders?.[i] ? 'delete' : ''}`} onClick={handleFolderClick} key={i} data-index={i}>
+                <ROW className={`folder ${selectedFolders?.[i] ? 'delete' : ''}`} onClick={handleFolderClick} key={i} data-index={i}>
                     <FolderRounded/>
                     <COL>
                         <span className='name'>{folderName}</span>
                         <span className='path'>{folderPath}</span>
                     </COL>
                     <button className='deleteButton'><DeleteRounded/></button>
-                </li>
+                </ROW>
             );
         });
     }
@@ -212,7 +212,7 @@ export default function folders()
             totalDuration += duration;
     
             return (
-                <li key={i} className={`flexROW ${multiSelect ? 'selectable' : null} ${inputMatchSpace?.[i] ? null : 'displayNone'}`} onContextMenu={() => openContext({title, location})}>
+                <ROW key={i} className={`${multiSelect ? 'selectable' : null} ${inputMatchSpace?.[i] ? null : 'displayNone'}`} onContextMenu={() => openContext({title, location})}>
                     <button className='select' onClick={() => selectItems(location)}>{selectedFiles?.includes(location) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/>}</button>
                     <COL className='songData' onClick={() => multiSelect ? null : click(i)}>
                         <span className='title overflowPrevent'>{title}</span>
@@ -223,7 +223,7 @@ export default function folders()
                         </ROW>
                     </COL>
                     <button onClick={() => openContext({title, location})}><MoreHorizRounded/></button>
-                </li>
+                </ROW>
             );
         });
     }
@@ -301,33 +301,33 @@ export default function folders()
     return (
         <COL ref={sectionRef} className='section relative' id='folders'>
             <COL className={`out ${showInside ? null : 'show'}`}>
-                <ul className='folders'>
+                <COL className='folders'>
                     <FolderList/>
-                </ul>
-                <ul className='extras'>
-                    <li data-type={'favorites'} onClick={handleFolderClick}>
+                </COL>
+                <COL className='extras'>
+                    <ROW data-type={'favorites'} onClick={handleFolderClick}>
                         <FavoriteRounded/>
                         <span className='name'>Favorites</span>
-                    </li>
+                    </ROW>
                     {/* <li onClick={handleFolderClick}>
                         <DeleteRounded/>
                         <span className='name'>Placeholder</span>
                     </li> */}
-                </ul>
-                <ul className='folderOptions'>
-                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); }}>
+                </COL>
+                <COL className='folderOptions'>
+                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); }}>
                         <CreateNewFolderRounded/>
                         <span>Add folders</span>
-                    </li>
-                    <li className={`folderOption ${deleteSelected ? 'selected' : ''}`} onClick={handleDeleteClick}>
+                    </ROW>
+                    <ROW className={`folderOption ${deleteSelected ? 'selected' : ''}`} onClick={handleDeleteClick}>
                         <RemoveCircleOutlineRounded/>
                         <DeleteText/>
-                    </li>
-                    <li className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-updateFiles'); }}>
+                    </ROW>
+                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-updateFiles'); }}>
                         <SyncRounded/>
                         <span>Sync files</span>
-                    </li>
-                </ul>
+                    </ROW>
+                </COL>
             </COL>
             <COL className={`in ${showInside ? 'show' : null}`}>
                 <ROW className='head'>
@@ -352,7 +352,7 @@ export default function folders()
                     </GRID>
                     <button onClick={() => setMultiSelect(x => !x)} className={multiSelect ? 'focus' : null}>{multiSelect ? <DeselectRounded/> : <SelectAllRounded/>}</button>
                 </GRID>
-                <ul className='songList'><Songs/></ul>
+                <COL className='songList'><Songs/></COL>
             </COL>
             <AddToQueueModal
                 visibility={[showAddToQueueModal, setShowAddToQueueModal]}
