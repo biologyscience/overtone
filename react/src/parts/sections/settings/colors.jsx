@@ -1,28 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
-import { HexColorInput, HexColorPicker } from 'react-colorful';
-import { useClickOutside } from 'react-haiku';
+import toast from 'react-hot-toast';
 
-import { COL, ROW, CustomDropdown } from '../../../util/components';
+import { COL, ROW, CustomDropdown, ColorPicker, CustomModal } from '../../../util/components';
 
 import { OpenInNewRounded } from '@mui/icons-material';
 
 export default function Colors()
 {
-    const root = useRef();
+    const
+        root = useRef(),
+        parentRef = useRef();
 
     const
         [currentDynamicColor, setCurrentDyanmicColor] = useState({}),
         [dynamic, setDynamic] = useState(true),
         [theme, setTheme] = useState(),
+        [themes, setThemes] = useState(['Dark', 'Light']),
         colorState = { background: useState(), accent: useState(), accent1: useState(), text: useState('#FFFFFF') },
-        paletteState = { background: useState(false), accent: useState(false), accent1: useState(false), text: useState(false) },
-        colorPickerRef = { background: useRef(), accent: useRef(), accent1: useRef(), text: useRef() },
+        [showModal, setShowModal] = useState(false),
+        [themeName, setThemeName] = useState(''),
         [highContrast, setHighContrast] = useState(false);
-
-    useClickOutside(colorPickerRef.background, () => paletteState.background[1](false));
-    useClickOutside(colorPickerRef.accent, () => paletteState.accent[1](false));
-    useClickOutside(colorPickerRef.accent1, () => paletteState.accent1[1](false));
-    useClickOutside(colorPickerRef.text, () => paletteState.text[1](false));
 
     function toHex(rgb) { return '#' + rgb.map(number => number.toString(16).padStart(2, '0')).join('').toUpperCase() };
 
@@ -66,6 +63,16 @@ export default function Colors()
             colorState.accent1[1](toHex(colors.LightVibrant));
             colorState.text[1]('#FFFFFF');
         }
+    }
+
+    function saveTheme(name, colors)
+    {
+        setThemes(x => { x.push(name); return x; });
+        setTheme(name);
+
+        toast.success('Theme saved successfully', {toasterId: 'settings'});
+
+        setShowModal(false);
     }
 
     //
@@ -122,16 +129,25 @@ export default function Colors()
         setDynamicColors(structuredClone(currentDynamicColor), theme);
 
     }, [currentDynamicColor]);
+
+    useEffect(() =>
+    {
+        if (showModal) return;
+
+        setThemeName('');
+
+    }, [showModal]);
     
     useEffect(() =>
     {
         root.current = document.querySelector(':root');
-
         window.ipc.on('ipc-setNowPlaying', ({colors}) => setCurrentDyanmicColor(colors));
+
+        setTheme(themes[0]);
     }, []);
 
     return (
-        <COL className={'view'}>
+        <COL ref={parentRef} className={'view'}>
             <ROW className={'option'}>
                 <span>Dynamic colors</span>
                 <input type='checkbox' className='switch' checked={dynamic} onChange={() => setDynamic(x => !x)}/>
@@ -139,55 +155,49 @@ export default function Colors()
             <ROW className={'option'}>
                 <span>Select theme</span>
                 <CustomDropdown
-                    options={['Dark', 'Light', 'Some other']}
-                    defaultOptionIndex={0}
+                    options={themes}
                     select={[theme, setTheme]}
                 />
             </ROW>
             <ROW className={`option ${dynamic || highContrast ? 'disabled' : null}`}>
                 <span>Background color</span>
-                <ROW ref={colorPickerRef.background} className={'colorPicker'}>
-                    <div className='color'/>
-                    <HexColorInput prefixed color={colorState.background[0]} onChange={colorState.background[1]} onClick={() => paletteState.background[1](true)}/>
-                    <div className={`picker ${paletteState.background[0] ? null : 'displayNone'}`}><HexColorPicker color={colorState.background[0]} onChange={colorState.background[1]}/></div>
-                </ROW>
+                <ColorPicker colorState={colorState.background}/>
             </ROW>
             <ROW className={`option ${dynamic || highContrast ? 'disabled' : null}`}>
                 <span>Primary accent color</span>
-                <ROW ref={colorPickerRef.accent} className={'colorPicker'}>
-                    <div className='color'/>
-                    <HexColorInput prefixed color={colorState.accent[0]} onChange={colorState.accent[1]} onClick={() => paletteState.accent[1](true)}/>
-                    <div className={`picker ${paletteState.accent[0] ? null : 'displayNone'}`}><HexColorPicker color={colorState.accent[0]} onChange={colorState.accent[1]}/></div>
-                </ROW>
+                <ColorPicker colorState={colorState.accent}/>
             </ROW>
             <ROW className={`option ${dynamic || highContrast ? 'disabled' : null}`}>
                 <span>Secondary accent color (at 25% transparency)</span>
-                <ROW ref={colorPickerRef.accent1} className={'colorPicker'}>
-                    <div className='color'/>
-                    <HexColorInput prefixed color={colorState.accent1[0]} onChange={colorState.accent1[1]} onClick={() => paletteState.accent1[1](true)}/>
-                    <div className={`picker ${paletteState.accent1[0] ? null : 'displayNone'}`}><HexColorPicker color={colorState.accent1[0]} onChange={colorState.accent1[1]}/></div>
-                </ROW>
+                <ColorPicker colorState={colorState.accent1}/>
             </ROW>
             {/* <ROW className={`option ${dynamic || highContrast ? 'disabled' : null}`}>
                 <span>Text color</span>
-                <ROW ref={colorPickerRef.text} className={'colorPicker'}>
-                    <div className='color'/>
-                    <HexColorInput prefixed color={colorState.text[0]} onChange={colorState.text[1]} onClick={() => paletteState.text[1](true)}/>
-                    <div className={`picker ${paletteState.text[0] ? null : 'displayNone'}`}><HexColorPicker color={colorState.text[0]} onChange={colorState.text[1]}/></div>
-                </ROW>
+                <ColorPicker colorState={colorState.text}/>
             </ROW> */}
             <ROW className={`option ${dynamic || highContrast ? 'disabled' : null}`}>
                 <span>Save colors as a theme</span>
-                <button className='popup'><OpenInNewRounded/></button>
+                <button className='popup' onClick={() => setShowModal(true)}><OpenInNewRounded/></button>
             </ROW>
             <ROW className={'option'}>
                 <span>Enable high contrast mode</span>
                 <input type='checkbox' className='switch' checked={highContrast} onChange={() => setHighContrast(x => !x)}/>
             </ROW>
             <ROW className={'option'}>
-                <span>Restore default colors</span>
+                <span>Restore to default color config</span>
                 <button className='popup' onClick={() => { setTheme('Dark'); setDynamic(true); }}><OpenInNewRounded/></button>
             </ROW>
+            <CustomModal parentRef={parentRef} visibility={[showModal, setShowModal]}>
+                <COL className={'saveThemeModal'}>
+                    <span className='title'>You are about to save the colors displayed currently as a theme</span>
+                    <span>Name your theme to proceed</span>
+                    <input placeholder='Your theme name' value={themeName} onChange={({target}) => setThemeName(target.value)}/>
+                    <ROW className={'buttons'}>
+                        <button onClick={() => saveTheme(themeName, [colorState.background[0], colorState.accent[0], colorState.accent1[0], colorState.text[0]])}>Save</button>
+                        <button onClick={() => setShowModal(false)}>Cancel</button>
+                    </ROW>
+                </COL>
+            </CustomModal>
         </COL>
     )
 }

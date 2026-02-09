@@ -633,3 +633,41 @@ input
         }
     }
 }
+
+.colorPicker
+{
+    position: relative;
+
+    .color
+    {
+        position: absolute;
+        height: 100%;
+        aspect-ratio: 1;
+        left: -2em;
+        border-radius: 100%;
+    }
+
+    input
+    {
+        font-size: 1rem;
+        width: 7ch;
+        text-align: right;
+        background: none;
+        padding: .25em;
+        margin: 0;
+        transition: border-bottom-color .5s ease;
+
+        @include util.inputBorderReset(bottom, 2px);
+    }
+
+    .picker
+    {
+        position: absolute;
+        top: 100%;
+        right: -2.25em;
+        z-index: 1;
+        padding: 1em;
+
+        *:hover { cursor: pointer; }
+    }
+}

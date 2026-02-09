@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import { HexColorInput, HexColorPicker } from 'react-colorful';
+import { useClickOutside } from 'react-haiku';
 
 import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
@@ -580,9 +582,17 @@ function AddToQueueModal({visibility, parentRef, files, toasterId})
     )
 }
 
-function CustomDropdown({options, defaultOptionIndex, select})
+function CustomDropdown({options, select})
 {
-    useEffect(() => { if (defaultOptionIndex !== undefined) select[1](options[defaultOptionIndex]) }, []);
+    const [selectedKey, setSelectedKey] = useState(['0']);
+
+    useEffect(() =>
+    {
+        const index = options.indexOf(select[0]);
+
+        setSelectedKey([index?.toString()]);
+    
+    }, [select[0]]);
 
     return (
         <ConfigProvider
@@ -594,12 +604,13 @@ function CustomDropdown({options, defaultOptionIndex, select})
             } } }}>
             <Dropdown
                 trigger={'click'}
+                placement='bottomRight'
                 menu={{
                     items: options.map((x, i) => { return {label: x, key: i} }),
                     onClick: ({key}) => select[1](options[parseInt(key)]),
                     selectable: true,
                     multiple: false,
-                    defaultSelectedKeys: [defaultOptionIndex?.toString()]
+                    defaultSelectedKeys: selectedKey
                 }}>
                 <ROW className={'dropdown'}>
                     <span className='overflowPrevent'>{ select[0] ? select[0] : 'Click to choose' }</span>
@@ -610,4 +621,35 @@ function CustomDropdown({options, defaultOptionIndex, select})
     )
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal, CustomDropdown };
+function ColorPicker({colorState})
+{
+    const ref = useRef();
+
+    const [showPalette, setShowPalette] = useState(false);
+
+    useClickOutside(ref, () => setShowPalette(false));
+
+    return (
+        <ROW ref={ref} className={'colorPicker'}>
+            <div className='color' style={{backgroundColor: colorState[0]}}/>
+            <HexColorInput prefixed color={colorState[0]} onChange={colorState[1]} onClick={() => setShowPalette(true)}/>
+            <div className={`picker ${showPalette ? null : 'displayNone'}`}><HexColorPicker color={colorState[0]} onChange={colorState[1]}/></div>
+        </ROW>
+    )
+}
+
+export {
+    ROW,
+    COL,
+    GRID,
+    Slider,
+    Hover3D,
+    SearchBox,
+    CustomModal,
+    ContextMenu,
+    SongInfoModal,
+    DeleteModal,
+    AddToQueueModal,
+    CustomDropdown,
+    ColorPicker
+};
