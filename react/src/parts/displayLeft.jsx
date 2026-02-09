@@ -8,6 +8,7 @@ import Folders from './sections/folders';
 import Albums from './sections/albums';
 import Artists from './sections/artists';
 import EQ from './sections/eq';
+import Settings from './sections/settings';
 
 export default function displayRight()
 {
@@ -40,7 +41,7 @@ export default function displayRight()
             <Albums/>
             <Artists/>
             <EQ/>
-            <COL className='section' style={{background: 'purple'}}></COL>
+            <Settings/>
         </ROW>
     )
 }
