@@ -18,4 +18,24 @@ function parseTime(sec)
 	return data;
 };
 
-export { parseTime };
+function getTextColor(background)
+{
+	const rgb = background
+	.replace('#', '')
+	.match(/.{2}/g)
+	.map(x => parseInt(x, 16))
+	.map((y) =>
+	{
+		y /= 255;
+
+		if (y > 0.03928) return Math.pow((y + 0.055) / 1.055, 2.4)
+
+		return y / 12.92;
+	})
+
+	const luminance = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+
+	return luminance > 0.5 ? '#000000' : '#ffffff'
+}
+
+export { parseTime, getTextColor };
