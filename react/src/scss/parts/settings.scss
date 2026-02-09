@@ -1,0 +1,92 @@
+@use '../util';
+@use '../colors.scss';
+
+.section#settings
+{
+    .title
+    {
+        font-size: 1.5rem;
+        padding: .5em 1em;
+    }
+
+    .categories
+    {
+        font-size: 1.2rem;
+        background-color: var(--accent2);
+        gap: 1em;
+        justify-content: space-evenly;
+
+        .category
+        {
+            padding: .25em 1em;
+            transition: background-color 250ms ease;
+
+            &.current { background-color: var(--background); }
+
+            &:hover { cursor: pointer; }
+        }
+    }
+
+    .views
+    {
+        flex-grow: 1;
+        overflow: hidden;
+
+        .view
+        {
+            font-size: 1rem;
+            min-width: var(--displayLeftWidth);
+            max-width: var(--displayLeftWidth);
+            margin: 1em 0;
+            gap: 1.25em;
+
+            & > * { padding: 0 7.5vw; }
+
+            .option
+            {
+                align-items: center;
+                grid-auto-flow: column;
+                grid-auto-columns: 1fr auto;
+
+                .switch
+                {
+                    display: flex;
+                    align-items: center;
+                    appearance: none;
+                    margin: 0;
+                    height: 100%;
+                    aspect-ratio: 2.5;
+                    transform: skewX(-10deg);
+                    border-radius: 5px;
+                    background-color: colors.$dark10;
+                    transition: all 250ms ease;
+                    cursor: pointer;
+
+                    $switchPad: 15%;
+
+                    &::before
+                    {
+                        content: '';
+                        margin-left: $switchPad;
+                        height: 50%;
+                        aspect-ratio: 1.5;
+                        background-color: colors.$dark90;
+                        border-radius: 2.5px;
+                        transition: all 250ms ease;
+                    }
+
+                    &:checked
+                    {
+                        background-color: colors.$dark90;
+
+                        &::before
+                        {
+                            background-color: colors.$dark10;
+                            margin-left: 75% - $switchPad;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
