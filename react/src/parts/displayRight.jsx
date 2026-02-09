@@ -213,7 +213,7 @@ export default function displayRight()
 
         window.ipc.on('ipc-setNowPlaying', (song) =>
         {
-            const { title, artist, album, albumart, filepath, duration, colors } = song;
+            const { title, artist, album, albumart, filepath, duration } = song;
 
             timerReset();
             timer.current.filepath = filepath;
@@ -231,13 +231,6 @@ export default function displayRight()
             }
 
             navigator.mediaSession.metadata = new MediaMetadata({title, album, artist, artwork: [{src: albumart}]});
-
-            const root = document.querySelector(':root');
-
-            root.style.setProperty('--background', `rgb(${colors.DarkMuted.join(',')})`);
-            root.style.setProperty('--accent', `rgb(${colors.LightVibrant.join(',')})`);
-            root.style.setProperty('--accent2', `rgba(${colors.LightVibrant.join(',')}, .25)`);
-            // document.querySelector(':root').style.setProperty('--textColor', `rgb(${colors.Vibrant.join(',')})`);
         });
 
         window.ipc.on('ipc-restoreShuffleRepeat', (data) =>

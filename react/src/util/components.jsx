@@ -5,7 +5,19 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { CloseRounded, InfoOutlineRounded, FavoriteBorderRounded, FavoriteRounded, QueueMusicRounded, PersonAddRounded, NewLabelRounded, AddchartRounded } from '@mui/icons-material';
+import { ConfigProvider, Dropdown } from 'antd';
+
+import
+{
+    CloseRounded,
+    InfoOutlineRounded,
+    FavoriteBorderRounded,
+    FavoriteRounded,
+    QueueMusicRounded,
+    PersonAddRounded,
+    NewLabelRounded,
+    UnfoldMoreRounded
+} from '@mui/icons-material';
 
 import { parseTime } from './functions';
 import eventBus from './events';
@@ -565,7 +577,37 @@ function AddToQueueModal({visibility, parentRef, files, toasterId})
                 <COL className={'queuesList'}>{queuesList}</COL>
             </COL>
         </CustomModal>
-    )   
+    )
 }
 
-export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal };
+function CustomDropdown({options, defaultOptionIndex, select})
+{
+    useEffect(() => { if (defaultOptionIndex !== undefined) select[1](options[defaultOptionIndex]) }, []);
+
+    return (
+        <ConfigProvider
+            theme={{ components: { Dropdown: {
+                colorBgElevated: 'var(--dark20)',
+                controlItemBgHover: 'var(--accent2)',
+                controlItemBgActive: 'var(--accent2)',
+                controlItemBgActiveHover: 'var(--accent2)'
+            } } }}>
+            <Dropdown
+                trigger={'click'}
+                menu={{
+                    items: options.map((x, i) => { return {label: x, key: i} }),
+                    onClick: ({key}) => select[1](options[parseInt(key)]),
+                    selectable: true,
+                    multiple: false,
+                    defaultSelectedKeys: [defaultOptionIndex?.toString()]
+                }}>
+                <ROW className={'dropdown'}>
+                    <span className='overflowPrevent'>{ select[0] ? select[0] : 'Click to choose' }</span>
+                    <UnfoldMoreRounded/>
+                </ROW>
+            </Dropdown>
+        </ConfigProvider>
+    )
+}
+
+export { ROW, COL, GRID, Slider, Hover3D, SearchBox, CustomModal, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal, CustomDropdown };

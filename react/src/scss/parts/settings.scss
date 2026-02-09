@@ -19,9 +19,14 @@
         .category
         {
             padding: .25em 1em;
-            transition: background-color 250ms ease;
+            border-top: .15em solid transparent;
+            transition: all 250ms ease;
 
-            &.current { background-color: var(--background); }
+            &.current
+            {
+                background-color: var(--background);
+                border-color: var(--accent);
+            }
 
             &:hover { cursor: pointer; }
         }
@@ -44,9 +49,16 @@
 
             .option
             {
+                height: 1.5rem;
                 align-items: center;
-                grid-auto-flow: column;
-                grid-auto-columns: 1fr auto;
+                transition: opacity 200ms ease;
+
+                &.disabled
+                {
+                    position: relative;
+                    opacity: .5;
+                    pointer-events: none;
+                }
 
                 .switch
                 {
@@ -58,7 +70,7 @@
                     aspect-ratio: 2.5;
                     transform: skewX(-10deg);
                     border-radius: 5px;
-                    background-color: colors.$dark10;
+                    background-color: var(--accent2);
                     transition: all 250ms ease;
                     cursor: pointer;
 
@@ -70,22 +82,98 @@
                         margin-left: $switchPad;
                         height: 50%;
                         aspect-ratio: 1.5;
-                        background-color: colors.$dark90;
+                        background-color: var(--accent);
                         border-radius: 2.5px;
                         transition: all 250ms ease;
                     }
 
                     &:checked
                     {
-                        background-color: colors.$dark90;
+                        background-color: var(--accent);
 
                         &::before
                         {
-                            background-color: colors.$dark10;
+                            background-color: var(--background);
                             margin-left: 75% - $switchPad;
                         }
                     }
                 }
+
+                .dropdown
+                {
+                    width: fit-content;
+                    max-width: 250px;
+                    background-color: var(--accent2);
+                    align-items: center;
+                    padding-left: .5em;
+                    padding-block: .25em;
+                    gap: .25em;
+                    border-radius: 2.5px;
+                    
+                    svg { margin-left: auto; }
+
+                    &:hover { cursor: pointer; }
+                }
+
+                .popup
+                {
+                    transition: scale 200ms ease;
+
+                    svg
+                    {
+                        height: 1em;
+                        width: auto;
+                        fill: var(--accent);
+                        transition: fill 200ms ease;
+                    }
+
+                    &:hover, &.current
+                    {
+                        scale: 1.05;
+                        svg { fill: white; }
+                    }
+                }
+
+                .sliderInOption
+                {
+                    width: 200px;
+                    gap: .5em;
+                    align-items: center;
+                    text-align: right;
+
+                    span { width: 5ch; }
+                }
+
+                .colorPicker
+                {
+                    position: relative;
+
+                    input
+                    {
+                        font-size: 1rem;
+                        width: 7ch;
+                        text-align: right;
+                        background: none;
+                        padding: .25em;
+                        margin: 0;
+                        transition: border-bottom-color .5s ease;
+
+                        @include util.inputBorderReset(bottom, 2px);
+                    }
+
+                    .picker
+                    {
+                        position: absolute;
+                        top: 100%;
+                        right: -2.25em;
+                        z-index: 1;
+                        padding: 1em;
+
+                        *:hover { cursor: pointer; }
+                    }
+                }
+
+                & > *:last-child { margin-left: auto; }
             }
         }
     }
