@@ -7,7 +7,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { ConfigProvider, Dropdown } from 'antd';
+import { ConfigProvider, Dropdown, Select } from 'antd';
 
 import
 {
@@ -582,41 +582,30 @@ function AddToQueueModal({visibility, parentRef, files, toasterId})
     )
 }
 
-function CustomDropdown({options, select})
+function CustomDropdown({options, select, className})
 {
-    const [selectedKey, setSelectedKey] = useState(['0']);
-
-    useEffect(() =>
-    {
-        const index = options.indexOf(select[0]);
-
-        setSelectedKey([index?.toString()]);
-    
-    }, [select[0]]);
-
     return (
         <ConfigProvider
-            theme={{ components: { Dropdown: {
+            theme={{ components: { Select: {
+                optionSelectedFontWeight: 'normal',
+                boxShadow: 'none',
+                colorTextPlaceholder: 'white',
+                colorInfoActive: 'white',
+                colorBorder: 'transparent',
+                activeBorderColor: 'transparent',
+                hoverBorderColor: 'transparent',
                 colorBgElevated: 'var(--dark20)',
+                colorBgContainer: 'var(--accent2)',
                 controlItemBgHover: 'var(--accent2)',
-                controlItemBgActive: 'var(--accent2)',
-                controlItemBgActiveHover: 'var(--accent2)'
+                controlItemBgActive: 'var(--accent2)'
             } } }}>
-            <Dropdown
-                trigger={'click'}
-                placement='bottomRight'
-                menu={{
-                    items: options.map((x, i) => { return {label: x, key: i} }),
-                    onClick: ({key}) => select[1](options[parseInt(key)]),
-                    selectable: true,
-                    multiple: false,
-                    defaultSelectedKeys: selectedKey
-                }}>
-                <ROW className={'dropdown'}>
-                    <span className='overflowPrevent'>{ select[0] ? select[0] : 'Click to choose' }</span>
-                    <UnfoldMoreRounded/>
-                </ROW>
-            </Dropdown>
+            <Select
+                className={className}
+                value={select[0]}
+                onChange={select[1]}
+                showSearch={{optionFilterProp: 'label'}}
+                options={options.map(x => { return { value: x, label: x } })}
+            />
         </ConfigProvider>
     )
 }

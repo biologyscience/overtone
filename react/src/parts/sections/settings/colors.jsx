@@ -153,7 +153,7 @@ export default function Colors()
                 <input type='checkbox' className='switch' checked={dynamic} onChange={() => setDynamic(x => !x)}/>
             </ROW>
             <ROW className={'option'}>
-                <span>Select theme</span>
+                <span>Color theme</span>
                 <CustomDropdown
                     options={themes}
                     select={[theme, setTheme]}

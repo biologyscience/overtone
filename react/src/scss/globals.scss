@@ -69,10 +69,10 @@
 
 body
 {
+    font-size: 10px;
     position: relative;
     display: grid;
     grid-template-rows: 20px auto 55px;
-    font-size: 10px;
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -80,6 +80,15 @@ body
     // background-color: colors.$dark25;
     background-color: var(--background);
     transition: background-color ease 400ms;
+
+    &.disableAnimations
+    {
+        &, *, *::before, *::after
+        {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
 
     &::before
     {
@@ -650,7 +659,7 @@ input
     input
     {
         font-size: 1rem;
-        width: 7ch;
+        width: 8ch;
         text-align: right;
         background: none;
         padding: .25em;
