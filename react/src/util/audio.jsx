@@ -6,6 +6,8 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
     const preGainRef = useRef();
     const filtersRef = useRef();
 
+    const fadeRef = useRef({step: 0.05, duration: 250});
+
     useEffect(() =>
     {
         if (!force) return;
@@ -27,8 +29,47 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
     {
         if (file === undefined) return;
 
-        if (playing) playerRef.current.play();
-        else playerRef.current.pause();
+        clearInterval(fadeRef.current.timer);
+
+        console.log(fadeRef.current.duration);
+
+        if (playing)
+        {
+            playerRef.current.play();
+            playerRef.current.volume = 0;
+
+            const fadeInterval = fadeRef.current.duration / ((audioLevel / 100) / fadeRef.current.step);
+
+            fadeRef.current.timer = setInterval(() =>
+            {
+                if ((playerRef.current.volume + fadeRef.current.step) >= (audioLevel / 100))
+                {
+                    playerRef.current.volume = audioLevel / 100;
+
+                    clearInterval(fadeRef.current.timer);
+                }
+
+                else playerRef.current.volume = parseFloat((playerRef.current.volume + fadeRef.current.step).toFixed(3));
+            }, fadeInterval);
+        }
+
+        else
+        {
+            const fadeInterval = fadeRef.current.duration / (playerRef.current.volume / fadeRef.current.step);
+
+            fadeRef.current.timer = setInterval(() =>
+            {
+                if ((playerRef.current.volume - fadeRef.current.step) <= 0)
+                {
+                    playerRef.current.volume = 0;
+                    playerRef.current.pause();
+
+                    clearInterval(fadeRef.current.timer);
+                }
+
+                else playerRef.current.volume = parseFloat((playerRef.current.volume - fadeRef.current.step).toFixed(3));
+            }, fadeInterval);
+        }
 
     }, [file, playing]);
 
@@ -103,12 +144,16 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             filtersRef.current.forEach((x, i) => x.gain.value = eqs[index][i]);
         }
 
-        window.addEventListener('ot-eq0', () => eqChange(0));
-        window.addEventListener('ot-eq1', () => eqChange(1));
+        playerRef.current.preservesPitch = false;
 
         audioPlayer.addEventListener('play', init);
         audioPlayer.addEventListener('ended', () => indicateEnd(true));
         audioPlayer.addEventListener('timeupdate', updateTime);
+
+        eventBus.addEventListener('ot-audioDeviceChange', ({detail}) => playerRef.current.setSinkId(detail));
+        eventBus.addEventListener('ot-changePlaybackSpeed', ({detail}) => playerRef.current.playbackRate = detail);
+        eventBus.addEventListener('ot-preservesPitch', ({detail}) => playerRef.current.preservesPitch = detail);
+        eventBus.addEventListener('ot-changeFadeDuration', ({detail}) => fadeRef.current.duration = detail);
         
         return () =>
         {
