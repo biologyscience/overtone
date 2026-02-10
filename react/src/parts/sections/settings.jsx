@@ -13,7 +13,7 @@ export default function Settings()
 {
     const settingsRef = useRef();
 
-    const [index, setIndex] = useState(1);
+    const [index, setIndex] = useState(2);
 
     function selectCategory({target})
     {

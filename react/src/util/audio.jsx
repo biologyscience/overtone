@@ -31,8 +31,6 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
         clearInterval(fadeRef.current.timer);
 
-        console.log(fadeRef.current.duration);
-
         if (playing)
         {
             playerRef.current.play();

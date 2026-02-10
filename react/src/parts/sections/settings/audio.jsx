@@ -75,14 +75,14 @@ export default function Audio()
         <COL className={'view'}>
             <ROW className={'option'}>
                 <span>Audio device</span>
-                <CustomDropdown options={deviceLabels} select={[selectedDeviceLabel, setSelectedDeviceLabel]}/>
+                <CustomDropdown className={'audioDeviceSelect'} options={deviceLabels} select={[selectedDeviceLabel, setSelectedDeviceLabel]}/>
             </ROW>
             <ROW className={'option'}>
                 <span>Playback speed</span>
                 <ROW className={'sliderInOption'}>
                     <button className={(playbackSpeed * 4 / 100).toFixed(2) === '1.00' ? 'visibilityHidden' : null } onClick={() => setPlaybackSpeed(25)}><CancelRounded/></button>
                     <Slider progressState={[playbackSpeed, setPlaybackSpeed]}/>
-                    <span>{(playbackSpeed * 4 / 100).toFixed(2)}</span>
+                    <span>{(playbackSpeed * 4 / 100).toFixed(2)}x</span>
                 </ROW>
             </ROW>
             <ROW className={'option'}>
