@@ -13,7 +13,7 @@ export default function Settings()
 {
     const settingsRef = useRef();
 
-    const [index, setIndex] = useState(4);
+    const [index, setIndex] = useState(3);
 
     function selectCategory({target})
     {
@@ -44,14 +44,14 @@ export default function Settings()
                 <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
                 <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
                 <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
-                <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span>
-                <span data-index={4} className={`category ${index === 4 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
+                {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
+                <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
             </ROW>
             <ROW className={'views'}>
                 <Colors/>
                 <Audio/>
                 <Interface/>
-                <DiscordRPC/>
+                {/* <DiscordRPC/> */}
                 <Advanced/>
             </ROW>
             <Toaster

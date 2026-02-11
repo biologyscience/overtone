@@ -94,10 +94,10 @@ export default function Interface()
                 <span>App Icon</span>
                 <button className='popup'><OpenInNewRounded/></button>
             </ROW> */}
-            <ROW className={'option'}>
+            {/* <ROW className={'option'}>
                 <span>Keyboard Shortcuts</span>
                 <button className='popup' onClick={() => setShowModal(true)}><OpenInNewRounded/></button>
-            </ROW>
+            </ROW> */}
             <CustomModal parentRef={parentRef} visibility={[showModal, setShowModal]}>
                 <COL className={'keyboardShortcuts'}>
                     TBD
