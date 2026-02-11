@@ -1,7 +1,343 @@
 @use '../util';
 @use '../colors.scss';
 
-.section#settings
+.section#settings.vertical
+{
+    & > .title
+    {
+        font-size: 1.5rem;
+        padding: .5em 1em;
+        position: relative;
+
+        @include util.divider(after, BottomLeft);
+    }
+
+    .content
+    {
+        flex-grow: 1;
+        overflow: hidden;
+
+        .categories
+        {
+            font-size: 1.2rem;
+            background-color: var(--accent2);
+            justify-content: space-evenly;
+    
+            .category
+            {
+                padding: .25em 1em;
+                border-left: .15em solid transparent;
+                transition: all 250ms ease;
+                text-align: center;
+    
+                &.current
+                {
+                    background-color: var(--background);
+                    border-color: var(--accent);
+                }
+    
+                &:hover { cursor: pointer; }
+            }
+        }
+    
+        .views
+        {
+            flex-grow: 1;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            .divider
+            {
+                min-height: 2.5px;
+                width: auto;
+                margin: .5em 1vw;
+                background-color: var(--accent2);
+            }
+    
+            .view
+            {
+                font-size: 1rem;
+                margin: 1em 0;
+                gap: 1.25em;
+
+                & > * { padding: 0 2vw; }
+    
+                .option
+                {
+                    height: 1.5rem;
+                    align-items: center;
+                    transition: opacity 200ms ease;
+    
+                    &.disabled
+                    {
+                        position: relative;
+                        opacity: .5;
+                        pointer-events: none;
+                    }
+    
+                    .audioDeviceSelect { min-width: fit-content; width: 30ch; }
+                    .fontSelect { min-width: fit-content; width: 20ch; }
+                    .fontSizeSelect { min-width: fit-content; width: 12.5ch; }
+    
+                    .switch
+                    {
+                        display: flex;
+                        align-items: center;
+                        appearance: none;
+                        margin: 0;
+                        height: 100%;
+                        aspect-ratio: 2.5;
+                        transform: skewX(-10deg);
+                        border-radius: 5px;
+                        background-color: var(--accent2);
+                        transition: all 250ms ease;
+                        cursor: pointer;
+    
+                        $switchPad: 15%;
+    
+                        &::before
+                        {
+                            content: '';
+                            margin-left: $switchPad;
+                            height: 50%;
+                            aspect-ratio: 1.5;
+                            background-color: var(--accent);
+                            border-radius: 2.5px;
+                            transition: all 250ms ease;
+                        }
+    
+                        &:checked
+                        {
+                            background-color: var(--accent);
+    
+                            &::before
+                            {
+                                background-color: var(--background);
+                                margin-left: 75% - $switchPad;
+                            }
+                        }
+                    }
+    
+                    .dropdown
+                    {
+                        width: fit-content;
+                        max-width: 250px;
+                        background-color: var(--accent2);
+                        align-items: center;
+                        padding-left: .5em;
+                        padding-block: .25em;
+                        gap: .25em;
+                        border-radius: 2.5px;
+                        
+                        svg { margin-left: auto; }
+    
+                        &:hover { cursor: pointer; }
+                    }
+    
+                    .popup
+                    {
+                        transition: scale 200ms ease;
+    
+                        svg
+                        {
+                            height: 1em;
+                            width: auto;
+                            fill: var(--accent);
+                            transition: fill 200ms ease;
+                        }
+    
+                        &:hover, &.current
+                        {
+                            scale: 1.05;
+                            svg { fill: white; }
+                        }
+                    }
+    
+                    .sliderInOption
+                    {
+                        width: 200px;
+                        gap: .5em;
+                        align-items: center;
+                        text-align: right;
+    
+                        button
+                        {
+                            scale: .75;
+                            transition: scale 200ms ease;
+    
+                            svg
+                            {
+                                height: 1em;
+                                width: auto;
+                                fill: var(--accent);
+                                transition: fill 200ms ease;
+                            }
+    
+                            &:hover, &.current
+                            {
+                                scale: .8;
+                                svg { fill: white; }
+                            }
+                        }
+    
+                        span { width: 12ch; }
+                    }
+    
+                    & > *:last-child { margin-left: auto; }
+                }
+    
+                .saveThemeModal
+                {
+                    font-size: 1rem;
+                    height: 25vh;
+                    width: 30vw;
+                    gap: 1em;
+                    padding: 1em 1.5em;
+                    border-radius: .5em;
+                    background-color: var(--background);
+    
+                    .title
+                    {
+                        font-size: 1.25em;
+                        margin-bottom: 1em;
+                    }
+    
+                    input
+                    {
+                        font-size: 1rem;
+                        padding: .25em .5em;
+                        background-color: var(--accent2);
+                        border-bottom: .15em solid var(--accent);
+                    }
+    
+                    .buttons
+                    {
+                        justify-content: center;
+                        margin-top: 1em;
+                        gap: 2em;
+                        
+                        button
+                        {
+                            font-size: 1rem;
+                            height: fit-content;
+                            padding: .4em 1em;
+                            border: .1em solid var(--accent);
+                            border-radius: .25em;
+                            transition: all 150ms ease;
+                
+                            &:hover
+                            {
+                                color: var(--background);
+                                background-color: var(--accent);
+                            }
+                        }
+                    }
+                }
+                
+                .keyboardShortcuts
+                {
+                    font-size: 1rem;
+                    height: 30vh;
+                    width: 50vw;
+                    padding: 1em 1.5em;
+                    border-radius: .5em;
+                    background-color: var(--background);
+    
+                    justify-content: center;
+                    align-items: center;
+                }
+    
+                .backupRestoreModal
+                {
+                    font-size: 1rem;
+                    gap: 2em;
+                    justify-content: center;
+                    padding: 2em;
+                    background-color: var(--background);
+                    border-radius: .5em;
+    
+                    .choice
+                    {
+                        min-width: fit-content;
+                        width: 15vw;
+                        align-items: center;
+                        padding: 1em;
+                        border-radius: .5em;
+                        background-color: var(--accent2);
+    
+                        span
+                        {
+                            font-size: 1.25em;
+                            white-space: nowrap;
+                        }
+    
+                        svg
+                        {
+                            height: 10vh;
+                            width: auto;
+                        }
+    
+                        &:hover
+                        {
+                            cursor: pointer;
+    
+                            svg { fill: var(--accent) }
+                        }
+                    }
+                }
+    
+                .resetAppModal, .confirmRestoreModal
+                {
+                    font-size: 1rem;
+                    gap: 1em;
+                    padding: 1em 2em;
+                    width: 25vw;
+                    background-color: var(--background);
+                    border-radius: .5em;
+    
+                    .title { font-size: 1.5em; }
+    
+                    .buttons
+                    {
+                        margin-top: .5em;
+                        gap: 2em;
+                        margin-left: auto;
+    
+                        button
+                        {
+                            font-size: 1rem;
+                            padding: .4em 1.25em;
+                            border: .15em solid colors.$dark40;
+                            border-radius: .25em;
+                            transition: all 150ms ease;
+    
+                            &:hover
+                            {
+                                border-color: transparent;
+                                background-color: colors.$dark40;
+                            }
+                        }
+    
+                        .yes
+                        {
+                            border-color: colors.$accentRed1;
+                            &:hover { background-color: colors.$accentRed1; }
+                        }
+    
+                        .accent
+                        {
+                            border-color: var(--accent);
+                            &:hover { background-color: var(--accent2); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.section#settings.horizontal
 {
     & > .title
     {
