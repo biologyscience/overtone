@@ -38,7 +38,7 @@ class Player
             duration: rawDuration,
             albumart: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
             filepath,
-            autoPlay,
+            autoPlay: autoPlay || false,
             isFavorite
         };
 

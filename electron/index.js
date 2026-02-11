@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage, Tray } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
 const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync } = require('fs');
@@ -16,6 +16,7 @@ const rpc = require('./rpc');
 // require('./example');
 
 let WINDOW = null;
+let TRAY = null;
 
 function init()
 {
@@ -687,7 +688,7 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 
         audioPlayer.shuffle = audio.shuffle;
         audioPlayer.repeat = audio.repeat;
-        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
+        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], audio.autoPlayOnLaunch);
     }
 });
 
@@ -1319,6 +1320,8 @@ ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
 
     ref[keys.shift()] = value;
 
+    app.setLoginItemSettings({openAtLogin: config.launchOnStartup});
+
     appdata.set('config', config);
 });
 
@@ -1356,6 +1359,11 @@ app.on('ready', () =>
         }
     });
 
+    TRAY = new Tray(`${__dirname}/logo.png`);
+    TRAY.setToolTip('OverTone');
+    TRAY.setContextMenu(Menu.buildFromTemplate([{ label: 'Quit OverTone', click: () => WINDOW.close() }]));
+    TRAY.on('click', () => WINDOW.show());
+
     init();
 
     audioPlayer.window = WINDOW;
@@ -1365,5 +1373,13 @@ app.on('ready', () =>
 
     ipcMain.on('ipc-minimize', () => WINDOW.minimize());
     ipcMain.on('ipc-maximize', () => WINDOW.maximize());
-    ipcMain.on('ipc-close', (E, data) => exitApp(data));
+
+    ipcMain.on('ipc-close', (E, data) =>
+    {
+        const { systemTray } = appdata.get('config');
+
+        if (!systemTray) return exitApp(data);
+
+        WINDOW.hide();
+    });
 });
