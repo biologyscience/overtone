@@ -35,15 +35,40 @@ function init()
             data =
             {
                 allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
-                font: 'Fira',
-                volume: 100,
-                shuffle: false,
-                repeat: false,
-                discordAppID: '1312407617540456458',
-                discordRPCconnect: false,
+                launchOnStartup: false,
+                systemTray: false,
                 checkMusicIn: [],
                 lastQueueState: {},
-                localhostPORT: 7410
+                colors:
+                {
+                    dynamic: true,
+                    highContrast: false,
+                    theme: 'Dark',
+                    themes: {}
+                },
+                audio:
+                {
+                    device: 'default',
+                    speed: 1,
+                    preservePitch: false,
+                    crossFade: 250,
+                    volume: 100,
+                    shuffle: false,
+                    repeat: false,
+                    autoPlayOnLaunch: false,
+                    percentForPlaycount: 50
+                },
+                interface:
+                {
+                    font: 'Fira',
+                    scale: 1,
+                    animations: true
+                },
+                discordRPC:
+                {
+                    appID: '1312407617540456458',
+                    autoConnect: true
+                }
             };
         }
 
@@ -639,21 +664,16 @@ ipcMain.on('ipc-wantQueue', (E, queue) =>
         WINDOW.webContents.send('ipc-setCurrentQueue', data);
     }
 });
-
-ipcMain.on('ipc-saveVolume', (E, volume) =>
-{
-    const config = appdata.get('config');
-
-    config.volume = volume;
-
-    appdata.set('config', config);
-});
  
 ipcMain.on('ipc-displayRightReady', (E, isReady) =>
 {
     if (!isReady) return;
 
-    const { lastQueueState, volume, shuffle, repeat } = appdata.get('config');
+    const config = appdata.get('config');
+
+    WINDOW.webContents.send('ipc-takeConfig', config);
+
+    const { lastQueueState, audio } = config;
     const queues = appdata.get('queues');
 
     if (lastQueueState.queue?.length > 0)
@@ -661,12 +681,12 @@ ipcMain.on('ipc-displayRightReady', (E, isReady) =>
         const queue = queues.find(x => x.name === lastQueueState.queue);
 
         WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
-        WINDOW.webContents.send('ipc-restoreVolume', volume);
-        WINDOW.webContents.send('ipc-restoreShuffleRepeat', {shuffle, repeat});
+        WINDOW.webContents.send('ipc-restoreVolume', audio.volume);
+        WINDOW.webContents.send('ipc-restoreShuffleRepeat', {shuffle: audio.shuffle, repeat: audio.repeat});
         WINDOW.webContents.send('ipc-restoreCurrentTime', lastQueueState.duration);
 
-        audioPlayer.shuffle = shuffle;
-        audioPlayer.repeat = repeat;
+        audioPlayer.shuffle = audio.shuffle;
+        audioPlayer.repeat = audio.repeat;
         audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], false);
     }
 });
@@ -796,8 +816,8 @@ ipcMain.on('ipc-audioPlayer-shuffleRepeat', (E, {shuffle, repeat}) =>
     if (shuffle !== undefined) audioPlayer.shuffle = shuffle;
     if (repeat !== undefined) audioPlayer.repeat = repeat;
 
-    config.shuffle = audioPlayer.shuffle;
-    config.repeat = audioPlayer.repeat;
+    config.audio.shuffle = audioPlayer.shuffle;
+    config.audio.repeat = audioPlayer.repeat;
 
     appdata.set('config', config);
 });
@@ -1285,6 +1305,29 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
     if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false, songMetadata);
 
     WINDOW.webContents.send(toastEvent, {type: 'success', text: `Metatags for were changed successfully`});
+});
+
+ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
+{
+    if (value === undefined || value === null || isNaN(value)) return;
+
+    const config = appdata.get('config');
+
+    let ref = config;
+
+    while (keys.length > 1) ref = ref[keys.shift()];
+    ref[keys.shift()] = value;
+
+    appdata.set('config', config);
+});
+
+ipcMain.on('ipc-saveColorTheme', (E, {name, colors}) =>
+{
+    const config = appdata.get('config');
+
+    config.colors.themes[name] = colors;
+
+    appdata.set('config', config);
 });
 
 app.on('ready', () =>

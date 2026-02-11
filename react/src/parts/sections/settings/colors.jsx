@@ -13,13 +13,13 @@ export default function Colors()
 
     const
         [currentDynamicColor, setCurrentDyanmicColor] = useState({}),
-        [dynamic, setDynamic] = useState(true),
+        [dynamic, setDynamic] = useState(),
         [theme, setTheme] = useState(),
-        [themes, setThemes] = useState(['Dark', 'Light']),
+        [themes, setThemes] = useState(),
         colorState = { background: useState(), accent: useState(), accent1: useState(), text: useState('#FFFFFF') },
         [showModal, setShowModal] = useState(false),
         [themeName, setThemeName] = useState(''),
-        [highContrast, setHighContrast] = useState(false);
+        [highContrast, setHighContrast] = useState();
 
     function toHex(rgb) { return '#' + rgb.map(number => number.toString(16).padStart(2, '0')).join('').toUpperCase() };
 
@@ -73,12 +73,16 @@ export default function Colors()
         toast.success('Theme saved successfully', {toasterId: 'settings'});
 
         setShowModal(false);
+
+        window.ipc.send('ipc-saveColorTheme', ({name, colors}));
     }
 
     //
 
     useEffect(() =>
     {
+        window.ipc.send('ipc-updateConfig', ({value: dynamic, keys: ['colors', 'dynamic']}));
+
         if (!dynamic) return;
 
         setDynamicColors(structuredClone(currentDynamicColor), theme);
@@ -98,6 +102,8 @@ export default function Colors()
 
         if (dynamic) setDynamicColors(structuredClone(currentDynamicColor), theme);
 
+        window.ipc.send('ipc-updateConfig', ({value: theme, keys: ['colors', 'theme']}));
+
     }, [theme]);
 
     useEffect(() =>
@@ -113,6 +119,8 @@ export default function Colors()
     
     useEffect(() =>
     {
+        window.ipc.send('ipc-updateConfig', ({value: highContrast, keys: ['colors', 'highContrast']}));
+
         if (!highContrast) return;
 
         setHighContrastColors(theme);
@@ -141,9 +149,16 @@ export default function Colors()
     useEffect(() =>
     {
         root.current = document.querySelector(':root');
+
         window.ipc.on('ipc-setNowPlaying', ({colors}) => setCurrentDyanmicColor(colors));
 
-        setTheme(themes[0]);
+        window.ipc.on('ipc-takeConfig', ({colors}) =>
+        {
+            setDynamic(colors.dynamic);
+            setThemes(['Dark', 'Light', ...Object.keys(colors.themes)]);
+            setTheme(colors.theme);
+            setHighContrast(colors.highContrast);
+        });
     }, []);
 
     return (

@@ -1,7 +1,7 @@
 const { Client } = require('discord-rpc');
 const { appdata } = require('./util');
 
-const { discordAppID } = appdata.get('config');
+const { discordRPC } = appdata.get('config');
 
 const rpc = new Client({transport: 'ipc'});
 
@@ -28,7 +28,7 @@ class RPC
     {
         try
         {
-            await rpc.login({clientId: discordAppID});
+            await rpc.login({clientId: discordRPC.appID});
 
             this.live = true;
         }

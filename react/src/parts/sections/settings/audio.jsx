@@ -7,12 +7,12 @@ import { CancelRounded } from '@mui/icons-material';
 export default function Audio()
 {
     const
-        [deviceLabels, setDeviceLabels] = useState([]),
+        [deviceLabels, setDeviceLabels] = useState(),
         [selectedDeviceLabel, setSelectedDeviceLabel] = useState(),
-        [deviceIDs, setDeviceIDs] = useState([]),
-        [playbackSpeed, setPlaybackSpeed] = useState(25),
-        [preservePitch, setPreservePitch] = useState(false),
-        [crossfade, setCrossfade] = useState(12.5);
+        [deviceIDs, setDeviceIDs] = useState(),
+        [playbackSpeed, setPlaybackSpeed] = useState(),
+        [preservePitch, setPreservePitch] = useState(),
+        [crossfade, setCrossfade] = useState();
 
     async function updateDeviceList()
     {
@@ -39,11 +39,15 @@ export default function Audio()
 
     useEffect(() =>
     {
+        if (!deviceLabels) return;
+
         const index = deviceLabels.indexOf(selectedDeviceLabel);
 
         if (index === -1) return;
 
         eventBus.dispatchEvent(new CustomEvent('ot-audioDeviceChange', ({detail: deviceIDs[index]})));
+
+        window.ipc.send('ipc-updateConfig', {value: selectedDeviceLabel, keys: ['audio', 'device']});
 
     }, [selectedDeviceLabel]);
 
@@ -51,24 +55,39 @@ export default function Audio()
     {
         eventBus.dispatchEvent(new CustomEvent('ot-changePlaybackSpeed', {detail: playbackSpeed * 4 / 100}));
 
+        window.ipc.send('ipc-updateConfig', {value: playbackSpeed * 4 / 100, keys: ['audio', 'speed']});
+
     }, [playbackSpeed]);
 
     useEffect(() =>
     {
         eventBus.dispatchEvent(new CustomEvent('ot-preservesPitch', {detail: preservePitch}));
 
+        window.ipc.send('ipc-updateConfig', {value: preservePitch, keys: ['audio', 'preservePitch']});
+
     }, [preservePitch]);
 
     useEffect(() =>
     {
-        eventBus.dispatchEvent(new CustomEvent('ot-changeFadeDuration', {detail: Math.round(crossfade * 2000 / 100)}));
+        eventBus.dispatchEvent(new CustomEvent('ot-changeFadeDuration', {detail: Math.round(crossfade * 20)}));
+
+        window.ipc.send('ipc-updateConfig', {value: Math.round(crossfade * 20), keys: ['audio', 'crossFade']});
 
     }, [crossfade]);
 
     useEffect(() =>
     {
         updateDeviceList();
+
         navigator.mediaDevices.addEventListener('devicechange', updateDeviceList);
+
+        window.ipc.on('ipc-takeConfig', ({audio}) =>
+        {
+            setSelectedDeviceLabel(audio.device);
+            setPlaybackSpeed(audio.speed * 100 / 4);
+            setPreservePitch(audio.preservePitch);
+            setCrossfade(audio.crossFade / 20);
+        });
     }, []);
 
     return (

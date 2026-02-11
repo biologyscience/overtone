@@ -58,7 +58,7 @@ export default function displayRight()
     const [dragging, setDragging] = useState(false);
 
     const player = useRef();
-    const timer = useRef({});
+    const timer = useRef({percentForSongCount: 50});
     const sectionRef = useRef();
 
     function clickDisplayRight({clientX, clientY})
@@ -106,12 +106,18 @@ export default function displayRight()
         eventBus.dispatchEvent(new Event('ot-previous'));
     }
 
-    function timerStart()
+    function timerStart(percent)
     {
         if (timer.current.played) return;
 
         timer.current.lastTime = Date.now();
-        timer.current.timeout = setTimeout(() => { window.ipc.send('ipc-songPlayed', timer.current.filepath); timer.current.played = true; }, (((timer.current.duration * 1000) / 2) - timer.current.timeSpent));
+
+        timer.current.timeout = setTimeout(() =>
+        {
+            window.ipc.send('ipc-songPlayed', timer.current.filepath);
+            timer.current.played = true;
+
+        }, ((timer.current.duration * 1000 * timer.current.percentForSongCount / 100) - timer.current.timeSpent));
     }
 
     function timerStop()
@@ -186,7 +192,7 @@ export default function displayRight()
     {
         if (showVolumeSlider || !volume) return;
 
-        window.ipc.send('ipc-saveVolume', Math.round(volume));
+        window.ipc.send('ipc-updateConfig', {value: Math.round(volume), keys: ['audio', 'volume']});
 
     }, [showVolumeSlider]);
 
@@ -256,11 +262,12 @@ export default function displayRight()
         navigator.mediaSession.setActionHandler('nexttrack', playNext);
 
         eventBus.addEventListener('ot-toggleFavorite', ({detail: filepath}) => filepath === timer.current.filepath ? setIsFavorite(x => !x) : null);
+        eventBus.addEventListener('ot-changePercentForSongCount', ({detail}) => { timer.current.percentForSongCount = detail; timerStop(); timerStart(); });
     }, []);
 
     function miscButton()
     {
-        
+
     }
 
     return (

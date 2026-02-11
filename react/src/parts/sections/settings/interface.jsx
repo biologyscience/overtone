@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { OpenInNewRounded, RoomRounded, Sledding } from '@mui/icons-material';
+import { OpenInNewRounded } from '@mui/icons-material';
 
 import { COL, ROW, CustomModal, CustomDropdown } from '../../../util/components';
 
@@ -12,11 +12,11 @@ export default function Interface()
         parentRef = useRef();
 
     const
-        [fonts, setFonts] = useState([]),
+        [fonts, setFonts] = useState(),
         [selectedFont, setSelectedFont] = useState(),
-        [fontSize, setFontSize] = useState('Medium'),
-        [allowAnimations, setAllowAnimations] = useState(true),
-        [showModal, setShowModal] = useState(false);
+        [fontSize, setFontSize] = useState(),
+        [allowAnimations, setAllowAnimations] = useState(),
+        [showModal, setShowModal] = useState();
 
     useEffect(() =>
     {
@@ -28,6 +28,8 @@ export default function Interface()
         else fontName = selectedFont;
 
         root.current.style.setProperty('--currentFont', fontName);
+        
+        window.ipc.send('ipc-updateConfig', {value: fontName, keys: ['interface', 'font']});
 
     }, [selectedFont]);
 
@@ -39,12 +41,16 @@ export default function Interface()
         if (fontSize === 'Medium') root.current.style.setProperty('font-size', '16px');
         if (fontSize === 'Large') root.current.style.setProperty('font-size', '22px');
 
+        window.ipc.send('ipc-updateConfig', {value: ['Small', 'Medium', 'Large'].indexOf(fontSize), keys: ['interface', 'scale']});
+
     }, [fontSize]);
 
     useEffect(() =>
     {
         if (allowAnimations) document.body.classList.remove('disableAnimations');
         else document.body.classList.add('disableAnimations');
+
+        window.ipc.send('ipc-updateConfig', {value: allowAnimations, keys: ['interface', 'animations']});
 
     }, [allowAnimations]);
 
@@ -60,6 +66,14 @@ export default function Interface()
             setFonts([defaultFont, ...unique]);
         });
 
+        window.ipc.on('ipc-takeConfig', (config) =>
+        {
+            const { font, scale, animations } = config.interface;
+
+            setSelectedFont(font);
+            setFontSize(['Small', 'Medium', 'Large'][scale]);
+            setAllowAnimations(animations);
+        });
     }, []);
 
     return (
