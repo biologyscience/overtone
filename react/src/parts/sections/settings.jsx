@@ -11,6 +11,8 @@ import { COL, ROW } from '../../util/components';
 
 export default function Settings()
 {
+    const vertical = true;
+
     const settingsRef = useRef();
 
     const [index, setIndex] = useState(0);
@@ -21,11 +23,18 @@ export default function Settings()
 
         const int = parseInt(target.dataset.index);
 
-        const visibleWidth = element.getBoundingClientRect().width;
+        const boundingRect = element.getBoundingClientRect();
 
-        element.scrollTo({left: int * visibleWidth, behavior: 'smooth'});
+        if (vertical)
+        {
+            element.scrollTo({top: int * (element.scrollHeight - boundingRect.height) / 3, behavior: 'smooth'});
+        }
 
-        setIndex(int);
+        else
+        {
+            element.scrollTo({left: int * boundingRect.width, behavior: 'smooth'});
+            setIndex(int);
+        }
     }
 
     useEffect(() =>
@@ -34,26 +43,65 @@ export default function Settings()
 
         selectCategory({target: { dataset: { index } }});
 
-        settingsRef.current.querySelector('.views').addEventListener('wheel', preventXScroll, {passive: false});
+        const element = settingsRef.current.querySelector('.views');
+
+        element.addEventListener('wheel', preventXScroll, {passive: false});
+        element.addEventListener('scroll', (E) =>
+        {
+            if (!vertical) return;
+
+            const { scrollTop, scrollHeight, clientHeight } = E.target;
+
+            const int = Math.round(scrollTop * 3 / (scrollHeight - clientHeight));
+
+            setIndex(int);
+        });
+
     }, []);
-    
+
     return (
-        <COL ref={settingsRef} className='section relative' id='settings'>
+        <COL ref={settingsRef} className={`section relative ${vertical ? 'vertical' : 'horizontal'}`} id='settings'>
             <span className={'title'}>Settings</span>
-            <ROW className={'categories'}>
-                <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
-                <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
-                <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
-                {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
-                <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
-            </ROW>
-            <ROW className={'views'}>
-                <Colors/>
-                <Audio/>
-                <Interface/>
-                {/* <DiscordRPC/> */}
-                <Advanced/>
-            </ROW>
+            {
+                vertical ? (
+                    <ROW className={'content'}>
+                        <COL className={'categories'}>
+                            <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
+                            <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
+                            <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
+                            {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
+                            <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
+                        </COL>
+                        <COL className={'views'}>
+                            <Colors/>
+                            <div className='divider'/>
+                            <Audio/>
+                            <div className='divider'/>
+                            <Interface/>
+                            <div className='divider'/>
+                            {/* <DiscordRPC/> */}
+                            <Advanced/>
+                        </COL>
+                    </ROW>
+                ) : (
+                    <>
+                    <ROW className={'categories'}>
+                        <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
+                        <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
+                        <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
+                        {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
+                        <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
+                    </ROW>
+                    <ROW className={'views'}>
+                        <Colors/>
+                        <Audio/>
+                        <Interface/>
+                        {/* <DiscordRPC/> */}
+                        <Advanced/>
+                    </ROW>
+                    </>
+                )
+            }
             <Toaster
                 toasterId='settings'
                 position='bottom-right'
