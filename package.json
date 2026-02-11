@@ -1,6 +1,6 @@
 {
   "name": "overtone",
-  "version": "0.54.0",
+  "version": "0.55.0",
   "description": "A free and open source Music Player for all your local music files !",
   "main": "electron/index.js",
   "author": "biologyscience",
@@ -13,9 +13,11 @@
     "start": "vite build ./react && electron electron/index.js --file"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "chokidar": "^5.0.0",
     "discord-rpc": "^4.0.1",
     "electron": "^39.2.7",
+    "extract-zip": "^2.0.1",
     "move-file": "^4.1.0",
     "music-metadata": "^7.14.0",
     "node-taglib-sharp": "^6.0.1",

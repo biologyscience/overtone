@@ -1,12 +1,14 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, Menu, clipboard, nativeImage, Tray } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
-const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync } = require('fs');
+const { mkdirSync, existsSync, writeFileSync, readdirSync, statSync, unlinkSync, createWriteStream, renameSync, rmSync, copyFileSync, cpSync } = require('fs');
 const { moveFileSync } = require('move-file');
 const path = require('path');
 const sharp = require('sharp');
 const crypto = require('crypto');
 const { Vibrant } = require('node-vibrant/node');
+const archiver = require('archiver');
+const extractor = require('extract-zip');
 
 const { appdata, parseTime, M3U } = require('./util');
 const { getArtistPicture, getAlbumArtURL } = require('./spotify');
@@ -1339,6 +1341,83 @@ ipcMain.handle('ipc-wantThemeColors', (E, theme) =>
     const config = appdata.get('config');
 
     return config.colors.themes[theme];
+});
+
+ipcMain.handle('ipc-backupAppdata', async () =>
+{
+    const pathSafeTime = new Date(Date.now()).toLocaleString().replaceAll('/', '-').replaceAll(':', '-').replaceAll(',', '').replaceAll(' ', '_');
+
+    const location = dialog.showSaveDialogSync(WINDOW, {title: 'Export app data as .zip', defaultPath: `OverTone_Backup_${pathSafeTime}`, filters: [{extensions: ['zip'], name: 'ZIP File'}]});
+
+    if (location === undefined) return;
+
+    const writeStream = createWriteStream(location);
+    const zip = archiver('zip');
+
+    zip.pipe(writeStream);
+    zip.directory(path.join(__dirname, './appdata/'), false);
+
+    try
+    {
+        await zip.finalize();
+
+        return location;
+    }
+
+    catch (E) { return false; }
+});
+
+ipcMain.handle('ipc-restoreAppdata', async () =>
+{
+    const location = dialog.showOpenDialogSync(WINDOW, {title: 'Choose a OverTone backup (.zip)', filters: [{extensions: ['zip'], name: 'ZIP File'}]});
+
+    if (location === undefined) return;
+
+    try
+    {
+        const restoredPath = path.join(__dirname, './restored/');
+
+        await extractor(location[0], {dir: restoredPath});
+
+        const files = readdirSync(restoredPath);
+
+        const partial = ['albums.json', 'config.json', 'queues.json', 'songList.json', 'songMetadata.json'].map(x => files.includes(x)).includes(false);
+
+        return { partial };
+    }
+
+    catch (E) { return false; }
+});
+
+ipcMain.on('ipc-restoreNow', () =>
+{
+    rmSync(path.join(__dirname, './appdata/'), {recursive: true});
+    cpSync(path.join(__dirname, './restored/'), path.join(__dirname, './appdata/'), {recursive: true});
+    rmSync(path.join(__dirname, './restored/'), {recursive: true});
+
+    const files = readdirSync(path.join(__dirname, './appdata/'));
+
+    files.forEach((file) =>
+    {
+        if (['albums.json', 'config.json', 'queues.json', 'songList.json', 'songMetadata.json', 'webp'].includes(file)) return;
+
+        rmSync(path.join(__dirname, './appdata/', file), {recursive: true});
+    });
+
+    audioPlayer.reset();
+
+    app.relaunch();
+    app.exit();
+});
+
+ipcMain.on('ipc-resetApp', () =>
+{
+    rmSync(path.join(__dirname, './appdata/'), {recursive: true});
+
+    audioPlayer.reset();
+
+    app.relaunch();
+    app.exit();
 });
 
 app.on('ready', () =>

@@ -19,6 +19,19 @@ class Player
         this.playUpcoming = false;
     }
 
+    reset()
+    {
+        this.queue = [];
+        this.queueName = '';
+        this.currentQueueItem = 0;
+        this.ended = true;
+        this.shuffle = false;
+        this.repeat = false;
+        this.stopAfter = null;
+        this.stopped = false;
+        this.playUpcoming = false;
+    }
+
     setNowPlaying(filepath, autoPlay, songMetadata)
     {
         this.ended = false;
