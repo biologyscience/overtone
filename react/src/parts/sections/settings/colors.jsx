@@ -33,6 +33,7 @@ export default function Colors()
             colorState.accent[1]('#2563EB');
             colorState.accent1[1]('#2563EB25');
             colorState.text[1]('#111827');
+            setTheme('Light');
         }
 
         else
@@ -41,6 +42,7 @@ export default function Colors()
             colorState.accent[1]('#22C55E');
             colorState.accent1[1]('#22C55E25');
             colorState.text[1]('#FFFFFF');
+            setTheme('Dark');
         }
     }
 
@@ -54,14 +56,16 @@ export default function Colors()
             colorState.accent[1](toHex(colors.DarkVibrant));
             colorState.accent1[1](toHex(colors.DarkVibrant));
             colorState.text[1]('#000000');
+            setTheme('Light');
         }
 
-        if (currentTheme === 'Dark')
+        else
         {
             colorState.background[1](toHex(colors.DarkMuted));
             colorState.accent[1](toHex(colors.LightVibrant));
             colorState.accent1[1](toHex(colors.LightVibrant));
             colorState.text[1]('#FFFFFF');
+            setTheme('Dark');
         }
     }
 
@@ -93,14 +97,27 @@ export default function Colors()
 
     useEffect(() =>
     {
-        if (highContrast)
+        if (!['Dark', 'Light'].includes(theme))
         {
-            setHighContrastColors(theme);
+            setDynamic(false);
+            setHighContrast(false);
 
-            if (theme !== 'Light') setTheme('Dark');
+            window.ipc.invoke('ipc-wantThemeColors', theme).then((colors) =>
+            {
+                colorState.background[1](colors[0]);
+                colorState.accent[1](colors[1]);
+                colorState.accent1[1](colors[2]);
+                colorState.text[1](colors[3]);
+            });
         }
 
-        if (dynamic) setDynamicColors(structuredClone(currentDynamicColor), theme);
+        else if (highContrast) setHighContrastColors(theme);
+
+        else
+        {
+            setDynamic(true);
+            setDynamicColors(structuredClone(currentDynamicColor), theme);
+        }
 
         window.ipc.send('ipc-updateConfig', ({value: theme, keys: ['colors', 'theme']}));
 
