@@ -1330,6 +1330,13 @@ ipcMain.on('ipc-saveColorTheme', (E, {name, colors}) =>
     appdata.set('config', config);
 });
 
+ipcMain.handle('ipc-wantThemeColors', (E, theme) =>
+{
+    const config = appdata.get('config');
+
+    return config.colors.themes[theme];
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
