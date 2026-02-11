@@ -24,12 +24,12 @@ export default function Interface()
 
         let fontName;
 
-        if (selectedFont === defaultFont) fontName = 'Fira';
+        if (selectedFont === defaultFont) fontName = 'Fira Sans';
         else fontName = selectedFont;
 
         root.current.style.setProperty('--currentFont', fontName);
         
-        window.ipc.send('ipc-updateConfig', {value: fontName, keys: ['interface', 'font']});
+        window.ipc.send('ipc-updateConfig', {value: selectedFont === defaultFont ? defaultFont : selectedFont, keys: ['interface', 'font']});
 
     }, [selectedFont]);
 
@@ -62,7 +62,7 @@ export default function Interface()
         {
             const unique = [...new Set(fontsArray.map(x => x.family).filter(y => y?.length > 0))];
 
-            setSelectedFont(defaultFont);
+            // setSelectedFont(defaultFont);
             setFonts([defaultFont, ...unique]);
         });
 
