@@ -60,7 +60,7 @@ function init()
                 },
                 interface:
                 {
-                    font: 'Fira',
+                    font: 'Default (Fira Sans)',
                     scale: 1,
                     animations: true
                 },
@@ -1309,13 +1309,14 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 
 ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
 {
-    if (value === undefined || value === null || isNaN(value)) return;
+    if (value === undefined || value === null || (typeof(value) ==='number' && isNaN(value))) return;
 
     const config = appdata.get('config');
 
     let ref = config;
 
     while (keys.length > 1) ref = ref[keys.shift()];
+
     ref[keys.shift()] = value;
 
     appdata.set('config', config);
