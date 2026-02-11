@@ -604,7 +604,7 @@ function CustomDropdown({options, select, className})
                 value={select[0]}
                 onChange={select[1]}
                 showSearch={{optionFilterProp: 'label'}}
-                options={options.map(x => { return { value: x, label: x } })}
+                options={options?.map(x => { return { value: x, label: x } })}
             />
         </ConfigProvider>
     )
