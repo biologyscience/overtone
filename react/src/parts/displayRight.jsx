@@ -267,7 +267,9 @@ export default function displayRight()
 
     function miscButton()
     {
-        window.location.reload()
+        // window.location.reload()
+
+        eventBus.dispatchEvent(new Event('ot-eqReset'));
     }
 
     return (

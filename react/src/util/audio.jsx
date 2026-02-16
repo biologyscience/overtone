@@ -103,7 +103,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
             preGainRef.current = ctx.createGain();
 
-            const bands = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+            const bands = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 
             const filters = bands.map((band) =>
             {
@@ -123,23 +123,19 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
             let node = source;
 
-            [preGainRef.current, ...filters, analyser, ctx.destination].forEach((filter) =>
+            [...filters, analyser, ctx.destination].forEach((filter) =>
+            // [preGainRef.current, ...filters, analyser, ctx.destination].forEach((filter) =>
             {
                 node.connect(filter);
                 node = filter;
             });
         }
 
-        function eqChange(index)
+        function eqChange(gains)
         {
-            const eqs = [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [2.6, 2.6, 1.3, -0.4, -2.8, -3.5, -2.6, -0.4, 1.8, 2.6]
-            ];
+            preGainRef.current.gain.value = Math.pow(10, -(Math.max(...gains)) / 20);
 
-            preGainRef.current.gain.value = Math.pow(10, -(Math.max(...eqs[index])) / 20);
-
-            filtersRef.current.forEach((x, i) => x.gain.value = eqs[index][i]);
+            filtersRef.current.forEach((x, i) => x.gain.value = gains[i]);
         }
 
         playerRef.current.preservesPitch = false;
@@ -152,6 +148,10 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
         eventBus.addEventListener('ot-changePlaybackSpeed', ({detail}) => playerRef.current.playbackRate = detail);
         eventBus.addEventListener('ot-preservesPitch', ({detail}) => playerRef.current.preservesPitch = detail);
         eventBus.addEventListener('ot-changeFadeDuration', ({detail}) => fadeRef.current.duration = detail);
+
+        eventBus.addEventListener('ot-eqChange', ({detail}) => eqChange(detail));
+
+        eventBus.dispatchEvent(new CustomEvent('ot-playerRef', {detail: playerRef}));
         
         return () =>
         {
