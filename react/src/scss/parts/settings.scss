@@ -151,6 +151,17 @@
                             scale: 1.05;
                             svg { fill: white; }
                         }
+
+                        &.spin
+                        {
+                            @keyframes spin
+                            {
+                                0% { rotate: 0deg; }    
+                                100% { rotate: 360deg; }
+                            }
+
+                            svg { animation: spin 750ms linear forwards infinite; }
+                        }
                     }
     
                     .sliderInOption
