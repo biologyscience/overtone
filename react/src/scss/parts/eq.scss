@@ -3,7 +3,173 @@
 
 .section#eq
 {
-    // justify-content: center;
-    gap: 5vh;
-    align-items: center;
+    & > .title
+    {
+        font-size: 1.5rem;
+        padding: .5em 1em;
+        position: relative;
+
+        @include util.divider(after, BottomLeft);
+    }
+
+    .content
+    {
+        margin: 0 2vw;
+
+        .graphs
+        {
+            margin-top: 2.5vh;
+            position: relative;
+    
+            .visualizer
+            {
+                text, line, rect
+                {
+                    opacity: 0;
+                    transition: opacity 150ms ease;
+                }
+        
+                &:hover
+                {
+                    line, rect { opacity: 1; }
+                }
+            }
+
+            &::after
+            {
+                position: absolute;
+                background-color: colors.$dark30;
+                inset: 0;
+                top: 100px;
+                opacity: .6;
+            }
+
+            &.disableEQ::after { content: ''; }
+        }
+    
+        .options
+        {
+            gap: 2vh;
+            
+            .head
+            {
+                margin: 2.5vh 0;
+                font-size: 1rem;
+                justify-content: space-between;
+
+                & > * { gap: 1em; }
+            }
+    
+            .switch
+            {
+                display: flex;
+                align-items: center;
+                appearance: none;
+                margin: 0;
+                height: 100%;
+                aspect-ratio: 2.5;
+                transform: skewX(-10deg);
+                border-radius: 5px;
+                background-color: var(--accent2);
+                transition: all 250ms ease;
+                cursor: pointer;
+        
+                $switchPad: 15%;
+        
+                &::before
+                {
+                    content: '';
+                    margin-left: $switchPad;
+                    height: 50%;
+                    aspect-ratio: 1.5;
+                    background-color: var(--accent);
+                    border-radius: 2.5px;
+                    transition: all 250ms ease;
+                }
+        
+                &:checked
+                {
+                    background-color: var(--accent);
+        
+                    &::before
+                    {
+                        background-color: var(--background);
+                        margin-left: 75% - $switchPad;
+                    }
+                }
+            }
+
+            .bands
+            {
+                justify-content: space-evenly;
+
+                .band
+                {
+                    position: relative;
+
+                    input
+                    {
+                        width: 3ch;
+                        text-align: center;
+                        padding: .25em .5em;
+                        background-color: var(--accent2);
+                        border-bottom: .15em solid var(--accent);
+                    }
+    
+                    span
+                    {
+                        font-size: .8rem;
+                        text-align: center;
+                    }
+
+                    &::after
+                    {
+                        position: absolute;
+                        background-color: colors.$dark30;
+                        inset: 0;
+                        opacity: .25;
+                    }
+    
+                    &.disableEQ::after { content: ''; }
+                }
+            }
+
+            .presets
+            {
+                position: relative;
+                align-items: center;
+                gap: 1em;
+
+                .eqPreset { flex-grow: 1; }
+
+                button
+                {
+                    transition: scale 200ms ease;
+
+                    svg
+                    {
+                        fill: colors.$dark80;
+                        transition: fill 200ms ease;
+                    }
+
+                    &:hover
+                    {
+                        scale: 1.05;
+                        svg { fill: white; }
+                    }
+                }
+
+                &::after
+                {
+                    position: absolute;
+                    background-color: colors.$dark30;
+                    inset: 0;
+                    opacity: .1;
+                    z-index: 1;
+                }
+
+                &.disableEQ::after { content: ''; }
+            }
+        }
+    }
 }

@@ -269,7 +269,6 @@ export default function displayRight()
     {
         // window.location.reload()
 
-        eventBus.dispatchEvent(new Event('ot-eqReset'));
     }
 
     return (

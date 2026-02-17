@@ -1,4 +1,5 @@
-electron/appdata
+electron/appdata/*
+!electron/appdata/eqs.json
 electron/example.js
 node_modules
 react/dist
