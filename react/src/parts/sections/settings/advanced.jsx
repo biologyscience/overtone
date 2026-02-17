@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { OpenInNewRounded, CancelRounded, FileUploadRounded, RestoreRounded } from '@mui/icons-material';
+import { OpenInNewRounded, CancelRounded, FileUploadRounded, RestoreRounded, RotateRightRounded } from '@mui/icons-material';
 
 import { COL, CustomModal, ROW, Slider } from '../../../util/components';
 import { useDebounce } from 'react-haiku';
@@ -18,6 +18,8 @@ export default function Advanced()
         [showBackupRestoreModal, setShowBackupRestoreModal] = useState(false),
         [showConfirmRestoreModal, setShowConfirmRestoreModal] = useState(false),
         [partialRestore, setPartialRestore] = useState(false),
+        [RPCAutoConnect, setRPCAutoConnect] = useState(),
+        [restartingRPC, setRestartingRPC] = useState(false),
         [showResetAppModal, setShowResetAppModal] = useState(false);
 
     const debouncedPercent = useDebounce(percent);
@@ -58,6 +60,7 @@ export default function Advanced()
     useEffect(() => window.ipc.send('ipc-updateConfig', {value: launchOnStartup, keys: ['launchOnStartup']}), [launchOnStartup]);
     useEffect(() => window.ipc.send('ipc-updateConfig', {value: autoplay, keys: ['audio', 'autoPlayOnLaunch']}), [autoplay]);
     useEffect(() => window.ipc.send('ipc-updateConfig', {value: hideToSystemTray, keys: ['systemTray']}), [hideToSystemTray]);
+    useEffect(() => window.ipc.send('ipc-updateConfig', {value: RPCAutoConnect, keys: ['discordRPC', 'autoConnect']}), [RPCAutoConnect]);
 
     useEffect(() =>
     {
@@ -69,12 +72,30 @@ export default function Advanced()
 
     useEffect(() =>
     {
+        if (restartingRPC)
+        {
+            window.ipc.invoke('ipc-startRPC', {restart: true}).then((status) =>
+            {
+                if (status) toast.success('Discord RPC restarted', {toasterId: 'settings'});
+
+                else toast.error('Error starting Discord RPC', {toasterId: 'settings'});
+
+                setRestartingRPC(false);
+            });
+        }
+    }, [restartingRPC]);
+
+    useEffect(() =>
+    {
         window.ipc.on('ipc-takeConfig', (config) =>
         {
             setLaunchOnStartup(config.launchOnStartup);
             setAutoplay(config.audio.autoPlayOnLaunch);
             setHideToSystemTray(config.systemTray);
             setPercent(config.audio.percentForPlaycount);
+            setRPCAutoConnect(config.discordRPC.autoConnect);
+
+            if (config.discordRPC.autoConnect) window.ipc.invoke('ipc-startRPC');
         });
     }, []);
         
@@ -100,6 +121,15 @@ export default function Advanced()
                     <span>{Math.round(percent)}%</span>
                 </ROW>
             </ROW>
+            <ROW className={'option'}>
+                <span>Autoconnect Discord RPC on launch</span>
+                <input type='checkbox' className='switch' checked={RPCAutoConnect} onChange={() => setRPCAutoConnect(x => !x)}/>
+            </ROW>
+            <ROW className={'option'}>
+                <span>Restart Discord RPC</span>
+                <button className={`popup ${restartingRPC ? 'spin' : null}`} onClick={() => setRestartingRPC(true)}><RotateRightRounded/></button>
+            </ROW>
+            <div className='divider'/>
             <ROW className={'option'}>
                 <span>Backup and restore</span>
                 <button className='popup' onClick={() => setShowBackupRestoreModal(true)}><OpenInNewRounded/></button>

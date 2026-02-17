@@ -84,8 +84,6 @@ function init()
     
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
-
-    if (appdata.get('config').discordRPCconnect) rpc.on();
 }
 
 function exitApp({currentTime})
@@ -1439,6 +1437,22 @@ ipcMain.on('ipc-savePreset', (E, {name, gains}) =>
     appdata.set('eqs', eqs);
 
     WINDOW.webContents.send('ipc-takeEQs', eqs);
+});
+
+ipcMain.handle('ipc-startRPC', async (E, obj) =>
+{
+    if (obj?.restart)
+    {
+        await rpc.off();
+
+        await new Promise(x => setTimeout(x, 1250));
+
+        await rpc.on();
+
+        return rpc.live;
+    }
+
+    else rpc.on();
 });
 
 app.on('ready', () =>

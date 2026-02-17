@@ -37,10 +37,11 @@ class RPC
         return this;
     }
 
-    off()
+    async off()
     {
         this.localhost?.close();
-        rpc.destroy();
+
+        try { await rpc?.destroy(); } catch (E) {}
 
         this.live = false;
 
