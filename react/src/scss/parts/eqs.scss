@@ -1,8 +1,10 @@
 @use '../util';
 @use '../colors.scss';
 
-.section#eq
+.section#eqs
 {
+    position: relative;
+    
     & > .title
     {
         font-size: 1.5rem;
@@ -26,13 +28,10 @@
                 text, line, rect
                 {
                     opacity: 0;
-                    transition: opacity 150ms ease;
+                    transition: opacity 250ms ease;
                 }
         
-                &:hover
-                {
-                    line, rect { opacity: 1; }
-                }
+                &:hover { line, rect { opacity: 1; } }
             }
 
             &::after
@@ -55,9 +54,52 @@
             {
                 margin: 2.5vh 0;
                 font-size: 1rem;
-                justify-content: space-between;
+                gap: 5vw;
+                align-items: center;
 
-                & > * { gap: 1em; }
+                .option
+                {
+                    gap: 1em;
+                    height: 1.25em;
+                }
+
+                .presets
+                {
+                    position: relative;
+                    align-items: center;
+                    gap: 1em;
+                    flex-grow: 1;
+
+                    .eqPreset { flex-grow: 1; }
+
+                    button
+                    {
+                        transition: scale 200ms ease;
+
+                        svg
+                        {
+                            fill: colors.$dark80;
+                            transition: fill 200ms ease;
+                        }
+
+                        &:hover
+                        {
+                            scale: 1.05;
+                            svg { fill: white; }
+                        }
+                    }
+
+                    &::after
+                    {
+                        position: absolute;
+                        background-color: colors.$dark30;
+                        inset: 0;
+                        opacity: 0;
+                        z-index: 1;
+                    }
+
+                    &.disableEQ::after { content: ''; }
+                }
             }
     
             .switch
@@ -114,6 +156,8 @@
                         padding: .25em .5em;
                         background-color: var(--accent2);
                         border-bottom: .15em solid var(--accent);
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
                     }
     
                     span
@@ -133,42 +177,52 @@
                     &.disableEQ::after { content: ''; }
                 }
             }
+        }
+    }
+    
+    .savePresetModal
+    {
+        font-size: 1rem;
+        width: 30vw;
+        gap: 1em;
+        padding: 1.25em 1.5em;
+        border-radius: .5em;
+        background-color: var(--background);
 
-            .presets
+        .title
+        {
+            font-size: 1.25em;
+            margin-bottom: 1em;
+        }
+
+        input
+        {
+            font-size: 1rem;
+            padding: .25em .5em;
+            background-color: var(--accent2);
+            border-bottom: .15em solid var(--accent);
+        }
+
+        .buttons
+        {
+            justify-content: center;
+            margin-top: 1em;
+            gap: 2em;
+            
+            button
             {
-                position: relative;
-                align-items: center;
-                gap: 1em;
-
-                .eqPreset { flex-grow: 1; }
-
-                button
+                font-size: 1rem;
+                height: fit-content;
+                padding: .4em 1em;
+                border: .1em solid var(--accent);
+                border-radius: .25em;
+                transition: all 150ms ease;
+    
+                &:hover
                 {
-                    transition: scale 200ms ease;
-
-                    svg
-                    {
-                        fill: colors.$dark80;
-                        transition: fill 200ms ease;
-                    }
-
-                    &:hover
-                    {
-                        scale: 1.05;
-                        svg { fill: white; }
-                    }
+                    color: var(--background);
+                    background-color: var(--accent);
                 }
-
-                &::after
-                {
-                    position: absolute;
-                    background-color: colors.$dark30;
-                    inset: 0;
-                    opacity: .1;
-                    z-index: 1;
-                }
-
-                &.disableEQ::after { content: ''; }
             }
         }
     }

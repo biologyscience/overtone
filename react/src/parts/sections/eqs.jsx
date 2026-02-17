@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from 'react-haiku';
+import toast, { Toaster } from 'react-hot-toast';
 
 import {
     FrequencyResponseGraph,
@@ -11,16 +12,12 @@ import {
     FrequencyResponseCurve
 } from 'dsssp';
 
-import
-{
-    AddRounded,
-    SaveRounded
-} from '@mui/icons-material';
+import { AddRounded, SaveRounded } from '@mui/icons-material';
 
-import { COL, ROW, CustomDropdown } from '../../util/components';
+import { COL, ROW, CustomDropdown, CustomModal } from '../../util/components';
 import eventBus from '../../util/events';
 
-export default function eq()
+export default function eqs()
 {
     const colors = ['#65ffa0', '#ff5252', '#e040fb', '#6200ea', '#448aff', '#ffff00', '#ff5d2a', '#ff4081', '#18ffff', 'grey'];
 
@@ -37,11 +34,6 @@ export default function eq()
         { freq: 16000, gain: 2, q: 1, type: 'PEAK' },
     ];
 
-    // const gains = new Array(10).fill(0);
-    const gains = [2.6, 2.6, 1.3, -0.4, -2.8, -3.5, -2.6, -0.4, 1.8, 2.6];
-
-    startData.forEach((_, i) => startData[i].gain = gains[i]);
-
     const analyserRef = useRef({});
     const sectionRef = useRef();
 
@@ -52,14 +44,18 @@ export default function eq()
         [bands, setBands] = useState(startData),
         [dragging, setDragging] = useState(false),
         [showEnvelope, setShowEnvelope] = useState(false),
-        [enableEQ, setEnableEQ] = useState(true),
+        [enableEQ, setEnableEQ] = useState(),
         [EQs, setEQs] = useState({}),
         [presets, setPresets] = useState([]),
-        [selectedPreset, setSelectedPreset] = useState('Flat'),
+        [selectedPreset, setSelectedPreset] = useState(),
+        [showSavePresetModal, setShowSavePresetModal] = useState(false),
+        [savePresetName, setSavePresetName] = useState(),
         delayedBands = useDebounce(bands);
 
     function updateCurve({index, freq, gain, q, type})
     {
+        setSelectedPreset('Custom');
+
         setBands((oldBands) =>
         {
             const newBands = [...oldBands];
@@ -70,8 +66,10 @@ export default function eq()
         });
     }
 
-    function setGain(index, gain)
+    function setGain(index, gain, manual)
     {
+        if (manual) setSelectedPreset('Custom');
+
         const float = parseFloat(gain);
 
         if (isNaN(float)) return;
@@ -84,6 +82,28 @@ export default function eq()
 
             return newBands;
         });
+    }
+
+    function saveOrNewPreset(save, name, gains)
+    {
+        if (save)
+        {
+            if (name?.toLowerCase() === 'custom') return toast.error('Preset cannot be named "Custom"', {toasterId: 'eqs'});
+
+            if (gains)
+            {
+                window.ipc.send('ipc-savePreset', {name, gains});
+
+                setSelectedPreset(name);
+                setShowSavePresetModal(false);
+
+                toast.success(`Successfully saved the preset "${name}"`, {toasterId: 'eqs'});
+            }
+
+            else setShowSavePresetModal(true);
+        }
+
+        else setSelectedPreset('Custom');
     }
 
     useEffect(() =>
@@ -122,8 +142,10 @@ export default function eq()
 
     }, [analyser]);
 
-    useEffect(() =>
+    useEffect(() => 
     {
+        if (!enableEQ) return;
+
         const gains = delayedBands.map(x => x.gain);
 
         eventBus.dispatchEvent(new CustomEvent('ot-eqChange', {detail: gains}));
@@ -132,7 +154,20 @@ export default function eq()
 
     useEffect(() =>
     {
+        window.ipc.send('ipc-updateConfig', {value: enableEQ, keys: ['eq', 'enabled']});
+
+        if (enableEQ) eventBus.dispatchEvent(new CustomEvent('ot-eqChange', {detail: bands.map(x => x.gain)}));
+        else eventBus.dispatchEvent(new CustomEvent('ot-eqChange', {detail: Array(10).fill(0)}));
+
+    }, [enableEQ]);
+
+    useEffect(() =>
+    {
+        if (selectedPreset === 'Custom') return;
+    
         EQs[selectedPreset]?.forEach((gain, index) => setGain(index, gain));
+        
+        window.ipc.send('ipc-updateConfig', {value: selectedPreset, keys: ['eq', 'preset']});
 
     }, [selectedPreset, EQs]);
 
@@ -147,13 +182,14 @@ export default function eq()
 
         eventBus.addEventListener('ot-AnalyzerNode', ({detail}) => setAnalyser(detail));
 
-        window.ipc.on('ipc-takeEQs', (eqs) => { setEQs(eqs); setPresets(Object.keys(eqs)); });
+        window.ipc.on('ipc-takeConfig', ({eq}) => { setEnableEQ(eq.enabled); setSelectedPreset(eq.preset); });
+        window.ipc.on('ipc-takeEQs', (eqs) => { setEQs(eqs); setPresets(Object.keys(eqs).sort((x, y) => x.localeCompare(y))); });
 
         window.ipc.send('ipc-wantEQs');
     }, []);
 
     return (
-        <COL ref={sectionRef} className='section' id='eq'>
+        <COL ref={sectionRef} className='section' id='eqs'>
             <span className='title'>Equalizer & Visualization</span>
             <COL className={'content'}>
                 <COL className={`graphs ${enableEQ ? null : 'disableEQ'}`}>
@@ -198,11 +234,15 @@ export default function eq()
                 </COL>
                 <COL className={'options'}>
                     <ROW className={'head'}>
-                        <ROW>
+                        <ROW className={'option'}>
                             <span>Enable Equalizer</span>
                             <input type='checkbox' className='switch' checked={enableEQ} onChange={() => setEnableEQ(x => !x)}/>
                         </ROW>
-                        <ROW>
+                        <ROW className={`presets ${enableEQ ? null : 'disableEQ'}`}>
+                            <CustomDropdown className={'eqPreset'} options={presets} select={[selectedPreset, setSelectedPreset]}/>
+                            <button onClick={() => saveOrNewPreset(selectedPreset === 'Custom')}>{selectedPreset === 'Custom' ? <SaveRounded/> : <AddRounded/>}</button>
+                        </ROW>
+                        <ROW className={'option'}>
                             <span>Envelope View</span>
                             <input type='checkbox' className='switch' checked={showEnvelope} onChange={() => setShowEnvelope(x => !x)}/>
                         </ROW>
@@ -212,21 +252,35 @@ export default function eq()
                             startData.map((x, i) =>
                             {
                                 return (
-                                    <COL className={`band ${enableEQ ? null : 'disableEQ'}`}>
-                                        <input value={bands[i].gain.toFixed(1)} onChange={({target}) => setGain(i, target.value)}/>
+                                    <COL key={i} className={`band ${enableEQ ? null : 'disableEQ'}`}>
+                                        <input value={bands[i].gain.toFixed(1)} onChange={({target}) => setGain(i, target.value)} onWheel={({deltaY}) => setGain(i, bands[i].gain + (deltaY >= 1 ? -0.1 : 0.1), true)}/>
                                         <span>{Intl.NumberFormat('en-us', {maximumFractionDigits: 3, notation: 'compact'}).format(x.freq).toLowerCase()}Hz</span>
                                     </COL>
                                 )
                             })
                         }
                     </ROW>
-                    <ROW className={`presets ${enableEQ ? null : 'disableEQ'}`}>
-                        <CustomDropdown className={'eqPreset'} options={presets} select={[selectedPreset, setSelectedPreset]}/>
-                        <button><AddRounded/></button>
-                        <button><SaveRounded/></button>
-                    </ROW>
                 </COL>
             </COL>
+            <CustomModal parentRef={sectionRef} visibility={[showSavePresetModal, setShowSavePresetModal]}>
+                <COL className={'savePresetModal'}>
+                    <span className='title'>You are about to save the current EQ as a preset</span>
+                    <span>Name your preset to proceed</span>
+                    <input placeholder='Your preset name' value={savePresetName} onChange={({target}) => setSavePresetName(target.value)}/>
+                    <ROW className={'buttons'}>
+                        <button onClick={() => saveOrNewPreset(true, savePresetName, bands.map(x => x.gain))}>Save</button>
+                        <button onClick={() => setShowSavePresetModal(false)}>Cancel</button>
+                    </ROW>
+                </COL>
+            </CustomModal>
+            <Toaster
+                toasterId='eqs'
+                position='bottom-right'
+                containerStyle={{
+                    position: 'absolute',
+                    fontSize: '.8rem'
+                }}
+            />
         </COL>
     )
 }

@@ -7,7 +7,7 @@ import Queue from './sections/queues';
 import Folders from './sections/folders';
 import Albums from './sections/albums';
 import Artists from './sections/artists';
-import EQ from './sections/eq';
+import EQs from './sections/eqs';
 import Settings from './sections/settings';
 
 export default function displayRight()
@@ -40,7 +40,7 @@ export default function displayRight()
             <Folders/>
             <Albums/>
             <Artists/>
-            <EQ/>
+            <EQs/>
             <Settings/>
         </ROW>
     )
