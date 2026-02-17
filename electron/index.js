@@ -1420,6 +1420,11 @@ ipcMain.on('ipc-resetApp', () =>
     app.exit();
 });
 
+ipcMain.on('ipc-wantEQs', () =>
+{
+    WINDOW.webContents.send('ipc-takeEQs', appdata.get('eqs'));
+});
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow

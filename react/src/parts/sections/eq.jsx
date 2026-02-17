@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { COL } from '../../util/components';
+import { useDebounce } from 'react-haiku';
 
 import {
     FrequencyResponseGraph,
@@ -11,8 +11,14 @@ import {
     FrequencyResponseCurve
 } from 'dsssp';
 
+import
+{
+    AddRounded,
+    SaveRounded
+} from '@mui/icons-material';
+
+import { COL, ROW, CustomDropdown } from '../../util/components';
 import eventBus from '../../util/events';
-import { useDebounce } from 'react-haiku';
 
 export default function eq()
 {
@@ -37,88 +43,47 @@ export default function eq()
     startData.forEach((_, i) => startData[i].gain = gains[i]);
 
     const analyserRef = useRef({});
-    const visualizerRef = useRef();
     const sectionRef = useRef();
 
     const
         [width, setWidth] = useState(500),
         [analyser, setAnalyser] = useState(),
+        [magnitudes, setMagnitudes] = useState([]),
         [bands, setBands] = useState(startData),
         [dragging, setDragging] = useState(false),
         [showEnvelope, setShowEnvelope] = useState(false),
-        [magnitudes, setMagnitudes] = useState([]),
+        [enableEQ, setEnableEQ] = useState(true),
+        [EQs, setEQs] = useState({}),
+        [presets, setPresets] = useState([]),
+        [selectedPreset, setSelectedPreset] = useState('Flat'),
         delayedBands = useDebounce(bands);
 
-    function draw()
+    function updateCurve({index, freq, gain, q, type})
     {
-        requestAnimationFrame(draw);
-
-        const freqArray = new Uint8Array(analyserRef.current.analyser.frequencyBinCount);
-
-        analyserRef.current.analyser.getByteFrequencyData(freqArray);
-
-        const ctx = visualizerRef.current.getContext('2d');
-
-        ctx.clearRect(0, 0, visualizerRef.current.width, visualizerRef.current.height);
-
-        const color = document.querySelector(':root').style.getPropertyValue('--accent');
-
-        ctx.fillStyle = color;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-
-        const logScale = freqArray.filter((value, i) =>
+        setBands((oldBands) =>
         {
-            const freq = i * 20000 / freqArray.length;
+            const newBands = [...oldBands];
 
-            if (freq > 1000 && freq < 10000 && freq % 100 > 10) return false;
-            if (freq > 10000 && freq % 1000 > 100) return false;
+            newBands[index] = { freq, gain, q, type };
 
-            return true;
+            return newBands;
         });
+    }
 
-        for (let i = 0; i < logScale.length; i++)
+    function setGain(index, gain)
+    {
+        const float = parseFloat(gain);
+
+        if (isNaN(float)) return;
+
+        setBands((oldBands) =>
         {
-            const
-                x = i * 2,
-                y = visualizerRef.current.height,
-                w = 1,
-                h = -(logScale[i] / 255) * visualizerRef.current.height;
+            const newBands = [...oldBands];
 
-            ctx.fillRect(x, y, w, h);
+            newBands[index].gain = parseFloat(float.toFixed(1));
 
-            // const minF = 20;
-            // const maxF = 20000;
-            // const freq = i * maxF / freqArray.length;
-
-            // const x = Math.log10(freq / minF) / Math.log10(maxF / minF) * visualizerRef.current.width;
-            // const y = visualizerRef.current.height - (freqArray[i] / 255) * visualizerRef.current.height;
-
-            // if (i === 0) ctx.moveTo(x, y);
-            // else ctx.lineTo(x, y);
-        }
-
-        const mags = [];
-
-        let sum = 0;
-
-        const samples = 4;
-
-        for (let i = 0; i < freqArray.length; i++)
-        {
-            sum += freqArray[i] / 255;
-
-            if (Math.round(i % samples) === 0)
-            {
-                mags.push(sum);
-                sum = 0;
-            }
-        }
-
-        setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x * 2 } }));
-
-        ctx.stroke();
+            return newBands;
+        });
     }
 
     useEffect(() =>
@@ -150,26 +115,12 @@ export default function eq()
                 }
             }
 
-            setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x * 2 } }));
+            setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x / samples } }));
         });
-
-        // draw();
 
         return () => { clearInterval(int); }
 
     }, [analyser]);
-
-    function updateCurve({index, freq, gain, q, type})
-    {
-        setBands((oldBands) =>
-        {
-            const newBands = [...oldBands];
-
-            newBands[index] = { freq, gain, q, type };
-
-            return newBands;
-        });
-    }
 
     useEffect(() =>
     {
@@ -181,56 +132,101 @@ export default function eq()
 
     useEffect(() =>
     {
-        eventBus.addEventListener('ot-eqReset', () =>
-        {
-            setShowEnvelope(x => !x);
+        EQs[selectedPreset]?.forEach((gain, index) => setGain(index, gain));
 
-            setBands((oldBands) =>
-            {
-                const newBands = [...oldBands];
+    }, [selectedPreset, EQs]);
 
-                newBands.forEach((_, i) => newBands[i].gain = gains[i]);
-
-                return newBands;
-            });
-        });
-
+    useEffect(() =>
+    {
         eventBus.addEventListener('ot-navChange', ({detail}) =>
         {
             if (detail !== 4) return;
 
-            setWidth(Math.round(sectionRef.current.getBoundingClientRect().width - 100));
+            setWidth(Math.round(sectionRef.current.querySelector('.content').getBoundingClientRect().width));
         });
 
         eventBus.addEventListener('ot-AnalyzerNode', ({detail}) => setAnalyser(detail));
+
+        window.ipc.on('ipc-takeEQs', (eqs) => { setEQs(eqs); setPresets(Object.keys(eqs)); });
+
+        window.ipc.send('ipc-wantEQs');
     }, []);
 
-        return (
-            <COL ref={sectionRef} className='section' id='eq'>
-                <canvas ref={visualizerRef} className='visualizer'/>
-                <FrequencyResponseGraph
-                    width={width}   
-                    style={{ borderRadius: '5px' }}
-                    height={250}
-                    scale={{ minGain: -8, maxGain: 8, dbSteps: 2 }}
-                    theme={{ background:
+    return (
+        <COL ref={sectionRef} className='section' id='eq'>
+            <span className='title'>Equalizer & Visualization</span>
+            <COL className={'content'}>
+                <COL className={`graphs ${enableEQ ? null : 'disableEQ'}`}>
+                    <FrequencyResponseGraph
+                        className='visualizer'
+                        width={width}
+                        height={100}
+                        scale={{ minGain: 0, maxGain: 1 }}
+                        style={{ borderRadius: '5px' }}
+                        theme={{ background:
+                            {
+                                gradient: { start: 'var(--dark20)', stop: 'var(--dark15)' },
+                                grid:  { lineColor: 'var(--dark30)' },
+                                label: { color: 'var(--dark80)' }
+                            }
+                        }}
+                    >
+                        <FrequencyResponseCurve magnitudes={magnitudes} color='var(--accent)'/>
+                    </FrequencyResponseGraph>
+                    <FrequencyResponseGraph
+                        width={width}
+                        height={250}
+                        style={{ borderRadius: '5px' }}
+                        scale={{ minGain: -8, maxGain: 8, dbSteps: 2 }}
+                        theme={{ background:
+                            {
+                                gradient: { start: 'var(--dark20)', stop: 'var(--dark15)' },
+                                grid:  { lineColor: 'var(--dark30)' },
+                                label: { color: 'var(--dark80)' }
+                            }
+                        }}
+                    >
                         {
-                            gradient: { start: 'var(--dark20)', stop: 'var(--dark15)' },
-                            grid:  { lineColor: 'var(--dark30)' },
-                            label: { color: 'var(--dark80)' }
-                        }}}>
-                    {
-                        showEnvelope ?
-                        (<CompositeCurve filters={bands} animate={true} color='var(--accent)'/>) :
-                        (bands.map((x, i) => <FilterCurve key={i} index={i} gradientId={i} filter={x} color={colors[i]} lineWidth={2.5} opacity={.75} animate={true}/>))
-                    }
-                    { bands.map((x, i) => <FilterGradient key={i} id={i} filter={x} color={colors[i]}/>) }
-                    { bands.map((x, i) => <FilterPoint key={i} index={i} filter={x} color={colors[i]} radius={7} dragX={false} onChange={updateCurve} onDrag={setDragging} style={dragging ? null : {transition: 'cy 300ms ease-in-out'}}/>) }
-                    <PointerTracker labelColor='var(--dark80)' backgroundColor='var(--dark30)'/>
-                </FrequencyResponseGraph>
-                <FrequencyResponseGraph width={width} height={250} scale={{minGain: 0, maxGain: 10}}>
-                    <FrequencyResponseCurve magnitudes={magnitudes}/>
-                </FrequencyResponseGraph>
+                            showEnvelope ?
+                            (<CompositeCurve filters={bands} animate={true} color='var(--accent)'/>) :
+                            (bands?.map((x, i) => <FilterCurve key={i} gradientId={`curve${i}`} filter={x} color={colors[i]} lineWidth={2.5} opacity={.75} animate={true}/>))
+                        }
+                        { bands?.map((x, i) => <FilterGradient key={i} id={`curve${i}`} filter={x} color={colors[i]}/>) }
+                        { bands?.map((x, i) => <FilterPoint key={i} index={i} filter={x} color={colors[i]} radius={7} dragX={false} wheelQ={false} onChange={updateCurve} onDrag={setDragging} style={dragging ? null : {transition: 'cy 300ms ease-in-out'}}/>) }
+                        <PointerTracker labelColor='var(--dark80)' backgroundColor='var(--dark30)'/>
+                    </FrequencyResponseGraph>
+                </COL>
+                <COL className={'options'}>
+                    <ROW className={'head'}>
+                        <ROW>
+                            <span>Enable Equalizer</span>
+                            <input type='checkbox' className='switch' checked={enableEQ} onChange={() => setEnableEQ(x => !x)}/>
+                        </ROW>
+                        <ROW>
+                            <span>Envelope View</span>
+                            <input type='checkbox' className='switch' checked={showEnvelope} onChange={() => setShowEnvelope(x => !x)}/>
+                        </ROW>
+                    </ROW>
+                    <ROW className={'bands'}>
+                        {
+                            startData.map((x, i) =>
+                            {
+                                return (
+                                    <COL className={`band ${enableEQ ? null : 'disableEQ'}`}>
+                                        <input value={bands[i].gain.toFixed(1)} onChange={({target}) => setGain(i, target.value)}/>
+                                        <span>{Intl.NumberFormat('en-us', {maximumFractionDigits: 3, notation: 'compact'}).format(x.freq).toLowerCase()}Hz</span>
+                                    </COL>
+                                )
+                            })
+                        }
+                    </ROW>
+                    <ROW className={`presets ${enableEQ ? null : 'disableEQ'}`}>
+                        <CustomDropdown className={'eqPreset'} options={presets} select={[selectedPreset, setSelectedPreset]}/>
+                        <button><AddRounded/></button>
+                        <button><SaveRounded/></button>
+                    </ROW>
+                </COL>
             </COL>
-        )
-    }
+        </COL>
+    )
+}
