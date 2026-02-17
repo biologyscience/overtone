@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
-import { useClickOutside } from 'react-haiku';
+import { useClickOutside, useDebounce } from 'react-haiku';
 
 import Backdrop from '@mui/material/Backdrop';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 
-import { ConfigProvider, Dropdown, Select } from 'antd';
+import { ConfigProvider, Select } from 'antd';
 
 import
 {
@@ -17,8 +17,7 @@ import
     FavoriteRounded,
     QueueMusicRounded,
     PersonAddRounded,
-    NewLabelRounded,
-    UnfoldMoreRounded
+    NewLabelRounded
 } from '@mui/icons-material';
 
 import { parseTime } from './functions';
@@ -66,8 +65,6 @@ function Slider({ progressState: [progress, setProgress], setDragging, vertical,
         pressing.current = false;
 
         if (setDragging !== undefined) setDragging(pressing.current);
-
-        // change audio current time here
     }
     
     function mousemove({x, y})
@@ -141,41 +138,26 @@ function SearchBox({searchSpace, matchSpace, ...rest})
 {
     if (searchSpace === undefined) return;
 
+    const [value, setValue] = useState();
+    const debouncedValue = useDebounce(value, 200);
     const [noMatch, setNoMatch] = useState(false);
     
     const searchSpaceValues = [...searchSpace].map(x => new String(x).toLowerCase());
     const [mathSpaceValues, setMatchSpaceValues] = matchSpace;
 
-    let
-        wait = false,
-        lastInput;
-    
-    function handleChange({target})
+    useEffect(() =>
     {
-        // if (wait) return;
-    
-        // wait = true;
-        
-        // if (lastInput === target.value.toLowerCase()) return wait = false;
-    
-        lastInput = target.value.toLowerCase();
+        if (value === undefined) return;
 
-        searchSpaceValues.forEach((item, index) => item.includes(lastInput) ? mathSpaceValues[index] = true : mathSpaceValues[index] = false);
+        searchSpaceValues.forEach((item, index) => item.includes(debouncedValue.toLowerCase()) ? mathSpaceValues[index] = true : mathSpaceValues[index] = false);
 
         mathSpaceValues.includes(true) ? setNoMatch(false) : setNoMatch(true);
 
         setMatchSpaceValues([...mathSpaceValues]);
 
-        // setTimeout(() =>
-        // {
-        //     wait = false;
-    
-        //     if (lastInput !== target.value.toLowerCase()) handleChange({target});
+    }, [debouncedValue]);
 
-        // }, 1000);
-    }
-
-    return <input type='text' onChange={handleChange} data-no-match={noMatch} {...rest}/>
+    return <input type='text' value={value} onChange={({target}) => setValue(target.value)} data-no-match={noMatch} {...rest}/>
 }
 
 function CustomModal({visibility: [open, setOpen], parentRef, children})

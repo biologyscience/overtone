@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { ROW } from './util/components';
@@ -9,6 +8,8 @@ import DisplayRight from './parts/displayRight';
 import Navbar from './parts/navbar';
 
 import './scss/customClasses.scss';
+import './scss/customVariables.scss';
+
 import './scss/displayLeft.scss';
 import './scss/displayRight.scss';
 import './scss/globals.scss';
@@ -22,15 +23,13 @@ import './scss/parts/eqs.scss';
 import './scss/parts/settings.scss';
 
 ReactDOM.createRoot(document.body).render(
-    // <React.StrictMode>
     <>
         <Titlebar/>
-        <ROW id='main'>
+        <ROW>
             <DisplayLeft/>
             <DisplayRight/>
         </ROW>
         <Navbar/>
-    {/* </React.StrictMode> */}
     </>
 );
 

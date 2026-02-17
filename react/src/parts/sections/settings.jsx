@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import Colors from './settings/colors';
 import Audio from './settings/audio';
 import Interface from './settings/interface';
-import DiscordRPC from './settings/rpc';
 import Advanced from './settings/advanced';
 
 import { COL, ROW } from '../../util/components';
@@ -69,7 +68,6 @@ export default function Settings()
                             <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
                             <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
                             <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
-                            {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
                             <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
                         </COL>
                         <COL className={'views'}>
@@ -79,7 +77,6 @@ export default function Settings()
                             <div className='divider'/>
                             <Interface/>
                             <div className='divider'/>
-                            {/* <DiscordRPC/> */}
                             <Advanced/>
                         </COL>
                     </ROW>
@@ -89,14 +86,12 @@ export default function Settings()
                         <span data-index={0} className={`category ${index === 0 ? 'current' : ''}`} onClick={selectCategory}>Colors & Theme</span>
                         <span data-index={1} className={`category ${index === 1 ? 'current' : ''}`} onClick={selectCategory}>Audio</span>
                         <span data-index={2} className={`category ${index === 2 ? 'current' : ''}`} onClick={selectCategory}>Interface</span>
-                        {/* <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Discord RPC</span> */}
                         <span data-index={3} className={`category ${index === 3 ? 'current' : ''}`} onClick={selectCategory}>Advanced</span>
                     </ROW>
                     <ROW className={'views'}>
                         <Colors/>
                         <Audio/>
                         <Interface/>
-                        {/* <DiscordRPC/> */}
                         <Advanced/>
                     </ROW>
                     </>
