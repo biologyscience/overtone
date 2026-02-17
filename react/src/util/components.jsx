@@ -605,6 +605,7 @@ function CustomDropdown({options, select, className})
                 onChange={select[1]}
                 showSearch={{optionFilterProp: 'label'}}
                 options={options?.map(x => { return { value: x, label: x } })}
+                listHeight={128}
             />
         </ConfigProvider>
     )

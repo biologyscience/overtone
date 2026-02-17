@@ -61,6 +61,11 @@ function init()
                     autoPlayOnLaunch: false,
                     percentForPlaycount: 50
                 },
+                eq:
+                {
+                    enabled: false,
+                    preset: 'Soft Rock'
+                },
                 interface:
                 {
                     font: 'Default (Fira Sans)',
@@ -1423,6 +1428,17 @@ ipcMain.on('ipc-resetApp', () =>
 ipcMain.on('ipc-wantEQs', () =>
 {
     WINDOW.webContents.send('ipc-takeEQs', appdata.get('eqs'));
+});
+
+ipcMain.on('ipc-savePreset', (E, {name, gains}) =>
+{
+    const eqs = appdata.get('eqs');
+
+    eqs[name] = gains;
+
+    appdata.set('eqs', eqs);
+
+    WINDOW.webContents.send('ipc-takeEQs', eqs);
 });
 
 app.on('ready', () =>

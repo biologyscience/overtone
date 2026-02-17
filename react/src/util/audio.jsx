@@ -76,6 +76,8 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
     useEffect(() =>
     {
+        playerRef.current.preservesPitch = false;
+
         const audioPlayer = playerRef.current;
 
         if (audioPlayer === null) return;
@@ -94,43 +96,6 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             }
         }
 
-        function init()
-        {
-            const ctx = new AudioContext();
-
-            const source = ctx.createMediaElementSource(audioPlayer);
-            const analyser = ctx.createAnalyser();
-
-            preGainRef.current = ctx.createGain();
-
-            const bands = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-
-            const filters = bands.map((band) =>
-            {
-                const filter = ctx.createBiquadFilter();
-
-                filter.type = 'peaking';
-                filter.frequency.value = band;
-                filter.Q.value = 1;
-                filter.gain.value = 0;
-
-                return filter;
-            });
-
-            filtersRef.current = filters;
-            
-            eventBus.dispatchEvent(new CustomEvent('ot-AnalyzerNode', {detail: analyser}));
-
-            let node = source;
-
-            [...filters, analyser, ctx.destination].forEach((filter) =>
-            // [preGainRef.current, ...filters, analyser, ctx.destination].forEach((filter) =>
-            {
-                node.connect(filter);
-                node = filter;
-            });
-        }
-
         function eqChange(gains)
         {
             preGainRef.current.gain.value = Math.pow(10, -(Math.max(...gains)) / 20);
@@ -138,9 +103,40 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             filtersRef.current.forEach((x, i) => x.gain.value = gains[i]);
         }
 
-        playerRef.current.preservesPitch = false;
+        const ctx = new AudioContext();
 
-        audioPlayer.addEventListener('play', init);
+        const source = ctx.createMediaElementSource(audioPlayer);
+        const analyser = ctx.createAnalyser();
+
+        preGainRef.current = ctx.createGain();
+
+        const bands = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+
+        const filters = bands.map((band) =>
+        {
+            const filter = ctx.createBiquadFilter();
+
+            filter.type = 'peaking';
+            filter.frequency.value = band;
+            filter.Q.value = 1;
+            filter.gain.value = 0;
+
+            return filter;
+        });
+
+        filtersRef.current = filters;
+        
+        eventBus.dispatchEvent(new CustomEvent('ot-AnalyzerNode', {detail: analyser}));
+
+        let node = source;
+
+        // [...filters, analyser, ctx.destination].forEach((filter) =>
+        [preGainRef.current, ...filters, analyser, ctx.destination].forEach((filter) =>
+        {
+            node.connect(filter);
+            node = filter;
+        });
+
         audioPlayer.addEventListener('ended', () => indicateEnd(true));
         audioPlayer.addEventListener('timeupdate', updateTime);
 
@@ -155,7 +151,6 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
         
         return () =>
         {
-            audioPlayer.removeEventListener('play', init);
             audioPlayer.removeEventListener('ended', () => indicateEnd(true));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
