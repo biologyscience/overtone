@@ -267,11 +267,7 @@ ipcMain.on('ipc-close', (E, data) =>
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'overtone',
-    privileges:
-    {
-        stream: true,
-        standard: true
-    }
+    privileges: { standard: true }
 }]);
 
 app.on('ready', () =>
@@ -287,11 +283,17 @@ app.on('ready', () =>
         icon: `${__dirname}/logo.png`,
         webPreferences:
         {
+            webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
             preload: `${__dirname}/preload.js`,
         }
     });
+
+    /**
+     * AUDIO SERVED IN PROTOCOL IS MEH
+     * HENCE KEEP WEB SECURITY FALSE
+     */
 
     ipcMain.emit('WINDOW_OBJECT', WINDOW);
 

@@ -155,9 +155,11 @@ export default function displayRight()
 
     useEffect(() =>
     {
+        if (dragging) return;
+
         setProgress(100 * currentTime / nowPlaying?.duration);
 
-    }, [currentTime, nowPlaying]);
+    }, [dragging, currentTime, nowPlaying]);
 
     useEffect(() =>
     {
