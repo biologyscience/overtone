@@ -150,7 +150,7 @@ export default function queues()
         setTimeout(() =>
         {
             setShowRenamer(renamingQueue);
-            setTimeout(() => sectionRef.current.querySelector('.renamer input').focus(), 5);
+            setTimeout(() => sectionRef.current.querySelector('.renamer input')?.focus(), 5);
             
         }, 10);
 

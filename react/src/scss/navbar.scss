@@ -5,13 +5,11 @@
 {
     --left: 0;
 
+    position: relative;
+
     height: var(--navbarHeight);
     width: 100vw;
     background-color: colors.$dark10;
-
-    * { pointer-events: none; }
-
-    position: relative;
 
     @include util.divider(before, TopLeft);
     &::before { z-index: 2; }
@@ -25,7 +23,7 @@
         height: .25em;
         width: calc(var(--navbarHeight) / 1.1);;
         background-color: var(--accent);
-        transition: left ease 250ms;
+        transition: left ease 500ms;
     }
 
     .sections
@@ -36,7 +34,7 @@
 
         .section
         {
-            pointer-events: all;
+            transition: scale 200ms ease;
 
             svg
             {
@@ -48,7 +46,11 @@
 
             &.current svg { fill: white; }
 
-            &:hover { cursor: pointer; }
+            &:hover
+            {
+                scale: 1.05;
+                svg { fill: white; }
+            }
         }
     }
 }

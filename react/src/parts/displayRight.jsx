@@ -267,8 +267,7 @@ export default function displayRight()
 
     function miscButton()
     {
-        // window.location.reload()
-
+        window.location.reload()
     }
 
     return (
