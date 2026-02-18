@@ -1,5 +1,7 @@
+const { ipcMain } = require('electron');
 const { readFileSync } = require('fs');
 const path = require('path');
+
 const { appdata } = require('./util');
 const rpc = require('./rpc');
 
@@ -288,4 +290,86 @@ class Player
     }
 }
 
-module.exports = new Player();
+const audioPlayer = new Player();
+
+ipcMain.on('WINDOW_OBJECT', obj => audioPlayer.window = obj);
+
+ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>
+{
+    const { queueName } = audioPlayer;
+    const { ended, queueName: newQueueName, currentQueueItem } = audioPlayer.next({ot_auto});
+    
+    if (queueName !== newQueueName)
+    {
+        const data = wantQueue(newQueueName);
+
+        data.trackNumber = currentQueueItem;
+    
+        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+    }
+
+    if (ended || audioPlayer.stopped) return false;
+
+    return true;
+});
+
+ipcMain.on('ipc-audioPlayer-previous', () =>
+{
+    const { queueName } = audioPlayer;
+    const { queueName: newQueueName, currentQueueItem } = audioPlayer.previous();
+
+    if (queueName !== newQueueName)
+    {
+        const data = wantQueue(newQueueName);
+
+        data.trackNumber = currentQueueItem;
+    
+        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+    }
+});
+
+ipcMain.on('ipc-audioPlayer-switchToTrack', (E, {queueName, index}) =>
+{
+    audioPlayer.switchTo(queueName, index);
+});
+
+ipcMain.on('ipc-audioPlayer-shuffleRepeat', (E, {shuffle, repeat}) =>
+{
+    const config = appdata.get('config');
+
+    if (shuffle !== undefined) audioPlayer.shuffle = shuffle;
+    if (repeat !== undefined) audioPlayer.repeat = repeat;
+
+    config.audio.shuffle = audioPlayer.shuffle;
+    config.audio.repeat = audioPlayer.repeat;
+
+    appdata.set('config', config);
+});
+
+ipcMain.on('ipc-stopAfter', (E, filepath) =>
+{
+    audioPlayer.stopAfter = filepath;
+});
+
+ipcMain.handle('ipc-upcomingSongs', (E, {files}) =>
+{
+    audioPlayer.playUpcoming = true;
+
+    const queues = appdata.get('queues');
+
+    const oldQueue = queues.find(x => x.name === 'Upcoming Songs');
+
+    if (oldQueue === undefined) queues.push({name: 'Upcoming Songs', songs: files, queuePosition: queues.length, currentSong: 0});
+
+    else
+    {
+        oldQueue.songs = files;
+        oldQueue.currentSong = 0;
+    }
+
+    appdata.set('queues', queues);
+
+    return true;
+});
+
+module.exports = audioPlayer;
