@@ -75,7 +75,7 @@ export default function albums()
         {
             return (
                 <div key={i} style={{'--shadow': `rgba(${accent.join(',')}, .5)`}} onClick={() => showAlbum(album, artist)} className={`albumItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
-                    <img src={albumart} draggable={false}/>
+                    <img src={`overtone://${albumart}`} draggable={false}/>
                     <span title={album} className='albumName block overflowPrevent'>{album}</span>
                 </div>
             );
@@ -167,7 +167,7 @@ export default function albums()
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
                     <ROW className={'albumart'} onClick={() => play(0)}>
-                        <img src={album?.albumart} draggable={false}/>
+                        <img src={`overtone://${album?.albumart}`} draggable={false}/>
                         <PlayArrowRounded className='icon'/>
                     </ROW>
                     <COL className={'content'}>

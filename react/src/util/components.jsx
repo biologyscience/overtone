@@ -330,9 +330,9 @@ function SongInfoModal({visibility, parentRef, file, edit, toastEvent})
                             <input ref={chooseFile} style={{display: 'none'}} type='file' accept='image/*' onChange={handleFileChange}/>
                             {
                                 edit ? (
-                                    <img src={editedTags?.picture} onClick={() => chooseFile.current?.click()} draggable={false}/>
+                                    <img src={`overtone://${editedTags?.picture}`} onClick={() => chooseFile.current?.click()} draggable={false}/>
                                 ) : (
-                                    <img src={songInfo?.tags?.picture} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
+                                    <img src={`overtone://${songInfo?.tags?.picture}`} onClick={() => window.ipc.send('ipc-newWindow', songInfo?.tags?.picture)} draggable={false}/>
                                 )
                             }
                             <button onClick={toggleFavorite}>{isFavorite ? <FavoriteRounded/> : <FavoriteBorderRounded/>}</button>

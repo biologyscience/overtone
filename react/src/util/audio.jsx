@@ -19,7 +19,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
     useEffect(() =>
     {
         playerRef.current.pause();
-        playerRef.current.src = file;
+        playerRef.current.src = `overtone://${file}`;
 
         setCurrentTime(0);
 
