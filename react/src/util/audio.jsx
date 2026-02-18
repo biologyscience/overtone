@@ -1,27 +1,39 @@
 import { useEffect, useRef } from 'react';
+
 import eventBus from './events';
 
 function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercent, force], playing, audioLevel, indicateEnd})
 {
+    const dragging = useRef(force);
     const preGainRef = useRef();
     const filtersRef = useRef();
-
     const fadeRef = useRef({step: 0.05, duration: 250});
 
     useEffect(() =>
     {
-        if (!force) return;
-        
+        dragging.current = force;
+
+        if (force) return;
+
+        // once dragging is complete
         playerRef.current.currentTime = (progressPercent || 0) * (playerRef.current.duration || 0) / 100;
 
-    }, [progressPercent, force]);
+    }, [force]);
+
+    useEffect(() =>
+    {
+        if (!dragging.current) return;
+
+        setCurrentTime((progressPercent || 0) * (playerRef.current.duration || 0) / 100);
+
+    }, [progressPercent]);
 
     useEffect(() =>
     {
         const { playbackRate, preservesPitch } = playerRef.current;
 
         playerRef.current.pause();
-        playerRef.current.src = `overtone://${file}`;
+        playerRef.current.src = file;
         playerRef.current.playbackRate = playbackRate
         playerRef.current.preservesPitch = preservesPitch;
 
@@ -80,7 +92,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
     useEffect(() =>
     {
-        playerRef.current.preservesPitch = false;
+        // playerRef.current.preservesPitch = false;
 
         const audioPlayer = playerRef.current;
 
@@ -95,6 +107,8 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
             if (Math.abs(currentTime - lastTime) >= 1)
             {
                 lastTime = currentTime;
+
+                if (dragging.current) return;
 
                 setCurrentTime(lastTime);
             }
@@ -155,7 +169,7 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
         return () =>
         {
             // DO NOT DELETE
-            
+
             audioPlayer.removeEventListener('ended', () => indicateEnd(true));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
