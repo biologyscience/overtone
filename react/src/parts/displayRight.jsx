@@ -73,11 +73,11 @@ export default function displayRight()
         }
     }
 
-    function CurrentTime()
+    function CurrentTime({time})
     {
-        const { minutes, seconds } = parseTime(currentTime);
+        const { minutes, seconds } = parseTime(time);
 
-        eventBus.dispatchEvent(new CustomEvent('ot-currentTime', {detail: currentTime}));
+        eventBus.dispatchEvent(new CustomEvent('ot-currentTime', {detail: time}));
 
         return <span>{String(minutes || 0).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}</span>
     }
@@ -254,8 +254,6 @@ export default function displayRight()
         window.ipc.on('ipc-restoreVolume', setVolume);
         window.ipc.on('ipc-restoreCurrentTime', (time) => setTimeout(() => { setCurrentTime(time); player.current.currentTime = time; }, 10));
 
-        window.ipc.send('ipc-displayRightReady', true);
-
         navigator.mediaSession.setActionHandler('play', () => setPlayState(true));
         navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
         navigator.mediaSession.setActionHandler('previoustrack', playPrevious);
@@ -263,6 +261,15 @@ export default function displayRight()
 
         eventBus.addEventListener('ot-toggleFavorite', ({detail: filepath}) => filepath === timer.current.filepath ? setIsFavorite(x => !x) : null);
         eventBus.addEventListener('ot-changePercentForSongCount', ({detail}) => { timer.current.percentForSongCount = detail; timerStop(); timerStart(); });
+
+        document.addEventListener('keyup', (E) =>
+        {
+            if (E.code !== 'Space') return;
+
+            if (E.target.localName === 'input') return;
+
+            setPlayState(x => !x);
+        });
     }, []);
 
     function miscButton()
@@ -292,7 +299,7 @@ export default function displayRight()
                 <button data-function={'repeat'} onClick={shuffleRepeat}>{repeat ? <RepeatOnRounded/> : <RepeatRounded/>}</button>
             </ROW>
             <ROW className='timeline'>
-                <CurrentTime/>
+                <CurrentTime time={currentTime}/>
                 <Slider progressState={[progress, setProgress]} setDragging={setDragging}/>
                 <TotalTime/>
             </ROW>

@@ -18,8 +18,12 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
 
     useEffect(() =>
     {
+        const { playbackRate, preservesPitch } = playerRef.current;
+
         playerRef.current.pause();
         playerRef.current.src = `overtone://${file}`;
+        playerRef.current.playbackRate = playbackRate
+        playerRef.current.preservesPitch = preservesPitch;
 
         setCurrentTime(0);
 
@@ -144,13 +148,14 @@ function AudioPlayer({playerRef, file, setCurrentTime, progress: [progressPercen
         eventBus.addEventListener('ot-changePlaybackSpeed', ({detail}) => playerRef.current.playbackRate = detail);
         eventBus.addEventListener('ot-preservesPitch', ({detail}) => playerRef.current.preservesPitch = detail);
         eventBus.addEventListener('ot-changeFadeDuration', ({detail}) => fadeRef.current.duration = detail);
-
         eventBus.addEventListener('ot-eqChange', ({detail}) => eqChange(detail));
-
-        eventBus.dispatchEvent(new CustomEvent('ot-playerRef', {detail: playerRef}));
         
+        eventBus.dispatchEvent(new CustomEvent('ot-playerRef', {detail: playerRef}));
+
         return () =>
         {
+            // DO NOT DELETE
+            
             audioPlayer.removeEventListener('ended', () => indicateEnd(true));
             audioPlayer.removeEventListener('timeupdate', updateTime);
         }
