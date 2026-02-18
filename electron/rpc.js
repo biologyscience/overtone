@@ -1,11 +1,13 @@
+const { ipcMain } = require('electron');
 const { Client } = require('discord-rpc');
+
 const { appdata } = require('./util');
 
 const { discordRPC } = appdata.get('config');
 
-const rpc = new Client({transport: 'ipc'});
+const rpcClient = new Client({transport: 'ipc'});
 
-rpc.on('ready', () => console.log('RPC ready'));
+rpcClient.on('ready', () => console.log('RPC ready'));
 
 class RPC
 {
@@ -28,7 +30,7 @@ class RPC
     {
         try
         {
-            await rpc.login({clientId: discordRPC.appID});
+            await rpcClient.login({clientId: discordRPC.appID});
 
             this.live = true;
         }
@@ -41,7 +43,7 @@ class RPC
     {
         this.localhost?.close();
 
-        try { await rpc?.destroy(); } catch (E) {}
+        try { await rpcClient?.destroy(); } catch (E) {}
 
         this.live = false;
 
@@ -60,7 +62,7 @@ class RPC
         this.currentState.startTimestamp = Date.now();
         this.currentState.endTimestamp = undefined;
 
-        await rpc.setActivity(this.currentState);
+        await rpcClient.setActivity(this.currentState);
 
         return this;
     }
@@ -81,10 +83,33 @@ class RPC
             this.currentState.endTimestamp = undefined;
         }
         
-        await rpc.setActivity(this.currentState);
+        await rpcClient.setActivity(this.currentState);
 
         return this;
     }
 }
 
-module.exports = new RPC();
+const rpc = new RPC();
+
+ipcMain.handle('ipc-startRPC', async (E, obj) =>
+{
+    if (obj?.restart)
+    {
+        await rpc.off();
+
+        await new Promise(x => setTimeout(x, 1250));
+
+        await rpc.on();
+
+        return rpc.live;
+    }
+
+    else rpc.on();
+});
+
+ipcMain.on('ipc-setRPCtime', (E, data) =>
+{
+    rpc.setTime(data.time, data.stop);
+});
+
+module.exports = rpc;
