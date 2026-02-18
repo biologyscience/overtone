@@ -271,7 +271,9 @@ app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
     ({
+        minWidth: 500,
         width: 1920 / 2,
+        minHeight: 500,
         height: 1080 / 2,
         frame: false,
         title: 'OverTone',
