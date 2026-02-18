@@ -104,6 +104,8 @@ export default function Colors()
 
             window.ipc.invoke('ipc-wantThemeColors', theme).then((colors) =>
             {
+                if (colors === undefined) return;
+
                 colorState.background[1](colors[0]);
                 colorState.accent[1](colors[1]);
                 colorState.accent1[1](colors[2]);

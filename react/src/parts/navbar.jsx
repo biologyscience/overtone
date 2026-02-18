@@ -17,29 +17,24 @@ export default function Navbar()
 {
     const [left, setLeft] = useState(0);
     const [index, setIndex] = useState(0);
-    const [width, setWidth] = useState(0);
+
     const navRef = useRef();
+    const indexRef = useRef(index);
 
     function handleResize()
     {
-        const value = parseInt(getComputedStyle(navRef.current, ':after').width.slice(0, -2));
+        const tabWidth = parseInt(getComputedStyle(navRef.current, ':after').width.slice(0, -2));
 
-        setWidth(value);
-        setLeft(navRef.current.children[0].children[index].getBoundingClientRect().left - (value / 4));
+        setLeft(navRef.current.children[0].children[indexRef.current].getBoundingClientRect().left - (tabWidth / 4));
         
-        eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: index}));
-    }
-
-    function handleClick({target})
-    {
-        setIndex(parseInt(target.dataset.index));
-        setLeft(target.getBoundingClientRect().left - (width / 4));
+        eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: indexRef.current}));
     }
 
     useEffect(() =>
     {
+        indexRef.current = index;
         handleResize();
-        
+
     }, [index]);
 
     useEffect(() =>
@@ -51,12 +46,12 @@ export default function Navbar()
     return (
         <nav id='nav' ref={navRef} style={{'--left': `${left}px`}}>
             <ROW className={'sections'}>
-                <ROW data-index={0} className={`section ${index === 0 ? 'current' : ''}`} onClick={handleClick}><QueueMusicRounded/></ROW>
-                <ROW data-index={1} className={`section ${index === 1 ? 'current' : ''}`} onClick={handleClick}><FolderRounded/></ROW>
-                <ROW data-index={2} className={`section ${index === 2 ? 'current' : ''}`} onClick={handleClick}><AlbumRounded/></ROW>
-                <ROW data-index={3} className={`section ${index === 3 ? 'current' : ''}`} onClick={handleClick}><PersonRounded/></ROW>
-                <ROW data-index={4} className={`section ${index === 4 ? 'current' : ''}`} onClick={handleClick}><GraphicEqRounded/></ROW>
-                <ROW data-index={5} className={`section ${index === 5 ? 'current' : ''}`} onClick={handleClick}><SettingsRounded/></ROW>
+                <button className={`section ${index === 0 ? 'current' : ''}`} onClick={() => setIndex(0)}><QueueMusicRounded/></button>
+                <button className={`section ${index === 1 ? 'current' : ''}`} onClick={() => setIndex(1)}><FolderRounded/></button>
+                <button className={`section ${index === 2 ? 'current' : ''}`} onClick={() => setIndex(2)}><AlbumRounded/></button>
+                <button className={`section ${index === 3 ? 'current' : ''}`} onClick={() => setIndex(3)}><PersonRounded/></button>
+                <button className={`section ${index === 4 ? 'current' : ''}`} onClick={() => setIndex(4)}><GraphicEqRounded/></button>
+                <button className={`section ${index === 5 ? 'current' : ''}`} onClick={() => setIndex(5)}><SettingsRounded/></button>
             </ROW>
         </nav>
     );

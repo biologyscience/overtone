@@ -20,7 +20,6 @@ export default function displayRight()
 
         function scroll({detail})
         {
-            // should give width of all sections, but only gives visible part, so it works
             const visibleWidth = element.getBoundingClientRect().width;
 
             displayRef.current.scrollTo({left: detail * visibleWidth, behavior: 'smooth'});
