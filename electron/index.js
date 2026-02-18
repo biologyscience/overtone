@@ -18,7 +18,7 @@ require('./sections/queues');
 require('./sections/settings');
 
 let WINDOW = null;
-let TRAY = null;
+let TRAY = null; 
 
 function exitApp({currentTime})
 {
@@ -50,11 +50,9 @@ function wantQueue(queue)
 
     return { queueName: queue, songs: songList, trackNumber: currentSong, duration: parseTime(totalTime).text };
 }
- 
-ipcMain.on('ipc-displayRightReady', (E, isReady) =>
-{
-    if (!isReady) return;
 
+ipcMain.on('ipc-clientReady', (E) =>
+{
     const config = appdata.get('config');
 
     WINDOW.webContents.send('ipc-takeConfig', config);
@@ -281,9 +279,9 @@ app.on('ready', () =>
     WINDOW = new BrowserWindow
     ({
         minWidth: 500,
-        width: 1920 / 2,
+        width: 500,
         minHeight: 500,
-        height: 1080 / 2,
+        height: 500,
         frame: false,
         title: 'OverTone',
         icon: `${__dirname}/logo.png`,
@@ -369,14 +367,6 @@ app.on('ready', () =>
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
 
-
-
-    if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
-    else WINDOW.loadURL('http://localhost:8520');
-});
-
-app.whenReady().then(() =>
-{
     protocol.handle('overtone', (request) => 
     {
         const filepath = request.url.slice('overtone://'.length);
@@ -388,4 +378,7 @@ app.whenReady().then(() =>
 
         return net.fetch(`file:///${driveLetter.toUpperCase()}:${filepath.slice(1)}`);
     });
-})
+
+    if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
+    else WINDOW.loadURL('http://localhost:8520');
+});

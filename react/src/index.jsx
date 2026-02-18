@@ -33,4 +33,16 @@ ReactDOM.createRoot(document.body).render(
     </>
 );
 
-document.addEventListener('DOMContentLoaded', () => window.ipc.send('ipc-maximize'));
+document.addEventListener('DOMContentLoaded', () =>
+{
+    window.ipc.send('ipc-clientReady');
+
+    setTimeout(() =>
+    {
+        document.body.classList.add('ready');
+
+        setTimeout(() => document.body.style.setProperty('--z', -1), 500);
+
+        window.ipc.send('ipc-maximize');
+    }, 1000);
+});

@@ -290,6 +290,26 @@ class Player
     }
 }
 
+function wantQueue(queue)
+{
+    const queues = appdata.get('queues');
+
+    const songMetadata = appdata.get('songMetadata');
+
+    const { songs, currentSong } = queues.find(x => x.name === queue);
+
+    const songList = songs.map((filepath) =>
+    {
+        const { title, artists, album, duration, rawDuration } = songMetadata[filepath];
+
+        return { title, artists, album, duration, rawDuration, filepath };
+    });
+    
+    let totalTime = 0; songList.forEach(({rawDuration}) => totalTime += rawDuration);
+
+    return { queueName: queue, songs: songList, trackNumber: currentSong, duration: parseTime(totalTime).text };
+}
+
 const audioPlayer = new Player();
 
 ipcMain.on('WINDOW_OBJECT', obj => audioPlayer.window = obj);
