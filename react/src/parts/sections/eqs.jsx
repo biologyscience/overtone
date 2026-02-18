@@ -173,13 +173,7 @@ export default function eqs()
 
     useEffect(() =>
     {
-        eventBus.addEventListener('ot-navChange', ({detail}) =>
-        {
-            if (detail !== 4) return;
-
-            setWidth(Math.round(sectionRef.current.querySelector('.content').getBoundingClientRect().width));
-        });
-
+        eventBus.addEventListener('ot-navChange', () => setWidth(Math.round(sectionRef.current.querySelector('.content').getBoundingClientRect().width)));
         eventBus.addEventListener('ot-AnalyzerNode', ({detail}) => setAnalyser(detail));
 
         window.ipc.on('ipc-takeConfig', ({eq}) => { setEnableEQ(eq.enabled); setSelectedPreset(eq.preset); });

@@ -8,7 +8,6 @@
     gap: 2.5vh;
     justify-content: center;
     padding: 3vh 0;
-    overflow: hidden;
     
     & > * { padding: 0 2.5vw; }
 
@@ -19,9 +18,10 @@
         align-items: center;
         transition: scale 200ms ease;
         
-        .albumart
+        img
         {
-            height: 45vh;
+            object-fit: contain;
+            width: 27.5vw;
             aspect-ratio: 1;
         }
 
