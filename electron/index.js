@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, Menu, clipboard, nativeImage, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu, clipboard, nativeImage, Tray, protocol, net } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
 const { mkdirSync, existsSync, writeFileSync, statSync } = require('fs');
@@ -267,6 +267,15 @@ ipcMain.on('ipc-close', (E, data) =>
     WINDOW.hide();
 });
 
+protocol.registerSchemesAsPrivileged([{
+    scheme: 'overtone',
+    privileges:
+    {
+        stream: true,
+        standard: true
+    }
+}]);
+
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
@@ -280,7 +289,6 @@ app.on('ready', () =>
         icon: `${__dirname}/logo.png`,
         webPreferences:
         {
-            webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
             preload: `${__dirname}/preload.js`,
@@ -361,6 +369,23 @@ app.on('ready', () =>
         writeFileSync(filepath, JSON.stringify(data, null, 4));
     });
 
+
+
     if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
     else WINDOW.loadURL('http://localhost:8520');
 });
+
+app.whenReady().then(() =>
+{
+    protocol.handle('overtone', (request) => 
+    {
+        const filepath = request.url.slice('overtone://'.length);
+
+        if (filepath.startsWith('undefined')) return;
+        if (filepath.startsWith('http')) return net.fetch(filepath.replace('//', '://'));
+
+        const driveLetter = filepath.at(0);
+
+        return net.fetch(`file:///${driveLetter.toUpperCase()}:${filepath.slice(1)}`);
+    });
+})

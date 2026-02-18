@@ -68,7 +68,7 @@ export default function artists()
         {
             return (
                 <div key={i} onClick={() => showArtist(artist)} className={`artistItem ${inputMatchSpace?.[i] ? '' : 'displayNone'}`}>
-                    <ROW className={'artistPic'}><img src={picture} draggable={false}/></ROW>
+                    <ROW className={'artistPic'}><img src={`overtone://${picture}`} draggable={false}/></ROW>
                     <span className='artistName block overflowPrevent'>{artist}</span>
                 </div>
             );
@@ -81,7 +81,7 @@ export default function artists()
         {
             return (
                 <div key={i} onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-showAlbum', {detail: {album, artist: artist.name}}))} onContextMenu={() => openContext({album})} className={`albumItem`}>
-                    <img src={albumart} draggable={false}/>
+                    <img src={`overtone://${albumart}`} draggable={false}/>
                     <COL className={'info'}>
                         <span title={album} className='albumName block overflowPrevent'>{album}</span>
                         <span className='year'>{year}</span>
@@ -149,7 +149,7 @@ export default function artists()
                 <ROW className='head'>
                     <button className='goBack' onClick={() => setShowInside(false)}><ChevronLeftRounded/></button>
                     <ROW className={'artistPic'} onClick={() => play(artist?.name)}>
-                        <img src={artist?.picture} draggable={false}/>
+                        <img src={`overtone://${artist?.picture}`} draggable={false}/>
                         <PlayArrowRounded className='icon'/>
                     </ROW>
                     <COL className={'content'}>
