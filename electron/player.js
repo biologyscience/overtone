@@ -2,7 +2,7 @@ const { ipcMain } = require('electron');
 const { readFileSync } = require('fs');
 const path = require('path');
 
-const { appdata } = require('./util');
+const { appdata, parseTime } = require('./util');
 const rpc = require('./rpc');
 
 class Player
@@ -69,8 +69,7 @@ class Player
         }
 
         this.window.webContents.send('ipc-setNowPlaying', data);
-        this.window.webContents.send('ipc-playingQueueName', this.queueName);
-        this.window.webContents.send('ipc-playingTrackNumber', this.currentQueueItem);
+        this.window.webContents.send('ipc-setPlayingQueueData', {queueName: this.queueName, trackNumber: this.currentQueueItem});
 
         const config = appdata.get('config');
 
@@ -324,8 +323,8 @@ ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>
         const data = wantQueue(newQueueName);
 
         data.trackNumber = currentQueueItem;
-    
-        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+
+        audioPlayer.window.webContents.send('ipc-setCurrentQueue', data);
     }
 
     if (ended || audioPlayer.stopped) return false;
@@ -344,7 +343,7 @@ ipcMain.on('ipc-audioPlayer-previous', () =>
 
         data.trackNumber = currentQueueItem;
     
-        WINDOW.webContents.send('ipc-setCurrentQueue', data);
+        audioPlayer.window.webContents.send('ipc-setCurrentQueue', data);
     }
 });
 
