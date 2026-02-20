@@ -52,13 +52,6 @@ export default function queues()
         [selectedFiles, setSelectedFiles] = useState([]),
         [multiSelect, setMultiSelect] = useState(false);
     
-    function switchToTrack(name, index)
-    {
-        window.ipc.send('ipc-audioPlayer-switchToTrack', {queueName: name, index});
-
-        setPlayingTrackNumber(index + 1);
-    }
-
     function selectItems(filepath)
     {
         setSelectedFiles((oldArray) =>
@@ -114,13 +107,11 @@ export default function queues()
 
     useEffect(() =>
     {
-        focusSongInQueue();
-
         if (playingQueueName !== currentQueueName) return;
 
-        setTimeout(() => setCurrentQueueSongNumber(playingTrackNumber), 10);
+        focusSongInQueue();
 
-    }, [playingTrackNumber, currentQueueName, playingQueueName]);
+    }, [currentQueueName, playingQueueName]);
 
     useEffect(() =>
     {
@@ -134,15 +125,6 @@ export default function queues()
         }
 
         eventBus.addEventListener('ot-songsInQueueReorder', handle);
-        // eventBus.addEventListener('ot-filesDeleted', reloadQueue);
-        // eventBus.addEventListener('ot-navChange', handle2);
-
-        return () =>
-        {
-            eventBus.removeEventListener('ot-songsInQueueReorder', handle);
-            // eventBus.removeEventListener('ot-filesDeleted', reloadQueue);
-            // eventBus.removeEventListener('ot-navChange', handle2);
-        }
     }, [currentQueueName]);
 
     useEffect(() =>
@@ -191,6 +173,12 @@ export default function queues()
 
             focusSongInQueue();
         });
+        
+        window.ipc.on('ipc-setPlayingQueueData', ({queueName, trackNumber}) =>
+        {
+            setPlayingQueueName(queueName);
+            setPlayingTrackNumber(trackNumber);
+        });
 
         window.ipc.on('ipc-setQueuesList', ({queues, current}) =>
         {
@@ -209,14 +197,10 @@ export default function queues()
             );
         });
 
-        eventBus.addEventListener('ot-next', () => setPlayingTrackNumber(x => x + 1))
-        eventBus.addEventListener('ot-previous', () => setPlayingTrackNumber(x => x - 1));
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
         eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
 
-        window.ipc.on('ipc-playingQueueName', setPlayingQueueName);
-        window.ipc.on('ipc-playingTrackNumber', setPlayingTrackNumber);
         window.ipc.on('ipc-queuesToast', ({type, text}) => toast[type](text, {toasterId: 'queues'}));
     }, []);
 
@@ -242,13 +226,13 @@ export default function queues()
             </CustomModal>
             <COL className={'head'}>
                 <ROW className={'queueSelector'} onClick={() => setShowModal(true)}>
-                    <span className='name overflowPrevent'>{currentQueueName}</span>
+                    <span className='name overflowPrevent'>{currentQueueName === playingQueueName ? playingQueueName : currentQueueName}</span>
                     <ChevronRightRounded/>
                 </ROW>
                 <ROW className={'currentQueueInfo'}>
                     <button onClick={() => setMultiSelect(x => !x)} className={multiSelect ? 'focus' : null}>{multiSelect ? <DeselectRounded/> : <SelectAllRounded/>}</button>
                     <ROW className={'songNumbers'}>
-                        <strong>{currentQueueSongNumber + 1}</strong>
+                        <strong>{currentQueueName === playingQueueName ? playingTrackNumber + 1 : currentQueueSongNumber + 1}</strong>
                         <span>/</span>
                         <span>{songsData?.length}</span>
                     </ROW>
@@ -262,10 +246,17 @@ export default function queues()
             <COL className={`currentQueueList ${currentQueueName === playingQueueName ? 'playing' : ''}`}>
                 <SortableList setOrder={'ot-songsInQueueReorder'} disable={multiSelect}>
                     {
-                        songsData?.map(({title, artists, album, duration, filepath}, i) =>
+                        songsData?.map((data, i) =>
+                        {
+                            if (currentQueueName === playingQueueName) data.current = playingTrackNumber === i;
+                            else data.current = currentQueueSongNumber === i;
+
+                            return data;
+
+                        }).map(({title, artists, album, duration, filepath, current}, i) =>
                         {
                             return (
-                                <div key={i} id={crypto.randomUUID()} className={`listItem ${currentQueueSongNumber === i ? 'current' : ''}`} onContextMenu={() => openContext({title, i, filepath})}>
+                                <div key={i} id={crypto.randomUUID()} className={`listItem ${current ? 'current' : ''}`} onContextMenu={() => openContext({title, i, filepath})}>
                                     {
                                         multiSelect ? (
                                             <button onClick={() => selectItems(filepath)}>{ selectedFiles?.includes(filepath) ? <CheckBoxRounded/> : <CheckBoxOutlineBlankRounded/> }</button>
@@ -273,7 +264,7 @@ export default function queues()
                                             <button data-is-drag-handle={true} className='drag'><DragHandleRounded/></button>
                                         )
                                     }
-                                    <COL className='songData' onClick={() => multiSelect ? null : switchToTrack(currentQueueName, i)}>
+                                    <COL className='songData' onClick={() => multiSelect ? null : window.ipc.send('ipc-audioPlayer-switchToTrack', {queueName: currentQueueName, index: i})}>
                                         <span className='title overflowPrevent'>{title}</span>
                                         <span className='artist overflowPrevent'>{artists.join(', ')}</span>
                                         <ROW>

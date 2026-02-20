@@ -276,7 +276,8 @@ export default function displayRight()
 
     function miscButton()
     {
-        window.location.reload()
+        toast('63 6F 6D 69 6E 67 20 73 6F 6F 6E 20 2E 2E 2E'.replaceAll(' ', ''), {toasterId: 'displayRight'})
+        // window.location.reload()
     }
 
     return (
