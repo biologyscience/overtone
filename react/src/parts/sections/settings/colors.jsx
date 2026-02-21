@@ -21,7 +21,7 @@ export default function Colors()
         [themeName, setThemeName] = useState(''),
         [highContrast, setHighContrast] = useState();
 
-    function toHex(rgb) { return '#' + rgb.map(number => number.toString(16).padStart(2, '0')).join('').toUpperCase() };
+    function toHex(rgb) { return '#' + rgb.map(number => parseInt(number).toString(16).padStart(2, '0')).join('').toUpperCase() };
 
     function setHighContrastColors(currentTheme)
     {

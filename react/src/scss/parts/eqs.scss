@@ -13,10 +13,58 @@
 
         @include util.divider(after, BottomLeft);
     }
+    
+    .switch
+    {
+        display: flex;
+        align-items: center;
+        appearance: none;
+        margin: 0;
+        height: 100%;
+        aspect-ratio: 2.5;
+        transform: skewX(-10deg);
+        border-radius: 5px;
+        background-color: var(--accent2);
+        transition: all 250ms ease;
+        cursor: pointer;
+
+        $switchPad: 15%;
+
+        &::before
+        {
+            content: '';
+            margin-left: $switchPad;
+            height: 50%;
+            aspect-ratio: 1.5;
+            background-color: var(--accent);
+            border-radius: 2.5px;
+            transition: all 250ms ease;
+        }
+
+        &:checked
+        {
+            background-color: var(--accent);
+
+            &::before
+            {
+                background-color: var(--background);
+                margin-left: 75% - $switchPad;
+            }
+        }
+    }
 
     .content
     {
         margin: 0 2vw;
+        
+        & > .head
+        {
+            margin-top: 2.5vh;
+            font-size: 1rem;
+            justify-content: space-between;
+            
+            .option { gap: 1em; }
+        }
 
         .graphs
         {
@@ -99,45 +147,6 @@
                     }
 
                     &.disableEQ::after { content: ''; }
-                }
-            }
-    
-            .switch
-            {
-                display: flex;
-                align-items: center;
-                appearance: none;
-                margin: 0;
-                height: 100%;
-                aspect-ratio: 2.5;
-                transform: skewX(-10deg);
-                border-radius: 5px;
-                background-color: var(--accent2);
-                transition: all 250ms ease;
-                cursor: pointer;
-        
-                $switchPad: 15%;
-        
-                &::before
-                {
-                    content: '';
-                    margin-left: $switchPad;
-                    height: 50%;
-                    aspect-ratio: 1.5;
-                    background-color: var(--accent);
-                    border-radius: 2.5px;
-                    transition: all 250ms ease;
-                }
-        
-                &:checked
-                {
-                    background-color: var(--accent);
-        
-                    &::before
-                    {
-                        background-color: var(--background);
-                        margin-left: 75% - $switchPad;
-                    }
                 }
             }
 

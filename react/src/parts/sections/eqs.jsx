@@ -40,6 +40,8 @@ export default function eqs()
     const
         [width, setWidth] = useState(500),
         [analyser, setAnalyser] = useState(),
+        [enableVisualization, setEnableVisualization] = useState(true),
+        [timeFrequency, setTimeFrequency] = useState(false),
         [magnitudes, setMagnitudes] = useState([]),
         [bands, setBands] = useState(startData),
         [dragging, setDragging] = useState(false),
@@ -112,21 +114,37 @@ export default function eqs()
 
         analyserRef.current.analyser = analyser;
 
+        const timeArray = new Float32Array(analyserRef.current?.analyser?.frequencyBinCount);
         const freqArray = new Uint8Array(analyserRef.current?.analyser?.frequencyBinCount);
 
-        const int = setInterval(() =>
+        let int;
+
+        if (!enableVisualization) return;
+
+        int = setInterval(() =>
         {
-            analyserRef.current?.analyser?.getByteFrequencyData(freqArray);
+            analyserRef.current.analyser.getFloatTimeDomainData(timeArray);
+            analyserRef.current.analyser.getByteFrequencyData(freqArray);
 
             const mags = [];
 
-            let sum = 0;
+            let sum = 0, samples, list;
 
-            const samples = 4;
-
-            for (let i = 0; i < freqArray.length; i++)
+            if (timeFrequency)
             {
-                sum += freqArray[i] / 255;
+                samples = 1;
+                list = [...timeArray].map(x => (x + 1) / 2);
+            }
+            
+            else
+            {
+                samples = 4;
+                list = [...freqArray].map(x => x / 255);
+            }
+
+            for (let i = 0; i < list.length; i++)
+            {
+                sum += list[i] / samples;
 
                 if (Math.round(i % samples) === 0)
                 {
@@ -134,13 +152,13 @@ export default function eqs()
                     sum = 0;
                 }
             }
-
-            setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x / samples } }));
-        });
+            
+            setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x } }));
+        }, timeFrequency ? 35 : 15);
 
         return () => { clearInterval(int); }
 
-    }, [analyser]);
+    }, [analyser, timeFrequency, enableVisualization]);
 
     useEffect(() => 
     {
@@ -186,6 +204,17 @@ export default function eqs()
         <COL ref={sectionRef} className='section' id='eqs'>
             <span className='title'>Equalizer & Visualization</span>
             <COL className={'content'}>
+                <ROW className={'head'}>
+                    <ROW className={'option'}>
+                        <span>Enable Visualization</span>
+                        <input type='checkbox' className='switch' checked={enableVisualization} onChange={() => setEnableVisualization(x => !x)}/>
+                    </ROW>
+                    <ROW className={'option'}>
+                        <span>Frequency Domain</span>
+                        <input type='checkbox' className='switch' checked={timeFrequency} onChange={() => setTimeFrequency(x => !x)}/>
+                        <span>Time Domain</span>
+                    </ROW>
+                </ROW>
                 <COL className={`graphs ${enableEQ ? null : 'disableEQ'}`}>
                     <FrequencyResponseGraph
                         className='visualizer'
