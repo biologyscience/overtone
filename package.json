@@ -8,15 +8,15 @@
   "homepage": "https://overtone.js.org",
   "scripts": {
     "build": "vite build ./react",
-    "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js\"",
+    "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js --dev\"",
+    "make": "electron-forge make",
     "react": "vite ./react --host",
-    "start": "vite build ./react && electron electron/index.js --file"
+    "start": "vite build ./react && electron electron/index.js"
   },
   "dependencies": {
     "archiver": "^7.0.1",
     "chokidar": "^5.0.0",
     "discord-rpc": "^4.0.1",
-    "electron": "^39.2.7",
     "extract-zip": "^2.0.1",
     "move-file": "^4.1.0",
     "music-metadata": "^7.14.0",
@@ -29,6 +29,10 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-dmg": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@eslint/js": "^9.39.1",
@@ -40,6 +44,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "antd": "^6.2.3",
     "dsssp": "^0.6.4",
+    "electron": "^39.2.7",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

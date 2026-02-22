@@ -1,6 +1,6 @@
 electron/appdata/*
 !electron/appdata/eqs.json
-electron/example.js
 node_modules
+out
 react/dist
 package-lock.json

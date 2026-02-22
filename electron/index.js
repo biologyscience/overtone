@@ -6,6 +6,80 @@ const path = require('path');
 const sharp = require('sharp');
 const { Vibrant } = require('node-vibrant/node');
 
+if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
+if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
+
+['config', 'queues', 'songList', 'albums', 'songMetadata'].forEach((x) =>
+{
+    const filepath = path.join(__dirname, `./appdata/${x}.json`);
+
+    let data = {};
+
+    if (existsSync(filepath)) return;
+
+    if (x === 'config')
+    {
+        data =
+        {
+            allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
+            launchOnStartup: false,
+            systemTray: false,
+            checkMusicIn: [],
+            lastQueueState: {},
+            "spotify": {
+                "clientID": "",
+                "clientSecret": ""
+            },
+            colors:
+            {
+                dynamic: true,
+                highContrast: false,
+                theme: 'Dark',
+                themes: {}
+            },
+            audio:
+            {
+                device: 'default',
+                speed: 1,
+                preservePitch: false,
+                crossFade: 250,
+                volume: 100,
+                shuffle: false,
+                repeat: false,
+                autoPlayOnLaunch: false,
+                percentForPlaycount: 50
+            },
+            eq:
+            {
+                show: true,
+                timeDomain: true,
+                enabled: false,
+                preset: 'Soft Rock'
+            },
+            interface:
+            {
+                font: 'Default (Fira Sans)',
+                scale: 1,
+                animations: true
+            },
+            discordRPC:
+            {
+                appID: '1312407617540456458',
+                autoConnect: true
+            }
+        };
+    }
+
+    if (x === 'queues') data = [];
+
+    writeFileSync(filepath, JSON.stringify(data, null, 4));
+});
+
+protocol.registerSchemesAsPrivileged([{
+    scheme: 'overtone',
+    privileges: { standard: true }
+}]);
+
 const { appdata, parseTime } = require('./util');
 
 const audioPlayer = require('./player');
@@ -78,6 +152,8 @@ ipcMain.on('ipc-clientReady', (E) =>
 ipcMain.on('ipc-songPlayed', (E, filepath) =>
 {
     const songMetadata = appdata.get('songMetadata');
+
+    if (songMetadata[filepath] === undefined) return;
 
     const { playCount } = songMetadata[filepath];
 
@@ -265,11 +341,6 @@ ipcMain.on('ipc-close', (E, data) =>
     WINDOW.hide();
 });
 
-protocol.registerSchemesAsPrivileged([{
-    scheme: 'overtone',
-    privileges: { standard: true }
-}]);
-
 app.on('ready', () =>
 {
     WINDOW = new BrowserWindow
@@ -280,13 +351,13 @@ app.on('ready', () =>
         height: 500,
         frame: false,
         title: 'OverTone',
-        icon: `${__dirname}/logo.png`,
+        icon: path.join(__dirname, 'logo.png'),
         webPreferences:
         {
             webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
-            preload: `${__dirname}/preload.js`,
+            preload: path.join(__dirname, 'preload.js'),
         }
     });
 
@@ -297,77 +368,10 @@ app.on('ready', () =>
 
     ipcMain.emit('WINDOW_OBJECT', WINDOW);
 
-    TRAY = new Tray(`${__dirname}/logo.png`);
+    TRAY = new Tray(path.join(__dirname, 'logo.png'));
     TRAY.setToolTip('OverTone');
     TRAY.setContextMenu(Menu.buildFromTemplate([{ label: 'Quit OverTone', click: () => WINDOW.close() }]));
     TRAY.on('click', () => WINDOW.show());
-
-    if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
-    if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
-    
-    ['config', 'queues', 'songList', 'albums', 'songMetadata'].forEach((x) =>
-    {
-        const filepath = path.join(__dirname, `./appdata/${x}.json`);
-    
-        let data = {};
-    
-        if (existsSync(filepath)) return;       
-    
-        if (x === 'config')
-        {
-            data =
-            {
-                allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
-                launchOnStartup: false,
-                systemTray: false,
-                checkMusicIn: [],
-                lastQueueState: {},
-                "spotify": {
-                    "clientID": "",
-                    "clientSecret": ""
-                },
-                colors:
-                {
-                    dynamic: true,
-                    highContrast: false,
-                    theme: 'Dark',
-                    themes: {}
-                },
-                audio:
-                {
-                    device: 'default',
-                    speed: 1,
-                    preservePitch: false,
-                    crossFade: 250,
-                    volume: 100,
-                    shuffle: false,
-                    repeat: false,
-                    autoPlayOnLaunch: false,
-                    percentForPlaycount: 50
-                },
-                eq:
-                {
-                    enabled: false,
-                    preset: 'Soft Rock'
-                },
-                interface:
-                {
-                    font: 'Default (Fira Sans)',
-                    scale: 1,
-                    animations: true
-                },
-                discordRPC:
-                {
-                    appID: '1312407617540456458',
-                    autoConnect: true
-                }
-            };
-        }
-
-        if (x === 'queues') data = [];
-    
-        writeFileSync(filepath, JSON.stringify(data, null, 4));
-    });
 
     protocol.handle('overtone', (request) => 
     {
@@ -381,6 +385,6 @@ app.on('ready', () =>
         return net.fetch(`file:///${driveLetter.toUpperCase()}:${filepath.slice(1)}`);
     });
 
-    if (process.argv.includes('--file')) WINDOW.loadFile('../react/dist/index.html');
-    else WINDOW.loadURL('http://localhost:8520');
+    if (process.argv.includes('--dev')) WINDOW.loadURL('http://localhost:8520');
+    else WINDOW.loadFile(path.join(__dirname, '../react/dist/index.html'));
 });

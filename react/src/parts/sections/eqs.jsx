@@ -120,7 +120,7 @@ export default function eqs()
         const timeArray = new Float32Array(analyserRef.current?.analyser?.frequencyBinCount);
         const freqArray = new Uint8Array(analyserRef.current?.analyser?.frequencyBinCount);
 
-        let int;
+        let int, mags, sum, samples, list;
 
         if (!enableVisualization) return;
 
@@ -129,9 +129,7 @@ export default function eqs()
             analyserRef.current.analyser.getFloatTimeDomainData(timeArray);
             analyserRef.current.analyser.getByteFrequencyData(freqArray);
 
-            const mags = [];
-
-            let sum = 0, samples, list;
+            mags = []; sum = 0;
 
             if (timeFrequency)
             {
@@ -155,8 +153,9 @@ export default function eqs()
                     sum = 0;
                 }
             }
-            
+
             setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x } }));
+            
         }, timeFrequency ? 35 : 15);
 
         return () => { clearInterval(int); }
