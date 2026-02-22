@@ -1,6 +1,8 @@
 name: Build OverTone Executable
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -27,11 +29,31 @@ jobs:
       - name: Bundle react
         run: npm run build
 
-      - name: Build executables
+      - name: Bundle electron
         run: npm run make
+
+      - name: Isolate files
+        run: |
+          mkdir -p release
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            cp out/make/macos-latest/*.dmg release/
+            cp out/make/macos-latest/zip/darwin/arm64/*.zip release/
+          fi
+
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            cp out/make/windows-latest/zip/win32/x64/*.zip release/
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-build-${{ matrix.os }}
-          path: out/make/**
+          name: ${{ matrix.os }}
+          path: release/**
+          
+      - name: Upload to Release
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
