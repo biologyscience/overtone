@@ -7,7 +7,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest]
+        # os: [windows-latest, macos-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -22,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
+
       - name: Bundle react
         run: npm run build
 
