@@ -33,6 +33,7 @@ jobs:
         run: npm run make
 
       - name: Isolate files
+        shell: bash
         run: |
           mkdir -p release
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
