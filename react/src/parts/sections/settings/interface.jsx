@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { OpenInNewRounded } from '@mui/icons-material';
 
 import { COL, ROW, CustomModal, CustomDropdown } from '../../../util/components';
+import eventBus from '../../../util/events';
 
 export default function Interface()
 {
@@ -16,6 +17,7 @@ export default function Interface()
         [selectedFont, setSelectedFont] = useState(),
         [fontSize, setFontSize] = useState(),
         [allowAnimations, setAllowAnimations] = useState(),
+        [cameraShake, setCameraShake] = useState(),
         [showModal, setShowModal] = useState();
 
     useEffect(() =>
@@ -53,7 +55,15 @@ export default function Interface()
         window.ipc.send('ipc-updateConfig', {value: allowAnimations, keys: ['interface', 'animations']});
 
     }, [allowAnimations]);
+    
+    useEffect(() =>
+    {
+        eventBus.dispatchEvent(new CustomEvent('ot-cameraShake', {detail: cameraShake}));
 
+        window.ipc.send('ipc-updateConfig', {value: cameraShake, keys: ['interface', 'shake']});
+
+    }, [cameraShake]);
+    
     useEffect(() =>
     {
         root.current = document.querySelector(':root');
@@ -68,11 +78,12 @@ export default function Interface()
 
         window.ipc.on('ipc-takeConfig', (config) =>
         {
-            const { font, scale, animations } = config.interface;
+            const { font, scale, animations, shake } = config.interface;
 
             setSelectedFont(font);
             setFontSize(['Small', 'Medium', 'Large'][scale]);
             setAllowAnimations(animations);
+            setCameraShake(shake);
         });
     }, []);
 
@@ -89,6 +100,10 @@ export default function Interface()
             <ROW className={'option'}>
                 <span>Allow animations</span>
                 <input type='checkbox' className='switch' checked={allowAnimations} onChange={() => setAllowAnimations(x => !x)}/>
+            </ROW>
+            <ROW className={'option'}>
+                <span>Camera Shake (Experimental)</span>
+                <input type='checkbox' className='switch' checked={cameraShake} onChange={() => setCameraShake(x => !x)}/>
             </ROW>
             {/* <ROW className={'option'}>
                 <span>App Icon</span>
