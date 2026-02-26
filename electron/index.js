@@ -60,7 +60,8 @@ if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__d
             {
                 font: 'Default (Fira Sans)',
                 scale: 1,
-                animations: true
+                animations: true,
+                shake: false
             },
             discordRPC:
             {

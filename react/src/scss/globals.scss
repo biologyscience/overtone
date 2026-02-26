@@ -81,7 +81,9 @@ body
     height: 100vh;
     width: 100vw;
     background-color: var(--background);
-    transition: background-color ease 400ms;
+    transition:
+        background-color ease 400ms,
+        transform ease-in-out 20ms;
 
     &.disableAnimations
     {

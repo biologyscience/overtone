@@ -40,6 +40,7 @@ export default function eqs()
     const
         [width, setWidth] = useState(500),
         [analyser, setAnalyser] = useState(),
+        [shake, setShake] = useState(),
         [enableVisualization, setEnableVisualization] = useState(),
         [timeFrequency, setTimeFrequency] = useState(),
         [magnitudes, setMagnitudes] = useState([]),
@@ -120,11 +121,12 @@ export default function eqs()
         const timeArray = new Float32Array(analyserRef.current?.analyser?.frequencyBinCount);
         const freqArray = new Uint8Array(analyserRef.current?.analyser?.frequencyBinCount);
 
-        let int, mags, sum, samples, list;
+        let loopNumber, mags, sum, samples, list;
 
-        if (!enableVisualization) return;
+        const beatWindow = [];
+        const beatPeaks = [];
 
-        int = setInterval(() =>
+        function loop()
         {
             analyserRef.current.analyser.getFloatTimeDomainData(timeArray);
             analyserRef.current.analyser.getByteFrequencyData(freqArray);
@@ -154,13 +156,49 @@ export default function eqs()
                 }
             }
 
-            setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x } }));
-            
-        }, timeFrequency ? 35 : 15);
+            if (enableVisualization) setMagnitudes(mags.map((x, i) => { return { frequency: i * 20000 / mags.length, magnitude: x } }));
 
-        return () => { clearInterval(int); }
+            function isBeat()
+            {
+                const power = [...timeArray].map(x => Math.pow(x, 2)).reduce((x, y) => x + y) / timeArray.length;
 
-    }, [analyser, timeFrequency, enableVisualization]);
+                if (beatWindow.length > 2) beatWindow.shift();
+                beatWindow.push(power);
+
+                if (beatWindow[1] < 0.1) return false;
+
+                if ((beatWindow[1] > beatWindow[0]) && (beatWindow[1] > beatWindow[2]))
+                {
+                    if (beatPeaks.length > 49) beatPeaks.shift();
+                    beatPeaks.push(beatWindow[1]);
+
+                    const avgBeatPower = beatPeaks.reduce((x, y) => x + y) / beatPeaks.length;
+
+                    if (beatWindow[1] >= 1.2 * avgBeatPower) return true;
+                }
+
+                return false;
+            }
+
+            if (shake)
+            {
+                if (isBeat())
+                {
+                    setTimeout(() => document.body.style.transform = 'rotate(1deg)', 0);
+                    setTimeout(() => document.body.style.transform = 'rotate(0deg)', 15);
+                    setTimeout(() => document.body.style.transform = 'rotate(-1deg)', 25);
+                    setTimeout(() => document.body.style.transform = 'rotate(0deg)', 35);
+                }
+            }
+
+            loopNumber = requestAnimationFrame(loop);
+        }
+        
+        loop();
+
+        return () => { cancelAnimationFrame(loopNumber); }
+
+    }, [analyser, timeFrequency, enableVisualization, shake]);
 
     useEffect(() => 
     {
@@ -195,6 +233,7 @@ export default function eqs()
     {
         eventBus.addEventListener('ot-navChange', () => setWidth(Math.round(sectionRef.current.querySelector('.content').getBoundingClientRect().width)));
         eventBus.addEventListener('ot-AnalyzerNode', ({detail}) => setAnalyser(detail));
+        eventBus.addEventListener('ot-cameraShake', ({detail}) => setShake(detail));
 
         window.ipc.on('ipc-takeConfig', ({eq}) => { setEnableEQ(eq.enabled); setSelectedPreset(eq.preset); setTimeFrequency(eq.timeDomain); setEnableVisualization(eq.show); });
         window.ipc.on('ipc-takeEQs', (eqs) => { setEQs(eqs); setPresets(Object.keys(eqs).sort((x, y) => x.localeCompare(y))); });

@@ -5,6 +5,7 @@ module.exports = {
             if (path.includes('node_modules')) return false;
 
             if (path.includes('.git')) return true;
+            if (path.includes('.github')) return true;
 
             if (path.includes('electron/appdata/'))
             {
@@ -39,7 +40,7 @@ module.exports = {
         },
         {
             name: '@electron-forge/maker-zip',
-            platforms: ['darwin', 'linux', 'win32', 'win64'],
+            platforms: ['darwin', 'linux', 'win32'],
         }
     ]
 }
