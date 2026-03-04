@@ -2,7 +2,11 @@ module.exports = {
     packagerConfig: {
         ignore: (path) =>
         {
-            if (path.includes('node_modules')) return false;
+            if (path.includes('node_modules'))
+            {
+                if (path.includes('/.')) return true;
+                return false;
+            }
 
             if (path.includes('.git')) return true;
             if (path.includes('.github')) return true;
@@ -34,10 +38,10 @@ module.exports = {
             name: '@electron-forge/maker-dmg',
             platforms: ['darwin'],
         },
-        // {
-        //     name: '@electron-forge/maker-deb',
-        //     platforms: ['linux'],
-        // },
+        {
+            name: '@electron-forge/maker-deb',
+            platforms: ['linux'],
+        },
         {
             name: '@electron-forge/maker-zip',
             platforms: ['darwin', 'linux', 'win32'],
