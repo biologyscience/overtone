@@ -9,7 +9,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        # os: [windows-latest, macos-latest]
+        os: [ubuntu-latest]
         # os: [windows-latest, macos-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
@@ -36,6 +37,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
+
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            cp out/make/ release/
+          fi
+
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             cp out/make/*.dmg release/
             cp out/make/zip/darwin/arm64/*.zip release/
