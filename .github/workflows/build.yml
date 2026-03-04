@@ -39,7 +39,7 @@ jobs:
           mkdir -p release
 
           # if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-          #   cp out/make/ release/
+          #   cp out/make/zip/linux/x64/*.zip release/
           # fi
 
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
