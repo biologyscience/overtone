@@ -37,12 +37,12 @@ jobs:
           mkdir -p release
 
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            cp out/make/deb/x64/*.deb release/
+            # cp out/make/deb/x64/*.deb release/
             cp out/make/zip/linux/x64/*.zip release/
           fi
 
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            cp out/make/*.dmg release/
+            # cp out/make/*.dmg release/
             cp out/make/zip/darwin/arm64/*.zip release/
           fi
 
