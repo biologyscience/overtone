@@ -1,9 +1,6 @@
 const { ipcMain } = require('electron');
 const path = require('path');
 
-let WINDOW;
-ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
-
 let albums, songMetadata;
 ipcMain.on('APPDATA', (obj) =>
 {
@@ -39,16 +36,16 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 
     for (const ID in data)
     {
-        const album = data[ID];
+        const albumItem = data[ID];
 
-        if (album.album === album && album.artists.includes(artist))
+        if (albumItem.album === album && albumItem.artists.includes(artist))
         {
-            albumData.colors = album.colors;
-            albumData.artist = album.artists[0];
-            albumData.year = album.year;
-            albumData.albumart = album.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
+            albumData.colors = albumItem.colors;
+            albumData.artist = albumItem.artists[0];
+            albumData.year = albumItem.year;
+            albumData.albumart = albumItem.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
-            albumData.songs = album.songs.map((filepath) =>
+            albumData.songs = albumItem.songs.map((filepath) =>
             {
                 const { title, rawDuration, track, artists, playCount } = songMetadata.get(filepath);
 
