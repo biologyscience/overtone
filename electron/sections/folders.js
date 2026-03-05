@@ -281,15 +281,17 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
 {
     if (folder === 'favorites')
     {
-        const data = [];
+        const temp = [];
 
-        for (const file in songMetadata.store)
+        const data = { ...songMetadata.store };
+
+        for (const file in data)
         {
-            const { title, artists, album, rawDuration, isFavorite } = songMetadata.get(file);
+            const { title, artists, album, rawDuration, isFavorite } = data[file];
 
             if (!isFavorite) continue;
 
-            data.push({ artist: artists.join(', '), location: file, duration: rawDuration, title, album });
+            temp.push({ artist: artists.join(', '), location: file, duration: rawDuration, title, album });
         }
 
         return data;
@@ -320,9 +322,11 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
     {
         if (audioPlayer.queue.includes(file)) playingQueueAffected = true;
 
-        for (const albumID in albums.store)
+        let data = { ...albums.store };
+
+        for (const albumID in data)
         {
-            const album = albums.get(albumID);
+            const album = data[albumID];
 
             if (album.songs.includes(file))
             {
@@ -340,9 +344,11 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
             }
         }
 
-        for (const queueName in queues.store)
+        data = { ...queues.store };
+
+        for (const queueName in data)
         {
-            const queue = queues.get(queueName);
+            const queue = data[queueName];
 
             if (queue.songs.includes(file))
             {
@@ -354,11 +360,13 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
             }
         }
 
-        for (const folder in songList.store)
+        data = { ...songList.store };
+
+        for (const folder in data)
         {
             if (file.startsWith(folder))
             {
-                const list = songList.get(folder);
+                const list = data[folder];
 
                 list.splice(list.indexOf(file), 1);
                 
@@ -420,9 +428,11 @@ ipcMain.on('ipc-moveToFolder', (E, {files, toastEvent}) =>
         album.songs.splice(album.songs.indexOf(oldLocation), 1, newLocation);
         albums.set(oldMetadata.albumID, album);
 
-        for (const queueName in queues.store)
+        const data = { ...queues.store };
+
+        for (const queueName in data)
         {
-            const queue = queues.get(queueName);
+            const queue = data[queueName];
 
             if (!queue.songs.includes(oldLocation)) continue;
 

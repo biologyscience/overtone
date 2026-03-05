@@ -18,7 +18,10 @@ ipcMain.on('APPDATA', (obj) =>
 ipcMain.on('ipc-wantQueues', () =>
 {
     const queueList = [];
-    for (const queueName in queues.store) queueList[queues.get(queueName).queuePosition] = queueName;
+
+    const data = { ...queues.store };
+
+    for (const queueName in data) queueList[data[queueName].queuePosition] = queueName;
 
     WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: queueList.filter(Boolean) });
 });
@@ -28,11 +31,13 @@ ipcMain.on('ipc-deleteQueue', (E, {name}) =>
     const queueList = [];
     const position = queues.get(name).queuePosition;
 
-    for (const queueName in queues.store)
+    const data = { ...queues.store };
+
+    for (const queueName in data)
     {
         if (queueName === name) continue;
 
-        const queue = queues.get(queueName);
+        const queue = data[queueName];
 
         queueList[queue.queuePosition] = queueName;
 
@@ -56,7 +61,10 @@ ipcMain.on('ipc-renameQueue', (E, {oldName, newName}) =>
     queues.delete(oldName);
 
     const queueList = [];
-    for (const queueName in queues.store) queueList[queues.get(queueName).queuePosition] = queueName;
+
+    const data = { ...queues.store };
+
+    for (const queueName in data) queueList[data[queueName].queuePosition] = queueName;
 
     WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: queueList.filter(Boolean) });
 });
@@ -65,9 +73,11 @@ function wantQueue(queue)
 {
     const { songs, currentSong } = queues.get(queue);
 
+    const data = { ...songMetadata.store };
+
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
+        const { title, artists, album, duration, rawDuration } = data[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
@@ -76,6 +86,7 @@ function wantQueue(queue)
 
     return { queueName: queue, songs: songList, trackNumber: currentSong, duration: parseTime(totalTime).text };
 }
+
 
 ipcMain.on('ipc-wantQueue', (E, queue) =>
 {
@@ -105,21 +116,23 @@ ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queu
     {
         albums.forEach((album) =>
         {
-            for (const ID in albums.store)
+            const data = { ...albums.store };
+
+            for (const ID in data)
             {
-                const albumData = albums.get(ID);
+                const albumData = data[ID];
 
                 if (albumData.album === album && albumData.artists.includes(artist))
                 {
-                    const data = albumData.songs.map((filepath) =>
+                    const temp = albumData.songs.map((filepath) =>
                     {
                         const { title, artists, album, duration, rawDuration, track } = songMetadata.get(filepath);
 
                         return { title, artists, album, duration, rawDuration, track, filepath };
                     });
 
-                    data.sort((x, y) => x.track?.no - y.track?.no);
-                    data.forEach(x => songs.push(x));
+                    temp.sort((x, y) => x.track?.no - y.track?.no);
+                    temp.forEach(x => songs.push(x));
 
                     break;
                 }
@@ -163,7 +176,10 @@ ipcMain.on('ipc-reorderQueue', (E, {queueName, oldOrder, newOrder}) =>
 ipcMain.on('ipc-reorderQueues', (E, {oldOrder, newOrder}) =>
 {
     const queueNames = [];
-    for (const queueName in queues.store) queueNames[queues.get(queueName).queuePosition] = queueName;
+    
+    const data = { ...queues.store };
+
+    for (const queueName in data) queueNames[data[queueName].queuePosition] = queueName;
 
     const mapped = {};
     oldOrder.forEach((x, i) => mapped[x] = queueNames[i]);
@@ -193,9 +209,11 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, files}) =>
 
     if (queue.songs.length === 0)
     {
-        for (const queueName in queues.store)
+        const data = { ...queues.store };
+
+        for (const queueName in data)
         {
-            const queueItem = queues.get(queueName);
+            const queueItem = data[queueName];
 
             if (queueItem.queuePosition === queue.queuePosition + 1) afterQueueName = queueName;
             if (queueItem.queuePosition > queue.queuePosition) queueItem.queuePosition--;

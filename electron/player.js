@@ -108,9 +108,11 @@ class Player
         {
             let nextQueueName = null;
 
-            for (const queueNames in queues.store)
+            const data = { ...queues.store };
+
+            for (const queueNames in data)
             {
-                if (queues.get(queueNames).queuePosition === queues.get(this.queueName).queuePosition + 1)
+                if (data[queueNames].queuePosition === data[this.queueName].queuePosition + 1)
                 {
                     nextQueueName = queueNames;
                     break;
@@ -187,16 +189,18 @@ class Player
         {
             let previousQueueName;
 
-            for (const queueNames in queues.store)
+            const data = { ...queues.store };
+
+            for (const queueNames in data)
             {
-                if (queues.get(queueNames).queuePosition === queuePosition - 1)
+                if (data[queueNames].queuePosition === queuePosition - 1)
                 {
                     previousQueueName = queueNames;
                     break;
                 }
             }
     
-            const previousQueue = queues.get(previousQueueName);
+            const previousQueue = data[previousQueueName];
     
             this.currentQueueItem = previousQueue.songs.length - 1;
             this.queue = previousQueue.songs;
@@ -280,9 +284,11 @@ function wantQueue(queue)
 {
     const { songs, currentSong } = queues.get(queue);
 
+    const data = { ...songMetadata.store };
+
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
+        const { title, artists, album, duration, rawDuration } = data[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
