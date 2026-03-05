@@ -54,7 +54,7 @@ if (!existsSync(path.join(__dirname, './appdata/config.json')))
         },
         eq:
         {
-            show: true,
+            show: false,
             timeDomain: true,
             enabled: false,
             preset: 'Soft Rock'
@@ -118,7 +118,7 @@ function wantQueue(queue)
     return { queueName: queue, songs: songList, trackNumber: currentSong, duration: parseTime(totalTime).text };
 }
 
-ipcMain.on('ipc-clientReady', (E) =>
+ipcMain.on('ipc-clientReady', () =>
 {
     WINDOW.webContents.send('ipc-takeConfig', config.store);
 

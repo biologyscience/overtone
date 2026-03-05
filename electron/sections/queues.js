@@ -90,15 +90,12 @@ function wantQueue(queue)
 
 ipcMain.on('ipc-wantQueue', (E, queue) =>
 {
-    if (queue)
-    {
-        const data = wantQueue(queue);
+    if (!queue) return;
 
-        WINDOW.webContents.send('ipc-setCurrentQueue', data);
-    }
+    WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue));
 });
 
-ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queueName}) =>
+ipcMain.on('ipc-addQueue', (E, {albums: albumList, artist, trackNumber, songLocations, queueName}) =>
 {
     const songs = [];
 
@@ -114,7 +111,7 @@ ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queu
 
     else
     {
-        albums.forEach((album) =>
+        albumList.forEach((album) =>
         {
             const data = { ...albums.store };
 
@@ -141,7 +138,7 @@ ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queu
     }
 
     let totalTime = 0; songs.forEach(({rawDuration}) => totalTime += rawDuration);
-    
+
     WINDOW.webContents.send('ipc-setCurrentQueue', {queueName, songs, trackNumber, duration: parseTime(totalTime).text});
 
     const files = songs.map(x => x.filepath);
