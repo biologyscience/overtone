@@ -3,18 +3,17 @@ const { existsSync } = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const { appdata } = require('../util');
-
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let songMetadata;
+ipcMain.on('APPDATA', obj => songMetadata = obj.songMetadata);
+
 ipcMain.handle('ipc-wantArtists', () =>
 {
-    const songMetadata = appdata.get('songMetadata');
-
     const artists = [];
 
-    for (const filepath in songMetadata) artists.push(songMetadata[filepath].artists[0]);
+    for (const filepath in songMetadata.store) artists.push(songMetadata.store[filepath].artists[0]);
 
     const unique = [...new Set(artists)].map((artist) =>
     {
@@ -30,15 +29,13 @@ ipcMain.handle('ipc-wantArtists', () =>
 
 ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
 {
-    const songMetadata = appdata.get('songMetadata');
-
     const albums = {};
 
-    for (const filepath in songMetadata)
+    for (const filepath in songMetadata.store)
     {
-        if (!songMetadata[filepath].artists.includes(artist)) continue;
+        if (!songMetadata.store[filepath].artists.includes(artist)) continue;
 
-        const { album, year, albumID } = songMetadata[filepath];
+        const { album, year, albumID } = songMetadata.store[filepath];
 
         if (albums?.[album]?.year === undefined && year !== undefined) albums[album] === undefined ? albums[album] = { year } : albums[album].year = year;
         if (albums?.[album]?.albumart === undefined && albumID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `../appdata/webp/${albumID}.webp`) } : albums[album].albumart = path.join(__dirname, `../appdata/webp/${albumID}.webp`);

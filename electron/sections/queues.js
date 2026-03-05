@@ -1,72 +1,73 @@
 const { ipcMain, dialog } = require('electron');
 const path = require('path');
 
-const { appdata, parseTime, M3U } = require('../util');
+const { parseTime, M3U } = require('../util');
 const audioPlayer = require('../player');
 
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let albums, queues, songMetadata;
+ipcMain.on('APPDATA', (obj) =>
+{
+    albums = obj.albums;
+    queues = obj.queues;
+    songMetadata = obj.songMetadata;
+});
+
 ipcMain.on('ipc-wantQueues', () =>
 {
-    const queues = appdata.get('queues');
+    const queueList = [];
+    for (const queueName in queues.store) queueList[queues.get(queueName).queuePosition] = queueName;
 
-    if (queues[0] === undefined) return [];
-
-    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: queueList.filter(Boolean) });
 });
 
 ipcMain.on('ipc-deleteQueue', (E, {name}) =>
 {
-    const queues = appdata.get('queues');
+    const queueList = [];
+    const position = queues.get(name).queuePosition;
 
-    const index = queues.indexOf(queues.find(x => x.name === name));
-
-    const position = queues[index].queuePosition;
-
-    for (let i = 0; i < queues.length; i++)
+    for (const queueName in queues.store)
     {
-        if (queues[i].queuePosition <= position) continue;
-        
-        queues[i].queuePosition--;
+        if (queueName === name) continue;
+
+        const queue = queues.get(queueName);
+
+        queueList[queue.queuePosition] = queueName;
+
+        if (queue.queuePosition > position)
+        {
+            queue.queuePosition--;
+            queues.set(queueName, queue);
+        }
     }
 
-    queues.splice(index, 1);
+    queues.delete(name);
 
-    appdata.set('queues', queues);
-
-    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: queueList.filter(Boolean) });
 });
 
 ipcMain.on('ipc-renameQueue', (E, {oldName, newName}) =>
 {
-    const queues = appdata.get('queues');
+    if (!oldName) return;
 
-    for (let i = 0; i < queues.length; i++)
-    {
-        if (queues[i].name === oldName)
-        {
-            queues[i].name = newName;
-            break;
-        }
-    }
+    queues.set(newName, queues.get(oldName));
+    queues.delete(oldName);
 
-    appdata.set('queues', queues);
+    const queueList = [];
+    for (const queueName in queues.store) queueList[queues.get(queueName).queuePosition] = queueName;
 
-    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: [...queues.sort((x, y) => x.queuePosition - y.queuePosition).map(z => z.name)] });
+    WINDOW.webContents.send('ipc-setQueuesList', { current: audioPlayer.queueName, queues: queueList.filter(Boolean) });
 });
 
 function wantQueue(queue)
 {
-    const queues = appdata.get('queues');
-
-    const songMetadata = appdata.get('songMetadata');
-
-    const { songs, currentSong } = queues.find(x => x.name === queue);
+    const { songs, currentSong } = queues.get(queue);
 
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata[filepath];
+        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
@@ -88,15 +89,13 @@ ipcMain.on('ipc-wantQueue', (E, queue) =>
 
 ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queueName}) =>
 {
-    const songMetadata = appdata.get('songMetadata');
-
     const songs = [];
 
     if (songLocations !== undefined)
     {
         songLocations.forEach((filepath) =>
         {
-            const { title, artists, album, duration, rawDuration, track } = songMetadata[filepath];
+            const { title, artists, album, duration, rawDuration, track } = songMetadata.get(filepath);
 
             songs.push({ title, artists, album, duration, rawDuration, track, filepath });
         });
@@ -104,17 +103,17 @@ ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queu
 
     else
     {
-        const albumsData = appdata.get('albums');
-        
         albums.forEach((album) =>
         {
-            for (const ID in albumsData)
+            for (const ID in albums.store)
             {
-                if (albumsData[ID].album === album && albumsData[ID].artists.includes(artist))
+                const albumData = albums.get(ID);
+
+                if (albumData.album === album && albumData.artists.includes(artist))
                 {
-                    const data = albumsData[ID].songs.map((filepath) =>
+                    const data = albumData.songs.map((filepath) =>
                     {
-                        const { title, artists, album, duration, rawDuration, track } = songMetadata[filepath];
+                        const { title, artists, album, duration, rawDuration, track } = songMetadata.get(filepath);
 
                         return { title, artists, album, duration, rawDuration, track, filepath };
                     });
@@ -139,28 +138,17 @@ ipcMain.on('ipc-addQueue', (E, {albums, artist, trackNumber, songLocations, queu
 
 ipcMain.handle('ipc-addToQueue', (E, {name, files}) =>
 {
-    const queues = appdata.get('queues');
+    const queue = queues.get(name);
 
-    const queue = queues.find(x => x.name === name);
-
-    if (queue === undefined)
-    {        
-        queues.push({
-            name,
-            songs: files,
-            queuePosition: queues.length,
-            currentSong: 0
-        });
-    }
+    if (queue === undefined) queues.set(name, {songs: files, queuePosition: Object.keys(queues.store).length, currentSong: 0});
 
     else
     {
         queue.songs = [...queue.songs, ...files];
+        queues.set(name, queue);
         
         if (audioPlayer.queueName === name) audioPlayer.queue = queue.songs;
     }
-
-    appdata.set('queues', queues);
 
     return true;
 });
@@ -174,51 +162,55 @@ ipcMain.on('ipc-reorderQueue', (E, {queueName, oldOrder, newOrder}) =>
 
 ipcMain.on('ipc-reorderQueues', (E, {oldOrder, newOrder}) =>
 {
-    const queues = appdata.get('queues');
-
-    const queueNames = queues.sort((x, y) => x.queuePosition - y.queuePosition).map(x => x.name);
+    const queueNames = [];
+    for (const queueName in queues.store) queueNames[queues.get(queueName).queuePosition] = queueName;
 
     const mapped = {};
     oldOrder.forEach((x, i) => mapped[x] = queueNames[i]);
     const reOrdered = newOrder.map(x => mapped[x]);
 
-    queues.forEach((x, i) => queues[i].queuePosition = reOrdered.indexOf(x.name));
+    queueNames.forEach((x) =>
+    {
+        const queue = queues.get(x);
 
-    appdata.set('queues', queues);
+        queue.queuePosition = reOrdered.indexOf(x);
+
+        queues.set(x, queue);
+    });
 });
 
 ipcMain.on('ipc-removeFromQueue', (E, {name, files}) =>
 {
     let afterQueueName = null;
 
-    const queues = appdata.get('queues');
+    const queue = queues.get(name);
 
-    const queueIndex = queues.indexOf(queues.find(x => x.name === name));
+    const currentOldSong = queue.songs[queue.currentSong];
 
-    const currentOldSong = queues[queueIndex].songs[queues[queueIndex].currentSong];
-
-    const set = new Set(queues[queueIndex].songs);
+    const set = new Set(queue.songs);
     files.forEach(x => set.delete(x));
-    queues[queueIndex].songs = [...set];
+    queue.songs = [...set];
 
-    if (queues[queueIndex].songs.length === 0)
+    if (queue.songs.length === 0)
     {
-        const { queuePosition } = queues[queueIndex];
-
-        queues.splice(queueIndex, 1);
-
-        for (let i = 0; i < queues.length; i++)
+        for (const queueName in queues.store)
         {
-            if (queues[i].queuePosition === queuePosition + 1) afterQueueName = queues[i].name;
-            if (queues[i].queuePosition > queuePosition) queues[i].queuePosition--;
+            const queueItem = queues.get(queueName);
+
+            if (queueItem.queuePosition === queue.queuePosition + 1) afterQueueName = queueName;
+            if (queueItem.queuePosition > queue.queuePosition) queueItem.queuePosition--;
+
+            queues.set(queueName, queueItem);
         }
+
+        queues.delete(name);
     }
 
     if (afterQueueName !== null) audioPlayer.switchTo(afterQueueName, 0);
 
     else
     {
-        const currentQueue = queues[queueIndex];
+        const currentQueue = queues.get(name);
 
         if (audioPlayer.queueName === name)
         {
@@ -252,19 +244,18 @@ ipcMain.on('ipc-removeFromQueue', (E, {name, files}) =>
             if (newPosition !== -1) currentQueue.currentSong = newPosition;
             else if (oldPosition >= currentQueue.songs.length) currentQueue.currentSong = currentQueue.songs.length - 1;
         }
+
+        queues.set(name, currentQueue);
     }
     
-    appdata.set('queues', queues);
     WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(afterQueueName || name));
 });
 
 ipcMain.on('ipc-saveAsM3U', (E, queueName) =>
 {
-    const queues = appdata.get('queues');
+    const queue = queues.get(queueName);
 
-    const { songs } = queues.find(x => x.name === queueName);
-
-    const playlist = new M3U({name: queueName, songs: songs.map(x => path.basename(x))});
+    const playlist = new M3U({name: queueName, songs: queue.songs.map(x => path.basename(x))});
 
     const location = dialog.showSaveDialogSync(WINDOW, {title: 'Save Playlist as M3U File', defaultPath: queueName, filters: [{extensions: ['m3u'], name: 'M3U File'}]});
 

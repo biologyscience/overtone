@@ -1,87 +1,85 @@
 const { app, BrowserWindow, ipcMain, shell, Menu, clipboard, nativeImage, Tray, protocol, net } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
-const { mkdirSync, existsSync, writeFileSync, statSync } = require('fs');
+const { mkdirSync, existsSync, statSync } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { Vibrant } = require('node-vibrant/node');
+const { default: Store } = require('electron-store');
+
+const albums = new Store();
+const config = new Store();
+const eqs = new Store({accessPropertiesByDotNotation: false});
+const queues = new Store({accessPropertiesByDotNotation: false});
+const songList = new Store({accessPropertiesByDotNotation: false})
+const songMetadata = new Store({accessPropertiesByDotNotation: false});
+
+albums.path = path.join(__dirname, './appdata/albums.json');
+config.path = path.join(__dirname, './appdata/config.json');
+eqs.path = path.join(__dirname, './appdata/eqs.json');
+queues.path = path.join(__dirname, './appdata/queues.json');
+songList.path = path.join(__dirname, './appdata/songList.json');
+songMetadata.path = path.join(__dirname, './appdata/songMetadata.json');
 
 if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
 if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
 
-['config', 'queues', 'songList', 'albums', 'songMetadata'].forEach((x) =>
+if (!existsSync(path.join(__dirname, './appdata/config.json')))
 {
-    const filepath = path.join(__dirname, `./appdata/${x}.json`);
-
-    let data = {};
-
-    if (existsSync(filepath)) return;
-
-    if (x === 'config')
+    config.store =
     {
-        data =
+        allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
+        launchOnStartup: false,
+        systemTray: false,
+        checkMusicIn: [],
+        lastQueueState: {},
+        colors:
         {
-            allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
-            launchOnStartup: false,
-            systemTray: false,
-            checkMusicIn: [],
-            lastQueueState: {},
-            "spotify": {
-                "clientID": "",
-                "clientSecret": ""
-            },
-            colors:
-            {
-                dynamic: true,
-                highContrast: false,
-                theme: 'Dark',
-                themes: {}
-            },
-            audio:
-            {
-                device: 'default',
-                speed: 1,
-                preservePitch: false,
-                crossFade: 250,
-                volume: 100,
-                shuffle: false,
-                repeat: false,
-                autoPlayOnLaunch: false,
-                percentForPlaycount: 50
-            },
-            eq:
-            {
-                show: true,
-                timeDomain: true,
-                enabled: false,
-                preset: 'Soft Rock'
-            },
-            interface:
-            {
-                font: 'Default (Fira Sans)',
-                scale: 1,
-                animations: true,
-                shake: false
-            },
-            discordRPC:
-            {
-                appID: '1312407617540456458',
-                autoConnect: true
-            }
-        };
-    }
-
-    if (x === 'queues') data = [];
-
-    writeFileSync(filepath, JSON.stringify(data, null, 4));
-});
+            dynamic: true,
+            highContrast: false,
+            theme: 'Dark',
+            themes: {}
+        },
+        audio:
+        {
+            device: 'default',
+            speed: 1,
+            preservePitch: false,
+            crossFade: 250,
+            volume: 100,
+            shuffle: false,
+            repeat: false,
+            autoPlayOnLaunch: false,
+            percentForPlaycount: 50
+        },
+        eq:
+        {
+            show: true,
+            timeDomain: true,
+            enabled: false,
+            preset: 'Soft Rock'
+        },
+        interface:
+        {
+            font: 'Default (Fira Sans)',
+            scale: 1,
+            animations: true,
+            shake: false
+        },
+        discordRPC:
+        {
+            appID: '1312407617540456458',
+            autoConnect: true
+        }
+    };
+}
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'overtone',
     privileges: { standard: true }
 }]);
 
-const { appdata, parseTime } = require('./util');
+const { parseTime } = require('./util');
 
 const audioPlayer = require('./player');
 require('./rpc');
@@ -97,26 +95,18 @@ let TRAY = null;
 
 function exitApp({currentTime})
 {
-    const config = appdata.get('config');
-
-    config.lastQueueState.duration = currentTime;
-
-    appdata.set('config', config);
+    config.set('lastQueueState.duration', currentTime);
 
     WINDOW.close();
 }
 
 function wantQueue(queue)
 {
-    const queues = appdata.get('queues');
-
-    const songMetadata = appdata.get('songMetadata');
-
-    const { songs, currentSong } = queues.find(x => x.name === queue);
+    const { songs, currentSong } = queues.get(queue);
 
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata[filepath];
+        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
@@ -128,41 +118,35 @@ function wantQueue(queue)
 
 ipcMain.on('ipc-clientReady', (E) =>
 {
-    const config = appdata.get('config');
+    WINDOW.webContents.send('ipc-takeConfig', config.store);
 
-    WINDOW.webContents.send('ipc-takeConfig', config);
-
-    const { lastQueueState, audio } = config;
-    const queues = appdata.get('queues');
+    const { lastQueueState, audio } = config.store;
 
     if (lastQueueState.queue?.length > 0)
     {
-        const queue = queues.find(x => x.name === lastQueueState.queue);
+        const queue = queues.get(lastQueueState.queue);
 
-        WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(queue.name));
+        WINDOW.webContents.send('ipc-setCurrentQueue', wantQueue(lastQueueState.queue));
         WINDOW.webContents.send('ipc-restoreVolume', audio.volume);
         WINDOW.webContents.send('ipc-restoreShuffleRepeat', {shuffle: audio.shuffle, repeat: audio.repeat});
         WINDOW.webContents.send('ipc-restoreCurrentTime', lastQueueState.duration);
 
         audioPlayer.shuffle = audio.shuffle;
         audioPlayer.repeat = audio.repeat;
-        audioPlayer.setQueue(queue.songs, lastQueueState.track, queue.name).setNowPlaying(queue.songs[lastQueueState.track], audio.autoPlayOnLaunch);
+        audioPlayer.setQueue(queue.songs, lastQueueState.track, lastQueueState.queue).setNowPlaying(queue.songs[lastQueueState.track], audio.autoPlayOnLaunch);
     }
 });
 
 ipcMain.on('ipc-songPlayed', (E, filepath) =>
 {
-    const songMetadata = appdata.get('songMetadata');
+    if (songMetadata.store[filepath] === undefined) return;
 
-    if (songMetadata[filepath] === undefined) return;
+    const tempMetadata = songMetadata.store[filepath];
 
-    const { playCount } = songMetadata[filepath];
+    if (tempMetadata.playCount === undefined) tempMetadata.playCount = 0;
+    tempMetadata.playCount++;
 
-    if (playCount === undefined) songMetadata[filepath].playCount = 0;
-    
-    songMetadata[filepath].playCount++;
-
-    appdata.set('songMetadata', songMetadata);
+    songMetadata.set(filepath, tempMetadata);
 });
 
 ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
@@ -170,7 +154,7 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     const { format, common } = await metadata.parseFile(filepath);
 
     const picture = common.picture[0];
-    const { playCount, isFavorite } = appdata.get('songMetadata')[filepath];
+    const { playCount, isFavorite } = songMetadata.store[filepath];
 
     format.size = statSync(filepath).size;
     common.picture = `data:${picture.format};base64,${picture.data.toString('base64')}`;
@@ -243,7 +227,7 @@ ipcMain.on('ipc-openInBrowser', (E, url) => shell.openExternal(url));
 
 ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 {
-    const songMetadata = appdata.get('songMetadata');
+    const tempMetadata = songMetadata.store[file];
     const song = taglib.File.createFromPath(file);
     
     tags.artists = tags.artists.filter(x => x.length > 0);
@@ -251,19 +235,19 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 
     if (tags.title?.length > 0)
     {
-        songMetadata[file].title = tags.title;
+        tempMetadata.title = tags.title;
         song.tag.title = tags.title;
     }
 
     if (tags.album?.length > 0)
     {
-        songMetadata[file].album = tags.album;
+        tempMetadata.album = tags.album;
         song.tag.album = tags.album;
     }
 
     if (tags.artists[0] !== undefined)
     {
-        songMetadata[file].artists = tags.artists;
+        tempMetadata.artists = tags.artists;
         song.tag.performers = tags.artists;
     }
 
@@ -271,7 +255,7 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
     
     if (tags.genre[0] !== undefined)
     {
-        songMetadata[file].genre = tags.genre;
+        tempMetadata.genre = tags.genre;
         song.tag.genres = tags.genre;
     }
 
@@ -289,7 +273,7 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 
         if (!isNaN(track))
         {
-            songMetadata[file].track.no = track;
+            tempMetadata.track.no = track;
             song.tag.track = track;
         }
     }
@@ -300,7 +284,7 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 
         if (!isNaN(year))
         {
-            songMetadata[file].year = year;
+            tempMetadata.year = year;
             song.tag.year = year;
         }
     }
@@ -313,18 +297,18 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
         {
             const buf = Buffer.from(split[3], 'base64');
 
-            sharp(buf).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${songMetadata[file].albumID}.webp`));
+            sharp(buf).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${tempMetadata.albumID}.webp`));
             
             song.tag.pictures[0].mimeType = split[1];
             song.tag.pictures[0].data = new Uint8Array(buf);
         }        
     }
 
-    appdata.set('songMetadata', songMetadata);
+    songMetadata.set(file, tempMetadata);
     song.save();
     song.dispose();
 
-    if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false, songMetadata);
+    if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false, songMetadata.store);
 
     WINDOW.webContents.send(toastEvent, {type: 'success', text: `Metatags for were changed successfully`});
 });
@@ -335,9 +319,7 @@ ipcMain.on('ipc-maximize', () => WINDOW.maximize());
 
 ipcMain.on('ipc-close', (E, data) =>
 {
-    const { systemTray } = appdata.get('config');
-
-    if (!systemTray) return exitApp(data);
+    if (!config.get('systemTray')) return exitApp(data);
 
     WINDOW.hide();
 });
@@ -368,6 +350,7 @@ app.on('ready', () =>
      */
 
     ipcMain.emit('WINDOW_OBJECT', WINDOW);
+    ipcMain.emit('APPDATA', {albums, config, eqs, queues, songList, songMetadata});
 
     TRAY = new Tray(path.join(__dirname, 'logo.png'));
     TRAY.setToolTip('OverTone');

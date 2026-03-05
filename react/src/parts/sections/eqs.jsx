@@ -184,13 +184,12 @@ export default function eqs()
             {
                 if (isBeat())
                 {
-                    const scaleFactor = Math.random() * (1.075 - 1.025) + 1.025;
-                    const skewFactor = (Math.random() > 0.5 ? 1 : -1) * Math.random() * (5 - 2) + 2;
+                    const scaleFactor = 1.075;
 
-                    setTimeout(() => document.body.style.transform = `scaleY(${scaleFactor}) skewX(${skewFactor}deg)`, 0);
-                    setTimeout(() => document.body.style.transform = `scaleY(1) skewX(0deg)`, 15);
-                    setTimeout(() => document.body.style.transform = `scaleY(${scaleFactor}) skewX(${skewFactor}deg)`, 25);
-                    setTimeout(() => document.body.style.transform = `scaleY(1) skewX(0deg)`, 35);
+                    setTimeout(() => document.body.style.transform = `scaleY(${scaleFactor})`, 0);
+                    setTimeout(() => document.body.style.transform = `scaleY(1)`, 15);
+                    setTimeout(() => document.body.style.transform = `scaleY(${scaleFactor})`, 25);
+                    setTimeout(() => document.body.style.transform = `scaleY(1)`, 35);
                 }
             }
 

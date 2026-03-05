@@ -2,23 +2,17 @@ const { ipcMain } = require('electron');
 const { readFileSync } = require('fs');
 const path = require('path');
 
-const { appdata, parseTime } = require('./util');
+const { parseTime } = require('./util');
 const rpc = require('./rpc');
+
+let albums, config, queues, songMetadata;
 
 class Player
 {
     constructor(WINDOW)
     {
+        this.reset();
         this.window = WINDOW;
-        this.queue = [];
-        this.queueName = '';
-        this.currentQueueItem = 0;
-        this.ended = true;
-        this.shuffle = false;
-        this.repeat = false;
-        this.stopAfter = null;
-        this.stopped = false;
-        this.playUpcoming = false;
     }
 
     reset()
@@ -34,16 +28,14 @@ class Player
         this.playUpcoming = false;
     }
 
-    setNowPlaying(filepath, autoPlay, songMetadata)
+    setNowPlaying(filepath, autoPlay)
     {
         this.ended = false;
         this.stopped = false;
 
         if (filepath === undefined) return this;
-
-        if (songMetadata === undefined) songMetadata = appdata.get('songMetadata');
     
-        const { title, artists, album, rawDuration, albumID, isFavorite } = songMetadata[filepath];
+        const { title, artists, album, rawDuration, albumID, isFavorite } = songMetadata.get(filepath);
 
         const data =
         {
@@ -57,7 +49,7 @@ class Player
             isFavorite
         };
 
-        const albumData = appdata.get('albums')?.[albumID];
+        const albumData = albums.get(albumID);
 
         if (albumData?.hasArt)
         {
@@ -71,13 +63,9 @@ class Player
         this.window.webContents.send('ipc-setNowPlaying', data);
         this.window.webContents.send('ipc-setPlayingQueueData', {queueName: this.queueName, trackNumber: this.currentQueueItem});
 
-        const config = appdata.get('config');
-
-        config.lastQueueState.queue = this.queueName;
-        config.lastQueueState.track = this.currentQueueItem;
-        config.lastQueueState.duration = 0;
-
-        appdata.set('config', config);
+        config.set('lastQueueState.queue', this.queueName);
+        config.set('lastQueueState.track', this.currentQueueItem);
+        config.set('lastQueueState.duration', 0);
 
         rpc.set({title, album, artists, albumartURL: albumData?.albumartURL});
 
@@ -88,9 +76,7 @@ class Player
     {
         if (name)
         {
-            const queues = appdata.get('queues');
-    
-            this.queue = queues.find(x => x.name === name).songs;
+            this.queue = queues.get(name).songs;
             this.queueName = name;
             this.currentQueueItem = index;
     
@@ -102,43 +88,43 @@ class Player
         return this;
     }
 
-    saveQueue({queues, position, currentTrack})
+    saveQueue({position, currentTrack})
     {
-        if (queues === undefined) queues = appdata.get('queues');
+        const queue = queues.get(this.queueName, {});
 
-        const oldQueue = queues.find(x => x.name === this.queueName);
+        if (queue.queuePosition === undefined) queue.queuePosition = position || Object.keys(queues.store).length;
+        
+        queue.songs = this.queue;
+        queue.currentSong = currentTrack || 0;
 
-        if (oldQueue === undefined) queues.push({name: this.queueName, songs: this.queue, queuePosition: position || queues.length, currentSong: currentTrack || 0});
-
-        else
-        {
-            const index = queues.indexOf(oldQueue);
-
-            queues[index].songs = this.queue;
-            queues[index].currentSong = currentTrack || 0;
-        }
-
-        appdata.set('queues', queues);
+        queues.set(this.queueName, queue);
 
         return this;
     }
     
     actuallyNext()
     {
-        const queues = appdata.get('queues');
-
-        const { queuePosition } = queues.find(x => x.name === this.queueName);
-    
         if (this.currentQueueItem + 1 === this.queue.length)
         {
-            if (queuePosition + 1 === queues.length)
+            let nextQueueName = null;
+
+            for (const queueNames in queues.store)
+            {
+                if (queues.get(queueNames).queuePosition === queues.get(this.queueName).queuePosition + 1)
+                {
+                    nextQueueName = queueNames;
+                    break;
+                }
+            }
+
+            if (nextQueueName === null)
             {
                 this.ended = true;
 
                 return this;
             }
     
-            const nextQueue = queues.find(x => x.queuePosition === queuePosition + 1);
+            const nextQueue = queues.get(nextQueueName);
     
             this.currentQueueItem = 0;
             this.queue = nextQueue.songs;
@@ -152,8 +138,6 @@ class Player
 
     next({ot_auto})
     {
-        const queues = appdata.get('queues');
-
         if (ot_auto)
         {
             if (this.playUpcoming)
@@ -190,21 +174,30 @@ class Player
 
         else if (this.actuallyNext().ended) return this;
 
-        this.saveQueue({queues, currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
+        this.saveQueue({currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
 
         return this;
     }
 
     previous()
     {
-        const queues = appdata.get('queues');
-
-        const { queuePosition } = queues.find(x => x.name === this.queueName);
+        const { queuePosition } = queues.get(this.queueName);
 
         if ((this.currentQueueItem === 0) && (queuePosition !== 0))
         {
-            const previousQueue = queues.find(x => x.queuePosition === queuePosition - 1);
+            let previousQueueName;
 
+            for (const queueNames in queues.store)
+            {
+                if (queues.get(queueNames).queuePosition === queuePosition - 1)
+                {
+                    previousQueueName = queueNames;
+                    break;
+                }
+            }
+    
+            const previousQueue = queues.get(previousQueueName);
+    
             this.currentQueueItem = previousQueue.songs.length - 1;
             this.queue = previousQueue.songs;
             this.queueName = previousQueue.name;
@@ -212,7 +205,7 @@ class Player
         
         else { this.currentQueueItem--; }
 
-        this.saveQueue({queues, currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
+        this.saveQueue({currentTrack: this.currentQueueItem}).setNowPlaying(this.queue[this.currentQueueItem], true);
 
         return this;
     }
@@ -230,18 +223,14 @@ class Player
     {
         if (name === undefined) return;
 
-        const queues = appdata.get('queues');
-
-        const oldQueue = queues.find(x => x.name === name);
-
-        const index = queues.indexOf(oldQueue);
+        const queue = queues.get(name);
 
         const mapped = {};
-        oldOrder.forEach((x, i) => mapped[x] = oldQueue.songs[i]);
+        oldOrder.forEach((x, i) => mapped[x] = queue.songs[i]);
         const reOrdered = newOrder.map(x => mapped[x]);
 
-        queues[index].songs = reOrdered;
-        queues[index].currentSong = reOrdered.indexOf(oldQueue.songs[oldQueue.currentSong]);
+        queue.songs = reOrdered;
+        queue.currentSong = reOrdered.indexOf(queue.songs[queue.currentSong]);
 
         if (name === this.queueName)
         {
@@ -249,22 +238,20 @@ class Player
             this.queue = reOrdered;
         }
 
-        appdata.set('queues', queues);
+        queues.set(name, queue);
 
         return this;
     }
 
     addToQueue(name, file)
     {
-        const queues = appdata.get('queues');
+        const queue = queues.get(name);
 
-        const index = queues.indexOf(queues.find(x => x.name === name));
-
-        queues[index].songs.push(file);
+        queue.songs.push(file);
 
         if (name === this.queueName) this.queue.push(file);
 
-        appdata.set('queues', queues);
+        queues.set(name, queue);
 
         return this;
     }
@@ -291,15 +278,11 @@ class Player
 
 function wantQueue(queue)
 {
-    const queues = appdata.get('queues');
-
-    const songMetadata = appdata.get('songMetadata');
-
-    const { songs, currentSong } = queues.find(x => x.name === queue);
+    const { songs, currentSong } = queues.get(queue);
 
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata[filepath];
+        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
@@ -312,6 +295,14 @@ function wantQueue(queue)
 const audioPlayer = new Player();
 
 ipcMain.on('WINDOW_OBJECT', obj => audioPlayer.window = obj);
+
+ipcMain.on('APPDATA', (obj) =>
+{
+    albums = obj.albums;
+    config = obj.config;
+    queues = obj.queues;
+    songMetadata = obj.songMetadata;
+});
 
 ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>
 {
@@ -354,15 +345,11 @@ ipcMain.on('ipc-audioPlayer-switchToTrack', (E, {queueName, index}) =>
 
 ipcMain.on('ipc-audioPlayer-shuffleRepeat', (E, {shuffle, repeat}) =>
 {
-    const config = appdata.get('config');
-
     if (shuffle !== undefined) audioPlayer.shuffle = shuffle;
     if (repeat !== undefined) audioPlayer.repeat = repeat;
 
-    config.audio.shuffle = audioPlayer.shuffle;
-    config.audio.repeat = audioPlayer.repeat;
-
-    appdata.set('config', config);
+    config.set('audio.shuffle', audioPlayer.shuffle);
+    config.set('audio.repeat', audioPlayer.repeat);
 });
 
 ipcMain.on('ipc-stopAfter', (E, filepath) =>
@@ -374,19 +361,14 @@ ipcMain.handle('ipc-upcomingSongs', (E, {files}) =>
 {
     audioPlayer.playUpcoming = true;
 
-    const queues = appdata.get('queues');
+    const oldQueue = queues.get('Upcoming Songs', {});
 
-    const oldQueue = queues.find(x => x.name === 'Upcoming Songs');
+    if (oldQueue.queuePosition === undefined) oldQueue.queuePosition = Object.keys(queues.store).length;
 
-    if (oldQueue === undefined) queues.push({name: 'Upcoming Songs', songs: files, queuePosition: queues.length, currentSong: 0});
+    oldQueue.songs = files;
+    oldQueue.currentSong = 0;
 
-    else
-    {
-        oldQueue.songs = files;
-        oldQueue.currentSong = 0;
-    }
-
-    appdata.set('queues', queues);
+    queues.set('Upcoming Songs', oldQueue);
 
     return true;
 });
