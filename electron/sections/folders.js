@@ -163,75 +163,67 @@ function updateLibrary(dirs)
     {
         console.log('start updating ...');
 
-        const pendingPromises = [];
-
         async function saveAlbumPicture(ID, BUFFER)
         {
-            const album = albums.get(ID);
-
-            album.hasArt = true;
-    
             const colors = await Vibrant.from(BUFFER).getPalette();
 
             for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
     
-            album.colors = colors;
+            if (existsSync(path.join(__dirname, `../appdata/webp/${ID}.webp`))) return colors;
 
-            if (existsSync(path.join(__dirname, `../appdata/webp/${ID}.webp`))) return true;
+            sharp(BUFFER).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`))
     
-            pendingPromises.push(
-                sharp(BUFFER)
-                .resize({height: 1000})
-                .webp({quality: 70})
-                .toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`))
-            );
-
-            albums.set(ID, album);
-
-            return true;
+            return colors;
         }
 
         for (let i = 0; i < results.length; i++)
         {
-            const { album, artists, genre, title, track, bpm, year, picture } = results[i].common;
+            const { album, artists, title, track, bpm, year, picture } = results[i].common;
 
             const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
 
-            let albumData = albums.get(albumID);
+            const albumData = albums.get(albumID, {});
 
-            if (albumData === undefined)
+            if (albumData.songs === undefined)
             {
-                albumData =
+                albumData.album = album;
+                albumData.artists = artists;
+                albumData.year = year;
+                albumData.songs = [newSongs[i]];
+                
+                if (picture[0] !== undefined)
                 {
-                    album,
-                    artists,
-                    year,
-                    songs: [newSongs[i]]
-                };
+                    const colors = await saveAlbumPicture(albumID, picture[0].data);
 
-                if (picture[0] !== undefined) await saveAlbumPicture(albumID, picture[0].data);
+                    albumData.hasArt = true;
+                    albumData.colors = colors;
+                }
             }
 
             else
             {
                 if (!albumData.songs.includes(newSongs[i])) albumData.songs.push(newSongs[i]);
 
-                if (albumData?.hasArt !== true && (picture[0] !== undefined)) await saveAlbumPicture(albumID, picture[0].data);
+                if (albumData?.hasArt !== true && (picture[0] !== undefined))
+                {
+                    const colors = await saveAlbumPicture(albumID, picture[0].data);
+
+                    albumData.hasArt = true;
+                    albumData.colors = colors;
+                }
             }
 
             albums.set(albumID, albumData);
 
             if (!existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`))) saveArtistPicture(artists[0], artistID);
 
-            const data = { albumID, album, artists, bpm, genre: genre.flatMap(x => x.split(/[,\.;:\/]+/).map(y => y.trim()).filter(Boolean)), title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
+            const data = { albumID, album, artists, bpm, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
 
             songMetadata.set(newSongs[i], data);
         }
 
-        console.log('waiting for pending promises ... (should take a while)');
-        await Promise.all(pendingPromises);
-        console.log('pending promises complete');
+        console.log('update complete');
     });
 
     const newList = config.get('checkMusicIn').concat(foldersToAdd).sort(alphabeticalOrder);
