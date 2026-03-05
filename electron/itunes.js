@@ -5,13 +5,13 @@ class ITunes
         this.waiting = false;
     }
 
-    #artistSearchURL(term) { return `https://itunes.apple.com/search?term=${term}&media=music&entity=musicArtist&limit=1`; }
+    #searchURL(term) { return `https://itunes.apple.com/search?term=${term}&media=music&entity=album&limit=1`; }
 
-    async getArtistURL(term)
+    async search(term)
     {
         while (this.waiting) await new Promise(resolve => setTimeout(resolve, 100));
 
-        const URL = this.#artistSearchURL(term);
+        const URL = this.#searchURL(term);
 
         const response = await fetch(URL);
 
@@ -21,14 +21,14 @@ class ITunes
 
             setTimeout(() => this.waiting = false, 5000);
 
-            return await this.getArtistURL(term);
+            return await this.search(term);
         }
 
         const api = await response.json();
 
         if (api.resultCount === 0) return null;
 
-        return api.results[0].artistLinkUrl;
+        return api.results[0];
     }
 
     async getArtistPicture(artistURL)
@@ -59,7 +59,7 @@ class ITunes
 
         const parts = pictureURL.split('/');
         parts.pop();
-        parts.push('500x500.webp');
+        parts.push('512x512.webp');
         pictureURL = parts.join('/');
 
         return pictureURL;
