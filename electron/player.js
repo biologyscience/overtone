@@ -43,7 +43,7 @@ class Player
             artists,
             album,
             duration: rawDuration,
-            albumart: 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
+            albumart: 'https://brucecoughlin.com/data/default_artwork/music_ph.png',
             filepath,
             autoPlay: autoPlay || false,
             isFavorite

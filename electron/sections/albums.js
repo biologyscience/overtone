@@ -17,7 +17,7 @@ ipcMain.handle('ipc-wantAlbums', () =>
 
     for (const ID in albums.store)
     {
-        let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+        let albumart = 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
         const album = albums.get(ID);
 
@@ -42,7 +42,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
             albumData.colors = album.colors;
             albumData.artist = album.artists[0];
             albumData.year = album.year;
-            albumData.albumart = album.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+            albumData.albumart = album.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
             albumData.songs = album.songs.map((filepath) =>
             {

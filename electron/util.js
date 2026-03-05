@@ -1,5 +1,8 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs');
 const path = require('path');
+const sharp = require('sharp');
+
+const itunes = require('./itunes');
 
 const appdata =
 {
@@ -81,4 +84,16 @@ class M3U
 	}
 }
 
-module.exports = { appdata, parseTime, M3U };
+async function saveArtistPicture(term, ID)
+{
+	const artistURL = await itunes.getArtistURL(term);
+
+	if (artistURL === null) return;
+
+	const pictureURL = await itunes.getArtistPicture(artistURL);
+	const buffer = await itunes.bufferFromURL(pictureURL);
+
+	sharp(buffer).toFile(path.join(__dirname, `./appdata/webp/${ID}.webp`));
+}
+
+module.exports = { appdata, parseTime, M3U, saveArtistPicture };
