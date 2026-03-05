@@ -167,7 +167,7 @@ function CustomModal({visibility: [open, setOpen], parentRef, children})
             closeAfterTransition
             container={parentRef?.current}
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => setOpen ? setOpen(false) : null}
             sx={{ position: 'absolute', inset: 0 }}
             slots={{ backdrop: Backdrop }}
             slotProps={{ backdrop: { timeout: 500, sx: { position: 'absolute', inset: 0, zIndex: 0 } }}}>

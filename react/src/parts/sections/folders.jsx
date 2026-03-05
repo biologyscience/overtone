@@ -1,7 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal } from '../../util/components';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+import { COL, ROW, GRID, SearchBox, ContextMenu, SongInfoModal, DeleteModal, AddToQueueModal, CustomModal } from '../../util/components';
 import { parseTime } from '../../util/functions';
 import eventBus from '../../util/events';
 
@@ -35,6 +38,8 @@ export default function folders()
     const toastRef = useRef('');
 
     const
+        [showProgressModal, setShowProgressModal] = useState(false),
+        [updateProgress, setUpdateProgress] = useState(0),
         [showInside, setShowInside] = useState(false),
         [folderPaths, setFolderPaths] = useState([]),
         [selectedFolders, setSelectedFolders] = useState(),
@@ -244,6 +249,18 @@ export default function folders()
 
     useEffect(() =>
     {
+        if (updateProgress >= 100)
+        {
+            eventBus.dispatchEvent(new Event('ot-refresh'));
+
+            setTimeout(() => setShowProgressModal(false), 1000);
+            setTimeout(() => setUpdateProgress(0), 2000);
+        }
+
+    }, [updateProgress]);
+
+    useEffect(() =>
+    {
         window.ipc.on('ipc-newFoldersFiles', ({folders, songCount}) =>
         {
             let
@@ -295,6 +312,8 @@ export default function folders()
             else toast(text, {toasterId: 'folders'});            
         });
 
+        window.ipc.on('ipc-updateLibraryProgress', setUpdateProgress);
+
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
     }, []);
 
@@ -315,7 +334,7 @@ export default function folders()
                     </li> */}
                 </COL>
                 <COL className='folderOptions'>
-                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); }}>
+                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); setShowProgressModal(true); }}>
                         <CreateNewFolderRounded/>
                         <span>Add folders</span>
                     </ROW>
@@ -323,7 +342,7 @@ export default function folders()
                         <RemoveCircleOutlineRounded/>
                         <DeleteText/>
                     </ROW>
-                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-updateFiles'); }}>
+                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-updateFiles'); setShowProgressModal(true); }}>
                         <SyncRounded/>
                         <span>Sync files</span>
                     </ROW>
@@ -354,6 +373,13 @@ export default function folders()
                 </GRID>
                 <COL className='songList'><Songs/></COL>
             </COL>
+            <CustomModal visibility={[showProgressModal]} parentRef={sectionRef}>
+                <COL className={'progressModal'}>
+                    <CircularProgressbar value={updateProgress} strokeWidth={5} text={`${updateProgress.toString().split('.')[0]}%`}/>
+                    <span>Do not close the app, until the progress completes</span>
+                    <span>If progress seems to be stuck for more than a minute, restart the app</span>
+                </COL>
+            </CustomModal>
             <AddToQueueModal
                 visibility={[showAddToQueueModal, setShowAddToQueueModal]}
                 parentRef={sectionRef}

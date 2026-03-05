@@ -16,7 +16,7 @@ import { ROW } from '../util/components';
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(1);
 
     const navRef = useRef();
     const indexRef = useRef(index);
