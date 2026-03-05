@@ -2,16 +2,29 @@ class ITunes
 {
     constructor()
     {
-        this.pending = [];
+        this.waiting = false;
     }
 
     #artistSearchURL(term) { return `https://itunes.apple.com/search?term=${term}&media=music&entity=musicArtist&limit=1`; }
 
     async getArtistURL(term)
     {
+        while (this.waiting) await new Promise(resolve => setTimeout(resolve, 100));
+
         const URL = this.#artistSearchURL(term);
 
-        const api = await (await fetch(URL)).json();
+        const response = await fetch(URL);
+
+        if (!response.ok)
+        {
+            this.waiting = true;
+
+            setTimeout(() => this.waiting = false, 5000);
+
+            return await this.getArtistURL(term);
+        }
+
+        const api = await response.json();
 
         if (api.resultCount === 0) return null;
 
