@@ -7,7 +7,8 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 const { Vibrant } = require('node-vibrant/node');
 
-const { parseTime, saveArtistPicture } = require('../util');
+const { parseTime } = require('../util');
+const itunes = require('../itunes');
 const audioPlayer = require('../player');
 
 let WINDOW;
@@ -161,8 +162,6 @@ function updateLibrary(dirs)
     
     Promise.all(newSongs.map(x => metadata.parseFile(x, {skipPostHeaders: true}))).then(async (results) =>
     {
-        console.log('start updating ...');
-
         async function saveAlbumPicture(ID, BUFFER)
         {
             const colors = await Vibrant.from(BUFFER).getPalette();
@@ -214,16 +213,31 @@ function updateLibrary(dirs)
                 }
             }
 
+            const missingArtistPic = !existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
+
+            if ((albumData.albumartURL === undefined) || missingArtistPic)
+            {
+                const result = await itunes.search(artists[0] + ' - ' + album);
+
+                if (result !== null)
+                {
+                    if ((albumData.albumartURL === undefined) && (result.collectionName.includes(album) || album.includes(result.collectionName))) albumData.albumartURL = result.artworkUrl100.replace('100x100bb', '512x512');
+
+                    if (missingArtistPic && result.artistViewUrl)
+                    {
+                        const pictureURL = await itunes.getArtistPicture(result.artistViewUrl);
+                        const buffer = await itunes.bufferFromURL(pictureURL);
+
+                        await sharp(buffer).toFile(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
+                    }
+                }
+            }
+
             albums.set(albumID, albumData);
 
-            if (!existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`))) saveArtistPicture(artists[0], artistID);
-
             const data = { albumID, album, artists, bpm, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
-
             songMetadata.set(newSongs[i], data);
         }
-
-        console.log('update complete');
     });
 
     const newList = config.get('checkMusicIn').concat(foldersToAdd).sort(alphabeticalOrder);
