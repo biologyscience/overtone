@@ -282,4 +282,27 @@
             }
         }
     }
+
+    .progressModal
+    {
+        width: 40vw;
+        align-items: center;
+        gap: 2em;
+
+        span { font-size: 1rem; }
+
+        svg
+        {
+            width: 10vw;
+
+            .CircularProgressbar-trail { stroke: white; }
+            .CircularProgressbar-path { stroke: var(--accent); }
+            
+            text
+            {
+                fill: var(--accent);
+                dominant-baseline: central;
+            }
+        }
+    }
 }

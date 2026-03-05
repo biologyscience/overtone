@@ -146,6 +146,16 @@ export default function albums()
 
         eventBus.addEventListener('ot-showAlbum', ({detail: {album, artist}}) => showAlbum(album, artist));
         eventBus.addEventListener('ot-filesDeleted', triggerReload);
+
+        eventBus.addEventListener('ot-refresh', () =>
+        {
+            window.ipc.invoke('ipc-wantAlbums').then((albumData) =>
+            {
+                setAlbumData(albumData);
+                setInputSearchSpace([...albumData].sort((x, y) => x?.album?.localeCompare(y?.album)).map(x => x.album));
+                setInputMatchSpace([...albumData].map(x => true));
+            });
+        });
     }, []);
 
     return (

@@ -128,6 +128,16 @@ export default function artists()
 
         eventBus.addEventListener('ot-showArtist', ({detail}) => showArtist(detail));
         eventBus.addEventListener('ot-filesDeleted', triggerReload);
+
+        eventBus.addEventListener('ot-refresh', () =>
+        {
+            window.ipc.invoke('ipc-wantArtists').then((artistsData) =>
+            {
+                setArtists(artistsData);
+                setInputSearchSpace([...artistsData].sort((x, y) => x?.artist?.localeCompare(y?.artist)).map(x => x.artist));
+                setInputMatchSpace([...artistsData].map(x => true));
+            });
+        });
     }, []);
 
     return (

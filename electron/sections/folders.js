@@ -237,6 +237,8 @@ function updateLibrary(dirs)
 
             const data = { albumID, album, artists, bpm, title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
             songMetadata.set(newSongs[i], data);
+
+            WINDOW.webContents.send('ipc-updateLibraryProgress', 100 * (i + 1) / results.length);
         }
     });
 
