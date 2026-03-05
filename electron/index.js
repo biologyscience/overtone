@@ -104,9 +104,11 @@ function wantQueue(queue)
 {
     const { songs, currentSong } = queues.get(queue);
 
+    const data = { ...songMetadata.store };
+
     const songList = songs.map((filepath) =>
     {
-        const { title, artists, album, duration, rawDuration } = songMetadata.store[filepath];
+        const { title, artists, album, duration, rawDuration } = data[filepath];
 
         return { title, artists, album, duration, rawDuration, filepath };
     });
@@ -139,9 +141,9 @@ ipcMain.on('ipc-clientReady', (E) =>
 
 ipcMain.on('ipc-songPlayed', (E, filepath) =>
 {
-    if (songMetadata.store[filepath] === undefined) return;
+    if (songMetadata.get(filepath) === undefined) return;
 
-    const tempMetadata = songMetadata.store[filepath];
+    const tempMetadata = songMetadata.get(filepath);
 
     if (tempMetadata.playCount === undefined) tempMetadata.playCount = 0;
     tempMetadata.playCount++;
@@ -154,7 +156,7 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
     const { format, common } = await metadata.parseFile(filepath);
 
     const picture = common.picture[0];
-    const { playCount, isFavorite } = songMetadata.store[filepath];
+    const { playCount, isFavorite } = songMetadata.get(filepath);
 
     format.size = statSync(filepath).size;
     common.picture = `data:${picture.format};base64,${picture.data.toString('base64')}`;
@@ -227,7 +229,7 @@ ipcMain.on('ipc-openInBrowser', (E, url) => shell.openExternal(url));
 
 ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
 {
-    const tempMetadata = songMetadata.store[file];
+    const tempMetadata = songMetadata.get(file);
     const song = taglib.File.createFromPath(file);
     
     tags.artists = tags.artists.filter(x => x.length > 0);
@@ -308,7 +310,7 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
     song.save();
     song.dispose();
 
-    if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false, songMetadata.store);
+    if (audioPlayer.queue[audioPlayer.currentQueueItem] === file) audioPlayer.setNowPlaying(file, false);
 
     WINDOW.webContents.send(toastEvent, {type: 'success', text: `Metatags for were changed successfully`});
 });

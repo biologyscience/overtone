@@ -15,11 +15,13 @@ ipcMain.handle('ipc-wantAlbums', () =>
 {
     const albumData = [];
 
-    for (const ID in albums.store)
+    const data = { ...albums.store };
+
+    for (const ID in data)
     {
         let albumart = 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
-        const album = albums.get(ID);
+        const album = data[ID];
 
         if (album.hasArt) albumart = path.join(__dirname, `../appdata/webp/${ID}.webp`);
 
@@ -33,9 +35,11 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 {
     const albumData = { album, songs: [] };
 
-    for (const ID in albums.store)
+    const data = { ...albums.store };
+
+    for (const ID in data)
     {
-        const album = albums.get(ID);
+        const album = data[ID];
 
         if (album.album === album && album.artists.includes(artist))
         {
@@ -46,7 +50,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 
             albumData.songs = album.songs.map((filepath) =>
             {
-                const { title, rawDuration, track, artists, playCount } = songMetadata.store[filepath];
+                const { title, rawDuration, track, artists, playCount } = songMetadata.get(filepath);
 
                 const data =
                 {

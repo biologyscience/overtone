@@ -13,7 +13,9 @@ ipcMain.handle('ipc-wantArtists', () =>
 {
     const artists = [];
 
-    for (const filepath in songMetadata.store) artists.push(songMetadata.store[filepath].artists[0]);
+    const metadata = { ...songMetadata.store };
+
+    for (const filepath in metadata) artists.push(metadata[filepath].artists[0]);
 
     const unique = [...new Set(artists)].map((artist) =>
     {
@@ -31,11 +33,13 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
 {
     const albums = {};
 
-    for (const filepath in songMetadata.store)
-    {
-        if (!songMetadata.store[filepath].artists.includes(artist)) continue;
+    const metadata = { ...songMetadata.store };
 
-        const { album, year, albumID } = songMetadata.store[filepath];
+    for (const filepath in metadata)
+    {
+        if (!metadata[filepath].artists.includes(artist)) continue;
+
+        const { album, year, albumID } = metadata[filepath];
 
         if (albums?.[album]?.year === undefined && year !== undefined) albums[album] === undefined ? albums[album] = { year } : albums[album].year = year;
         if (albums?.[album]?.albumart === undefined && albumID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `../appdata/webp/${albumID}.webp`) } : albums[album].albumart = path.join(__dirname, `../appdata/webp/${albumID}.webp`);
