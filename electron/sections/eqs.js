@@ -1,22 +1,19 @@
 const { ipcMain } = require('electron');
 
-const { appdata } = require('../util');
-
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let eqs;
+ipcMain.on('APPDATA', obj => eqs = obj.eqs);
+
 ipcMain.on('ipc-wantEQs', () =>
 {
-    WINDOW.webContents.send('ipc-takeEQs', appdata.get('eqs'));
+    WINDOW.webContents.send('ipc-takeEQs', eqs.store);
 });
 
 ipcMain.on('ipc-savePreset', (E, {name, gains}) =>
 {
-    const eqs = appdata.get('eqs');
+    eqs.set(name, gains);
 
-    eqs[name] = gains;
-
-    appdata.set('eqs', eqs);
-
-    WINDOW.webContents.send('ipc-takeEQs', eqs);
+    WINDOW.webContents.send('ipc-takeEQs', eqs.store);
 });

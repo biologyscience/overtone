@@ -7,39 +7,45 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 const { Vibrant } = require('node-vibrant/node');
 
-const { appdata, parseTime } = require('../util');
+const { parseTime } = require('../util');
 const { getArtistPicture, getAlbumArtURL } = require('../spotify');
 const audioPlayer = require('../player');
 
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let albums, config, queues, songList, songMetadata;
+ipcMain.on('APPDATA', (obj) =>
+{
+    albums = obj.albums;
+    config = obj.config;
+    queues = obj.queues;
+    songList = obj.songList;
+    songMetadata = obj.songMetadata;
+});
+
 ipcMain.handle('ipc-wantFolders', () => 
 {
-    const { checkMusicIn } = appdata.get('config');
-
-    return [...checkMusicIn];
+    return config.get('checkMusicIn');
 });
 
 ipcMain.handle('ipc-deleteFolders', (E, toDelete) => 
-{   
-    const config = appdata.get('config');
-    const songList = appdata.get('songList');
-    const songMetadata = appdata.get('songMetadata');
+{
+    const checkMusicIn = config.get('checkMusicIn');
 
     toDelete.forEach((x) =>
     {
-        const index = config.checkMusicIn.indexOf(x);
+        const index = checkMusicIn.indexOf(x);
 
         if (index !== -1)
         {
-            config.checkMusicIn.splice(index, 1);
+            checkMusicIn.splice(index, 1);
 
-            const songsInFolder = songList[x];
+            const songsInFolder = songList.get(x);
 
-            songsInFolder.forEach(y => delete songMetadata[y]);
+            songsInFolder.forEach(y => songMetadata.delete(y));
 
-            delete songList[x];
+            songList.delete(x);
         }
         
         else
@@ -48,21 +54,14 @@ ipcMain.handle('ipc-deleteFolders', (E, toDelete) =>
         }
     });
 
-    appdata.set('config', config);
-    appdata.set('songList', songList);
-    appdata.set('songMetadata', songMetadata);
+    config.set('checkMusicIn', checkMusicIn);
 
-    return [...config.checkMusicIn];
+    return checkMusicIn;
 });
 
 function updateLibrary(dirs)
 {
-    const config = appdata.get('config');
-    const songList = appdata.get('songList');
-    const albums = appdata.get('albums');
-    const songMetadata = appdata.get('songMetadata');
-
-    if (dirs === undefined) dirs = [...config.checkMusicIn];
+    if (dirs === undefined) dirs = config.get('checkMusicIn');
 
     const filtered = [];
     const foldersToRemove = [];
@@ -81,14 +80,14 @@ function updateLibrary(dirs)
 
         for (const file of files)
         {
-            if (new RegExp(`\\.(${config.allowedMusicFileFormats.join('|')})$`, 'i').test(file))
+            if (new RegExp(`\\.(${config.get('allowedMusicFileFormats').join('|')})$`, 'i').test(file))
             {
                 filtered.push(folder);
                 break;
             }
         }
 
-        if (config.checkMusicIn.includes(folder) && !filtered.includes(folder))
+        if (config.get('checkMusicIn').includes(folder) && !filtered.includes(folder))
         {
             foldersToRemove.push(folder);
             continue;
@@ -102,7 +101,7 @@ function updateLibrary(dirs)
         });
     }
 
-    const foldersToAdd = filtered.filter(x => !config.checkMusicIn.includes(x));
+    const foldersToAdd = filtered.filter(x => !config.get('checkMusicIn').includes(x));
 
     function alphabeticalOrder(a, b) { return path.basename(a).localeCompare(path.basename(b)) }
 
@@ -113,13 +112,13 @@ function updateLibrary(dirs)
     {
         const songListInFolder = readdirSync(dir)
         .filter(a => !statSync(path.join(dir, a)).isDirectory())
-        .filter(x => new RegExp(`\\.(${config.allowedMusicFileFormats.join('|')})$`, 'i').test(x))
+        .filter(x => new RegExp(`\\.(${config.get('allowedMusicFileFormats').join('|')})$`, 'i').test(x))
         .map(b => path.join(dir, b));
 
-        songsToAdd.push(songListInFolder.filter(x => !songList?.[dir]?.includes(x)));
-        if (songList?.[dir]?.length > 0) songList[dir].filter(x => !songListInFolder.includes(x)).forEach(x => songsToRemove.add(x));
+        songsToAdd.push(songListInFolder.filter(x => !songList.get(dir)?.includes(x)));
+        if (songList.get(dir)?.length > 0) songList.get(dir).filter(x => !songListInFolder.includes(x)).forEach(x => songsToRemove.add(x));
 
-        songList[dir] = [...songListInFolder];
+        songList.set(dir, [...songListInFolder]);
     });
 
     const removedSongs = [];
@@ -128,20 +127,25 @@ function updateLibrary(dirs)
     {
         removedSongs.push(filepath);
 
-        const { albumID } = songMetadata[filepath];
+        const { albumID } = songMetadata.get(filepath);
     
-        const { songs } = albums[albumID];
+        const album = albums.get(albumID);
     
-        if (songs.length > 1) albums[albumID].songs = songs.filter(x => x !== filepath);
+        if (album.songs?.length > 1)
+        {
+            album.songs = [...album.songs.filter(x => x !== filepath)];
+
+            albums.set(albumID, album);
+        }
     
-        else delete albums[albumID];
+        else delete albums.delete(albumID);
     
-        delete songMetadata[filepath];
+        songMetadata.delete(filepath);
     }
 
     foldersToRemove.forEach((folder) =>
     {
-        const files = songList[folder];
+        const files = songList.get(folder);
 
         files.forEach((filepath) =>
         {
@@ -149,14 +153,10 @@ function updateLibrary(dirs)
             songsToRemove.delete(filepath);
         });
 
-        delete songList[folder];
+        songList.delete(folder);
     });
 
     [...songsToRemove].forEach(removeFile);
-
-    appdata.set('albums', albums);
-    appdata.set('songList', songList);
-    appdata.set('songMetadata', songMetadata);
 
     const newSongs = songsToAdd.flat();
     
@@ -168,23 +168,25 @@ function updateLibrary(dirs)
 
         async function saveAlbumPicture(ID, BUFFER)
         {
-            albums[ID].hasArt = true;
+            const album = albums.get(ID);
+
+            album.hasArt = true;
     
             const colors = await Vibrant.from(BUFFER).getPalette();
 
             for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
     
-            albums[ID].colors = colors;
+            album.colors = colors;
             
-            if (albums[ID].albumartURL === undefined)
+            if (album.albumartURL === undefined)
             {
-                albums[ID].albumartURL = null;
+                album.albumartURL = null;
 
                 pendingPromises.push(new Promise(async (resolve) =>
                 {
-                    const url = await getAlbumArtURL(albums[ID].album, albums[ID].artists[0]);
+                    const url = await getAlbumArtURL(album.album, album.artists[0]);
 
-                    if (url !== undefined) albums[ID].albumartURL = url;
+                    if (url !== undefined) album.albumartURL = url;
 
                     return resolve(true)
                 }));
@@ -199,6 +201,8 @@ function updateLibrary(dirs)
                 .toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`))
             );
 
+            albums.set(ID, album);
+
             return true;
         }
 
@@ -209,9 +213,11 @@ function updateLibrary(dirs)
             const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
             const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
 
-            if (albums[albumID] === undefined)
+            let albumData = albums.get(albumID);
+
+            if (albumData === undefined)
             {
-                albums[albumID] =
+                albumData =
                 {
                     album,
                     artists,
@@ -224,10 +230,12 @@ function updateLibrary(dirs)
 
             else
             {
-                if (!albums[albumID].songs.includes(newSongs[i])) albums[albumID].songs.push(newSongs[i]);
+                if (!albumData.songs.includes(newSongs[i])) albumData.songs.push(newSongs[i]);
 
-                if (albums[albumID]?.hasArt !== true && (picture[0] !== undefined)) await saveAlbumPicture(albumID, picture[0].data);
+                if (albumData?.hasArt !== true && (picture[0] !== undefined)) await saveAlbumPicture(albumID, picture[0].data);
             }
+
+            albums.set(albumID, albumData);
 
             if (!existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`)))
             {
@@ -246,29 +254,20 @@ function updateLibrary(dirs)
 
             const data = { albumID, album, artists, bpm, genre: genre.flatMap(x => x.split(/[,\.;:\/]+/).map(y => y.trim()).filter(Boolean)), title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
 
-            songMetadata[newSongs[i]] = data;
+            songMetadata.set(newSongs[i], data);
         }
 
-        appdata.set('songMetadata', songMetadata);
-        
         console.log('finished sync tasks');
         console.log('waiting for pending promises ... (should take a while)');
         
-        appdata.set('albums', albums);
-
         await Promise.all(pendingPromises);
-
-        appdata.set('songMetadata', songMetadata);
-        appdata.set('albums', albums);
 
         console.log('pending promises complete');
     });
 
-    const newList = config.checkMusicIn.concat(foldersToAdd).sort(alphabeticalOrder);
+    const newList = config.get('checkMusicIn').concat(foldersToAdd).sort(alphabeticalOrder);
 
-    config.checkMusicIn = newList;
-
-    appdata.set('config', config);
+    config.set('checkMusicIn', newList);
 
     return {
         folders:
@@ -319,16 +318,13 @@ ipcMain.on('ipc-updateFiles', () =>
 
 ipcMain.handle('ipc-wantFolder', (E, folder) =>
 {
-    const songList = appdata.get('songList');
-    const songMetadata = appdata.get('songMetadata');
-
     if (folder === 'favorites')
     {
         const data = [];
 
-        for (const file in songMetadata)
+        for (const file in songMetadata.store)
         {
-            const { title, artists, album, rawDuration, isFavorite } = songMetadata[file];
+            const { title, artists, album, rawDuration, isFavorite } = songMetadata.get(file);
 
             if (!isFavorite) continue;
 
@@ -338,9 +334,9 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
         return data;
     }
     
-    return songList[folder]?.map((file) =>
+    return songList.get(folder)?.map((file) =>
     {
-        const { title, artists, album, rawDuration } = songMetadata[file];
+        const { title, artists, album, rawDuration } = songMetadata.get(file);
 
         return { artist: artists.join(', '), location: file, duration: rawDuration, title, album };
     });
@@ -348,95 +344,92 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
 
 ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
 {
-    const songMetadata = appdata.get('songMetadata');
+    const data = songMetadata.get(filepath);
+    
+    data.isFavorite = isFavorite;
 
-    songMetadata[filepath].isFavorite = isFavorite;
-
-    appdata.set('songMetadata', songMetadata);
+    songMetadata.set(filepath, data);
 });
 
 ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
 {
-    const albums = appdata.get('albums');
-    const config = appdata.get('config');
-    const queues = appdata.get('queues');
-    const songList = appdata.get('songList');
-    const songMetadata = appdata.get('songMetadata');
-
     let playingQueueAffected = false;
     
     files.forEach((file) =>
     {
         if (audioPlayer.queue.includes(file)) playingQueueAffected = true;
 
-        for (const albumID in albums)
+        for (const albumID in albums.store)
         {
-            if (albums[albumID].songs.includes(file))
+            const album = albums.get(albumID);
+
+            if (album.songs.includes(file))
             {
-                albums[albumID].songs.splice(albums[albumID].songs.indexOf(file), 1);
+                album.songs.splice(albums[albumID].songs.indexOf(file), 1);
+                albums.set(albumID, album);
 
-                if (albums[albumID].songs.length === 0)
+                if (album.songs.length === 0)
                 {
-                    if (albums[albumID].hasArt) unlinkSync(path.join(__dirname, `../appdata/webp/${albumID}.webp`));
+                    if (album.hasArt) unlinkSync(path.join(__dirname, `../appdata/webp/${albumID}.webp`));
 
-                    delete albums[albumID];
+                    albums.delete(albumID);
                 }
-                
+
                 break;
             }
         }
 
-        for (let i = 0; i < queues.length; i++)
+        for (const queueName in queues.store)
         {
-            if (queues[i].songs.includes(file))
+            const queue = queues.get(queueName);
+
+            if (queue.songs.includes(file))
             {
-                queues[i].songs.splice(queues[i].songs.indexOf(file), 1);
+                queue.songs.splice(queue.songs.indexOf(file), 1);
     
-                if (queues[i].currentSong >= queues[i].songs.length) queues[i].currentSong = queues[i].songs.length - 1;
+                if (queue.currentSong >= queue.songs.length) queue.currentSong = queue.songs.length - 1;
+
+                queues.set(queueName, queue);
             }
         }
 
-        for (const folder in songList)
+        for (const folder in songList.store)
         {
             if (file.startsWith(folder))
             {
-                songList[folder].splice(songList[folder].indexOf(file), 1);
+                const list = songList.get(folder);
 
-                if (songList[folder].length === 0)
+                list.splice(list.indexOf(file), 1);
+                
+                songList.set(folder, list);
+
+                if (list?.length === 0)
                 {
-                    config.checkMusicIn.splice(config.checkMusicIn.indexOf(folder), 1);
-                    delete songList[folder];
+                    const checkMusicIn = config.get('checkMusicIn');
+                    checkMusicIn.splice(checkMusicIn.indexOf(folder), 1);
+                    config.set('checkMusicIn', checkMusicIn);
+
+                    songList.delete(folder);
                 }
 
                 break;
             }
         }
 
-        delete songMetadata[file];
+        songMetadata.delete(file);
     
         unlinkSync(file);
     });
 
     if (playingQueueAffected)
     {
-        const queue = queues.find(x => x.name === audioPlayer.queueName);
+        const queue = queues.get(audioPlayer.queueName);
 
-        if (files.includes(audioPlayer.queue[audioPlayer.currentQueueItem]))
-        {
-            audioPlayer
-            .setQueue(queue.songs, queue.currentSong, queue.name)
-            .setNowPlaying(queue.songs[queue.currentSong], true, songMetadata);
-        }
+        audioPlayer.setQueue(queue.songs, queue.currentSong, audioPlayer.queueName);
 
-        else audioPlayer.setQueue(queue.songs, queue.currentSong, queue.name);
+        if (files.includes(audioPlayer.queue[audioPlayer.currentQueueItem])) audioPlayer.setNowPlaying(queue.songs[queue.currentSong], true);
     }
 
-    appdata.set('albums', albums);
-    appdata.set('config', config);
-    appdata.set('queues', queues);
-    appdata.set('songList', songList);
-    appdata.set('songMetadata', songMetadata);
-    
     return true;
 });
 
@@ -448,59 +441,63 @@ ipcMain.on('ipc-moveToFolder', (E, {files, toastEvent}) =>
 
     if (path.dirname(files[0]) === location[0]) return WINDOW.webContents.send(toastEvent, { text: 'No files were moved (same folder selected)' });
 
-    const albums = appdata.get('albums');
-    const config = appdata.get('config');
-    const queues = appdata.get('queues');
-    const songList = appdata.get('songList');
-    const songMetadata = appdata.get('songMetadata');
+    const checkMusicIn = config.get('checkMusicIn');
 
-    if (!config.checkMusicIn.includes(location[0])) config.checkMusicIn.push(location[0]);
+    if (!checkMusicIn.includes(location[0]))
+    {
+        checkMusicIn.push(location[0]);
+        config.set('checkMusicIn', checkMusicIn);
+    }
 
     files.forEach((oldLocation) =>
     {
         const newLocation = path.join(location[0], path.basename(oldLocation));
 
-        const oldMetadata = songMetadata[oldLocation];
+        const oldMetadata = songMetadata.get(oldLocation);
 
-        const album = albums[oldMetadata.albumID];
+        const album = albums.get(oldMetadata.albumID);
         album.songs.splice(album.songs.indexOf(oldLocation), 1, newLocation);
+        albums.set(oldMetadata.albumID, album);
 
-        for (let i = 0; i < queues.length; i++)
+        for (const queueName in queues.store)
         {
-            if (!queues[i].songs.includes(oldLocation)) continue;
+            const queue = queues.get(queueName);
 
-            queues[i].songs.splice(queues[i].songs.indexOf(oldLocation), 1, newLocation);
+            if (!queue.songs.includes(oldLocation)) continue;
+
+            queue.songs.splice(queue.songs.indexOf(oldLocation), 1, newLocation);
+
+            queues.set(queueName, queue);
         }
 
         if (audioPlayer.queue.includes(oldLocation)) audioPlayer.queue.splice(audioPlayer.queue.indexOf(oldLocation), 1, newLocation);
 
-        if (songList[location[0]] === undefined) songList[location[0]] = [newLocation];
-        else songList[location[0]].push(newLocation);
+        const list = songList.get(location[0], []);
+        list.push(newLocation);
+        songList.set(location[0], list);
 
         const oldFolderpath = path.dirname(oldLocation);
-        const oldFolder = songList[oldFolderpath];
+        const oldFolder = songList.get(oldFolderpath);
 
         oldFolder.splice(oldFolder.indexOf(oldLocation), 1);
 
         if (oldFolder.length === 0)
         {
-            config.checkMusicIn.splice(config.checkMusicIn.indexOf(oldFolderpath), 1);
-            delete songList[oldFolderpath];
+            checkMusicIn.splice(checkMusicIn.indexOf(oldFolderpath), 1);
+            config.set('checkMusicIn', checkMusicIn);
+
+            songList.delete(oldFolderpath);
         }
 
-        songMetadata[newLocation] = oldMetadata;
-        delete songMetadata[oldLocation];
+        songMetadata.set(newLocation, oldMetadata);
+        songMetadata.delete(oldLocation);
 
         moveFileSync(oldLocation, newLocation);
     });
 
-    songList[location[0]].sort((x, y) => path.basename(x).localeCompare(path.basename(y)));
-
-    appdata.set('albums', albums);
-    appdata.set('config', config);
-    appdata.set('queues', queues);
-    appdata.set('songList', songList);
-    appdata.set('songMetadata', songMetadata);
+    const list = songList.get(location[0]);
+    list.sort((x, y) => path.basename(x).localeCompare(path.basename(y)));
+    songList.set(location[0], list);
 
     WINDOW.webContents.send(toastEvent, {type: 'success', text: `${files.length} ${files.length > 1 ? 'songs were' : 'song was'} moved to ${location[0]}`});
 

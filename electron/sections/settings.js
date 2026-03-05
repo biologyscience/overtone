@@ -10,6 +10,9 @@ const audioPlayer = require('../player');
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let config;
+ipcMain.on('APPDATA', obj => config = obj.config);
+
 ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
 {
     if (value === undefined || value === null || (typeof(value) ==='number' && isNaN(value))) return;
@@ -29,18 +32,12 @@ ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
 
 ipcMain.on('ipc-saveColorTheme', (E, {name, colors}) =>
 {
-    const config = appdata.get('config');
-
-    config.colors.themes[name] = colors;
-
-    appdata.set('config', config);
+    config.set(`colors.themes.${name}`, colors);
 });
 
 ipcMain.handle('ipc-wantThemeColors', (E, theme) =>
 {
-    const config = appdata.get('config');
-
-    return config.colors.themes[theme];
+    return config.get(`colors.themes.${theme}`);
 });
 
 ipcMain.handle('ipc-backupAppdata', async () =>

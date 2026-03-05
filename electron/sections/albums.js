@@ -1,24 +1,29 @@
 const { ipcMain } = require('electron');
 const path = require('path');
 
-const { appdata } = require('../util');
-
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
+let albums, songMetadata;
+ipcMain.on('APPDATA', (obj) =>
+{
+    albums = obj.albums;
+    songMetadata = obj.songMetadata;
+});
+
 ipcMain.handle('ipc-wantAlbums', () =>
 {
-    const albums = appdata.get('albums');
-
     const albumData = [];
 
-    for (const ID in albums)
+    for (const ID in albums.store)
     {
         let albumart = 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
 
-        if (albums[ID].hasArt) albumart = path.join(__dirname, `../appdata/webp/${ID}.webp`);
+        const album = albums.get(ID);
 
-        albumData.push({album: albums[ID].album, artist: albums[ID].artists[0], albumart, accent: albums[ID].colors.Vibrant});
+        if (album.hasArt) albumart = path.join(__dirname, `../appdata/webp/${ID}.webp`);
+
+        albumData.push({album: album.album, artist: album.artists[0], albumart, accent: album.colors.Vibrant});
     }
 
     return albumData;
@@ -26,24 +31,22 @@ ipcMain.handle('ipc-wantAlbums', () =>
 
 ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
 {
-    const songMetadata = appdata.get('songMetadata');
-
     const albumData = { album, songs: [] };
 
-    const albums = appdata.get('albums');
-
-    for (const ID in albums)
+    for (const ID in albums.store)
     {
-        if (albums[ID].album === album && albums[ID].artists.includes(artist))
-        {
-            albumData.colors = albums[ID].colors;
-            albumData.artist = albums[ID].artists[0];
-            albumData.year = albums[ID].year;
-            albumData.albumart = albums[ID].hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+        const album = albums.get(ID);
 
-            albumData.songs = albums[ID].songs.map((filepath) =>
+        if (album.album === album && album.artists.includes(artist))
+        {
+            albumData.colors = album.colors;
+            albumData.artist = album.artists[0];
+            albumData.year = album.year;
+            albumData.albumart = album.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+
+            albumData.songs = album.songs.map((filepath) =>
             {
-                const { title, rawDuration, track, artists, playCount } = songMetadata[filepath];
+                const { title, rawDuration, track, artists, playCount } = songMetadata.store[filepath];
 
                 const data =
                 {

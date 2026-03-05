@@ -1,10 +1,6 @@
 const { ipcMain } = require('electron');
 const { Client } = require('discord-rpc');
 
-const { appdata } = require('./util');
-
-const { discordRPC } = appdata.get('config');
-
 const rpcClient = new Client({transport: 'ipc'});
 
 rpcClient.on('ready', () => console.log('RPC ready'));
@@ -15,6 +11,7 @@ class RPC
     {
         this.live = false;
         this.localhost = null;
+        this.clientId = null;
 
         this.currentState = {
             details: 'Song Name',
@@ -30,7 +27,7 @@ class RPC
     {
         try
         {
-            await rpcClient.login({clientId: discordRPC.appID});
+            await rpcClient.login({clientId: this.clientId});
 
             this.live = true;
         }
@@ -90,6 +87,8 @@ class RPC
 }
 
 const rpc = new RPC();
+
+ipcMain.on('APPDATA', ({config}) => rpc.clientId = config.get('discordRPC.appID'));
 
 ipcMain.handle('ipc-startRPC', async (E, obj) =>
 {
