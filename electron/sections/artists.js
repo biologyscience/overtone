@@ -19,7 +19,7 @@ ipcMain.handle('ipc-wantArtists', () =>
     {
         const picturePath = path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
 
-        const picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+        const picture = existsSync(picturePath) ? picturePath : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
         return { artist, picture };
     });
@@ -48,13 +48,13 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
         toSend.push({
             album,
             year: albums[album].year,
-            albumart: albums[album].albumart || 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png'
+            albumart: albums[album].albumart || 'https://brucecoughlin.com/data/default_artwork/music_ph.png'
         });
     }
 
     const picturePath = path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
 
-    const picture = existsSync(picturePath) ? picturePath : 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png';
+    const picture = existsSync(picturePath) ? picturePath : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
     return { picture, albums: toSend };
 });

@@ -7,8 +7,7 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 const { Vibrant } = require('node-vibrant/node');
 
-const { parseTime } = require('../util');
-const { getArtistPicture, getAlbumArtURL } = require('../spotify');
+const { parseTime, saveArtistPicture } = require('../util');
 const audioPlayer = require('../player');
 
 let WINDOW;
@@ -177,20 +176,6 @@ function updateLibrary(dirs)
             for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
     
             album.colors = colors;
-            
-            if (album.albumartURL === undefined)
-            {
-                album.albumartURL = null;
-
-                pendingPromises.push(new Promise(async (resolve) =>
-                {
-                    const url = await getAlbumArtURL(album.album, album.artists[0]);
-
-                    if (url !== undefined) album.albumartURL = url;
-
-                    return resolve(true)
-                }));
-            }
 
             if (existsSync(path.join(__dirname, `../appdata/webp/${ID}.webp`))) return true;
     
@@ -237,31 +222,15 @@ function updateLibrary(dirs)
 
             albums.set(albumID, albumData);
 
-            if (!existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`)))
-            {
-                getArtistPicture(artists[0]).then(({data}) =>
-                {
-                    if (data !== null)
-                    {
-                        pendingPromises.push(
-                            sharp(data)
-                            .webp({quality: 70})
-                            .toFile(path.join(__dirname, `../appdata/webp/${artistID}.webp`))
-                        );
-                    }
-                });
-            }
+            if (!existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`))) saveArtistPicture(artists[0], artistID);
 
             const data = { albumID, album, artists, bpm, genre: genre.flatMap(x => x.split(/[,\.;:\/]+/).map(y => y.trim()).filter(Boolean)), title, track, year, duration: parseTime(results[i].format.duration).text, rawDuration: results[i].format.duration, playCount: 0 };
 
             songMetadata.set(newSongs[i], data);
         }
 
-        console.log('finished sync tasks');
         console.log('waiting for pending promises ... (should take a while)');
-        
         await Promise.all(pendingPromises);
-
         console.log('pending promises complete');
     });
 
