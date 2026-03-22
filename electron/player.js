@@ -130,7 +130,7 @@ class Player
     
             this.currentQueueItem = 0;
             this.queue = nextQueue.songs;
-            this.queueName = nextQueue.name;
+            this.queueName = nextQueueName;
         }
     
         else { this.currentQueueItem++; }

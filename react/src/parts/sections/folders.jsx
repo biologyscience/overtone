@@ -449,7 +449,10 @@ export default function folders()
                             texts: ['Add to a queue', 'Play after current song']
                         },
                         {
-                            functions: [() => {}, () => window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'})],
+                            functions: [
+                                () => setShowEditTagsModal(true),
+                                () => window.ipc.send('ipc-moveToFolder', {files: selectedFiles, toastEvent: 'ipc-foldersToast'})
+                            ],
                             icons: [<EditRounded/>, <DriveFileMoveRounded/>],
                             texts: ['Edit tags', 'Move to a folder']
                         },

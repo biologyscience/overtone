@@ -155,11 +155,11 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
 {    
     const { format, common } = await metadata.parseFile(filepath);
 
-    const picture = common.picture[0];
+    const picture = common.picture?.[0];
     const { playCount, isFavorite } = songMetadata.get(filepath);
 
     format.size = statSync(filepath).size;
-    common.picture = `data:${picture.format};base64,${picture.data.toString('base64')}`;
+    common.picture = picture ? `data:${picture.format};base64,${picture.data.toString('base64')}` : null;
 
     const data =
     {
@@ -174,11 +174,15 @@ ipcMain.handle('ipc-wantInfo', async (E, filepath) =>
         }
     };
 
-    data.tags.label = data.tags.label?.[0]
+    data.tags.label = data.tags.label?.[0];
+
+    if (data.tags.artists === undefined) data.tags.artists = [];
+    if (data.tags.genre === undefined) data.tags.genre = [];
 
     if (picture?.data)
     {
         const colors = await Vibrant.from(picture.data).getPalette();
+
         for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
 
         data.extras.colors = colors;
@@ -300,10 +304,16 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
             const buf = Buffer.from(split[3], 'base64');
 
             sharp(buf).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${tempMetadata.albumID}.webp`));
-            
-            song.tag.pictures[0].mimeType = split[1];
-            song.tag.pictures[0].data = new Uint8Array(buf);
-        }        
+
+            const picture = new taglib.Picture();
+
+            picture.data = taglib.ByteVector.fromByteArray(buf);
+            picture.mimeType = split[1];
+            picture.description = 'cover';
+            picture.type = taglib.PictureType.FrontCover;
+
+            song.tag.pictures = [picture];
+        }
     }
 
     songMetadata.set(file, tempMetadata);
