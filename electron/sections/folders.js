@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require('electron');
+const { ipcMain, dialog, shell } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const { existsSync, readdirSync, statSync, unlinkSync } = require('fs');
 const { moveFileSync } = require('move-file');
@@ -179,8 +179,8 @@ function updateLibrary(dirs)
         {
             const { album, artists, title, track, bpm, year, picture } = results[i].common;
 
-            const albumID = crypto.createHash('md5').update(`${album}_${artists[0]}`).digest('hex');
-            const artistID = crypto.createHash('md5').update(artists[0]).digest('hex');
+            const albumID = crypto.createHash('md5').update(`${album}_${artists?.[0]}`).digest('hex');
+            const artistID = crypto.createHash('md5').update(`${artists?.[0]}`).digest('hex');
 
             const albumData = albums.get(albumID, {});
 
@@ -191,7 +191,7 @@ function updateLibrary(dirs)
                 albumData.year = year;
                 albumData.songs = [newSongs[i]];
                 
-                if (picture[0] !== undefined)
+                if (picture?.[0] !== undefined)
                 {
                     const colors = await saveAlbumPicture(albumID, picture[0].data);
 
@@ -204,7 +204,7 @@ function updateLibrary(dirs)
             {
                 if (!albumData.songs.includes(newSongs[i])) albumData.songs.push(newSongs[i]);
 
-                if (albumData?.hasArt !== true && (picture[0] !== undefined))
+                if (albumData?.hasArt !== true && (picture?.[0] !== undefined))
                 {
                     const colors = await saveAlbumPicture(albumID, picture[0].data);
 
@@ -217,11 +217,11 @@ function updateLibrary(dirs)
 
             if ((albumData.albumartURL === undefined) || missingArtistPic)
             {
-                const result = await itunes.search(artists[0] + ' - ' + album);
+                const result = await itunes.search(artists?.[0] + ' - ' + album);
 
                 if (result !== null)
                 {
-                    if ((albumData.albumartURL === undefined) && (result.collectionName.includes(album) || album.includes(result.collectionName))) albumData.albumartURL = result.artworkUrl100.replace('100x100bb', '512x512');
+                    if ((albumData.albumartURL === undefined) && (result.collectionName.includes(album) || album?.includes(result.collectionName))) albumData.albumartURL = result.artworkUrl100.replace('100x100bb', '512x512');
 
                     if (missingArtistPic && result.artistViewUrl)
                     {
@@ -315,9 +315,13 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
     
     return songList.get(folder)?.map((file) =>
     {
-        const { title, artists, album, rawDuration } = songMetadata.get(file);
+        const data = songMetadata.get(file);
 
-        return { artist: artists.join(', '), location: file, duration: rawDuration, title, album };
+        if (!data) return { location: file };
+
+        const { title, artists, album, rawDuration } = data;
+
+        return { artist: artists?.join(', '), location: file, duration: rawDuration, title, album };        
     });
 });
 
