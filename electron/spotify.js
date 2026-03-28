@@ -1,3 +1,10 @@
+/**
+ * https://developer.spotify.com/blog/2026-02-06-update-on-developer-access-and-platform-security
+ * 
+ * ONLY PREMIUM USERS CAN ACCESS SPOTIFY API.
+ * FILE NO LONGER IN USE. BUT AVAILABLE FOR REFERENCE.
+ */
+
 const { appdata } = require('./util');
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }

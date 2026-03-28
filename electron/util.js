@@ -1,8 +1,5 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs');
 const path = require('path');
-const sharp = require('sharp');
-
-const itunes = require('./itunes');
 
 const appdata =
 {
