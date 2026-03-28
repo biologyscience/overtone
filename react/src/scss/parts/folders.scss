@@ -283,6 +283,159 @@
         }
     }
 
+    .topPlaysModal
+    {
+        max-height: 85vh;
+        width: 30vw;
+        border-radius: 10px;
+        background-color: var(--background);
+
+        .selector
+        {
+            padding: .5em 0;
+            font-size: 1.5rem;
+            justify-content: center;
+            gap: 1em;
+
+            span
+            {
+                position: relative;;
+                width: 6ch;
+                text-align: center;
+                z-index: 0;
+
+                &::after
+                {
+                    position: absolute;
+                    content: '';
+                    height: .1em;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    border-radius: 1em;
+                    background-color: var(--accent);
+                    z-index: -1;
+                    opacity: 0;
+                    transition: opacity 200ms ease;
+                }
+
+                &:hover { cursor: pointer; }
+
+                &.selected::after { opacity: 1; }
+            }
+        }
+
+        .divider
+        {
+            width: 100%;
+            height: .25em;
+            background-color: var(--accent2);
+        }
+
+        .imgWrapper
+        {
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+
+            img
+            {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .podium
+        {
+            margin: 1em 0;
+            justify-content: center;
+            gap: 1.25em;
+
+            & > *
+            {
+                font-size: 1rem;
+                gap: .5em;
+                display: grid;
+                grid-template-rows: 3em auto auto;
+                align-self: end;
+
+                img
+                {
+                    height: 100%;
+                    aspect-ratio: 1;
+                }
+
+                .bar
+                {
+                    position: relative;
+                    justify-self: center;
+                    align-self: end;
+                    width: 50%;
+                    transition: height 200ms ease;
+                }
+
+                &._1 .bar { background-color: #C9B037; }
+                &._2 .bar { background-color: #B4B4B4; }
+                &._3 .bar { background-color: #AD8A56; }
+
+                span { text-align: center; }
+            }
+        }
+
+        .leaderboard
+        {
+            overflow-y: auto;
+
+            .item
+            {
+                display: grid;
+                grid-template-columns: 3ch 5vw auto 7.5vw 5ch;
+                gap: 1em;
+                margin: .5em 1em;
+
+                .position, .playCount
+                {
+                    text-align: center;
+                    place-self: center;
+                }
+
+
+                img, .imgWrapper
+                {
+                    width: 100%;
+                    aspect-ratio: 1;
+                }
+
+                .songData
+                {
+                    overflow: hidden;
+                    justify-content: center;
+
+                    .big { font-size: 1.2em; }
+                }
+
+                .bar
+                {
+                    height: .5em;
+                    background-color: var(--accent);
+                    align-self: center;
+                    justify-self: right;
+                    border-radius: 1em;
+                    transition: width 200ms ease;
+                }
+            }
+        }
+
+        .noData
+        {
+            font-size: 1rem;
+            height: 10vh;
+            text-align: center;
+            align-content: center;
+        }
+    }
+
     .progressModal
     {
         width: 40vw;

@@ -325,6 +325,50 @@ ipcMain.handle('ipc-wantFolder', (E, folder) =>
     });
 });
 
+ipcMain.handle('ipc-topPlays', () =>
+{
+    const data = { ...songMetadata.store };
+
+    const artistMap = {};
+
+    Object.values(data).forEach(({artists, playCount}) =>
+    {
+        if (artistMap[artists[0]] === undefined) artistMap[artists[0]] = 0;
+        artistMap[artists[0]] += playCount;
+    });
+
+    const topSongs = Object.values(data).filter(x => x.playCount > 0).sort((x, y) => y?.playCount - x?.playCount).slice(0, 10); 
+    const topArtists = Object.entries(artistMap).filter(x => x[1] > 0).sort((x, y) => y[1] - x[1]).slice(0, 10);
+
+    return {
+        songs: topSongs.map((x) =>
+        {
+            const y = 
+            {
+                album: x.album,
+                artists: x.artists,
+                title: x.title,
+                playCount: x.playCount,
+                picture: path.join(__dirname, `../appdata/webp/${x.albumID}.webp`)
+            };
+
+            return y;
+        }),
+
+        artists: topArtists.map((x) =>
+        {
+            const y =
+            {
+                artist: x[0],
+                playCount: x[1],
+                picture: path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(x[0]).digest('hex')}.webp`)
+            }
+
+            return y;
+        })
+    };
+});
+
 ipcMain.on('ipc-favoriteSong', (E, {filepath, isFavorite}) =>
 {
     const data = songMetadata.get(filepath);

@@ -105,10 +105,10 @@ export default function Advanced()
                 <span>Launch OverTone on startup</span>
                 <input type='checkbox' className='switch' checked={launchOnStartup} onChange={() => setLaunchOnStartup(x => !x)}/>
             </ROW>
-            <ROW className={'option'}>
+            {/* <ROW className={'option'}>
                 <span>Automatically start playback on launch</span>
                 <input type='checkbox' className='switch' checked={autoplay} onChange={() => setAutoplay(x => !x)}/>
-            </ROW>
+            </ROW> */}
             <ROW className={'option'}>
                 <span>Hide app to system tray when closed</span>
                 <input type='checkbox' className='switch' checked={hideToSystemTray} onChange={() => setHideToSystemTray(x => !x)}/>

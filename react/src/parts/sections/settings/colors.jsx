@@ -218,7 +218,7 @@ export default function Colors()
                 <input type='checkbox' className='switch' checked={highContrast} onChange={() => setHighContrast(x => !x)}/>
             </ROW>
             <ROW className={'option'}>
-                <span>Restore to default color config</span>
+                <span>Restore default color config</span>
                 <button className='popup' onClick={() => { setTheme('Dark'); setDynamic(true); }}><OpenInNewRounded/></button>
             </ROW>
             <CustomModal parentRef={parentRef} visibility={[showModal, setShowModal]}>
