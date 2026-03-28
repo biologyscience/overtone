@@ -11,7 +11,7 @@ const albums = new Store();
 const config = new Store();
 const eqs = new Store({accessPropertiesByDotNotation: false});
 const queues = new Store({accessPropertiesByDotNotation: false});
-const songList = new Store({accessPropertiesByDotNotation: false})
+const songList = new Store({accessPropertiesByDotNotation: false});
 const songMetadata = new Store({accessPropertiesByDotNotation: false});
 
 albums.path = path.join(__dirname, './appdata/albums.json');
@@ -28,11 +28,12 @@ if (!existsSync(path.join(__dirname, './appdata/config.json')))
 {
     config.store =
     {
-        allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac'],
+        allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
         launchOnStartup: false,
         systemTray: false,
         checkMusicIn: [],
         lastQueueState: {},
+        lastSection: 0,
         colors:
         {
             dynamic: true,

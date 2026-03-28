@@ -16,7 +16,7 @@ import { ROW } from '../util/components';
 export default function Navbar()
 {
     const [left, setLeft] = useState(0);
-    const [index, setIndex] = useState(1);
+    const [index, setIndex] = useState(0);
 
     const navRef = useRef();
     const indexRef = useRef(index);
@@ -28,6 +28,8 @@ export default function Navbar()
         setLeft(navRef.current.children[0].children[indexRef.current].getBoundingClientRect().left - (tabWidth / 4));
         
         eventBus.dispatchEvent(new CustomEvent('ot-navChange', {detail: indexRef.current}));
+
+        window.ipc.send('ipc-updateConfig', {value: indexRef.current, keys: ['lastSection']});
     }
 
     useEffect(() =>
@@ -39,6 +41,7 @@ export default function Navbar()
 
     useEffect(() =>
     {
+        window.ipc.on('ipc-takeConfig', ({lastSection}) => setIndex(lastSection));
         window.addEventListener('resize', handleResize);
         eventBus.addEventListener('ot-changeSectionTo', ({detail}) => setIndex(detail));
     }, []);
