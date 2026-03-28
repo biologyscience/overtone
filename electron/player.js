@@ -1,4 +1,4 @@
-const { ipcMain } = require('electron');
+const { ipcMain, nativeImage } = require('electron');
 const { readFileSync } = require('fs');
 const path = require('path');
 
@@ -17,6 +17,7 @@ class Player
 
     reset()
     {
+        this.playState = false;
         this.queue = [];
         this.queueName = '';
         this.currentQueueItem = 0;
@@ -308,6 +309,24 @@ ipcMain.on('APPDATA', (obj) =>
     config = obj.config;
     queues = obj.queues;
     songMetadata = obj.songMetadata;
+});
+
+ipcMain.on('ipc-playState', (E, state) =>
+{
+    audioPlayer.playState = state;
+
+    const labels = ['Previous', audioPlayer.playState ? 'Pause' : 'Play', 'Next'];
+
+    audioPlayer.window.setThumbarButtons(
+        labels.map((label) =>
+        {
+            return {
+                tooltip: label,
+                icon: nativeImage.createFromPath(path.join(__dirname, `../media/overtone-${label.toLowerCase()}.png`)),
+                click: () => audioPlayer.window.webContents.send('ipc-thumbnailButtonClick', {action: label.toLowerCase()})
+            }
+        })
+    );
 });
 
 ipcMain.handle('ipc-audioPlayer-next', (E, {ot_auto}) =>

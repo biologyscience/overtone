@@ -176,6 +176,8 @@ export default function displayRight()
 
     useEffect(() =>
     {
+        window.ipc.send('ipc-playState', playState);
+
         if (playState)
         {
             window.ipc.send('ipc-setRPCtime', ({time: player.current.currentTime}));
@@ -257,6 +259,14 @@ export default function displayRight()
 
         window.ipc.on('ipc-restoreVolume', setVolume);
         window.ipc.on('ipc-restoreCurrentTime', (time) => setTimeout(() => { setCurrentTime(time); player.current.currentTime = time; }, 10));
+
+        window.ipc.on('ipc-thumbnailButtonClick', ({action}) =>
+        {
+            if (action === 'previous') playPrevious();
+            if (action === 'pause') setPlayState(false);
+            if (action === 'play') setPlayState(true);
+            if (action === 'next') playNext({});
+        });
 
         navigator.mediaSession.setActionHandler('play', () => setPlayState(true));
         navigator.mediaSession.setActionHandler('pause', () => setPlayState(false));
