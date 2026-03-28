@@ -22,7 +22,7 @@ module.exports = {
 
             if (path.includes('media/'))
             {
-                if (path.includes('overtone-logo')) return false;
+                if (path.includes('overtone-')) return false;
                 return true;
             }
 
