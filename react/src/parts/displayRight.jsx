@@ -6,6 +6,8 @@ import { AudioPlayer } from '../util/audio';
 import { parseTime } from '../util/functions';
 import eventBus from '../util/events';
 
+import { ReactComponent as Logo } from '../logo.svg';
+
 import
 {
     VolumeUpRounded,
@@ -276,17 +278,23 @@ export default function displayRight()
 
     function miscButton()
     {
-        toast('63 6F 6D 69 6E 67 20 73 6F 6F 6E 20 2E 2E 2E'.replaceAll(' ', ''), {toasterId: 'displayRight'})
-        window.location.reload()
+        toast('63 6F 6D 69 6E 67 20 73 6F 6F 6E 20 2E 2E 2E'.replaceAll(' ', ''), {toasterId: 'displayRight'});
+        // window.location.reload()
     }
 
     return (
         <COL ref={sectionRef} id='displayRight' className={'relative'} onClick={clickDisplayRight}>
             <AudioPlayer playerRef={player} file={nowPlaying?.filepath} setCurrentTime={setCurrentTime} progress={[progress, dragging]} playing={playState} audioLevel={volume} indicateEnd={setEndState}/>
             <ROW className={`albumartWrapper ${playState ? '' : 'paused'}`}>
-                <Hover3D style={{display: 'flex'}}>
-                    <img className='albumart' src={nowPlaying?.albumart} draggable={false}/>
-                </Hover3D>
+                {
+                    nowPlaying?.albumart === undefined ? (
+                        <Logo className={playState ? 'playing' : null}/>
+                    ) : (
+                        <Hover3D style={{display: 'flex'}}>
+                            <img className='albumart' src={nowPlaying.albumart} draggable={false}/>
+                        </Hover3D>
+                    )
+                }
             </ROW>
             <COL className='info'>
                 <span className='overflowPrevent'>{nowPlaying?.title}</span>

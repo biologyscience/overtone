@@ -1,5 +1,6 @@
 electron/appdata/*
 !electron/appdata/eqs.json
+media/logo.ai
 node_modules
 out
 react/dist
