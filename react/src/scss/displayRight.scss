@@ -25,6 +25,26 @@
             aspect-ratio: 1;
         }
 
+        svg
+        {
+            width: 80%;
+
+            @keyframes rotate
+            {
+                from { rotate: 0deg; }
+                to { rotate: 360deg; }
+            }
+
+            .tracks
+            {
+                transform-origin: center;
+                animation: rotate linear infinite 10s;
+                animation-play-state: paused;
+            }
+
+            &.playing .tracks { animation-play-state: running; }
+        }
+
         &.paused { scale: 0.975; }
     }
 

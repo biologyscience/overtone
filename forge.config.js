@@ -1,5 +1,6 @@
 module.exports = {
     packagerConfig: {
+        icon: './media/logo',
         ignore: (path) =>
         {
             if (path.includes('node_modules'))

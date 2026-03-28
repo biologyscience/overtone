@@ -347,7 +347,7 @@ app.on('ready', () =>
         height: 500,
         frame: false,
         title: 'OverTone',
-        icon: path.join(__dirname, 'logo.png'),
+        icon: path.join(__dirname, '../media/logo.ico'),
         webPreferences:
         {
             webSecurity: false,
@@ -365,7 +365,7 @@ app.on('ready', () =>
     ipcMain.emit('WINDOW_OBJECT', WINDOW);
     ipcMain.emit('APPDATA', {albums, config, eqs, queues, songList, songMetadata});
 
-    TRAY = new Tray(path.join(__dirname, 'logo.png'));
+    TRAY = new Tray(path.join(__dirname, '../media/logo.ico'));
     TRAY.setToolTip('OverTone');
     TRAY.setContextMenu(Menu.buildFromTemplate([{ label: 'Quit OverTone', click: () => WINDOW.close() }]));
     TRAY.on('click', () => WINDOW.show());
