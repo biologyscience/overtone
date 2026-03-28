@@ -29,7 +29,8 @@ import
     CheckBoxRounded,
     CheckBoxOutlineBlankRounded,
     SelectAllRounded,
-    DeselectRounded
+    DeselectRounded,
+    LeaderboardRounded
 } from '@mui/icons-material';
 
 export default function folders()
@@ -38,6 +39,9 @@ export default function folders()
     const toastRef = useRef('');
 
     const
+        [showTopPlays, setShowTopPlays] = useState(false),
+        [topPlays, setTopPlays] = useState({songs: [], artists: []}),
+        [topPlaysSelector, setTopPlaysSelector] = useState('songs'),
         [showProgressModal, setShowProgressModal] = useState(false),
         [updateProgress, setUpdateProgress] = useState(0),
         [showInside, setShowInside] = useState(false),
@@ -69,20 +73,29 @@ export default function folders()
             {
                 setCurrentFolderPath(undefined);
                 setFolderName('Favorites');
-            }
-            
-            window.ipc.invoke('ipc-wantFolder', type).then((songData) =>
-            {
-                let totalDuration = 0;
-             
-                songData?.forEach(({duration}) => totalDuration += duration);
-                setFoldarDuration(parseTime(totalDuration).text);
 
-                setInputSearchSpace(songData.map(x => x.title));
-                setInputMatchSpace(songData.map(x => true));
-                setSongsData(songData);
-                setShowInside(true);
-            });
+                window.ipc.invoke('ipc-wantFolder', type).then((songData) =>
+                {
+                    let totalDuration = 0;
+                
+                    songData?.forEach(({duration}) => totalDuration += duration);
+                    setFoldarDuration(parseTime(totalDuration).text);
+
+                    setInputSearchSpace(songData.map(x => x.title));
+                    setInputMatchSpace(songData.map(x => true));
+                    setSongsData(songData);
+                    setShowInside(true);
+                });
+            }
+
+            if (type === 'top')
+            {
+                window.ipc.invoke('ipc-topPlays').then((data) =>
+                {
+                    setTopPlays(data);
+                    setShowTopPlays(true);
+                });
+            }
         }
 
         else if (index !== undefined)
@@ -328,10 +341,10 @@ export default function folders()
                         <FavoriteRounded/>
                         <span className='name'>Favorites</span>
                     </ROW>
-                    {/* <li onClick={handleFolderClick}>
-                        <DeleteRounded/>
-                        <span className='name'>Placeholder</span>
-                    </li> */}
+                    <ROW data-type={'top'} onClick={handleFolderClick}>
+                        <LeaderboardRounded/>
+                        <span className='name'>Top Plays</span>
+                    </ROW>
                 </COL>
                 <COL className='folderOptions'>
                     <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); setShowProgressModal(true); }}>
@@ -373,6 +386,101 @@ export default function folders()
                 </GRID>
                 <COL className='songList'><Songs/></COL>
             </COL>
+            <CustomModal visibility={[showTopPlays, setShowTopPlays]} parentRef={sectionRef}>
+                <COL className={'topPlaysModal'}>
+                    <ROW className={'selector'}>
+                        <span className={`${topPlaysSelector === 'songs' ? 'selected' : null}`} onClick={() => setTopPlaysSelector('songs')}>Songs</span>
+                        <span className={`${topPlaysSelector === 'artists' ? 'selected' : null}`} onClick={() => setTopPlaysSelector('artists')}>Artists</span>
+                    </ROW>
+                    <div className='divider'/>
+                    {
+                        topPlays[topPlaysSelector].length >= 3 ? (
+                            <>
+                                <ROW className={'podium'}>
+                                    <div className={'_2'}>
+                                        {
+                                            topPlaysSelector === 'songs' ? (
+                                                <img src={`overtone://${topPlays[topPlaysSelector]?.[1]?.picture}`} draggable={false}/>
+                                            ) : (
+                                                <div className='imgWrapper'>
+                                                    <img src={`overtone://${topPlays[topPlaysSelector]?.[1]?.picture}`} draggable={false}/>
+                                                </div>
+                                            )
+                                        }
+                                        <div className='bar' style={{height: `${10 * topPlays[topPlaysSelector]?.[1]?.playCount / topPlays[topPlaysSelector]?.[0]?.playCount}vh`}}/>
+                                        <span>2<sup>nd</sup></span>
+                                    </div>
+                                    <div className={'_1'}>
+                                        {
+                                            topPlaysSelector === 'songs' ? (
+                                                <img src={`overtone://${topPlays[topPlaysSelector]?.[0]?.picture}`} draggable={false}/>
+                                            ) : (
+                                                <div className='imgWrapper'>
+                                                    <img src={`overtone://${topPlays[topPlaysSelector]?.[0]?.picture}`} draggable={false}/>
+                                                </div>
+                                            )
+                                        }
+                                        <div className='bar' style={{height: '10vh'}}/>
+                                        <span>1<sup>st</sup></span>
+                                    </div>
+                                    <div className={'_3'}>
+                                        {
+                                            topPlaysSelector === 'songs' ? (
+                                                <img src={`overtone://${topPlays[topPlaysSelector]?.[2]?.picture}`} draggable={false}/>
+                                            ) : (
+                                                <div className='imgWrapper'>
+                                                    <img src={`overtone://${topPlays[topPlaysSelector]?.[2]?.picture}`} draggable={false}/>
+                                                </div>
+                                            )
+                                        }
+                                        <div className='bar' style={{height: `${10 * topPlays[topPlaysSelector]?.[2]?.playCount / topPlays[topPlaysSelector]?.[0]?.playCount}vh`}}/>
+                                        <span>3<sup>rd</sup></span>
+                                    </div>
+                                </ROW>
+                                <div className='divider'/>
+                                <COL className={'leaderboard'}>
+                                {
+                                    topPlays[topPlaysSelector].map((data, i) =>
+                                    {
+                                        return (
+                                            <div key={i} className={'item'}>
+                                                <span className='position'>#{i + 1}</span>
+                                                {
+                                                    topPlaysSelector === 'songs' ? (
+                                                        <img src={`overtone://${data.picture}`} draggable={false}/>
+                                                    ) : (
+                                                        <div className='imgWrapper'>
+                                                            <img src={`overtone://${data.picture}`} draggable={false}/>
+                                                        </div>
+                                                    )
+                                                }
+                                                <COL className='songData'>
+                                                    {
+                                                        topPlaysSelector === 'songs' ? (
+                                                            <>
+                                                                <span className='big overflowPrevent'>{data.title}</span>
+                                                                <span className='overflowPrevent'>{data.artists.join(', ')}</span>
+                                                                <span className='overflowPrevent'>{data.album}</span>
+                                                            </>
+                                                        ) : (
+                                                            <span className='big overflowPrevent'>{data.artist}</span>
+                                                        )
+                                                    }
+                                                </COL>
+                                                <div className='bar' style={{width: `${100 * data.playCount / topPlays[topPlaysSelector][0].playCount}%`}}/>
+                                                <span className='playCount'>{data.playCount}</span>
+                                            </div>
+                                        )
+                                    })
+                                }
+                                </COL>
+                            </>
+                        ) : (
+                            <span className='noData'>There ain't much data to make your top plays.<br/>Come back after playing some songs.</span>
+                        )
+                    }
+                </COL>
+            </CustomModal>
             <CustomModal visibility={[showProgressModal]} parentRef={sectionRef}>
                 <COL className={'progressModal'}>
                     <CircularProgressbar value={updateProgress} strokeWidth={5} text={`${updateProgress.toString().split('.')[0]}%`}/>
