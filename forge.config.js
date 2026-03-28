@@ -18,6 +18,7 @@ module.exports = {
             }
 
             if (path.includes('guides')) return true;
+            if (path.includes('media/songs')) return true;
             if (path.includes('out')) return true;
 
             if (path.includes('react/'))
