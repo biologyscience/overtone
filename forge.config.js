@@ -1,6 +1,6 @@
 module.exports = {
     packagerConfig: {
-        icon: './media/logo',
+        icon: './media/overtone-logo',
         ignore: (path) =>
         {
             if (path.includes('node_modules'))
@@ -19,7 +19,13 @@ module.exports = {
             }
 
             if (path.includes('guides')) return true;
-            if (path.includes('media/songs')) return true;
+
+            if (path.includes('media/'))
+            {
+                if (path.includes('overtone-logo')) return false;
+                return true;
+            }
+
             if (path.includes('out')) return true;
 
             if (path.includes('react/'))
