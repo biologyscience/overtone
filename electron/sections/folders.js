@@ -170,7 +170,7 @@ function updateLibrary(dirs)
     
             if (existsSync(path.join(__dirname, `../appdata/webp/${ID}.webp`))) return colors;
 
-            sharp(BUFFER).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`))
+            sharp(BUFFER).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`));
     
             return colors;
         }
@@ -228,7 +228,7 @@ function updateLibrary(dirs)
                         const pictureURL = await itunes.getArtistPicture(result.artistViewUrl);
                         const buffer = await itunes.bufferFromURL(pictureURL);
 
-                        await sharp(buffer).toFile(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
+                        sharp(buffer).toFile(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
                     }
                 }
             }
@@ -266,7 +266,7 @@ ipcMain.on('ipc-addFolders', () =>
 {
     const dirs = dialog.showOpenDialogSync(WINDOW, { properties: ['openDirectory', 'multiSelections'] });
 
-    if (dirs === undefined) return WINDOW.webContents.send('ipc-newFoldersFiles', {});
+    if (dirs === undefined) return WINDOW.webContents.send('ipc-newFoldersFiles', {cancel: true});
 
     const data = updateLibrary(dirs);
 

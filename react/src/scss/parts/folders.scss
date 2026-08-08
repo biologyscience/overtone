@@ -442,7 +442,16 @@
         align-items: center;
         gap: 2em;
 
-        span { font-size: 1rem; }
+        span
+        {
+            font-size: 1rem;
+
+            &.small
+            {
+                font-style: italic;
+                font-size: 1em;
+            }
+        }
 
         svg
         {

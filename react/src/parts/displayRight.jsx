@@ -41,7 +41,7 @@ export default function displayRight()
 {
     const [progress, setProgress] = useState(0);
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-    const [volume, setVolume] = useState();
+    const [volume, setVolume] = useState(100);
     const [playState, setPlayState] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [endState, setEndState] = useState(false);

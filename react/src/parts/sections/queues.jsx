@@ -50,7 +50,8 @@ export default function queues()
         [showSongInfoModal, setShowSongInfoModal] = useState(false),
         [showDeleteModal, setShowDeleteModal] = useState(false),
         [selectedFiles, setSelectedFiles] = useState([]),
-        [multiSelect, setMultiSelect] = useState(false);
+        [multiSelect, setMultiSelect] = useState(false),
+        [noSongs, setNoSongs] = useState(false);
     
     function selectItems(filepath)
     {
@@ -115,16 +116,12 @@ export default function queues()
 
     useEffect(() =>
     {
-        function reloadQueue() { window.ipc.send('ipc-wantQueue', currentQueueName); };
         function handle({detail: [oldOrder, newOrder]}) { window.ipc.send('ipc-reorderQueue', {queueName: currentQueueName, oldOrder, newOrder}); }
-        function handle2({detail})
-        {
-            if (detail !== 0) return;
-
-            reloadQueue();
-        }
 
         eventBus.addEventListener('ot-songsInQueueReorder', handle);
+
+        return () => { eventBus.removeEventListener('ot-songsInQueueReorder', handle); }
+
     }, [currentQueueName]);
 
     useEffect(() =>
@@ -161,6 +158,8 @@ export default function queues()
     {
         window.ipc.on('ipc-setCurrentQueue', ({songs, queueName, trackNumber, duration}) =>
         {
+            window.ipc.send('ipc-wantQueues');
+
             setSongsData(songs);
             setCurrentQueueName(queueName);
             setCurrentQueueSongNumber(trackNumber);
@@ -197,6 +196,8 @@ export default function queues()
             );
         });
 
+        window.ipc.on('ipc-takeConfig', ({checkMusicIn}) => setNoSongs(checkMusicIn.length === 0));
+
         eventBus.addEventListener('ot-queuesReorder', ({detail: [oldOrder, newOrder]}) => window.ipc.send('ipc-reorderQueues', {oldOrder, newOrder}));
         eventBus.addEventListener('ot-focusSongInQueue', focusSongInQueue);
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
@@ -206,6 +207,25 @@ export default function queues()
 
     return (
         <COL ref={sectionRef} className='section relative' id='queues'>
+            <COL className={`noSongsBlocker absolute ${queuesList?.length > 0 ? 'displayNone' : ''}`}>
+                {
+                    noSongs ? (
+                        <>
+                            <span>Add your songs to get started</span>
+                            <button onClick={() => eventBus.dispatchEvent(new Event('ot-forceAddFolder'))}>Let's Go!</button>
+                        </>
+                    ) : (
+                        <>
+                            <span>Select songs from your saved albums or artists to get started</span>
+                            <ROW style={{gap: '2.5em', alignItems: 'center'}}>
+                                <button onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 2}))}>Go to Albums</button>
+                                <span>or</span>
+                                <button onClick={() => eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 3}))}>Go to Artists</button>
+                            </ROW>
+                        </>
+                    )
+                }
+            </COL>
             <CustomModal visibility={[showModal, setShowModal]} parentRef={sectionRef}>
                 <COL className={'queuesHolder'}>
                     <ROW className={'head relative'}>
