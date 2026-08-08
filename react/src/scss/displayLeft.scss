@@ -14,5 +14,33 @@
         max-height: var(--displayHeight);
         min-width: var(--displayLeftWidth);
         max-width: var(--displayLeftWidth);
+
+        & > .noSongsBlocker
+        {
+            inset: 0;
+            z-index: 5;
+            justify-content: center;
+            align-items: center;
+            gap: 2em;
+            backdrop-filter: blur(2.5px);
+
+            span { font-size: 2em; }
+
+            button
+            {
+                font-size: 2em;
+                border: .15em solid var(--accent);
+                padding: .35em 1em;
+                border-radius: .25em;
+
+                transition: all 150ms ease;
+
+                &:hover
+                {
+                    background-color: var(--accent);
+                    color: var(--background);
+                }
+            }
+        }
     }
 }

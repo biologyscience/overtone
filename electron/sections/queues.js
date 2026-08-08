@@ -7,10 +7,11 @@ const audioPlayer = require('../player');
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
-let albums, queues, songMetadata;
+let albums, config, queues, songMetadata;
 ipcMain.on('APPDATA', (obj) =>
 {
     albums = obj.albums;
+    config = obj.config;
     queues = obj.queues;
     songMetadata = obj.songMetadata;
 });
@@ -47,6 +48,8 @@ ipcMain.on('ipc-deleteQueue', (E, {name}) =>
             queues.set(queueName, queue);
         }
     }
+
+    if (config.get('lastQueueState').queue === name) config.set('lastQueueState', {});
 
     queues.delete(name);
 

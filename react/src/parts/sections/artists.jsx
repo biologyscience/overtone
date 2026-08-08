@@ -142,6 +142,10 @@ export default function artists()
 
     return (
         <COL ref={sectionRef} className='section relative' id='artists'>
+            <COL className={`noSongsBlocker absolute ${artists?.length > 0 ? 'displayNone' : ''}`}>
+                <span>Add your songs to get started</span>
+                <button onClick={() => eventBus.dispatchEvent(new Event('ot-forceAddFolder'))}>Let's Go!</button>
+            </COL>
             <COL className={`out ${showInside ? null : 'show'}`}>
                 <ROW className='head'>
                     <ROW className={'searchBar'}>

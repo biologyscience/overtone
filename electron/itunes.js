@@ -9,7 +9,9 @@ class ITunes
 
     async search(term)
     {
-        while (this.waiting) await new Promise(resolve => setTimeout(resolve, 100));
+        while (this.waiting) await new Promise(resolve => setTimeout(resolve, 1000));
+
+        this.waiting = true;
 
         const URL = this.#searchURL(term);
 
@@ -19,10 +21,12 @@ class ITunes
         {
             this.waiting = true;
 
-            setTimeout(() => this.waiting = false, 5000);
+            setTimeout(() => this.waiting = false, (parseInt(response.headers.get('retry-after')) || 10) * 1000);
 
             return await this.search(term);
         }
+
+        this.waiting = false;
 
         const api = await response.json();
 

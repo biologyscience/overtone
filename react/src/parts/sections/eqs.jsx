@@ -253,9 +253,9 @@ export default function eqs()
                         <input type='checkbox' className='switch' checked={enableVisualization} onChange={() => setEnableVisualization(x => !x)}/>
                     </ROW>
                     <ROW className={'option'}>
-                        <span>Frequency Domain</span>
+                        <span>FFT</span>
                         <input type='checkbox' className='switch' checked={timeFrequency} onChange={() => setTimeFrequency(x => !x)}/>
-                        <span>Time Domain</span>
+                        <span>TDW</span>
                     </ROW>
                 </ROW>
                 <COL className={`graphs ${enableEQ ? null : 'disableEQ'}`}>

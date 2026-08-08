@@ -246,6 +246,13 @@ export default function folders()
         });
     }
 
+    function addFolders()
+    {
+        toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'});
+        window.ipc.send('ipc-addFolders');
+        setShowProgressModal(true);
+    }
+
     useEffect(() => setSelectedFiles([]), [multiSelect]);
 
     useEffect(() => 
@@ -274,8 +281,14 @@ export default function folders()
 
     useEffect(() =>
     {
-        window.ipc.on('ipc-newFoldersFiles', ({folders, songCount}) =>
+        window.ipc.on('ipc-newFoldersFiles', ({folders, songCount, cancel}) =>
         {
+            if (cancel)
+            {
+                setShowProgressModal(false);
+                setUpdateProgress(0);
+            }
+
             let
                 text = 'Library is up to date',
                 folderType = null,
@@ -327,6 +340,13 @@ export default function folders()
 
         window.ipc.on('ipc-updateLibraryProgress', setUpdateProgress);
 
+        eventBus.addEventListener('ot-forceAddFolder', () =>
+        {
+            eventBus.dispatchEvent(new CustomEvent('ot-changeSectionTo', {detail: 1}));
+
+            setTimeout(addFolders, 750);
+        });
+
         eventBus.addEventListener('ot-navChange', () => setSelectedFiles([]));
     }, []);
 
@@ -347,7 +367,7 @@ export default function folders()
                     </ROW>
                 </COL>
                 <COL className='folderOptions'>
-                    <ROW className='folderOption' onClick={() => { toastRef.current = toast.loading('Scanning ...', {toasterId: 'folders'}); window.ipc.send('ipc-addFolders'); setShowProgressModal(true); }}>
+                    <ROW className='folderOption' onClick={addFolders}>
                         <CreateNewFolderRounded/>
                         <span>Add folders</span>
                     </ROW>
@@ -486,6 +506,7 @@ export default function folders()
                     <CircularProgressbar value={updateProgress} strokeWidth={5} text={`${updateProgress.toString().split('.')[0]}%`}/>
                     <span>Do not close the app, until the progress completes</span>
                     <span>If progress seems to be stuck for more than a minute, restart the app</span>
+                    <span className='small'>Progress speed depends on the number of unique songs. Higher the number, lower the speed.</span>
                 </COL>
             </CustomModal>
             <AddToQueueModal
