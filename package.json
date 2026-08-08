@@ -1,7 +1,7 @@
 {
   "name": "overtone",
-  "version": "0.56.3",
-  "description": "A free and open source Music Player for all your local music files !",
+  "version": "1.0.0",
+  "description": "A free and open source Music Player for all your local music files",
   "main": "electron/index.js",
   "author": "biologyscience",
   "license": "GPL-3.0-only",
