@@ -37,12 +37,10 @@ jobs:
           mkdir -p release
 
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            # cp out/make/deb/x64/*.deb release/
             cp out/make/zip/linux/x64/*.zip release/
           fi
 
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            # cp out/make/*.dmg release/
             cp out/make/zip/darwin/arm64/*.zip release/
           fi
 
@@ -73,12 +71,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}
-          path: release/*.exe
+          path: dist/*.exe
           
       - name: Upload to Release
         if: ${{ matrix.os == 'windows-latest' && github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.exe
+          files: dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
