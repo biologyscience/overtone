@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install dependencies
         run: npm install
@@ -47,14 +47,8 @@ jobs:
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             cp out/make/zip/win32/x64/*.zip release/
           fi
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-zip
-          path: release/**
           
-      - name: Upload to Release
+      - name: Upload .zip to Release
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
@@ -66,17 +60,21 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: npm run installer
 
-      - name: Upload artifacts
-        if: ${{ matrix.os == 'windows-latest' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-setup-exe
-          path: dist/*.exe
-          
-      - name: Upload to Release
+      - name: Upload .exe to Release
         if: ${{ matrix.os == 'windows-latest' && github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Isolate files cont.
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: bash
+        run: cp dist/*.exe release/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}
+          path: release/**
