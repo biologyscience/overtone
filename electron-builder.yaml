@@ -1,0 +1,28 @@
+appId: org.js.overtone
+productName: OverTone
+
+win:
+  target: nsis
+  icon: media/overtone-logo.ico
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true
+  installerIcon: media/overtone-logo.ico
+  uninstallerIcon: media/overtone-logo.ico
+
+files:
+  - "electron/**"
+  - "!electron/appdata/**/*"
+  - "electron/appdata/eqs.json"
+  - "!guides/"
+  - "!out/"
+  - "!media/**/*"
+  - "media/overtone-*"
+  - "!react/**/*"
+  - "react/dist"
+  - "!build.yml"
+  - "!forge.config.js"
+  - "LICENSE"
+  - "README.md"
