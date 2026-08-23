@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -28,53 +28,53 @@ jobs:
       - name: Bundle react
         run: npm run build
 
-      - name: Bundle electron
-        run: npm run make
+      # - name: Bundle electron
+      #   run: npm run make
 
-      - name: Isolate files
-        shell: bash
-        run: |
-          mkdir -p release
+      # - name: Isolate files
+      #   shell: bash
+      #   run: |
+      #     mkdir -p release
 
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            cp out/make/zip/linux/x64/*.zip release/
-          fi
+      #     if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+      #       cp out/make/zip/linux/x64/*.zip release/
+      #     fi
 
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            cp out/make/zip/darwin/arm64/*.zip release/
-          fi
+      #     if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+      #       cp out/make/zip/darwin/arm64/*.zip release/
+      #     fi
 
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            cp out/make/zip/win32/x64/*.zip release/
-          fi
+      #     if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+      #       cp out/make/zip/win32/x64/*.zip release/
+      #     fi
           
-      - name: Upload .zip to Release
-        if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release/**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Upload .zip to Release
+      #   if: ${{ github.event_name == 'release' }}
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: release/**
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create installer
-        if: ${{ matrix.os == 'windows-latest' }}
+        # if: ${{ matrix.os == 'windows-latest' }}
         run: npm run installer
 
-      - name: Upload .exe to Release
-        if: ${{ matrix.os == 'windows-latest' && github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/*.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Upload .exe to Release
+      #   if: ${{ matrix.os == 'windows-latest' && github.event_name == 'release' }}
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: dist/*.exe
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Isolate files cont.
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: bash
-        run: cp dist/*.exe release/
+      # - name: Isolate files cont.
+      #   if: ${{ matrix.os == 'windows-latest' }}
+      #   shell: bash
+      #   run: cp dist/*.exe release/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.os }}
-          path: release/**
+          path: dist/**
