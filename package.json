@@ -10,7 +10,7 @@
     "build": "vite build ./react",
     "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js --dev\"",
     "make": "electron-forge make",
-    "installer": "electron-builder",
+    "installer": "electron-builder --publish never",
     "react": "vite ./react --host",
     "start": "vite build ./react && electron electron/index.js"
   },
