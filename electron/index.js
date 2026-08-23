@@ -1,11 +1,17 @@
 const { app, BrowserWindow, ipcMain, shell, Menu, clipboard, nativeImage, Tray, protocol, net } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
-const { mkdirSync, existsSync, statSync } = require('fs');
+const { mkdirSync, existsSync, statSync, readFileSync } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { Vibrant } = require('node-vibrant/node');
 const { default: Store } = require('electron-store');
+
+const EXE = app.getPath('exe');
+const appdataLocation = EXE.includes('node_modules') ? path.join(__dirname, './appdata/') : path.join(path.dirname(EXE), './appdata/');
+
+if (!existsSync(appdataLocation)) mkdirSync(appdataLocation);
+if (!existsSync(path.join(appdataLocation, './webp/'))) mkdirSync(path.join(appdataLocation, './webp/'));
 
 const albums = new Store();
 const config = new Store();
@@ -14,66 +20,15 @@ const queues = new Store({accessPropertiesByDotNotation: false});
 const songList = new Store({accessPropertiesByDotNotation: false});
 const songMetadata = new Store({accessPropertiesByDotNotation: false});
 
-albums.path = path.join(__dirname, './appdata/albums.json');
-config.path = path.join(__dirname, './appdata/config.json');
-eqs.path = path.join(__dirname, './appdata/eqs.json');
-queues.path = path.join(__dirname, './appdata/queues.json');
-songList.path = path.join(__dirname, './appdata/songList.json');
-songMetadata.path = path.join(__dirname, './appdata/songMetadata.json');
+albums.path = path.join(appdataLocation, './albums.json');
+config.path = path.join(appdataLocation, './config.json');
+eqs.path = path.join(appdataLocation, './eqs.json');
+queues.path = path.join(appdataLocation, './queues.json');
+songList.path = path.join(appdataLocation, './songList.json');
+songMetadata.path = path.join(appdataLocation, './songMetadata.json');
 
-if (!existsSync(path.join(__dirname, './appdata/'))) mkdirSync(path.join(__dirname, './appdata/'));
-if (!existsSync(path.join(__dirname, './appdata/webp'))) mkdirSync(path.join(__dirname, './appdata/webp'));
-
-if (!existsSync(path.join(__dirname, './appdata/config.json')))
-{
-    config.store =
-    {
-        allowedMusicFileFormats: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
-        launchOnStartup: false,
-        systemTray: false,
-        checkMusicIn: [],
-        lastQueueState: {},
-        lastSection: 0,
-        colors:
-        {
-            dynamic: true,
-            highContrast: false,
-            theme: 'Dark',
-            themes: {}
-        },
-        audio:
-        {
-            device: 'default',
-            speed: 1,
-            preservePitch: false,
-            crossFade: 250,
-            volume: 100,
-            shuffle: false,
-            repeat: false,
-            autoPlayOnLaunch: false,
-            percentForPlaycount: 50
-        },
-        eq:
-        {
-            show: false,
-            timeDomain: true,
-            enabled: false,
-            preset: 'Soft Rock'
-        },
-        interface:
-        {
-            font: 'Default (Fira Sans)',
-            scale: 1,
-            animations: true,
-            shake: false
-        },
-        discordRPC:
-        {
-            appID: '1312407617540456458',
-            autoConnect: true
-        }
-    };
-}
+if (!existsSync(path.join(appdataLocation, './config.json'))) config.store = JSON.parse(readFileSync(path.join(__dirname, '../templates/config.json'), {encoding: 'utf8'}));
+if (!existsSync(path.join(appdataLocation, './eqs.json'))) eqs.store = JSON.parse(readFileSync(path.join(__dirname, '../templates/eqs.json'), {encoding: 'utf8'}));
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'overtone',
@@ -304,7 +259,7 @@ ipcMain.on('ipc-editTags', (E, {file, tags, toastEvent}) =>
         {
             const buf = Buffer.from(split[3], 'base64');
 
-            sharp(buf).webp({quality: 70}).toFile(path.join(__dirname, `./appdata/webp/${tempMetadata.albumID}.webp`));
+            sharp(buf).webp({quality: 70}).toFile(path.join(appdataLocation, `./webp/${tempMetadata.albumID}.webp`));
 
             const picture = new taglib.Picture();
 
@@ -354,8 +309,7 @@ app.on('ready', () =>
             webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js')
-            // app.getPath("userData")
+            preload: path.join(__dirname, './preload.js')
         }
     });
 
@@ -365,7 +319,7 @@ app.on('ready', () =>
      */
 
     ipcMain.emit('WINDOW_OBJECT', WINDOW);
-    ipcMain.emit('APPDATA', {albums, config, eqs, queues, songList, songMetadata});
+    ipcMain.emit('APPDATA', {albums, config, eqs, queues, songList, songMetadata, location: appdataLocation});
 
     TRAY = new Tray(path.join(__dirname, '../media/overtone-logo.ico'));
     TRAY.setToolTip('OverTone');

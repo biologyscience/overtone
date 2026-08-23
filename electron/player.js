@@ -6,7 +6,7 @@ const path = require('path');
 const { parseTime } = require('./util');
 const rpc = require('./rpc');
 
-let albums, config, queues, songMetadata;
+let albums, config, queues, songMetadata, appdataLocation;
 
 class Player
 {
@@ -55,7 +55,7 @@ class Player
 
         if (albumData?.hasArt)
         {
-            const picturePath = path.join(__dirname, `./appdata/webp/${albumID}.webp`);
+            const picturePath = path.join(appdataLocation, `./webp/${albumID}.webp`);
             
             data.albumart = `data:image/webp;base64,${readFileSync(picturePath).toString('base64')}`;
 
@@ -310,6 +310,7 @@ ipcMain.on('APPDATA', (obj) =>
     config = obj.config;
     queues = obj.queues;
     songMetadata = obj.songMetadata;
+    appdataLocation = obj.location
 });
 
 ipcMain.on('ipc-playState', (E, state) =>

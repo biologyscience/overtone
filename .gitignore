@@ -1,5 +1,5 @@
-electron/appdata/*
-!electron/appdata/eqs.json
+dist
+electron/appdata
 media/logo.ai
 node_modules
 out

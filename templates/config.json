@@ -1,0 +1,46 @@
+{
+    "allowedMusicFileFormats": ["mp3", "wav", "ogg", "flac", "aac"],
+    "launchOnStartup": false,
+    "systemTray": false,
+    "checkMusicIn": [],
+    "lastQueueState": {},
+    "lastSection": 0,
+    "colors":
+    {
+        "dynamic": true,
+        "highContrast": false,
+        "theme": "Dark",
+        "themes": {}
+    },
+    "audio":
+    {
+        "device": "default",
+        "speed": 1,
+        "preservePitch": false,
+        "crossFade": 250,
+        "volume": 100,
+        "shuffle": false,
+        "repeat": false,
+        "autoPlayOnLaunch": false,
+        "percentForPlaycount": 50
+    },
+    "eq":
+    {
+        "show": false,
+        "timeDomain": true,
+        "enabled": false,
+        "preset": "Soft Rock"
+    },
+    "interface":
+    {
+        "font": "Default (Fira Sans)",
+        "scale": 1,
+        "animations": true,
+        "shake": false
+    },
+    "discordRPC":
+    {
+        "appID": "1312407617540456458",
+        "autoConnect": true
+    }
+}

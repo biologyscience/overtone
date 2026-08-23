@@ -14,7 +14,7 @@ const audioPlayer = require('../player');
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
-let albums, config, queues, songList, songMetadata;
+let albums, config, queues, songList, songMetadata, appdataLocation;
 ipcMain.on('APPDATA', (obj) =>
 {
     albums = obj.albums;
@@ -22,6 +22,7 @@ ipcMain.on('APPDATA', (obj) =>
     queues = obj.queues;
     songList = obj.songList;
     songMetadata = obj.songMetadata;
+    appdataLocation = obj.location;
 });
 
 ipcMain.handle('ipc-wantFolders', () => 
@@ -168,9 +169,9 @@ function updateLibrary(dirs)
 
             for (const key in colors) colors[key] = colors[key]._rgb.map(x => parseFloat(x.toFixed(3)));
     
-            if (existsSync(path.join(__dirname, `../appdata/webp/${ID}.webp`))) return colors;
+            if (existsSync(path.join(appdataLocation, `./webp/${ID}.webp`))) return colors;
 
-            sharp(BUFFER).resize({height: 1000}).webp({quality: 70}).toFile(path.join(__dirname, `../appdata/webp/${ID}.webp`));
+            sharp(BUFFER).resize({height: 1000}).webp({quality: 70}).toFile(path.join(appdataLocation, `./webp/${ID}.webp`));
     
             return colors;
         }
@@ -213,7 +214,7 @@ function updateLibrary(dirs)
                 }
             }
 
-            const missingArtistPic = !existsSync(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
+            const missingArtistPic = !existsSync(path.join(appdataLocation, `./webp/${artistID}.webp`));
 
             if ((albumData.albumartURL === undefined) || missingArtistPic)
             {
@@ -228,7 +229,7 @@ function updateLibrary(dirs)
                         const pictureURL = await itunes.getArtistPicture(result.artistViewUrl);
                         const buffer = await itunes.bufferFromURL(pictureURL);
 
-                        sharp(buffer).toFile(path.join(__dirname, `../appdata/webp/${artistID}.webp`));
+                        sharp(buffer).toFile(path.join(appdataLocation, `./webp/${artistID}.webp`));
                     }
                 }
             }
@@ -349,7 +350,7 @@ ipcMain.handle('ipc-topPlays', () =>
                 artists: x.artists,
                 title: x.title,
                 playCount: x.playCount,
-                picture: path.join(__dirname, `../appdata/webp/${x.albumID}.webp`)
+                picture: path.join(appdataLocation, `./webp/${x.albumID}.webp`)
             };
 
             return y;
@@ -361,7 +362,7 @@ ipcMain.handle('ipc-topPlays', () =>
             {
                 artist: x[0],
                 playCount: x[1],
-                picture: path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(x[0]).digest('hex')}.webp`)
+                picture: path.join(appdataLocation, `./webp/${crypto.createHash('md5').update(x[0]).digest('hex')}.webp`)
             }
 
             return y;
@@ -399,7 +400,7 @@ ipcMain.handle('ipc-deleteFiles', async (E, {files}) =>
 
                 if (album.songs.length === 0)
                 {
-                    if (album.hasArt) unlinkSync(path.join(__dirname, `../appdata/webp/${albumID}.webp`));
+                    if (album.hasArt) unlinkSync(path.join(appdataLocation, `./webp/${albumID}.webp`));
 
                     albums.delete(albumID);
                 }

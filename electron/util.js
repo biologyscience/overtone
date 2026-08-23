@@ -1,11 +1,4 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs');
-const path = require('path');
-
-const appdata =
-{
-    get(filename) { return JSON.parse(readFileSync(path.join(__dirname, `./appdata/${filename}.json`))); },
-    set(filename, data) { return writeFileSync(path.join(__dirname, `./appdata/${filename}.json`), JSON.stringify(data, null, 4)); }
-}
 
 function parseTime(sec)
 {
@@ -81,4 +74,4 @@ class M3U
 	}
 }
 
-module.exports = { appdata, parseTime, M3U };
+module.exports = { parseTime, M3U };
