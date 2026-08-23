@@ -35,6 +35,7 @@ module.exports = {
             }
 
             if (path.includes('.gitignore')) return true;
+            if (path.includes('electron-builder.yaml')) return true;
             if (path.includes('forge.config.js')) return true;
             if (path.includes('package-lock.json')) return true;
 
