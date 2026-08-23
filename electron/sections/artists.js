@@ -6,8 +6,8 @@ const crypto = require('crypto');
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
-let songMetadata;
-ipcMain.on('APPDATA', obj => songMetadata = obj.songMetadata);
+let songMetadata, appdataLocation;
+ipcMain.on('APPDATA', obj => { songMetadata = obj.songMetadata; appdataLocation = obj.location; });
 
 ipcMain.handle('ipc-wantArtists', () =>
 {
@@ -19,7 +19,7 @@ ipcMain.handle('ipc-wantArtists', () =>
 
     const unique = [...new Set(artists)].map((artist) =>
     {
-        const picturePath = path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
+        const picturePath = path.join(appdataLocation, `./webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
 
         const picture = existsSync(picturePath) ? picturePath : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
@@ -42,7 +42,7 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
         const { album, year, albumID } = metadata[filepath];
 
         if (albums?.[album]?.year === undefined && year !== undefined) albums[album] === undefined ? albums[album] = { year } : albums[album].year = year;
-        if (albums?.[album]?.albumart === undefined && albumID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(__dirname, `../appdata/webp/${albumID}.webp`) } : albums[album].albumart = path.join(__dirname, `../appdata/webp/${albumID}.webp`);
+        if (albums?.[album]?.albumart === undefined && albumID !== undefined) albums[album] === undefined ? albums[album] = { albumart: path.join(appdataLocation, `./webp/${albumID}.webp`) } : albums[album].albumart = path.join(appdataLocation, `./webp/${albumID}.webp`);
     }
 
     const toSend = [];
@@ -56,7 +56,7 @@ ipcMain.handle('ipc-wantArtist', (E, {artist}) =>
         });
     }
 
-    const picturePath = path.join(__dirname, `../appdata/webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
+    const picturePath = path.join(appdataLocation, `./webp/${crypto.createHash('md5').update(artist).digest('hex')}.webp`)
 
     const picture = existsSync(picturePath) ? picturePath : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 

@@ -1,33 +1,32 @@
 const { app, ipcMain, dialog } = require('electron');
-const { readdirSync, createWriteStream, rmSync, cpSync } = require('fs');
+const { readFileSync, readdirSync, createWriteStream, rmSync, cpSync } = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 const extractor = require('extract-zip');
 
-const { appdata } = require('../util');
 const audioPlayer = require('../player');
 
 let WINDOW;
 ipcMain.on('WINDOW_OBJECT', obj => WINDOW = obj);
 
-let config;
-ipcMain.on('APPDATA', obj => config = obj.config);
+let config, appdataLocation;
+ipcMain.on('APPDATA', obj => { config = obj.config; appdataLocation = obj.location; });
 
 ipcMain.on('ipc-updateConfig', (E, {value, keys}) =>
 {
-    if (value === undefined || value === null || (typeof(value) ==='number' && isNaN(value))) return;
+    if (value === undefined || value === null || (typeof(value) === 'number' && isNaN(value))) return;
 
-    const config = appdata.get('config');
+    const configData = JSON.parse(readFileSync(config.path));
 
-    let ref = config;
+    let ref = configData;
 
     while (keys.length > 1) ref = ref[keys.shift()];
 
     ref[keys.shift()] = value;
 
-    app.setLoginItemSettings({openAtLogin: config.launchOnStartup});
+    app.setLoginItemSettings({openAtLogin: configData.launchOnStartup});
 
-    appdata.set('config', config);
+    config.store = configData;
 });
 
 ipcMain.on('ipc-saveColorTheme', (E, {name, colors}) =>
@@ -52,7 +51,7 @@ ipcMain.handle('ipc-backupAppdata', async () =>
     const zip = archiver('zip');
 
     zip.pipe(writeStream);
-    zip.directory(path.join(__dirname, './appdata/'), false);
+    zip.directory(appdataLocation, false);
 
     try
     {
@@ -72,7 +71,7 @@ ipcMain.handle('ipc-restoreAppdata', async () =>
 
     try
     {
-        const restoredPath = path.join(__dirname, './restored/');
+        const restoredPath = path.join(appdataLocation, '../restored/');
 
         await extractor(location[0], {dir: restoredPath});
 
@@ -88,17 +87,17 @@ ipcMain.handle('ipc-restoreAppdata', async () =>
 
 ipcMain.on('ipc-restoreNow', () =>
 {
-    rmSync(path.join(__dirname, './appdata/'), {recursive: true});
-    cpSync(path.join(__dirname, './restored/'), path.join(__dirname, './appdata/'), {recursive: true});
-    rmSync(path.join(__dirname, './restored/'), {recursive: true});
+    rmSync(appdataLocation, {recursive: true});
+    cpSync(path.join(appdataLocation, '../restored/'), appdataLocation, {recursive: true});
+    rmSync(path.join(appdataLocation, '../restored/'), {recursive: true});
 
-    const files = readdirSync(path.join(__dirname, './appdata/'));
+    const files = readdirSync(appdataLocation);
 
     files.forEach((file) =>
     {
         if (['albums.json', 'config.json', 'queues.json', 'songList.json', 'songMetadata.json', 'webp'].includes(file)) return;
 
-        rmSync(path.join(__dirname, './appdata/', file), {recursive: true});
+        rmSync(path.join(appdataLocation, file), {recursive: true});
     });
 
     audioPlayer.reset();
@@ -109,7 +108,7 @@ ipcMain.on('ipc-restoreNow', () =>
 
 ipcMain.on('ipc-resetApp', () =>
 {
-    rmSync(path.join(__dirname, './appdata/'), {recursive: true});
+    rmSync(appdataLocation, {recursive: true});
 
     audioPlayer.reset();
 

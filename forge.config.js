@@ -12,11 +12,7 @@ module.exports = {
             if (path.includes('.git')) return true;
             if (path.includes('.github')) return true;
 
-            if (path.includes('electron/appdata/'))
-            {
-                if (path.includes('eqs.json')) return false;
-                return true;
-            }
+            if (path.includes('electron/appdata/')) return true;
 
             if (path.includes('guides')) return true;
 

@@ -1,11 +1,12 @@
 const { ipcMain } = require('electron');
 const path = require('path');
 
-let albums, songMetadata;
+let albums, songMetadata, appdataLocation;
 ipcMain.on('APPDATA', (obj) =>
 {
     albums = obj.albums;
     songMetadata = obj.songMetadata;
+    appdataLocation = obj.location;
 });
 
 ipcMain.handle('ipc-wantAlbums', () =>
@@ -20,7 +21,7 @@ ipcMain.handle('ipc-wantAlbums', () =>
 
         const album = data[ID];
 
-        if (album.hasArt) albumart = path.join(__dirname, `../appdata/webp/${ID}.webp`);
+        if (album.hasArt) albumart = path.join(appdataLocation, `./webp/${ID}.webp`);
 
         albumData.push({album: album.album, artist: album.artists[0], albumart, accent: album.colors.Vibrant});
     }
@@ -43,7 +44,7 @@ ipcMain.handle('ipc-wantAlbum', (E, {album, artist}) =>
             albumData.colors = albumItem.colors;
             albumData.artist = albumItem.artists[0];
             albumData.year = albumItem.year;
-            albumData.albumart = albumItem.hasArt ? path.join(__dirname, `../appdata/webp/${ID}.webp`) : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
+            albumData.albumart = albumItem.hasArt ? path.join(appdataLocation, `./webp/${ID}.webp`) : 'https://brucecoughlin.com/data/default_artwork/music_ph.png';
 
             albumData.songs = albumItem.songs.map((filepath) =>
             {
