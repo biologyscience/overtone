@@ -63,3 +63,22 @@ jobs:
           files: release/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create installer
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: npm run installer
+
+      - name: Upload artifacts
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}
+          path: release/*.exe
+          
+      - name: Upload to Release
+        if: ${{ matrix.os == 'windows-latest' && github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

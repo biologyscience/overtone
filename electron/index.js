@@ -350,10 +350,12 @@ app.on('ready', () =>
         icon: path.join(__dirname, '../media/overtone-logo.ico'),
         webPreferences:
         {
+            // devTools: false,
             webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.js')
+            // app.getPath("userData")
         }
     });
 

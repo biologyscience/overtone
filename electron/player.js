@@ -1,5 +1,6 @@
 const { ipcMain, nativeImage } = require('electron');
 const { readFileSync } = require('fs');
+const { pathToFileURL } = require('url');
 const path = require('path');
 
 const { parseTime } = require('./util');
@@ -45,7 +46,7 @@ class Player
             album,
             duration: rawDuration,
             albumart: 'https://brucecoughlin.com/data/default_artwork/music_ph.png',
-            filepath,
+            filepath: pathToFileURL(filepath).href,
             autoPlay: autoPlay || false,
             isFavorite
         };
