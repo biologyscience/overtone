@@ -16,6 +16,8 @@ nsis:
 
 linux:
   icon: media/overtone-logo.png
+  category: MusicPlayer
+  syncDesktopName: true
   target:
     - AppImage
     - zip
