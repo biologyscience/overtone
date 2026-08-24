@@ -42,8 +42,8 @@ jobs:
           fi
 
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            file=$(find . -maxdepth 1 -name "dist/*.zip" -type f | head -n 1)
-            cp "$file" "${file%.zip}-linux.zip"
+            file=$(find dist -maxdepth 1 -name "*.zip" -type f | head -n 1)
+            cp "$file" "release/$(basename "${file%.zip}")-linux.zip"
             cp dist/*.AppImage release/
           fi
 
