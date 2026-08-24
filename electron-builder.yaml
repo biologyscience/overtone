@@ -9,6 +9,7 @@ win:
     - zip
 
 nsis:
+  license: templates/LICENSE.txt
   oneClick: false
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: true
@@ -36,9 +37,9 @@ dmg:
   icon: media/overtone-logo.icns
 
 files:
-  - "electron/**"
-  - "!electron/appdata/**/*"
-  - "electron/appdata/eqs.json"
+  - "!electron/**"
+  - "electron/app.js"
+  - "electron/preload.js"
   - "!guides/"
   - "!out/"
   - "!media/**/*"
@@ -46,7 +47,5 @@ files:
   - "!react/**/*"
   - "react/dist"
   - "templates/**"
-  - "!build.yml"
-  - "!forge.config.js"
   - "LICENSE"
   - "README.md"

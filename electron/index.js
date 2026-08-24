@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, Menu, clipboard, nativeImage, Tray, protocol, net } = require('electron');
 const metadata = require('music-metadata'); // cannot write and cannot read genre properly
 const taglib = require('node-taglib-sharp'); // cannot read artists properly
-const { mkdirSync, existsSync, statSync, readFileSync } = require('fs');
+const { mkdirSync, existsSync, statSync, readFileSync, writeFileSync } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { Vibrant } = require('node-vibrant/node');
@@ -12,6 +12,7 @@ const appdataLocation = EXE.includes('node_modules') ? path.join(__dirname, './a
 
 if (!existsSync(appdataLocation)) mkdirSync(appdataLocation);
 if (!existsSync(path.join(appdataLocation, './webp/'))) mkdirSync(path.join(appdataLocation, './webp/'));
+if (!existsSync(path.join(appdataLocation, '../LICENSE.OverTone.txt'))) writeFileSync(path.join(appdataLocation, '../LICENSE.OverTone.txt'), readFileSync(path.join(__dirname, '../templates/LICENSE.txt'), {encoding: 'utf8'}), {encoding: 'utf8'});
 
 const albums = new Store();
 const config = new Store();
@@ -305,7 +306,7 @@ app.on('ready', () =>
         icon: path.join(__dirname, '../media/overtone-logo.ico'),
         webPreferences:
         {
-            // devTools: false,
+            devTools: false,
             webSecurity: false,
             nodeIntegration: false,
             contextIsolation: true,
