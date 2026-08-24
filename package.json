@@ -1,5 +1,6 @@
 {
   "name": "overtone",
+  "desktopName": "OverTone",
   "version": "1.0.0",
   "description": "A free and open source Music Player for all your local music files",
   "main": "electron/index.js",
@@ -9,8 +10,7 @@
   "scripts": {
     "build": "vite build ./react",
     "electron": "nodemon --watch electron --ext js --exec \"electron electron/index.js --dev\"",
-    "make": "electron-forge make",
-    "installer": "electron-builder --publish never",
+    "make": "electron-builder --publish never",
     "react": "vite ./react --host",
     "start": "vite build ./react && electron electron/index.js"
   },
@@ -30,8 +30,6 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@electron-forge/cli": "^7.11.1",
-    "@electron-forge/maker-zip": "^7.11.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@eslint/js": "^9.39.1",
