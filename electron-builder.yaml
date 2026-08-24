@@ -2,8 +2,10 @@ appId: org.js.overtone
 productName: OverTone
 
 win:
-  target: nsis
   icon: media/overtone-logo.ico
+  target:
+    - nsis
+    - zip
 
 nsis:
   oneClick: false
@@ -11,6 +13,22 @@ nsis:
   deleteAppDataOnUninstall: true
   installerIcon: media/overtone-logo.ico
   uninstallerIcon: media/overtone-logo.ico
+
+linux:
+  icon: media/overtone-logo.png
+  target:
+    - AppImage
+    - zip
+
+mac:
+  icon: media/overtone-logo.icns
+  target:
+    - dmg
+    - zip
+
+dmg:
+  title: OverTone
+  icon: media/overtone-logo.icns
 
 files:
   - "electron/**"
