@@ -2,6 +2,7 @@ appId: org.js.overtone
 productName: OverTone
 
 win:
+  artifactName: "${productName}-${version}-${os}.${ext}"
   icon: media/overtone-logo.ico
   target:
     - nsis
@@ -15,6 +16,7 @@ nsis:
   uninstallerIcon: media/overtone-logo.ico
 
 linux:
+  artifactName: "${productName}-${version}-${os}.${ext}"
   icon: media/overtone-logo.png
   category: AudioVideo
   syncDesktopName: true
@@ -23,6 +25,7 @@ linux:
     - zip
 
 mac:
+  artifactName: "${productName}-${version}-${os}.${ext}"
   icon: media/overtone-logo.icns
   target:
     - dmg

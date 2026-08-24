@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -42,14 +42,12 @@ jobs:
           fi
 
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            file=$(find dist -maxdepth 1 -name "*.zip" -type f | head -n 1)
-            cp "$file" "release/$(basename "${file%.zip}")-linux.zip"
+            cp dist/*.zip release/
             cp dist/*.AppImage release/
           fi
 
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            file=$(find dist -maxdepth 1 -name "*.zip" -type f | head -n 1)
-            cp "$file" "release/$(basename "${file%-arm64-mac.zip}")-mac.zip"
+            cp dist/*.zip release/
             cp dist/*.dmg release/
           fi
 
