@@ -25,10 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Bundle react
+      - name: Bundle React
         run: npm run build
 
-      - name: Bundle electron
+      - name: Bundle Electron
+        run: npm run bundle
+
+      - name: Build Electron
         run: npm run make
 
       - name: Isolate files
