@@ -1,5 +1,6 @@
 dist
 electron/appdata
+electron/app.js
 media/logo.ai
 node_modules
 out
