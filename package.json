@@ -1,7 +1,7 @@
 {
   "name": "overtone",
   "desktopName": "OverTone",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A free and open source Music Player for all your local music files",
   "main": "electron/app.js",
   "author": "biologyscience",

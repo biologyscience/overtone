@@ -31,7 +31,7 @@ jobs:
       - name: Bundle Electron
         run: npm run bundle
 
-      - name: Build Electron
+      - name: Build exe
         run: npm run make
 
       - name: Isolate files

@@ -22,4 +22,4 @@ Report them in the [Issues](https://github.com/biologyscience/overtone/issues) s
 ## 😎 Have cool suggestions or feedbacks ?
 Use the [Discussion](https://github.com/biologyscience/overtone/discussions) tab to add it to the list.
 
-> ##### This project is authored and maintained by [Shiva Prasad](https://github.com/biologyscience).
+> ##### This project is authored and maintained by [Shiva Prasad](https://github.com/biologyscience)
