@@ -1,6 +1,7 @@
 dist
 electron/appdata
 electron/app.js
+electron/LICENSE.OverTone.txt
 media/logo.ai
 node_modules
 out
